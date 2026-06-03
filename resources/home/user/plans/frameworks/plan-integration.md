@@ -19,29 +19,28 @@ Use this plan when integrating with external APIs, SDKs, or services.
 - Out: unrelated feature work.
 
 ## Dependencies and assumptions
-- <provider SLAs, ownership contacts, and escalation path>
-- <credentials/scopes, network constraints, and environment parity assumptions>
-- <upstream versioning, deprecation windows, and release cadence assumptions>
+- Record provider SLAs, ownership contacts, and escalation paths.
+- Record credentials, scopes, network constraints, and environment-parity assumptions.
+- Record upstream versioning, deprecation windows, and release-cadence assumptions.
 
 ## Files and entry points
-- <integration entry points>
-- <config and secrets handling>
+- List the integration entrypoints that will change.
+- Describe the config and secret-handling surfaces involved.
 
 ## Data model / API changes
-- <new schema, DTOs, or configuration>
+- Describe new schemas, DTOs, or configuration objects that the integration introduces.
 
 ## API contract and compatibility
-- <OpenAPI/JSON schema source and locked version>
-- <operation mapping with unique operation IDs, explicit success/error responses, and pagination model>
-- <backward-compatibility, version negotiation, and deprecation handling>
-- <server URLs, security schemes/scopes, and callback/webhook contracts where applicable>
-
-- Failure model: <timeout budget, retry/backoff ceilings, circuit-breaker thresholds, and dead-letter handling>
+- Name the OpenAPI or JSON schema source and the locked version used for planning.
+- Define operation mappings, success/error responses, and pagination behavior.
+- Define backward-compatibility, version negotiation, and deprecation handling.
+- Define server URLs, security schemes/scopes, and callback or webhook contracts where applicable.
+- Define timeout budgets, retry/backoff ceilings, circuit-breaker thresholds, and dead-letter handling.
 
 ## Success metrics and exit criteria
-- <latency/error-rate/reliability targets>
-- <functional completion criteria for all required endpoint flows>
-- <go/no-go criteria, fallback path, and owner sign-off>
+- Define latency, error-rate, and reliability targets.
+- Define functional completion criteria for every required endpoint flow.
+- State the fallback path, go/no-go criteria, and sign-off owner.
 
 ## Action items
 [ ] Review provider API docs/spec and identify required endpoints.
@@ -56,15 +55,15 @@ Use this plan when integrating with external APIs, SDKs, or services.
 [ ] Document configuration, incident handling, and rollback runbook.
 
 ## Testing and validation
-- <commands to run, ordered fast → comprehensive>
-- <sandbox or mock validation steps>
-- <contract validation against OpenAPI/JSON schema>
-- <chaos/failure-mode validation for dependency outages and partial failures>
-- <offline/reconnect validation for constrained or intermittently connected environments>
+- List validation commands from fastest to deepest.
+- Describe sandbox or mock validation steps.
+- Describe contract validation against the chosen OpenAPI or JSON schema source.
+- Describe failure-mode validation for dependency outages and partial failures.
+- Describe offline or reconnect validation for constrained environments when relevant.
 
 ## Rollout / monitoring
-- <feature flags, canary, metrics/alerts>
-- <kill switch and fallback mode with decision owner>
+- Define feature flags, canary scope, metrics, and alerts.
+- Define the kill switch, fallback mode, and the decision owner.
 
 ## Security checkpoints
 - Confirm trust boundaries, credentials, and least-privilege assumptions before execution.
@@ -87,12 +86,11 @@ Use this plan when integrating with external APIs, SDKs, or services.
 - Receiving agent acknowledges handoff completeness before continuing execution.
 
 ## Risks and edge cases
-- <rate limits/quota exhaustion, partial failures, data drift, auth scope drift, replay/idempotency bugs>
+- Call out rate-limit exhaustion, partial failures, data drift, auth-scope drift, and replay or idempotency risks.
 
 ## Examples
-
-- Example objective: "Integrate <system> with <service>."
-- Example validation: "<integration test command>"
+- Example objective: "Integrate the runtime pack with a remote metadata service using explicit retry and rollback rules."
+- Example validation: "python3 -m unittest tests.test_plugin_runtime_contracts"
 
 ## Open questions
-- <missing API details or credentials>
+- Record only the missing API details, credentials, or environment access that block delivery.

@@ -3,7 +3,9 @@
 #permissions = ""
 default_permissions = "full"
 # this is set granular instead | approval_policy = "never"
+# legacy typo/comment retained for traceability
 #approval_reviewer = "guardian_subagent" "user"
+approvals_reviewer = "user"
 allow_login_shell = true
 web_search = "live"
 
@@ -14,7 +16,7 @@ sqlite_home = "$CODEX_SQLITE_HOME"
 cli_auth_credentials_store = "file"
 mcp_oauth_credentials_store = "file"
 mcp_oauth_callback_port = 8088
-#mcp_oauth_callback_url = "http://127.0.0.1:8765/callback"
+mcp_oauth_callback_url = "http://127.0.0.1:8088/callback"
 
 #experimental_realtime_ws_base_url = "https://your-realtime-backend.example.com/v1/realtime"
 #experimental_realtime_ws_model = "your-transcription-session-model"
@@ -29,28 +31,31 @@ mcp_oauth_callback_port = 8088
 
 # model
 chatgpt_base_url = 'https://chatgpt.com/backend-api'
+openai_base_url = "https://api.openai.com/v1"
 model = "gpt-5.4"
 review_model = "gpt-5.4"
 model_provider = "openai-custom"
-#personality = "pragmatic"
+personality = "pragmatic"
 #service_tier "flex|fast"
 #oss_provider = ""
 
 # model context and session
 model_context_window = 1050000
 model_auto_compact_token_limit = 900000
+model_auto_compact_token_limit_scope = "total"
 tool_output_token_limit = 12000
-#background_terminal_max_timeout = 200000
+background_terminal_max_timeout = 200000
 
 # model tunings
 model_reasoning_effort = "xhigh"
 model_reasoning_summary = "detailed"
 model_verbosity = "medium"
 plan_mode_reasoning_effort = "high"
-#model_supports_reasoning_summaries = true
+model_supports_reasoning_summaries = true
 
 # projects
-commit_attribution = "Authored-by: Matthew Cramer <git+commit@nullroute.sbs>"
+# legacy local customization, not present in upstream schema
+#commit_attribution = "Authored-by: Matthew Cramer <git+commit@nullroute.sbs>"
 #js_repl_node_module_dirs = []
 #js_repl_node_path = ""
 project_doc_max_bytes = 192768
@@ -78,29 +83,115 @@ developer_instructions = """1) Follow $CODEX_HOME/AGENTS.md, then $CODEX_HOME/me
 8) Default posture: correctness first, then security, then maintainability, then speed."""
 
 #compact_prompt = "Summarize aggressively."
+#apps_mcp_product_sku = ""
+include_apps_instructions = true
+include_collaboration_mode_instructions = true
+include_environment_context = true
+include_permissions_instructions = true
+#service_tier = "flex"
+#profile = ""
+forced_login_method = "chatgpt"
+#forced_chatgpt_workspace_id = ""
+suppress_unstable_features_warning = false
+
+#[auto_review]
+#policy = ""
+
+#[debug.config_lockfile]
+#export_dir = "/abs/path/to/export"
+#load_path = "/abs/path/to/config.lock.toml"
+#allow_codex_version_mismatch = false
+#save_fields_resolved_from_model_catalog = true
+
+#[marketplaces.codex-local]
+#enabled = true
+
+notify = []
+
+#[notice]
+#text = ""
 
 # models catalog and base instructions
 model_catalog_json = "./.models/model_catalog.json"
 model_instructions_file = "./.models/instructions/models/model-instructions.md"
 experimental_compact_prompt_file = "./.models/instructions/models/compact-prompt.md"
 
-[instruction_overrides]
-apply_patch_instructions_file = "./.models/instructions/prompt_overrides/apply_patch_instructions.md"
-#custom_personality_instructions_file = "./.models/instructions/prompt_overrides/custom_personality_instructions.md"
-default_mode_instructions_file = "./.models/instructions/prompt_overrides/default_mode_instructions.md"
-execute_mode_instructions_file = "./.models/instructions/prompt_overrides/execute_mode_instructions.md"
-hierarchical_agents_instructions_file = "./.models/instructions/prompt_overrides/hierarchical_agents_instructions.md"
-init_instructions_file = "./.models/instructions/prompt_overrides/init_instructions.md"
-model_personality_instructions_file = "./.models/instructions/prompt_overrides/model_personality_instructions.md"
-orchestrator_instructions_file = "./.models/instructions/prompt_overrides/orchestrator_instructions.md"
-pair_programming_mode_instructions_file = "./.models/instructions/prompt_overrides/pair_programming_mode_instructions.md"
-plan_mode_instructions_file = "./.models/instructions/prompt_overrides/plan_mode_instructions.md"
-presentation_artifact_instructions_file = "./.models/instructions/prompt_overrides/presentation_artifact_instructions.md"
-request_user_input_instructions_file = "./.models/instructions/prompt_overrides/request_user_input_instructions.md"
-review_base_branch_instructions_file = "./.models/instructions/prompt_overrides/review_base_branch_instructions.md"
-review_commit_instructions_file = "./.models/instructions/prompt_overrides/review_commit_instructions.md"
-review_mode_instructions_file = "./.models/instructions/prompt_overrides/review_mode_instructions.md"
-review_uncommitted_instructions_file = "./.models/instructions/prompt_overrides/review_uncommitted_instructions.md"
-search_tool_instructions_file = "./.models/instructions/prompt_overrides/search_tool_instructions.md"
-search_tool_suggest_instructions_file = "./.models/instructions/prompt_overrides/search_tool_suggest_instructions.md"
-spawn_agent_instructions_file = "./.models/instructions/prompt_overrides/spawn_agent_instructions.md"
+[history]
+persistence = "save-all"
+
+[tool_suggest]
+discoverables = []
+disabled_tools = []
+
+# legacy flat prompt overrides retained for traceability
+#[instruction_overrides]
+#apply_patch_instructions_file = "./.models/instructions/prompt_overrides/apply_patch_instructions.md"
+##custom_personality_instructions_file = "./.models/instructions/prompt_overrides/custom_personality_instructions.md"
+#default_mode_instructions_file = "./.models/instructions/prompt_overrides/default_mode_instructions.md"
+#execute_mode_instructions_file = "./.models/instructions/prompt_overrides/execute_mode_instructions.md"
+#hierarchical_agents_instructions_file = "./.models/instructions/prompt_overrides/hierarchical_agents_instructions.md"
+#init_instructions_file = "./.models/instructions/prompt_overrides/init_instructions.md"
+#model_personality_instructions_file = "./.models/instructions/prompt_overrides/model_personality_instructions.md"
+#orchestrator_instructions_file = "./.models/instructions/prompt_overrides/orchestrator_instructions.md"
+#pair_programming_mode_instructions_file = "./.models/instructions/prompt_overrides/pair_programming_mode_instructions.md"
+#plan_mode_instructions_file = "./.models/instructions/prompt_overrides/plan_mode_instructions.md"
+#presentation_artifact_instructions_file = "./.models/instructions/prompt_overrides/presentation_artifact_instructions.md"
+#request_user_input_instructions_file = "./.models/instructions/prompt_overrides/request_user_input_instructions.md"
+#review_base_branch_instructions_file = "./.models/instructions/prompt_overrides/review_base_branch_instructions.md"
+#review_commit_instructions_file = "./.models/instructions/prompt_overrides/review_commit_instructions.md"
+#review_mode_instructions_file = "./.models/instructions/prompt_overrides/review_mode_instructions.md"
+#review_uncommitted_instructions_file = "./.models/instructions/prompt_overrides/review_uncommitted_instructions.md"
+#search_tool_instructions_file = "./.models/instructions/prompt_overrides/search_tool_instructions.md"
+#search_tool_suggest_instructions_file = "./.models/instructions/prompt_overrides/search_tool_suggest_instructions.md"
+#spawn_agent_instructions_file = "./.models/instructions/prompt_overrides/spawn_agent_instructions.md"
+
+# [instruction_overrides.modes]
+# legacy out-of-schema keys retained for traceability
+#default_instructions_file = "./.models/instructions/prompt_overrides/default_mode_instructions.md"
+#plan_instructions_file = "./.models/instructions/prompt_overrides/plan_mode_instructions.md"
+
+# [instruction_overrides.agents]
+# legacy out-of-schema key retained for traceability
+#hierarchical_instructions_file = "./.models/instructions/prompt_overrides/hierarchical_agents_instructions.md"
+
+# [instruction_overrides.tui]
+# legacy out-of-schema key retained for traceability
+#init_instructions_file = "./.models/instructions/prompt_overrides/init_instructions.md"
+
+# [instruction_overrides.models]
+# legacy out-of-schema key retained for traceability
+#base_instructions_file = "./.models/instructions/models/gpt-5.4-base-instructions.md"
+
+# [instruction_overrides.review]
+# legacy out-of-schema keys retained for traceability
+#rubric_instructions_file = "./.models/instructions/prompt_overrides/review_mode_instructions.md"
+#base_branch_instructions_file = "./.models/instructions/prompt_overrides/review_base_branch_instructions.md"
+#commit_instructions_file = "./.models/instructions/prompt_overrides/review_commit_instructions.md"
+#uncommitted_instructions_file = "./.models/instructions/prompt_overrides/review_uncommitted_instructions.md"
+#base_branch_backup_instructions_file = "./.models/instructions/prompt_overrides/review_base_branch_backup_instructions.md"
+#commit_with_title_instructions_file = "./.models/instructions/prompt_overrides/review_commit_with_title_instructions.md"
+#exit_success_instructions_file = "./.models/instructions/prompt_overrides/review_exit_success_instructions.md"
+#exit_interrupted_instructions_file = "./.models/instructions/prompt_overrides/review_exit_interrupted_instructions.md"
+
+# [instruction_overrides.tools]
+# legacy out-of-schema keys retained for traceability
+#apply_patch_instructions_file = "./.models/instructions/prompt_overrides/apply_patch_instructions.md"
+#request_user_input_instructions_file = "./.models/instructions/prompt_overrides/request_user_input_instructions.md"
+#search_instructions_file = "./.models/instructions/prompt_overrides/search_tool_instructions.md"
+
+# [instruction_overrides.personality]
+# legacy out-of-schema key retained for traceability
+#custom_instructions_file = "./.models/instructions/prompt_overrides/custom_personality_instructions.md"
+
+# [instruction_overrides.permissions]
+#approval_policy_never_instructions_file = "./.models/instructions/prompt_overrides/approval_policy_never_instructions.md"
+#approval_policy_unless_trusted_instructions_file = "./.models/instructions/prompt_overrides/approval_policy_unless_trusted_instructions.md"
+#approval_policy_on_failure_instructions_file = "./.models/instructions/prompt_overrides/approval_policy_on_failure_instructions.md"
+#approval_policy_on_request_instructions_file = "./.models/instructions/prompt_overrides/approval_policy_on_request_instructions.md"
+#approval_policy_on_request_rule_request_permission_instructions_file = "./.models/instructions/prompt_overrides/approval_policy_on_request_rule_request_permission_instructions.md"
+#sandbox_mode_danger_full_access_instructions_file = "./.models/instructions/prompt_overrides/sandbox_mode_danger_full_access_instructions.md"
+#sandbox_mode_workspace_write_instructions_file = "./.models/instructions/prompt_overrides/sandbox_mode_workspace_write_instructions.md"
+#sandbox_mode_read_only_instructions_file = "./.models/instructions/prompt_overrides/sandbox_mode_read_only_instructions.md"
+#granular_intro_instructions_file = "./.models/instructions/prompt_overrides/granular_intro_instructions.md"
+#request_permissions_tool_instructions_file = "./.models/instructions/prompt_overrides/request_permissions_tool_instructions.md"
+#auto_review_approval_suffix_instructions_file = "./.models/instructions/prompt_overrides/auto_review_approval_suffix_instructions.md"

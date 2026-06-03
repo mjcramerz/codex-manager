@@ -1,5 +1,6 @@
-# Workflow plans (overview)
-Canonical catalog of workflow plan templates.
+# Workflow plan catalog
+Purpose: choose one workflow-specific plan template that mirrors an execution playbook.
+Use these templates when execution should follow an existing workflow playbook.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -8,14 +9,12 @@ Canonical catalog of workflow plan templates.
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-## Use when
-- executing a workflow that requires a structured plan
-- you want the plan that matches a workflow playbook
-- you need consistent checkpoints across workflow runs
+## Use these when
+- a workflow doc already defines the operational sequence
+- you want plan checkpoints that mirror a workflow playbook
+- you are maintaining workflow execution templates
 
-- Apply universal planning gates from `$CODEX_HOME/plans/OVERVIEW.md` (PoC, integration/API, implementation, and operational readiness).
-
-## Contents
+## Catalog
 <!-- BEGIN:contents -->
 - `$CODEX_HOME/plans/workflows/workflow-agent-orchestration.md` — Plan
 - `$CODEX_HOME/plans/workflows/workflow-aide.md` — Plan
@@ -61,36 +60,6 @@ Canonical catalog of workflow plan templates.
 - `$CODEX_HOME/plans/workflows/workflow-web-frontend.md` — Plan
 <!-- END:contents -->
 
-## Notes
-- File names map to `$CODEX_HOME/docs/workflows/*.md` as `workflow-<name>.md`.
-- If a workflow exists without a plan, add one and list it here.
-
-## Security checkpoints
-- Confirm trust boundaries, credentials, and least-privilege assumptions before execution.
-- Validate input bounds, timeout/retry limits, and failure behavior for risky operations.
-- Record any approved exception, owner, and expiry before proceeding.
-
-## Testing checkpoints
-- Define fast-path and deep validation commands before making changes.
-- Capture expected outcomes and acceptance criteria for each validation step.
-- Re-run impacted checks after major changes and before final handoff.
-
-## Deployment checkpoints
-- Document rollout order, blast-radius controls, and rollback conditions.
-- Confirm migration/backfill or feature-flag sequencing when applicable.
-- Record post-deploy verification owners and evidence.
-
-## Multi-agent handoff
-- Coordinator hands off scope, constraints, and stop condition with the target entrypoint.
-- Executor reports touched files, commands run, evidence, blockers, and next action.
-- Receiving agent acknowledges handoff completeness before continuing execution.
-
-## Related
-- `../OVERVIEW.md`
-- `$CODEX_HOME/index/pack/workflows.md`
-- `$CODEX_HOME/index/pack/plans.md`
-
-## Examples
-
-- Example objective: "<short task statement>"
-- Example validation: "<command or check>"
+## Maintenance rules
+- File names should map to workflow docs as `workflow-<name>.md`.
+- If a workflow exists without a matching plan, add it here in the same change.

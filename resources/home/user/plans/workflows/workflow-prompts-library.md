@@ -14,17 +14,20 @@ Use this plan when following `$CODEX_HOME/docs/workflows/prompts-library.md`.
 - `$CODEX_HOME/plans/prompts-library.md`
 
 ## Scope
-- In: maintaining prompt source files and prompt-maintenance support assets.
+- In: maintaining prompt guidance files and prompt-maintenance support assets.
 - Out: unrelated pack changes outside prompt maintenance.
 
 - For API/protocol surfaces, define contract versioning, timeout/retry ceilings, and idempotency/error-model expectations.
 
 ## Action items
 [ ] Review `$CODEX_HOME/docs/workflows/prompts-library.md` and confirm target commands/contracts.
-[ ] Update prompt source-of-truth files under `$CODEX_HOME/prompts/*`.
+[ ] Update `$CODEX_HOME/docs/create-prompts.md` if prompt-file structure, names, or catalog entries change.
 [ ] Update linked maintenance assets (docs, index, template, snippet, skill references) when required.
 
 ## Testing and validation
+- Run a stale-reference sweep for direct prompt-file paths outside `$CODEX_HOME/docs/create-prompts.md`.
+- Validate Markdown structure for the changed guidance files.
+- Run the narrowest repo checks required by the touched files.
 
 ## Security checkpoints
 - Confirm trust boundaries and disallow prompt text that bypasses required controls.
@@ -32,12 +35,12 @@ Use this plan when following `$CODEX_HOME/docs/workflows/prompts-library.md`.
 - Record approved exceptions with owner and expiry.
 
 ## Testing checkpoints
-- Validate updated prompt listings and command names in `$CODEX_HOME/prompts/OVERVIEW.md`.
+- Validate updated prompt listings and command names in `$CODEX_HOME/docs/create-prompts.md`.
 - Confirm routing and plan links resolve after any file rename or move.
 - Re-run impacted checks after every contract or command change.
 
 ## Deployment checkpoints
-- Sync runtime prompts only after source checks pass.
+- Keep prompt assets and prompt guidance aligned before broader pack checks.
 - Document user-impacting command changes and rollback instructions.
 - Confirm post-sync spot checks of affected commands.
 

@@ -77,13 +77,12 @@
     ]
   },
   "repos": [
-    # COPY THIS FULL OBJECT TO ADD A NEW REPO BLOCK.
-    # `match` decides when it applies; the other sections are optional overlays.
     {
-      "id": "c0d3x",
-      "display_name": "c0d3x",
+      "id": "codex-manager",
+      "display_name": "codex-manager",
       "match": {
         "repo_names": [
+          "codex-manager",
           "c0d3x"
         ],
         "all_of_paths": [
@@ -118,8 +117,6 @@
           }
         ]
       },
-      # Define focus_areas here inside each repo block.
-      # Each entry maps repo-relative path_globs to the label shown when changed files match.
       "focus_areas": [
         {
           "label": "installer",
@@ -165,7 +162,7 @@
               "\\bapps.toml\\b"
             ],
             "lines": [
-              "For `c0d3x`, source changes for installer and runtime configuration usually touch `src/install/**`, `config/usr/apps.toml`, `config/usr/*`, `config/vendor/*`, and `config/agents/*.toml`."
+              "For `codex-manager`, source changes for installer and runtime configuration usually touch `src/install/**`, `config/usr/apps.toml`, `config/usr/*`, `config/vendor/*`, and `config/agents/*.toml`."
             ]
           },
           {
@@ -179,7 +176,7 @@
               "\\bcheck\\b"
             ],
             "lines": [
-              "For `c0d3x` validation, run `python3 -m compileall -q src tests` and `python3 -m unittest discover -s tests`."
+              "For `codex-manager` validation, run `python3 -m compileall -q src tests` and `python3 -m unittest discover -s tests`."
             ]
           }
         ]
@@ -215,8 +212,6 @@
         ]
       }
     },
-    # SECOND REAL REPO BLOCK.
-    # COPY THIS FULL OBJECT OR THE ONE ABOVE AS A TEMPLATE FOR ANOTHER REPO.
     {
       "id": "codex",
       "display_name": "codex",

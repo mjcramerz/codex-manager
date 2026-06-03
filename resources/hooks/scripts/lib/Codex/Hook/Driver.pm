@@ -1,0 +1,658 @@
+package Codex::Hook::Driver;
+
+use strict;
+use warnings;
+
+use Exporter qw(import);
+use JSON::PP qw(decode_json);
+
+use Codex::Hook::Learning qw(
+  prompt_keyword_context_lines
+  tool_response_summary_lines
+  transcript_summary_lines
+);
+use Codex::Hook::Model qw(normalize_input);
+use Codex::Hook::Output qw(
+  emit_block
+  emit_context
+  emit_payload
+  emit_stop
+  emit_system_message
+  json_true
+);
+use Codex::Hook::Policy qw(
+  compact_system_message
+  destructive_command_reason
+  permission_request_message
+  pre_tool_policy_lines
+);
+use Codex::Hook::Repo qw(
+  current_branch
+  git_root
+  has_patch_release_dir
+  list_changed_files
+  list_mirror_refs
+  preferred_mirror_main_branch
+  preview_paths
+  summarize_worktree
+);
+use Codex::Hook::Runner qw(read_file_tail);
+use Codex::Hook::Schema qw(validate_event_input);
+use Codex::Hook::Subagent qw(start_context stop_system_message);
+
+our @EXPORT_OK = qw(run_event);
+
+our $RUNTIME_CONFIG_JSON = '__HOOK_RUNTIME_CONFIG_TEMPLATE__';
+our $TRANSCRIPT_TAIL_BYTES = 120000;
+
+sub _load_input {
+    local $/;
+    my $raw = <STDIN>;
+    return {} if !defined $raw || $raw !~ /\S/;
+    my $payload = decode_json($raw);
+    die "hook input must decode to an object\n" if ref($payload) ne 'HASH';
+    return $payload;
+}
+
+sub _load_runtime_config {
+    die "hook driver template was not rendered by the home/install/upgrade flow\n"
+      if $RUNTIME_CONFIG_JSON eq '__HOOK_RUNTIME_CONFIG_TEMPLATE__';
+    my $payload = decode_json($RUNTIME_CONFIG_JSON);
+    die "embedded hook runtime config must decode to an object\n" if ref($payload) ne 'HASH';
+    die "embedded hook runtime config must contain a repos list\n"
+      if ref($payload->{repos}) ne 'ARRAY';
+    return $payload;
+}
+
+sub _join_sections {
+    my (@sections) = @_;
+    my @filtered = grep { defined($_) && length($_) } @sections;
+    return undef if !@filtered;
+    return join("\n\n", @filtered);
+}
+
+sub _glob_regex {
+    my ($glob) = @_;
+    my $regex = quotemeta($glob // '');
+    $regex =~ s/\\\*\\\*/.*/g;
+    $regex =~ s/\\\*/[^\\n]*/g;
+    $regex =~ s/\\\?/./g;
+    return qr/\A$regex\z/;
+}
+
+sub _matches_any_glob {
+    my ($path, $globs) = @_;
+    return 0 if !defined $path || ref($globs) ne 'ARRAY';
+    for my $glob (@{$globs}) {
+        next if !defined $glob || !length($glob);
+        return 1 if $path =~ _glob_regex($glob);
+    }
+    return 0;
+}
+
+sub _focus_areas {
+    my ($manifest, $profiles) = @_;
+    my @groups;
+    for my $container ($manifest, @{$profiles || []}) {
+        next if ref($container) ne 'HASH';
+        next if ref($container->{focus_areas}) ne 'ARRAY';
+        push @groups, @{$container->{focus_areas}};
+    }
+    return @groups;
+}
+
+sub _detect_changed_areas {
+    my ($changed_files, $manifest, $profiles) = @_;
+    return () if ref($changed_files) ne 'ARRAY' || !@{$changed_files};
+    my @areas;
+    my %seen;
+    for my $group (_focus_areas($manifest, $profiles)) {
+        next if ref($group) ne 'HASH';
+        my $label = $group->{label} // '';
+        next if !length($label);
+        my $globs = $group->{path_globs};
+        next if ref($globs) ne 'ARRAY' || !@{$globs};
+        for my $path (@{$changed_files}) {
+            next if !_matches_any_glob($path, $globs);
+            push @areas, $label if !$seen{$label}++;
+            last;
+        }
+    }
+    return @areas;
+}
+
+sub _repo_matches {
+    my ($repo_root, $profile) = @_;
+    return 0 if !defined $repo_root || ref($profile) ne 'HASH';
+    my $match = $profile->{match};
+    return 0 if ref($match) ne 'HASH';
+
+    my $repo_name = $repo_root;
+    $repo_name =~ s{.*/}{};
+    my $repo_names = $match->{repo_names};
+    if (ref($repo_names) eq 'ARRAY' && @{$repo_names}) {
+        return 1 if grep { defined($_) && $_ eq $repo_name } @{$repo_names};
+    }
+
+    my $all_of = $match->{all_of_paths};
+    if (ref($all_of) eq 'ARRAY' && @{$all_of}) {
+        for my $path (@{$all_of}) {
+            return 0 if !-e "$repo_root/$path";
+        }
+        return 1;
+    }
+
+    my $any_of = $match->{any_of_paths};
+    if (ref($any_of) eq 'ARRAY' && @{$any_of}) {
+        for my $path (@{$any_of}) {
+            return 1 if -e "$repo_root/$path";
+        }
+    }
+
+    return 0;
+}
+
+sub _find_repo_profiles {
+    my ($manifest, $repo_root) = @_;
+    return () if ref($manifest->{repos}) ne 'ARRAY' || !defined $repo_root;
+    return grep { _repo_matches($repo_root, $_) } @{$manifest->{repos}};
+}
+
+sub _format_template {
+    my ($text, $values) = @_;
+    my $rendered = $text // '';
+    return '' if !length($rendered);
+    $rendered =~ s/\{([a-z_]+)\}/exists($values->{$1}) ? $values->{$1} : "{$1}"/ge;
+    return $rendered;
+}
+
+sub _format_lines {
+    my ($lines, $values) = @_;
+    return () if ref($lines) ne 'ARRAY';
+    my @rendered;
+    for my $line (@{$lines}) {
+        next if !defined $line || !length($line);
+        push @rendered, _format_template($line, $values);
+    }
+    return @rendered;
+}
+
+sub _manifest_block_entries {
+    my ($manifest, $profiles, $section) = @_;
+    my @blocks;
+    if (ref($manifest->{$section}) eq 'HASH') {
+        push @blocks, $manifest->{$section};
+    }
+    for my $profile (@{$profiles || []}) {
+        next if ref($profile) ne 'HASH';
+        next if ref($profile->{$section}) ne 'HASH';
+        push @blocks, $profile->{$section};
+    }
+    return @blocks;
+}
+
+sub _multi_agent_context {
+    my ($manifest, $prompt) = @_;
+    my $block = $manifest->{multi_agent};
+    return undef if ref($block) ne 'HASH' || !defined $prompt || !length($prompt);
+    my $patterns = $block->{trigger_patterns};
+    return undef if ref($patterns) ne 'ARRAY' || !@{$patterns};
+    my $matched = 0;
+    for my $pattern (@{$patterns}) {
+        next if !defined $pattern || !length($pattern);
+        if ($prompt =~ /$pattern/i) {
+            $matched = 1;
+            last;
+        }
+    }
+    return undef if !$matched;
+
+    my @lines;
+    if (ref($block->{shared_lines}) eq 'ARRAY') {
+        push @lines, @{$block->{shared_lines}};
+    }
+    if (ref($block->{roles}) eq 'ARRAY') {
+        push @lines, map {
+            my $name = $_->{name} // '';
+            my $desc = $_->{description} // '';
+            my $use_when = $_->{use_when} // '';
+            length($name) ? "`$name`: $desc Use when: $use_when" : ()
+        } grep { ref($_) eq 'HASH' } @{$block->{roles}};
+    }
+    return @lines ? join("\n", @lines) : undef;
+}
+
+sub _session_start_context {
+    my ($manifest, $payload) = @_;
+    my $repo_root = git_root($payload->{cwd} // '');
+    return undef if !defined $repo_root;
+
+    my @profiles = _find_repo_profiles($manifest, $repo_root);
+    my @changed_files = list_changed_files($repo_root);
+    my @changed_areas = _detect_changed_areas(\@changed_files, $manifest, \@profiles);
+    my $current = current_branch($repo_root);
+    my @mirror_refs = list_mirror_refs($repo_root);
+    my $mirror_main = preferred_mirror_main_branch($repo_root);
+    my $worktree = summarize_worktree($repo_root);
+    my @profile_ids = map { $_->{id} } grep { ref($_) eq 'HASH' && defined($_->{id}) && length($_->{id}) } @profiles;
+    my $profile_id = @profile_ids ? $profile_ids[0] : '';
+    my %values = (
+        changed_areas_csv       => @changed_areas ? join(', ', @changed_areas) : 'none',
+        changed_files_preview   => preview_paths(\@changed_files),
+        current_branch          => $current,
+        profile_ids_csv         => @profile_ids ? join(', ', @profile_ids) : 'none',
+        repo_id                 => length($profile_id) ? $profile_id : ($repo_root =~ s{.*/}{}r),
+        repo_name               => ($repo_root =~ s{.*/}{}r),
+        repo_root               => $repo_root,
+        runtime_hooks_dir       => '$CODEX_HOME/hooks',
+        runtime_hooks_driver_path => '$CODEX_HOME/hooks/scripts/hook_driver.pl',
+    );
+
+    my @summary = (
+        "Repository context for `$values{repo_name}`:",
+        "- Repo root: `$repo_root`",
+        "- Current branch: `$current`",
+    );
+    push @summary, "- Root instructions: follow the repo-root `AGENTS.md`, plus any deeper `AGENTS.md` files under touched paths."
+      if -f "$repo_root/AGENTS.md";
+    push @summary, '- Active generated hook profiles: `' . join(', ', @profile_ids) . '` from `$CODEX_HOME/hooks/scripts/hook_driver.pl`.'
+      if @profile_ids;
+    push @summary, "- Mirror refs detected (`github/*` or `gitlab/*`). Treat those branches as read-only mirrors and true-sync `mcr/main` from `" . ($mirror_main || 'github/mcr/main or gitlab/mcr/main') . "`, then `mcr/staging` from `mcr/main`, then `mcr/release` from `mcr/staging`, preserving only protected paths."
+      if @mirror_refs;
+    push @summary, "- Current branch `$current` is a read-only mirror branch."
+      if $current =~ m{\A(?:github|gitlab)/};
+    push @summary, "- `patches/release/` exists. Keep local patch work check-only with commands such as `git apply --check`, `scripts/release/check_release_patches.sh HEAD`, `git mcr-fork-check`, or `git mcr-fork-test`."
+      if has_patch_release_dir($repo_root);
+    if (@changed_areas) {
+        push @summary, "- Current changed areas:";
+        push @summary, map { "- `$_`" } @changed_areas;
+    }
+    if (($payload->{source} // '') eq 'resume' && @changed_files) {
+        my @bits;
+        for my $label (qw(staged unstaged untracked deleted renamed conflicts)) {
+            my $value = int($worktree->{$label} // 0);
+            push @bits, "$label=$value" if $value > 0;
+        }
+        push @summary, "- Worktree summary: " . join(', ', @bits) if @bits;
+        if (ref($worktree->{preview}) eq 'ARRAY' && @{$worktree->{preview}}) {
+            push @summary, "- Changed files preview: `" . preview_paths($worktree->{preview}) . "`";
+        }
+    }
+    my @recurring = transcript_summary_lines(path => $payload->{transcript_path});
+    if (@recurring) {
+        push @summary, '- Recent recurring signals from the session transcript:';
+        push @summary, map { "- $_" } @recurring;
+    }
+
+    my @sections = (join("\n", @summary));
+    my $source_name = lc($payload->{source} // '');
+    my $index = 0;
+    for my $block (_manifest_block_entries($manifest, \@profiles, 'session_start')) {
+        my @lines = $source_name eq 'resume'
+          ? _format_lines($block->{resume_context} || [], \%values)
+          : _format_lines($block->{startup_context} || [], \%values);
+        next if !@lines;
+        my $header = $index++ == 0 ? 'Hook pack context:' : "Repository profile `$values{repo_id}`:";
+        push @sections, join("\n", $header, map { "- $_" } @lines);
+    }
+    return _join_sections(@sections);
+}
+
+sub _user_prompt_context {
+    my ($manifest, $payload) = @_;
+    my $prompt = $payload->{prompt} // '';
+    my $repo_root = git_root($payload->{cwd} // '');
+    return undef if !length($prompt) || !defined $repo_root;
+
+    my @profiles = _find_repo_profiles($manifest, $repo_root);
+    my @changed_files = list_changed_files($repo_root);
+    my @changed_areas = _detect_changed_areas(\@changed_files, $manifest, \@profiles);
+    my @profile_ids = map { $_->{id} } grep { ref($_) eq 'HASH' && defined($_->{id}) && length($_->{id}) } @profiles;
+    my $primary = @profiles ? $profiles[0] : undef;
+    my %values = (
+        changed_areas_csv       => @changed_areas ? join(', ', @changed_areas) : 'none',
+        changed_files_preview   => preview_paths(\@changed_files),
+        current_branch          => current_branch($repo_root),
+        profile_ids_csv         => @profile_ids ? join(', ', @profile_ids) : 'none',
+        repo_id                 => defined($primary) ? ($primary->{id} // ($repo_root =~ s{.*/}{}r)) : ($repo_root =~ s{.*/}{}r),
+        repo_name               => ($repo_root =~ s{.*/}{}r),
+        repo_root               => $repo_root,
+        runtime_hooks_dir       => '$CODEX_HOME/hooks',
+        runtime_hooks_driver_path => '$CODEX_HOME/hooks/scripts/hook_driver.pl',
+    );
+
+    my @sections;
+    my $multi_agent = _multi_agent_context($manifest, $prompt);
+    push @sections, $multi_agent if defined $multi_agent;
+    push @sections, 'Review requests should lead with concrete findings ordered by severity, supported by file and line evidence plus explicit residual risks.'
+      if $prompt =~ /\b(review|audit)\b/i;
+    if ($prompt =~ /\b(hook|hooks|manifest|sessionstart|userpromptsubmit|stop hook)\b/i) {
+        push @sections, join(
+            "\n",
+            'Codex hooks expose exactly `SessionStart`, `UserPromptSubmit`, and `Stop` through `$CODEX_HOME/hooks.json`.',
+            'Only `SessionStart` uses the matcher regex from `hooks.json`; `UserPromptSubmit` and `Stop` must self-filter inside the hook command.',
+            'Stop input includes `stop_hook_active` and `last_assistant_message`. `decision: block` requires a non-empty `reason`.',
+        );
+    }
+    if ($prompt =~ /\b(github|gitlab|mirror|patch|patches|release|mcr\/)\b/i) {
+        my @lines;
+        my @mirror_refs = list_mirror_refs($repo_root);
+        if (@mirror_refs) {
+            push @lines, 'Mirror refs are present. Treat `github/*` and `gitlab/*` branches as read-only mirrors; true-sync `mcr/main` from `'
+              . (preferred_mirror_main_branch($repo_root) || 'github/mcr/main or gitlab/mcr/main')
+              . '`, then promote `mcr/staging` and `mcr/release` with the same protected-path contract.';
+        }
+        push @lines, '`patches/release/` exists. Keep local patch work check-only with commands such as `git apply --check`, `scripts/release/check_release_patches.sh HEAD`, `git mcr-fork-check`, or `git mcr-fork-test`.'
+          if has_patch_release_dir($repo_root);
+        push @sections, join("\n", @lines) if @lines;
+    }
+    my @keyword_lines = prompt_keyword_context_lines(prompt => $prompt);
+    push @sections, join("\n", @keyword_lines) if @keyword_lines;
+    for my $block (_manifest_block_entries($manifest, \@profiles, 'user_prompt_submit')) {
+        next if ref($block->{rules}) ne 'ARRAY';
+        for my $rule (@{$block->{rules}}) {
+            next if ref($rule) ne 'HASH' || ref($rule->{patterns}) ne 'ARRAY';
+            my $matched = 0;
+            for my $pattern (@{$rule->{patterns}}) {
+                next if !defined $pattern || !length($pattern);
+                if ($prompt =~ /$pattern/i) {
+                    $matched = 1;
+                    last;
+                }
+            }
+            next if !$matched;
+            my @lines = _format_lines($rule->{lines} || [], \%values);
+            push @sections, join("\n", @lines) if @lines;
+        }
+    }
+    return _join_sections(@sections);
+}
+
+sub _validation_evidence {
+    my ($payload) = @_;
+    my $last = $payload->{last_assistant_message} // '';
+    my $tail = read_file_tail(path => $payload->{transcript_path}, max_bytes => $TRANSCRIPT_TAIL_BYTES);
+    return join("\n", grep { defined($_) && length($_) } ($last, $tail));
+}
+
+sub _has_skip_rationale {
+    my ($text) = @_;
+    return 0 if !defined $text || !length($text);
+    return $text =~ /\b(could not run|couldn't run|unable to run|did not run|didn't run|skipped|cannot run|can't run|not run|not executed|permission boundary|permission denied|requires approval|sandbox|tool unavailable|command not found|not installed|missing dependency|out of scope)\b/i;
+}
+
+sub _has_any_evidence {
+    my ($text, $patterns) = @_;
+    return 0 if ref($patterns) ne 'ARRAY';
+    for my $pattern (@{$patterns}) {
+        next if !defined $pattern || !length($pattern);
+        return 1 if $text =~ /$pattern/i;
+    }
+    return 0;
+}
+
+sub _has_all_evidence {
+    my ($text, $patterns) = @_;
+    return 0 if ref($patterns) ne 'ARRAY';
+    for my $pattern (@{$patterns}) {
+        next if !defined $pattern || !length($pattern);
+        return 0 if $text !~ /$pattern/i;
+    }
+    return 1;
+}
+
+sub _collect_generic_validation_issues {
+    my ($repo_root, $changed_files, $evidence, $current) = @_;
+    my @issues;
+    my @patch_files = grep { /\.patch\z/ || m{\Apatches/release/} } @{$changed_files};
+
+    if ($current =~ m{\A(?:github|gitlab)/} && @{$changed_files}) {
+        push @issues, "Current branch `$current` is a read-only mirror; move authored work to a non-mirror branch before finishing. Changed files: " . preview_paths($changed_files) . '.';
+    }
+    if ((has_patch_release_dir($repo_root) || @patch_files) && !_has_any_evidence(
+            $evidence,
+            [
+                qr/\bgit mcr-fork-(check|test)\b/,
+                qr/\bscripts\/release\/check_release_patches\.sh\b/,
+                qr/\bgit apply( --verbose)? --check\b/,
+            ],
+        )) {
+        push @issues, 'Patch-release repo shape detected (' . (@patch_files ? preview_paths(\@patch_files) : 'patches/release/') . '). Keep local patch work check-only with `git apply --check`, `scripts/release/check_release_patches.sh HEAD`, `git mcr-fork-check`, or `git mcr-fork-test`.';
+    }
+
+    my @python_files = grep { /\.py\z/ } @{$changed_files};
+    my @shell_files = grep { /\.(sh|bash|zsh)\z/ } @{$changed_files};
+    my @json_files = grep { /\.json\z/ } @{$changed_files};
+    my @toml_files = grep { /\.toml\z/ } @{$changed_files};
+
+    if (@python_files && !_has_any_evidence($evidence, [ qr/\bpython3? -m (py_compile|compileall|pytest|unittest)\b/, qr/\bpytest\b/ ])) {
+        push @issues, 'Python changes (' . preview_paths(\@python_files) . ') need `python3 -m py_compile <file>` or a targeted unittest/pytest command.';
+    }
+    if (@shell_files && !_has_any_evidence($evidence, [ qr/\bshellcheck\b/, qr/\bbash -n\b/, qr/\bzsh -n\b/, qr/\b(?:sh|dash) -n\b/ ])) {
+        push @issues, 'Shell changes (' . preview_paths(\@shell_files) . ') need `bash -n` and/or `shellcheck` coverage.';
+    }
+    if (@json_files && !_has_any_evidence($evidence, [ qr/\bpython3? -m json\.tool\b/, qr/\bjq \./ ])) {
+        push @issues, 'JSON changes (' . preview_paths(\@json_files) . ') need `python3 -m json.tool` or `jq .` validation.';
+    }
+    if (@toml_files && !_has_any_evidence($evidence, [ qr/\btomllib\b/, qr/\btaplo\b/ ])) {
+        push @issues, 'TOML changes (' . preview_paths(\@toml_files) . ') need a `tomllib` parse, `taplo`, or equivalent validation.';
+    }
+    return @issues;
+}
+
+sub _collect_stop_rule_issues {
+    my ($manifest, $profiles, $changed_files, $evidence, $values, $current_branch, $mirror_refs_present) = @_;
+    my @issues;
+    for my $block (_manifest_block_entries($manifest, $profiles, 'stop')) {
+        next if ref($block->{rules}) ne 'ARRAY';
+        for my $rule (@{$block->{rules}}) {
+            next if ref($rule) ne 'HASH';
+            my @globs = ref($rule->{changed_path_globs}) eq 'ARRAY' ? @{$rule->{changed_path_globs}} : ();
+            my @matched_paths = !@globs ? @{$changed_files} : grep { _matches_any_glob($_, \@globs) } @{$changed_files};
+            next if @globs && !@matched_paths;
+
+            if (ref($rule->{branch_matches_any}) eq 'ARRAY' && @{$rule->{branch_matches_any}}) {
+                next if !_has_any_evidence($current_branch, $rule->{branch_matches_any});
+            }
+            if (exists $rule->{when_has_mirror_refs}) {
+                next if (!!$rule->{when_has_mirror_refs}) != (!!$mirror_refs_present);
+            }
+            my %rendered_values = %{$values};
+            $rendered_values{changed_files_preview} = preview_paths(\@matched_paths);
+            $rendered_values{changed_areas_csv} = join(', ', _detect_changed_areas(\@matched_paths, $manifest, $profiles)) || 'none';
+            my $message = _format_template($rule->{message} // '', \%rendered_values);
+            next if !length $message;
+
+            my $forbid = ref($rule->{forbid_any_patterns}) eq 'ARRAY' ? $rule->{forbid_any_patterns} : [];
+            if (@{$forbid} && _has_any_evidence($evidence, $forbid)) {
+                push @issues, $message;
+                next;
+            }
+            my $require_all = ref($rule->{require_all_patterns}) eq 'ARRAY' ? $rule->{require_all_patterns} : [];
+            my $require_any = ref($rule->{require_any_patterns}) eq 'ARRAY' ? $rule->{require_any_patterns} : [];
+            if (!@{$require_all} && !@{$require_any} && !@{$forbid}) {
+                push @issues, $message;
+                next;
+            }
+            my $all_ok = !@{$require_all} || _has_all_evidence($evidence, $require_all);
+            my $any_ok = !@{$require_any} || _has_any_evidence($evidence, $require_any);
+            push @issues, $message if !$all_ok || !$any_ok;
+        }
+    }
+    return @issues;
+}
+
+sub _stop_common {
+    my ($manifest, $payload, $label) = @_;
+    my $repo_root = git_root($payload->{cwd} // '');
+    return if !defined $repo_root;
+    my @changed_files = list_changed_files($repo_root);
+    return if !@changed_files;
+
+    my @profiles = _find_repo_profiles($manifest, $repo_root);
+    my $primary = @profiles ? $profiles[0] : undef;
+    my $evidence = _validation_evidence($payload);
+    return if _has_skip_rationale($evidence);
+    my $current = current_branch($repo_root);
+    my @profile_ids = map { $_->{id} } grep { ref($_) eq 'HASH' && defined($_->{id}) && length($_->{id}) } @profiles;
+    my @pattern_lines = transcript_summary_lines(path => $payload->{transcript_path});
+    my $pattern_message = @pattern_lines
+      ? join("\n", 'Repeated transcript signals:', map { "- $_" } @pattern_lines)
+      : undef;
+    my %values = (
+        changed_areas_csv       => join(', ', _detect_changed_areas(\@changed_files, $manifest, \@profiles)) || 'none',
+        changed_files_preview   => preview_paths(\@changed_files),
+        current_branch          => $current,
+        profile_ids_csv         => @profile_ids ? join(', ', @profile_ids) : 'none',
+        repo_id                 => defined($primary) ? ($primary->{id} // ($repo_root =~ s{.*/}{}r)) : ($repo_root =~ s{.*/}{}r),
+        repo_name               => ($repo_root =~ s{.*/}{}r),
+        repo_root               => $repo_root,
+        runtime_hooks_dir       => '$CODEX_HOME/hooks',
+        runtime_hooks_driver_path => '$CODEX_HOME/hooks/scripts/hook_driver.pl',
+    );
+    my @mirror_refs = list_mirror_refs($repo_root);
+    my @issues = _collect_generic_validation_issues($repo_root, \@changed_files, $evidence, $current);
+    push @issues, _collect_stop_rule_issues($manifest, \@profiles, \@changed_files, $evidence, \%values, $current, scalar @mirror_refs);
+    if (!@issues) {
+        emit_system_message($pattern_message) if defined $pattern_message && length $pattern_message;
+        return;
+    }
+
+    if ($payload->{stop_hook_active}) {
+        my $stop_reason = "$label hook follow-up is still unresolved, so the turn is ending instead of blocking again:";
+        $stop_reason .= join('', map { "\n- $_" } @issues);
+        emit_stop($stop_reason, $pattern_message);
+        return;
+    }
+    my $reason = "Repository and validation follow-up is required before this turn can finish:";
+    $reason .= join('', map { "\n- $_" } @issues);
+    $reason .= "\n- Run the missing checks now, or explain concretely why they could not be run in this environment before ending the turn.";
+    emit_block($reason, $pattern_message);
+}
+
+sub _pre_tool_use_context {
+    my ($manifest, $payload) = @_;
+    my $tool_name = $payload->{tool_name} // '';
+    my $tool_input = $payload->{tool_input};
+    my $repo_root = git_root($payload->{cwd} // '');
+    my $reason = destructive_command_reason(
+        tool_name  => $tool_name,
+        tool_input => $tool_input,
+    );
+    if (defined $reason && length $reason) {
+        emit_block($reason);
+        return undef;
+    }
+
+    my @lines = pre_tool_policy_lines(
+        repo_has_patch_release => defined $repo_root && has_patch_release_dir($repo_root),
+        tool_name              => $tool_name,
+    );
+    if (defined $tool_input && !ref($tool_input) && length $tool_input) {
+        my @learned = tool_response_summary_lines(text => $tool_input);
+        if (@learned) {
+            push @lines, 'Input cues:';
+            push @lines, map { "- $_" } @learned;
+        }
+    }
+    return join("\n", @lines);
+}
+
+sub _permission_request_context {
+    my ($payload) = @_;
+    return permission_request_message(tool_name => $payload->{tool_name});
+}
+
+sub _post_tool_use_context {
+    my ($payload) = @_;
+    my $tool_name = $payload->{tool_name} // 'tool';
+    my $response = $payload->{tool_response};
+    my $rendered = defined($response) && !ref($response) ? $response : '';
+    return undef if $rendered !~ /\b(error|failed|exception|permission denied|not found|timed out|warning)\b/i;
+
+    my @lines = (
+        "Post-tool follow-up for `$tool_name`:",
+        '- The tool output shows a failure or warning signal; tighten the next step to the failing boundary instead of widening scope.',
+        '- If execution stayed blocked, explain the boundary concretely before asking for more permissions or ending the turn.',
+    );
+    my @learned = tool_response_summary_lines(text => $rendered);
+    if (@learned) {
+        push @lines, 'Learned from tool output:';
+        push @lines, map { "- $_" } @learned;
+    }
+    return join("\n", @lines);
+}
+
+sub _compact_context {
+    my ($phase) = @_;
+    return compact_system_message($phase);
+}
+
+sub _subagent_start_context {
+    my ($manifest, $payload) = @_;
+    my $agent_type = $payload->{agent_type} // 'subagent';
+    my $multi_agent = _multi_agent_context($manifest, "agent");
+    return start_context(
+        agent_type  => $agent_type,
+        multi_agent => $multi_agent,
+    );
+}
+
+sub _subagent_stop_context {
+    return stop_system_message();
+}
+
+sub run_event {
+    my ($event_arg) = @_;
+    my $payload = normalize_input($event_arg, _load_input());
+    my $manifest = _load_runtime_config();
+    validate_event_input($event_arg, $payload, cwd => $payload->{cwd});
+    local $Codex::Hook::Output::CURRENT_EVENT_ARG = $event_arg;
+
+    if ($event_arg eq 'session-start') {
+        emit_context('SessionStart', _session_start_context($manifest, $payload), undef);
+        return 0;
+    }
+    if ($event_arg eq 'user-prompt-submit') {
+        emit_context('UserPromptSubmit', _user_prompt_context($manifest, $payload), undef);
+        return 0;
+    }
+    if ($event_arg eq 'stop') {
+        _stop_common($manifest, $payload, 'Stop');
+        return 0;
+    }
+    if ($event_arg eq 'pre-tool-use') {
+        my $context = _pre_tool_use_context($manifest, $payload);
+        emit_context('PreToolUse', $context, undef) if defined $context && length $context;
+        return 0;
+    }
+    if ($event_arg eq 'permission-request') {
+        emit_system_message(_permission_request_context($payload));
+        return 0;
+    }
+    if ($event_arg eq 'post-tool-use') {
+        my $context = _post_tool_use_context($payload);
+        emit_context('PostToolUse', $context, undef) if defined $context && length $context;
+        return 0;
+    }
+    if ($event_arg eq 'pre-compact') {
+        emit_system_message(_compact_context('Pre'));
+        return 0;
+    }
+    if ($event_arg eq 'post-compact') {
+        emit_system_message(_compact_context('Post'));
+        return 0;
+    }
+    if ($event_arg eq 'subagent-start') {
+        emit_context('SubagentStart', _subagent_start_context($manifest, $payload), undef);
+        return 0;
+    }
+    if ($event_arg eq 'subagent-stop') {
+        emit_system_message(_subagent_stop_context());
+        _stop_common($manifest, $payload, 'SubagentStop');
+        return 0;
+    }
+    die "unsupported hook event: $event_arg\n";
+}
+
+1;

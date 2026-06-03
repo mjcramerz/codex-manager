@@ -52,4 +52,3 @@ interface:
 - `$CODEX_HOME/index/domains/desktop/browsers.md`
 - `$CODEX_HOME/docs/desktop/browsers.md`
 - `$CODEX_HOME/docs/workflows/browsers.md`
-- `$CODEX_HOME/prompts/browser_hardening.md`

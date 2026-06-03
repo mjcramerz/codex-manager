@@ -13,6 +13,15 @@
     "https://source.android.com/docs/core/architecture/partitions/gki",
     "https://developer.android.com/studio/releases/platform-tools",
     "https://nmap.org/book/man.html",
-    "https://www.cisa.gov/resources-tools/resources/mobile-security-best-practices"
+    "https://www.cisa.gov/resources-tools/resources/mobile-security-best-practices",
+    "https://www.kali.org/docs/nethunter/nethunter-kernel-1-patching/",
+    "https://gitlab.com/kalilinux/nethunter/build-scripts/kali-nethunter-kernel-builder",
+    "https://gitlab.com/kalilinux/nethunter/build-scripts/kali-nethunter-installer",
+    "https://source.android.com/docs/core/architecture/bootloader/fastbootd",
+    "https://source.android.com/docs/core/architecture/kernel/gki-releases",
+    "https://source.android.com/docs/core/ota/ab",
+    "https://developer.android.com/tools/releases/platform-tools",
+    "https://attack.mitre.org/",
+    "https://csrc.nist.gov/publications/detail/sp/800-115/final"
   ]
 }

@@ -63,7 +63,7 @@ Purpose: a reliable, repeatable path from idea to a secure, testable MVP.
 ## Deterministic build checklist
 - Pin toolchains and base images; avoid `:latest`.
 - Commit lockfiles and use deterministic installs (`cargo --locked`, `npm ci`, `pnpm install --frozen-lockfile`).
-- Keep version changes script-driven (`<repo>/scripts/release/get_version.py`, `<repo>/scripts/release/bump_version.py`).
+- Keep version changes script-driven through the target repository's release helper scripts (for example `scripts/release/get_version.py` and `scripts/release/bump_version.py`).
 
 ## 7) Docs + runbook
 - Update README with setup/run/test commands.

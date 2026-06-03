@@ -8,43 +8,43 @@
 <!-- END:nav -->
 
 ## Requirements
-- <outcome to ship>
-- <data integrity and backward-compatibility requirements>
-- <downtime window and compliance constraints>
+- State the outcome to ship.
+- Define data-integrity and backward-compatibility requirements.
+- Define downtime, maintenance-window, and compliance constraints.
 
 ## Scope
-- In: <what changes>
-- Out: <what must not change>
+- In: state, data, configuration, or runtime transitions that must change.
+- Out: unaffected services, data, or behavior that must remain stable.
 
 ## Constraints / Non-goals
-- <constraints, safety limits, deadlines>
+- Record safety limits, deadlines, and explicit non-goals.
 
 ## Dependencies and assumptions
-- <upstream/downstream dependencies and owners>
-- <environment/access assumptions>
-- <backup/restore and audit evidence assumptions>
+- List upstream and downstream dependencies with owners.
+- Record environment and access assumptions.
+- Record backup, restore, and audit-evidence assumptions.
 
 ## Success metrics and exit criteria
-- <migration correctness and data-quality metrics>
-- <runtime performance/error-budget targets after cutover>
-- <go/no-go criteria and owner sign-off>
+- Define migration correctness and data-quality metrics.
+- Define runtime performance and error-budget targets after cutover.
+- State go/no-go criteria and the sign-off owner.
 
 ## Current state (inventory)
-- <files/modules/services>
-- <data stores/schemas/contracts>
-- <deployment/ops touchpoints>
+- List the files, modules, or services involved.
+- List the data stores, schemas, or contracts involved.
+- List deployment or operational touchpoints.
 
 ## Action items
-[ ] Define migration boundaries (`<files>`) and compatibility guardrails.
-[ ] Implement forward migration (`<files>`) with bounded execution and retries.
-[ ] Implement backward migration or safe fallback (`<files>`).
-[ ] Add feature flags/guards and progressive rollout controls (`<files>`).
+[ ] Define migration boundaries and compatibility guardrails for the affected files and services.
+[ ] Implement the forward migration with bounded execution and retries.
+[ ] Implement backward migration or a safe fallback path.
+[ ] Add feature flags, guards, and progressive rollout controls where needed.
 [ ] Execute rehearsal or dry-run in staging and capture evidence.
-[ ] Update $CODEX_HOME/docs/runbooks and operator checklists.
+[ ] Update `$CODEX_HOME/docs/workflows/` and operator checklists.
 
 ## Testing and validation
-- <commands to run, ordered fast → comprehensive>
-- <acceptance criteria>
+- List validation commands from fastest to deepest.
+- State explicit acceptance criteria for cutover and rollback.
 
 ## Security checkpoints
 - Confirm trust boundaries, credentials, and least-privilege assumptions before execution.
@@ -67,12 +67,11 @@
 - Receiving agent acknowledges handoff completeness before continuing execution.
 
 ## Risks / Rollback
-- <data safety, compatibility, rollback plan>
+- Describe data-safety, compatibility, and rollback risks explicitly.
 
 ## References
-- <tickets, specs, links, files>
+- List the tickets, specs, links, and files that define or approve the migration.
 
 ## Examples
-
-- Example objective: "Migrate <data/system> with rollback."
-- Example validation: "<migration verify command>"
+- Example objective: "Migrate the runtime skill metadata contract with rollback and verification steps."
+- Example validation: "python3 -m unittest tests.test_skill_catalog_contract tests.test_runtime_reference_contract"

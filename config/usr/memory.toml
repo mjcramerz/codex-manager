@@ -1,30 +1,35 @@
 [memories]
-no_memories_if_mcp_or_web_search = false
+# legacy alias, replaced by disable_on_external_context
+#no_memories_if_mcp_or_web_search = false
+disable_on_external_context = false
 generate_memories = true
 use_memories = true
+dedicated_tools = false
 max_raw_memories_for_consolidation = 256
 max_unused_days = 30
 max_rollout_age_days = 30
 max_rollouts_per_startup = 20
 min_rollout_idle_hours = 6
+min_rate_limit_remaining_percent = 25
 extract_model = "gpt-5.4-mini"
 consolidation_model = "gpt-5.4-codex"
 
 # instruction file overrides
-consolidation_instructions_file = "./.models/instructions/memories/consolidation.md"
-decay_lambda = 0.05
-embedding_provider_id = "cloudflare-ai-embedding"
-embedding_model = "@cf/baai/bge-base-en-v1.5"
-enable_semantic_search = true
-extraction_instructions_file = "./.models/instructions/memories/stage_one_system.md"
-incremental_consolidation = true
-inject_relevant_memories = true
-max_allowed_taint_level = 1
-max_memories_injected = 5
-max_rollout_summaries = 200
-max_system_prompt_memory_tokens = 2000
-min_decay_score_to_retain = 0.05
-read_path_instructions_file = "./.models/instructions/memories/read_path.md"
-relevance_threshold = 0.30
-vector_dimensions = 768
-workspace_isolation = false
+# legacy out-of-schema keys retained for traceability
+#consolidation_instructions_file = "./.models/instructions/memories/consolidation.md"
+#decay_lambda = 0.05
+#embedding_provider_id = "cloudflare-ai-embedding"
+#embedding_model = "@cf/baai/bge-base-en-v1.5"
+#enable_semantic_search = true
+#extraction_instructions_file = "./.models/instructions/memories/stage_one_system.md"
+#incremental_consolidation = true
+#inject_relevant_memories = true
+#max_allowed_taint_level = 1
+#max_memories_injected = 5
+#max_rollout_summaries = 200
+#max_system_prompt_memory_tokens = 2000
+#min_decay_score_to_retain = 0.05
+#read_path_instructions_file = "./.models/instructions/memories/read_path.md"
+#relevance_threshold = 0.30
+#vector_dimensions = 768
+#workspace_isolation = false

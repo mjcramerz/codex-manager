@@ -54,4 +54,3 @@ interface:
 - `$CODEX_HOME/docs/workflows/aide.md`
 - `$CODEX_HOME/templates/observability/aide-skeleton/`
 - `$CODEX_HOME/snippets/aide/aide.conf`
-- `$CODEX_HOME/prompts/aide_setup.md`

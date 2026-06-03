@@ -8,6 +8,8 @@ from typing import Any
 
 from common import ensure_https_url
 from common import fail
+from common import is_within
+from common import parse_json_file
 from apps_config import rewrite_runtime_plugin_skill_dependencies
 from plugin_bundles import PluginAppSpec
 from plugin_bundles import PluginBundleSpec
@@ -24,6 +26,10 @@ PLUGINS_MARKETPLACE_PATTERN = SAFE_FILENAME_PATTERN
 PLUGINS_SKILL_NAME_PATTERN = re.compile(r"^[a-z0-9][a-z0-9._-]*$")
 DEFAULT_PLUGIN_VERSION = "1.0.0"
 DEFAULT_PROMPT_MAX_CHARS = 128
+DEFAULT_PROMPT_MAX_ITEMS = 3
+INTERFACE_CAPABILITY_VALUES = {"Interactive", "Read", "Write"}
+HEX_COLOR_PATTERN = re.compile(r"^#[0-9A-Fa-f]{6}$")
+PLUGIN_SKILL_REFERENCE_PLACEHOLDER_MARKERS = ("${", "<", ">", ":fileKey", ":fileName", "{", "}")
 
 
 def _warn(message: str) -> None:
@@ -53,6 +59,53 @@ def plugin_skill_source_path(repo_root: Path, inventory_path: Path, skill_name: 
     if not skill_path.is_dir():
         fail(f"plugin skill source not found for {skill_name}: {skill_path}")
     return skill_path
+
+
+def validate_plugin_skill_metadata(skill_path: Path) -> None:
+    metadata_path = skill_path / "metadata.json"
+    payload = parse_json_file(metadata_path)
+
+    _required_string(payload.get("version"), label=f"{metadata_path} version")
+    _required_string(payload.get("organization"), label=f"{metadata_path} organization")
+    _required_string(payload.get("date"), label=f"{metadata_path} date")
+    _required_string(payload.get("abstract"), label=f"{metadata_path} abstract")
+
+    references = _string_list(payload.get("references", []), label=f"{metadata_path} references")
+    if not references:
+        fail(f"{metadata_path} references must not be empty")
+
+    skill_doc = skill_path / "SKILL.md"
+    if not skill_doc.is_file():
+        fail(f"plugin skill is missing SKILL.md: {skill_doc}")
+
+    skill_root = skill_path.resolve(strict=False)
+    seen: set[str] = set()
+    for ref in references:
+        if ref in seen:
+            fail(f"{metadata_path} references contains duplicate entry: {ref}")
+        seen.add(ref)
+        if any(ch in ref for ch in ("`", "\r", "\n", "\t")):
+            fail(f"{metadata_path} references contains invalid characters: {ref}")
+        if "://" in ref:
+            ensure_https_url(f"{metadata_path} reference", ref)
+            parsed = ref.lower()
+            if "localhost" in parsed or "127.0.0.1" in parsed:
+                fail(f"{metadata_path} references must not use localhost URLs: {ref}")
+            if any(marker in ref for marker in PLUGIN_SKILL_REFERENCE_PLACEHOLDER_MARKERS):
+                fail(f"{metadata_path} references must not contain placeholders: {ref}")
+            continue
+
+        ref_path = Path(ref)
+        if ref_path.is_absolute():
+            fail(f"{metadata_path} references must use bundle-relative paths or https URLs: {ref}")
+        parts = ref_path.parts
+        if not parts or any(part in ("", ".", "..") for part in parts):
+            fail(f"{metadata_path} references contains invalid relative path: {ref}")
+        candidate = (skill_path / ref_path).resolve(strict=False)
+        if not is_within(candidate, skill_root):
+            fail(f"{metadata_path} references escapes skill root: {ref}")
+        if not candidate.is_file():
+            fail(f"{metadata_path} references target is missing: {ref}")
 
 
 def _normalize_skill_asset_reference(raw_value: str) -> str | None:
@@ -170,6 +223,8 @@ def _user_plugin_settings(
             continue
         if isinstance(payload, bool):
             settings[plugin_id] = payload
+            continue
+        fail(f"{user_plugins_path} plugin entry must be a boolean or an object with boolean enabled: {plugin_id}")
     return settings
 
 
@@ -192,6 +247,8 @@ def _plugin_apps(bundle_name: str, payload: dict[str, Any], inventory_path: Path
             fail(f"{inventory_path} plugin.apps must contain strings or objects for {bundle_name}")
         if not PLUGINS_BUNDLE_PATTERN.fullmatch(app_name):
             fail(f"{inventory_path} app name is invalid for {bundle_name}: {app_name}")
+        if not app_id:
+            fail(f"{inventory_path} app id is required for {bundle_name}: {app_name}")
         if app_name in seen:
             fail(f"{inventory_path} duplicate app name for {bundle_name}: {app_name}")
         seen.add(app_name)
@@ -215,7 +272,7 @@ def _plugin_mcp_servers(
             server_name = entry.strip()
             server = shared_mcp_servers.get(server_name)
             if not isinstance(server, dict):
-                _warn(f"{inventory_path} plugin.mcp references unknown MCP server for {bundle_name}: {server_name}; skipping")
+                fail(f"{inventory_path} plugin.mcp references unknown MCP server for {bundle_name}: {server_name}")
             continue
         elif isinstance(entry, dict):
             server_name = str(entry.get("name", "")).strip()
@@ -267,6 +324,31 @@ def _required_string_warn_truncate(value: Any, *, label: str, max_length: int) -
     return rendered
 
 
+def _default_prompt_values(value: Any, *, label: str) -> list[str]:
+    if value in (None, ""):
+        return []
+
+    if isinstance(value, str):
+        values = [_required_string_warn_truncate(value, label=label, max_length=DEFAULT_PROMPT_MAX_CHARS)]
+    elif isinstance(value, list):
+        values = []
+        for index, item in enumerate(value):
+            values.append(
+                _required_string_warn_truncate(
+                    item,
+                    label=f"{label}[{index}]",
+                    max_length=DEFAULT_PROMPT_MAX_CHARS,
+                )
+            )
+    else:
+        fail(f"{label} must be a string or a list of strings")
+
+    if len(values) > DEFAULT_PROMPT_MAX_ITEMS:
+        _warn(f"{label} exceeds {DEFAULT_PROMPT_MAX_ITEMS} entries; truncating to fit runtime limit")
+        values = values[:DEFAULT_PROMPT_MAX_ITEMS]
+    return values
+
+
 def _optional_string(value: Any, *, label: str) -> str | None:
     if value in (None, ""):
         return None
@@ -274,6 +356,29 @@ def _optional_string(value: Any, *, label: str) -> str | None:
         fail(f"{label} must be a string")
     rendered = value.strip()
     return rendered or None
+
+
+def _optional_https_url(value: Any, *, label: str) -> str | None:
+    rendered = _optional_string(value, label=label)
+    if rendered is None:
+        return None
+    ensure_https_url(label, rendered)
+    return rendered
+
+
+def _required_https_url(value: Any, *, label: str) -> str:
+    rendered = _required_string(value, label=label)
+    ensure_https_url(label, rendered)
+    return rendered
+
+
+def _optional_hex_color(value: Any, *, label: str) -> str | None:
+    rendered = _optional_string(value, label=label)
+    if rendered is None:
+        return None
+    if not HEX_COLOR_PATTERN.fullmatch(rendered):
+        fail(f"{label} must be a #RRGGBB hex color")
+    return rendered
 
 
 def plugin_manifest_bundles(
@@ -293,7 +398,7 @@ def plugin_manifest_bundles(
     shared_mcp_refs = _inventory_shared_mcp_refs(plugins_metadata_payload, plugins_metadata_path)
     for server_name in shared_mcp_refs:
         if not isinstance(shared_mcp_servers.get(server_name), dict):
-            _warn(f"{plugins_metadata_path} shared_mcp references unknown MCP server: {server_name}")
+            fail(f"{plugins_metadata_path} shared_mcp references unknown MCP server: {server_name}")
     plugin_settings = _user_plugin_settings(
         plugins_payload,
         plugins_path,
@@ -350,12 +455,17 @@ def plugin_manifest_bundles(
             interface.get("short_description"),
             label=f"{plugins_metadata_path} plugin.interface.short_description for {bundle_name}",
         )
-        default_prompt = _required_string_warn_truncate(
+        default_prompt = _default_prompt_values(
             interface.get("default_prompt"),
             label=f"{plugins_metadata_path} plugin.interface.default_prompt for {bundle_name}",
-            max_length=DEFAULT_PROMPT_MAX_CHARS,
         )
         capabilities = _string_list(interface.get("capabilities", []), label=f"{plugins_metadata_path} plugin.interface.capabilities for {bundle_name}")
+        for capability in capabilities:
+            if capability not in INTERFACE_CAPABILITY_VALUES:
+                fail(
+                    f"{plugins_metadata_path} plugin.interface.capabilities for {bundle_name} "
+                    f"contains unsupported capability: {capability}"
+                )
 
         apps = _plugin_apps(bundle_name, payload, plugins_metadata_path)
         mcp_servers = _plugin_mcp_servers(
@@ -364,6 +474,11 @@ def plugin_manifest_bundles(
             plugins_metadata_path,
             shared_mcp_servers,
         )
+        if apps and "Interactive" not in capabilities:
+            fail(
+                f"{plugins_metadata_path} plugin.interface.capabilities for {bundle_name} "
+                "must include Interactive when apps are declared"
+            )
         if not skills and not apps and not mcp_servers:
             fail(f"{plugins_metadata_path} plugin {bundle_name} must declare at least one of skills, apps, or mcp")
 
@@ -383,11 +498,11 @@ def plugin_manifest_bundles(
                 )
                 or DEFAULT_PLUGIN_VERSION,
                 description=description,
-                homepage=_optional_string(
+                homepage=_required_https_url(
                     payload.get("homepage"),
                     label=f"{plugins_metadata_path} plugin.homepage for {bundle_name}",
                 ),
-                repository=_optional_string(
+                repository=_required_https_url(
                     payload.get("repository"),
                     label=f"{plugins_metadata_path} plugin.repository for {bundle_name}",
                 ),
@@ -404,7 +519,7 @@ def plugin_manifest_bundles(
                     author.get("email"),
                     label=f"{plugins_metadata_path} plugin.author.email for {bundle_name}",
                 ),
-                author_url=_optional_string(
+                author_url=_optional_https_url(
                     author.get("url"),
                     label=f"{plugins_metadata_path} plugin.author.url for {bundle_name}",
                 ),
@@ -425,19 +540,19 @@ def plugin_manifest_bundles(
                 category=category,
                 capabilities=capabilities,
                 default_prompt=default_prompt,
-                brand_color=_optional_string(
+                brand_color=_optional_hex_color(
                     interface.get("brand_color"),
                     label=f"{plugins_metadata_path} plugin.interface.brand_color for {bundle_name}",
                 ),
-                website_url=_optional_string(
+                website_url=_optional_https_url(
                     interface.get("website_url"),
                     label=f"{plugins_metadata_path} plugin.interface.website_url for {bundle_name}",
                 ),
-                privacy_policy_url=_optional_string(
+                privacy_policy_url=_optional_https_url(
                     interface.get("privacy_policy_url"),
                     label=f"{plugins_metadata_path} plugin.interface.privacy_policy_url for {bundle_name}",
                 ),
-                terms_of_service_url=_optional_string(
+                terms_of_service_url=_optional_https_url(
                     interface.get("terms_of_service_url"),
                     label=f"{plugins_metadata_path} plugin.interface.terms_of_service_url for {bundle_name}",
                 ),
@@ -478,6 +593,8 @@ def validate_plugin_bundle_inventory(installer: Any, source_root: Path) -> list[
         fail(f"{installer.plugins_json_path} references missing plugin skills: {', '.join(missing)}")
     if extra:
         fail(f"{installer.plugins_json_path} leaves plugin skills unbundled: {', '.join(extra)}")
+    for skill_name in sorted(actual_skill_names):
+        validate_plugin_skill_metadata(source_root / skill_name)
     return all_entries
 
 
@@ -496,9 +613,7 @@ def sync_runtime_plugin_bundle(installer: Any, source_root: Path, target_root: P
     for skill_source in bundle.skills:
         skill_path = plugin_skill_source_path(installer.repo_root, installer.plugins_json_path, skill_source)
         target_skill_dir = runtime_skills_dir / skill_path.name
-        if target_skill_dir.exists():
-            installer._remove_path_force(target_skill_dir)
-        installer._copy_tree(skill_path, target_skill_dir)
+        installer._sync_tree(skill_path, target_skill_dir, mirror_deletions=True)
 
     rewrite_runtime_plugin_skill_dependencies(
         runtime_skills_dir,
@@ -526,16 +641,8 @@ def sync_local_plugins(installer: Any) -> None:
 
     installer._mkdir_path(runtime_plugins_dir)
     installer._mkdir_path(runtime_marketplace_path.parent)
-    validate_plugin_bundle_inventory(installer, source_root)
-    active_entries = plugin_manifest_bundles(
-        repo_root=installer.repo_root,
-        plugins_payload=installer.plugins_payload,
-        plugins_path=installer.plugins_path,
-        plugins_metadata_payload=installer.effective_plugins_metadata_payload,
-        plugins_metadata_path=installer.plugins_json_path,
-        shared_mcp_servers=installer.mcp_payload.get("mcp_servers", {}),
-        enabled_only=True,
-    )
+    all_entries = validate_plugin_bundle_inventory(installer, source_root)
+    active_entries = [entry for entry in all_entries if entry.enabled]
     marketplace_name = plugin_manifest_marketplace_name(installer.effective_plugins_metadata_payload, installer.plugins_json_path)
     bundle_dirs = {entry.name for entry in active_entries}
     runtime_marketplace_plugins_dir = runtime_plugins_dir / marketplace_name

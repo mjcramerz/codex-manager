@@ -63,7 +63,4 @@ interface:
 - `$CODEX_HOME/docs/workflows/debian-preseed.md`
 - `$CODEX_HOME/docs/virtualization/debian-preseed.md`
 - `$CODEX_HOME/templates/virtualization/debian-preseed/`
-- `$CODEX_HOME/prompts/preseed.md`
-- `$CODEX_HOME/prompts/preseed_customize.md`
-- `$CODEX_HOME/prompts/preseed_validate.md`
 - `$CODEX_HOME/snippets/virtualization/preseed_boot_params.txt`

@@ -19,11 +19,11 @@ updated: '2026-02-20'
 - Freshness method: pack-local source inspection and prompt-maintenance verification scripts.
 
 ## Skill purpose
-Maintain prompt-library source assets and supporting maintenance surfaces.
+Maintain runtime prompt assets and supporting maintenance surfaces.
 
 ## Local implementation anchors
 - `../SKILL.md`
-- `$CODEX_HOME/prompts/OVERVIEW.md`
+- `$CODEX_HOME/docs/create-prompts.md`
 
 ## External references
 - [YAML 1.2 specification](https://yaml.org/spec/1.2.2/) - Frontmatter and deterministic YAML patterns.

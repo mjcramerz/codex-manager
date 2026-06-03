@@ -66,7 +66,6 @@ interface:
 - `$CODEX_HOME/docs/lang/html.md`
 - `$CODEX_HOME/templates/web/html-static/`
 - `$CODEX_HOME/snippets/web/html/index.html`
-- `$CODEX_HOME/prompts/html_page.md`
 - `references/implementation-playbook.md`
 - `references/semantic-and-a11y-patterns.md`
 - `references/quality-gates.md`

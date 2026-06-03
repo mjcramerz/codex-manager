@@ -23,5 +23,5 @@ Related:
 - `$CODEX_HOME/templates/common`
 - `$CODEX_HOME/templates/prompts/slash-command-maintenance`
 - `$CODEX_HOME/snippets/OVERVIEW.md`
-- `$CODEX_SKILLS/OVERVIEW.md`
+- `$CODEX_HOME/index/pack/skills.md`
 <!-- END:related -->

@@ -1,5 +1,6 @@
-# Skill plans (overview)
-Canonical catalog of skill plan templates.
+# Skill plan catalog
+Purpose: choose one skill-specific plan template for repeatable skill-driven work.
+Use these templates when the task maps directly to one skill and benefits from a repeatable checklist.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -8,14 +9,12 @@ Canonical catalog of skill plan templates.
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-## Use when
-- a task maps directly to a skill workflow
-- you need a repeatable checklist for a specific skill
-- you want consistency across repeated skill execution
+## Use these when
+- one skill clearly owns the execution path
+- you want repeatable planning around a known skill
+- you are maintaining the skill-plan catalog
 
-- Apply universal planning gates from `$CODEX_HOME/plans/OVERVIEW.md` (PoC, integration/API, implementation, and operational readiness).
-
-## Contents
+## Catalog
 <!-- BEGIN:contents -->
 - `$CODEX_HOME/plans/skills/skill-acrobat-forms-sign.md` — Plan
 - `$CODEX_HOME/plans/skills/skill-acrobat-forms.md` — Plan
@@ -108,35 +107,6 @@ Canonical catalog of skill plan templates.
 - `$CODEX_HOME/plans/skills/skill-workflow-plans.md` — Plan
 <!-- END:contents -->
 
-## Notes
-- File names map to skill names as `skill-<skill>.md`.
-- If a skill exists without a plan, add one and list it here.
-
-## Security checkpoints
-- Confirm trust boundaries, credentials, and least-privilege assumptions before execution.
-- Validate input bounds, timeout/retry limits, and failure behavior for risky operations.
-- Record any approved exception, owner, and expiry before proceeding.
-
-## Testing checkpoints
-- Define fast-path and deep validation commands before making changes.
-- Capture expected outcomes and acceptance criteria for each validation step.
-- Re-run impacted checks after major changes and before final handoff.
-
-## Deployment checkpoints
-- Document rollout order, blast-radius controls, and rollback conditions.
-- Confirm migration/backfill or feature-flag sequencing when applicable.
-- Record post-deploy verification owners and evidence.
-
-## Multi-agent handoff
-- Coordinator hands off scope, constraints, and stop condition with the target entrypoint.
-- Executor reports touched files, commands run, evidence, blockers, and next action.
-- Receiving agent acknowledges handoff completeness before continuing execution.
-
-## Related
-- `../OVERVIEW.md`
-- `$CODEX_HOME/index/pack/plans.md`
-
-## Examples
-
-- Example objective: "<short task statement>"
-- Example validation: "<command or check>"
+## Maintenance rules
+- File names should map to skill names as `skill-<skill>.md`.
+- If a skill exists without a matching plan, add it here in the same change.

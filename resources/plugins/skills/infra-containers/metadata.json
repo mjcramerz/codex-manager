@@ -6,6 +6,10 @@
   "references": [
     "https://docs.docker.com/",
     "https://compose-spec.io/",
-    "https://docs.podman.io/"
+    "https://docs.podman.io/",
+    "https://docs.docker.com/engine/security/rootless/",
+    "https://docs.podman.io/en/latest/",
+    "https://docs.docker.com/build/",
+    "https://docs.docker.com/reference/compose-file/"
   ]
 }

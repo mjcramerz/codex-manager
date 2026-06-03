@@ -1,6 +1,5 @@
-# Plans (entrypoint)
-Purpose: stable index to pack plan templates.
-
+# Plans hub (entrypoint)
+Purpose: route to plan templates and planning rules for runtime-pack and implementation work.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -9,19 +8,15 @@ Purpose: stable index to pack plan templates.
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-
 Canonical content: `$CODEX_HOME/plans/OVERVIEW.md`
 
-Use when:
-- you need a plan template (framework, workflow, or skill)
-- you want a repeatable checklist across the pack
-- you are maintaining pack plan templates
-- you need to map a repository name to its rollout plan under `$CODEX_HOME/rollouts/`
-- any plan-before-coding trigger applies (see `$CODEX_HOME/AGENTS.md`)
-- you need the routing contract sequence: AGENTS -> MEMORY -> INDEX -> plans/workflows -> skills -> `$CODEX_HOME/UNIX.md`
+## Use when
+- you need a framework, workflow, or skill plan template
+- the task is large enough to require explicit sequencing and validation
+- you are maintaining plan templates or planning guidance
 
+## Related
 <!-- BEGIN:related -->
-Related:
 - `$CODEX_HOME/docs/workflows/planning.md`
 - `$CODEX_HOME/index/core/plan.md`
 - `$CODEX_HOME/plans/OVERVIEW.md`

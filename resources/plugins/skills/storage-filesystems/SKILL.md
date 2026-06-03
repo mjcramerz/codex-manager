@@ -77,4 +77,3 @@ interface:
 - `$CODEX_HOME/docs/filesystems/filesystem-types.md`
 - `$CODEX_HOME/docs/workflows/filesystems.md`
 - `$CODEX_HOME/snippets/bash/fstab_update.sh`
-- `$CODEX_HOME/prompts/filesystem_plan.md`

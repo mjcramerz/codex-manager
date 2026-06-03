@@ -69,4 +69,3 @@ interface:
 - `$CODEX_HOME/docs/workflows/kernel-build.md`
 - `$CODEX_HOME/templates/system/kernel-build-skeleton/`
 - `$CODEX_HOME/snippets/system/kernel-config.fragment`
-- `$CODEX_HOME/prompts/kernel_build.md`

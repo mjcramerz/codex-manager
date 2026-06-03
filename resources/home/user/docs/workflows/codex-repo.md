@@ -68,7 +68,7 @@ Purpose: keep the Codex source repo and this config pack aligned across tooling,
 - Always reflect branch/tag policy and signing/publish behavior in pack docs.
 
 ## Contributor process alignment
-- Source policy references: `<codex-source-repo>/docs/contributing.md`, `<codex-source-repo>/docs/CLA.md`
+- Source policy references: the active source repository's `docs/contributing.md` and `docs/CLA.md` when those files exist.
 - Keep pack guidance explicit about issue-first intake, CLA expectations, and reproducible test evidence.
 - This fork snapshot does not currently ship `.github/pull_request_template.md` or `.github/workflows/cla.yml`; treat those as optional overlays instead of required anchors.
 

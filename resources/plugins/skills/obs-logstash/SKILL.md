@@ -50,4 +50,3 @@ interface:
 - `$CODEX_HOME/docs/observability/logstash.md`
 - `$CODEX_HOME/templates/observability/elastic-stack-compose/`
 - `$CODEX_HOME/snippets/elastic/logstash.conf`
-- `$CODEX_HOME/prompts/logstash_pipeline.md`

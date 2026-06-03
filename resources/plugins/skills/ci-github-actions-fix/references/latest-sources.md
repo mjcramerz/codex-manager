@@ -27,7 +27,7 @@ Inspect GitHub PR checks with gh, pull failing GitHub Actions logs, summarize fa
 - Quick start
 - Workflow
 - Bundled Resources
-- `$CODEX_SKILLS/GIT/ci-github-actions-fix/scripts/inspect_pr_checks.py`
+- `../scripts/inspect_pr_checks.py`
 - Agent orchestration
 - Validation and testing
 - Outputs

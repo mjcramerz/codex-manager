@@ -1,6 +1,5 @@
-# Workflows (entrypoint)
-Purpose: stable index to the pack’s workflow playbooks.
-
+# Workflows hub (entrypoint)
+Purpose: route to operational playbooks that explain how to execute recurring task types safely.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -9,16 +8,15 @@ Purpose: stable index to the pack’s workflow playbooks.
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-
 Canonical content: `$CODEX_HOME/docs/workflows/overview.md`
 
-Use when:
-- choosing the right workflow or checklist
-- mapping a workflow to a plan template
-- you want the default starting point before `$CODEX_HOME/plans/templates-library.md`
+## Use when
+- choosing the right workflow before editing
+- mapping a workflow to the matching plan template
+- reviewing execution, validation, or handoff checkpoints for a recurring task type
 
+## Related
 <!-- BEGIN:related -->
-Related:
 - `$CODEX_HOME/docs/workflows/overview.md`
 - `$CODEX_HOME/docs/workflows`
 - `$CODEX_HOME/docs/workflows/prompts-library.md`

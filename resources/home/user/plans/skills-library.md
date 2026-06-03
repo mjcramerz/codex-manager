@@ -60,8 +60,8 @@ Use this plan when adding or revising skills in the pack.
 
 ## Examples
 
-- Example objective: "<short task statement>"
-- Example validation: "<command or check>"
+- Example objective: "Add or revise a runtime skill and keep its metadata plus discovery surfaces aligned."
+- Example validation: "python3 -m unittest tests.test_skill_catalog_contract"
 
 ## Open questions
 - None.

@@ -12,31 +12,33 @@ Use this plan when adding, updating, or removing prompt assets in the pack sourc
 
 
 ## Requirements
-- Make prompt changes in source at `$CODEX_HOME/prompts/*` (not runtime copies).
+- Use `$CODEX_HOME/docs/create-prompts.md` as the source of truth for prompt-file structure and catalog updates.
 - Keep command coverage and argument contracts explicit in each prompt file.
 - Preserve deterministic verification and routing behavior after edits.
 
 ## Scope
-- In: prompt files and prompt index content under `$CODEX_HOME/prompts/`.
+- In: prompt-file guidance, prompt catalog maintenance, and prompt-related routing/index content.
 - Out: unrelated skill/template/doc implementation changes.
 
 ## Files and entry points
 - `$CODEX_HOME/docs/prompts-maintenance.md`
 - `$CODEX_HOME/docs/workflows/prompts-library.md`
 - `$CODEX_HOME/plans/workflows/workflow-prompts-library.md`
-- `$CODEX_HOME/prompts/OVERVIEW.md`
-- `$CODEX_HOME/prompts/*.md`
+- `$CODEX_HOME/docs/create-prompts.md`
 - `$CODEX_HOME/templates/prompts/slash-command-maintenance/`
 - `$CODEX_HOME/snippets/docs/prompt_contract.md`
 - Use skill `pack-prompts`.
 
 ## Action items
 [ ] Define prompt objective, required inputs, and expected outputs before editing.
-[ ] Update prompt source files only under `$CODEX_HOME/prompts/*`.
+[ ] Update `$CODEX_HOME/docs/create-prompts.md` if prompt-file structure, names, or catalog entries change.
 [ ] Keep prompt-maintenance workflow/plan/template/snippet references aligned when contracts change.
 [ ] Validate command naming, argument placeholders, and linked entrypoints.
 
 ## Testing and validation
+- Validate Markdown structure for changed prompt files and guidance docs.
+- Run a stale-reference sweep for direct prompt-file paths outside `$CODEX_HOME/docs/create-prompts.md`.
+- Run targeted repo checks after structural changes.
 
 ## Security checkpoints
 - Ensure prompts do not instruct bypassing auth, validation, or safety constraints.
@@ -44,19 +46,18 @@ Use this plan when adding, updating, or removing prompt assets in the pack sourc
 - Avoid embedding secrets or environment dumps in prompt content.
 
 ## Testing checkpoints
-- Confirm every changed prompt remains discoverable through `prompts/OVERVIEW.md`.
+- Confirm every changed prompt remains discoverable through `$CODEX_HOME/docs/create-prompts.md`.
 - Verify no stale references remain after rename/remove operations.
 - Re-run prompt checks after any follow-up edits.
 
 ## Deployment checkpoints
-- Sync runtime copies only after source validation passes.
 - Record changed commands and migration notes for users.
 - Confirm rollback path (restore prior prompt files) before release.
 
 ## Multi-agent handoff
 - Coordinator assigns ownership by prompt file set and stop condition.
 - Executor reports updated prompt paths, validation output, and unresolved gaps.
-- Receiver confirms source-of-truth remained `$CODEX_HOME/prompts/*`.
+- Receiver confirms prompt-file guidance remained centralized in `$CODEX_HOME/docs/create-prompts.md`.
 
 ## Risks and edge cases
 - Command name drift between filename and overview listing.

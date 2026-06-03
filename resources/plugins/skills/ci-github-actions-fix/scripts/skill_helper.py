@@ -24,7 +24,7 @@ COVERAGE_HEADINGS = [
     'Quick start',
     'Workflow',
     'Bundled Resources',
-    '`$CODEX_SKILLS/GIT/ci-github-actions-fix/scripts/inspect_pr_checks.py`',
+    '`../scripts/inspect_pr_checks.py`',
     'Agent orchestration',
     'Validation and testing',
     'Outputs',

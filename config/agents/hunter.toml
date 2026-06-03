@@ -30,11 +30,14 @@ enabled = true
 guardian_approval = false
 tool_call_mcp_elicitation = true
 elevated_windows_sandbox = false
+enable_experimental_windows_sandbox = false
+experimental_windows_sandbox = false
 default_mode_request_user_input = true
 request_permissions = true
 request_permissions_tool = true
 use_linux_sandbox_bwrap = true
 request_rule = false
+auth_elicitation = false
 
 # behavior
 image_detail_original = false
@@ -42,24 +45,33 @@ image_generation = false
 fast_mode = false
 code_mode = true
 memories = false
+memory_tool = false
 personality = true
 child_agents_md = true
 multi_agent = true
-spawn_csv = false
+# legacy alias, replaced by enable_fanout
+#spawn_csv = false
+enable_fanout = false
 remote_models = true
+hooks = true
 
 # tools
-#collab = true
-artifact = false
+collab = true
+# legacy out-of-schema key retained for traceability
+#artifact = false
 plugins = true
 codex_hooks = true
-powershell_utf8 = false
+# legacy out-of-schema key retained for traceability
+#powershell_utf8 = false
 undo = false
 sqlite = false
 apply_patch_freeform = true
+apply_patch_streaming_events = false
 unified_exec = true
 apps = true
-apps_mcp_gateway = true
+enable_mcp_apps = true
+# legacy out-of-schema key retained for traceability
+#apps_mcp_gateway = true
 skill_env_var_dependency_prompt = false
 skill_mcp_dependency_install = true
 
@@ -67,6 +79,7 @@ skill_mcp_dependency_install = true
 shell_tool = true
 shell_snapshot = true
 shell_zsh_fork = false
+unified_exec_zsh_fork = false
 
 # git
 codex_git_commit = false
@@ -75,9 +88,19 @@ js_repl_tools_only = false
 
 # device
 realtime_conversation = false
-voice_transcription = false
+# legacy out-of-schema key retained for traceability
+#voice_transcription = false
 runtime_metrics = false
 enable_request_compression = true
 responses_websockets_v2 = true
 prevent_idle_sleep = false
 
+[features.multi_agent_v2]
+enabled = true
+usage_hint_enabled = true
+max_concurrent_threads_per_session = 2
+min_wait_timeout_ms = 15000
+default_wait_timeout_ms = 120000
+max_wait_timeout_ms = 300000
+root_agent_usage_hint_text = "Use worker or explorer only when the research question splits cleanly into independent source-gathering or repo-tracing lanes."
+subagent_usage_hint_text = "Return source-backed findings with confidence notes and unresolved unknowns; do not hand back implementation advice without evidence."

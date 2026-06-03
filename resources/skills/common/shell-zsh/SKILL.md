@@ -12,7 +12,19 @@ metadata:
   - scripting
   - wrappers
   - terminal
+interface:
+  display-name: SHELL-Zsh
+  short-description: Write robust zsh scripts, wrappers, and shell integrations
+  icon-small: assets/icon-32.png
+  icon-large: assets/icon-128.png
+  brand-color: '#6F32CC'
+  default-prompt: Act as the "SHELL-Zsh" specialist for "Write robust zsh scripts, wrappers,
+    and shell integrations". Deliver focused, deterministic results with minimal, reviewable
+    changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest
+    relevant checks, and report concrete actions, evidence, and residual risks.
 ---
+
+# SHELL-Zsh
 
 ## When to use
 Use this skill whenever you need to:

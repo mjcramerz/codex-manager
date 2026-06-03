@@ -1,11 +1,19 @@
-# Workflows overview
+# Workflow catalog
+Purpose: map recurring task types to operational playbooks and help the agent choose one workflow before editing.
 
-Maintenance contract:
-- Create/update workflow docs in `$CODEX_HOME/docs/workflows/`.
-- Treat `$CODEX_HOME/docs/workflows/` as runtime materialized content.
+## Navigation
+<!-- BEGIN:nav -->
+- Parent: `$CODEX_HOME/docs/OVERVIEW.md`
+- Pack index: `$CODEX_HOME/INDEX.md`
+- Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
+<!-- END:nav -->
 
+## Use this file when
+- you need to choose the right operational playbook
+- you are mapping a workflow to a plan template
+- you are maintaining workflow routing or execution guidance
 
-## Contents
+## Workflow catalog
 <!-- BEGIN:contents -->
 - `$CODEX_HOME/docs/workflows/agent-orchestration.md` — Agent orchestration workflow
 - `$CODEX_HOME/docs/workflows/aide.md` — AIDE workflow
@@ -50,111 +58,20 @@ Maintenance contract:
 - `$CODEX_HOME/docs/workflows/web-frontend.md` — Web frontend workflow
 <!-- END:contents -->
 
+## Selection guide
+- Process and coordination -> `planning.md`, `agent-orchestration.md`, `repo-ops.md`
+- Validation and review -> `testing.md`, `code-review.md`, `dependency-updates.md`
+- Build and delivery -> `ci-cd.md`, `github-actions.md`, `gitlab-ci.md`, `release.md`
+- System and infra -> `filesystems.md`, `systemd.md`, `grub.md`, `kernel-build.md`, `containers.md`, `kubernetes.md`, `terraform.md`, `proxmox.md`, `virsh.md`
+- Security and defensive ops -> `bws-local.md`, `auditd.md`, `crowdsec.md`, `aide.md`, `usbguard.md`, `offsec-defense.md`, `nethunter-pixel9a.md`
+- UX and frontend -> `web-frontend.md`, `build-an-app.md`, `prompts-library.md`, `desktop-wayland.md`, `desktop-entries.md`, `browsers.md`
 
-## Navigation
-<!-- BEGIN:nav -->
-- Parent: `$CODEX_HOME/docs/OVERVIEW.md`
-- Pack index: `$CODEX_HOME/INDEX.md`
-- Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
-<!-- END:nav -->
+## Maintenance rules
+- Every workflow added here should have a corresponding plan under `$CODEX_HOME/plans/workflows/` when the execution path is non-trivial.
+- Prefer tool-agnostic workflow guidance unless a specific runtime primitive is guaranteed by contract.
+- Do not reference missing runtime directories as required prerequisites.
 
-
-## Plan
-Use workflows to identify the right plan template, then plan **before coding** when any trigger applies (see `planning.md`).
-Workflow-specific plan catalog: `$CODEX_HOME/plans/workflows/overview.md`.
-
-## Required routing contract
-- `$CODEX_HOME/AGENTS.md`
-- `$CODEX_HOME/memories/MEMORY.md` (use `default` when unsure)
-- `$CODEX_HOME/INDEX.md`
-- `$CODEX_HOME/index/pack/plans.md` + `$CODEX_HOME/index/pack/workflows.md`
-- `$CODEX_HOME/index/pack/skills.md`
-- follow `$CODEX_HOME/UNIX.md` before command execution
-
-## Direct routing
-- If you are updating CI or release policy across platforms, start with `ci-cd.md`.
-- If you are editing GitHub workflow files or wrappers, use `github-actions.md`.
-- If you are editing `.gitlab-ci.yml` delivery includes/rules, use `gitlab-ci.md`.
-- If you are running tagging/publish steps, use `release.md`.
-- If you are changing branch, tag, or automation scripting hygiene, use `repo-ops.md`.
-- If you are retiring legacy memory-runtime references or updating runtime-home sync guidance, use `codex-repo.md` or `repo-ops.md`.
-- If you are configuring local Bitwarden Secrets Manager usage on Debian, use `bws-local.md`.
-- If the task is tied to a repository rollout, check `$CODEX_HOME/rollouts/OVERVIEW.md` and the repository rollout plan first.
-
-## Core workflows
-- Agent orchestration: `agent-orchestration.md`
-- Role matrix and spawn guide: `$CODEX_HOME/MULTI_AGENT.md`
-- Codex repository alignment: `codex-repo.md`
-- Testing: `testing.md`
-- Execpolicy: `execpolicy.md`
-
-## CI platforms
-- CI/CD cross-platform strategy: `ci-cd.md`
-- GitHub pipelines and wrappers: `github-actions.md`
-- GitLab pipelines and delivery: `gitlab-ci.md`
-- Release execution: `release.md`
-- Repo automation guardrails: `repo-ops.md`
-
-## Security & hardening
-- Local BWS lifecycle: `bws-local.md` + `../security/bitwarden-secrets-local.md`
-- NetHunter Pixel 9a: `nethunter-pixel9a.md` + `../security/nethunter-pixel9a.md`
-- OffSec defense: `offsec-defense.md` + `../security/offsec-defense.md`
-- Security operations knowledge base: `../security/security-labs-index.md`
-
-## Platform workflows
-- Web frontend: `web-frontend.md`
-
-## Build & scaffolding
-- End-to-end build flow: `build-an-app.md`
-- Dependency hygiene: `dependency-updates.md`
-- Prompt maintenance: `prompts-library.md`
-
-## Infrastructure & ops
-- Containers: `containers.md`
-- Kubernetes: `kubernetes.md`
-- Systemd/logrotate/filesystems: `systemd.md`, `logrotate.md`, `filesystems.md`
-- Virtualization: `proxmox.md`, `virsh.md`
-
-## Observability
-- Elastic stack: `elastic-stack.md`
-- Audit and abuse defenses: `auditd.md`, `crowdsec.md`, `aide.md`
-
-## System hardening
-- Kernel and boot: `kernel-build.md`, `grub.md`
-- Runtime controls: `sysctl.md`, `usbguard.md`, `optimizations.md`
-
-## Desktop
-- Browser and desktop stacks: `browsers.md`, `desktop-wayland.md`, `desktop-entries.md`
-
-## Skill shortcuts
-- Use skill `workflow-plans`.
-- Use skill `ci-github-actions`.
-- Use skill `ci-gitlab-cicd`.
-- Use skill `repo-ops`.
-- Use skill `quality-code-review`.
-
-## Security checkpoints
-- Confirm the selected workflow covers the active trust boundary (code, CI, release, or repo policy).
-- Carry forward secret/auth assumptions from the chosen workflow instead of ad-hoc exceptions.
-- If multiple workflows apply, adopt the strictest posture and document why.
-
-## Testing checkpoints
-- Capture the minimum command set from the selected workflow before editing (fast path plus deep path).
-- Preserve prior evidence (command output, artifacts, risk notes) when hopping between workflows.
-- Revalidate workflow links when this overview or referenced workflows are updated.
-
-## Deployment checkpoints
-- Verify the chosen workflow names rollout order, rollback trigger, and post-deploy owner.
-- Check branch/tag policy alignment when moving between CI/CD, release, and repo-ops workflows.
-- Treat workflow doc changes as deployable assets and run pack verification before handoff.
-
-## Multi-agent handoff
-- Share the exact workflow file and plan template each agent must follow.
-- Require every agent to follow AGENTS -> MEMORY -> INDEX -> plans/workflows -> skills -> `$CODEX_HOME/UNIX.md` before execution.
-- Require agents to report workflow deviations, not only file diffs.
-- Close with a reconciled checklist showing completed checkpoints across involved workflows.
-
-## References
-- `$CODEX_HOME/templates/OVERVIEW.md`
+## Related
 - `$CODEX_HOME/index/pack/workflows.md`
 - `$CODEX_HOME/plans/OVERVIEW.md`
+- `$CODEX_HOME/plans/workflows/overview.md`

@@ -90,4 +90,3 @@ interface:
 - `$CODEX_HOME/docs/virtualization/vagrant-libvirt.md`
 - `$CODEX_HOME/docs/workflows/debian-preseed.md`
 - `$CODEX_HOME/templates/virtualization/vagrant-libvirt-skeleton/`
-- `$CODEX_HOME/prompts/virtualize.md`

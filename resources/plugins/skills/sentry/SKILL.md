@@ -28,11 +28,9 @@ Use `scripts/sentry_api.py` for deterministic API calls. It handles pagination a
 ## Skill path (set once)
 
 ```bash
-export CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
-export SENTRY_API="$CODEX_HOME/skills/sentry/scripts/sentry_api.py"
+export SENTRY_API="scripts/sentry_api.py"
 ```
 
-User-scoped skills install under `$CODEX_HOME/skills` (default: `~/.codex/skills`).
 
 ### 1) List issues (ordered by most recent)
 

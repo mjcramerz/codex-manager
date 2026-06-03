@@ -56,4 +56,3 @@ interface:
 - `$CODEX_HOME/docs/workflows/crowdsec.md`
 - `$CODEX_HOME/templates/observability/crowdsec-skeleton/`
 - `$CODEX_HOME/snippets/crowdsec/acquis.yaml`
-- `$CODEX_HOME/prompts/crowdsec_setup.md`

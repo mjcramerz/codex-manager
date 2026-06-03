@@ -80,5 +80,3 @@ interface:
 - `$CODEX_HOME/snippets/systemd/timer.unit`
 - `$CODEX_HOME/snippets/systemd/user-service.unit`
 - `$CODEX_HOME/templates/systemd/user-service-skeleton/`
-- `$CODEX_HOME/prompts/systemd_service.md`
-- `$CODEX_HOME/prompts/systemd_timer.md`

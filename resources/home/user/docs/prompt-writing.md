@@ -9,6 +9,10 @@ Purpose: write concise, testable prompts that produce deterministic engineering 
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
+## Use this file when
+- you need general prompt-writing advice that is not specific to runtime prompt assets
+- you want to improve instruction quality, precision, or validation wording
+
 ## Include (high-signal)
 - exact behavior to implement
 - acceptance criteria (observable, verifiable)
@@ -28,5 +32,12 @@ Purpose: write concise, testable prompts that produce deterministic engineering 
 - Prefer one clear objective over multi-part requests in a single prompt.
 - Call out non-negotiables first (security, data safety, rollout constraints).
 
-See also:
+## Review checklist
+- Is the request concrete and bounded?
+- Are acceptance criteria observable?
+- Are the critical constraints explicit?
+- Does the prompt tell the agent what to verify?
+
+## See also
+- `create-prompts.md`
 - `workflows/planning.md`

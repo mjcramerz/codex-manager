@@ -60,5 +60,5 @@ Purpose: provide a local-only playbook for Bitwarden Secrets Manager CLI (`bws`)
 See also:
 - `$CODEX_HOME/docs/security/bitwarden-secrets-local.md`
 - `$CODEX_HOME/docs/security/bitwarden-secrets.md`
-- `$CODEX_HOME/prompts/bws_local.md`
+- `$CODEX_HOME/docs/prompt-writing.md`
 - `$CODEX_HOME/index/domains/system/bws-local.md`

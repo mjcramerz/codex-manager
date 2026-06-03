@@ -12,6 +12,19 @@ INSTRUCTIONS_ROOT = REPO_ROOT / "resources" / "instructions"
 
 
 class InstructionMetadataContractTests(unittest.TestCase):
+    @staticmethod
+    def _flatten_paths(value: dict, prefix: tuple[str, ...] = ()) -> dict[str, str]:
+        flattened: dict[str, str] = {}
+        for key, item in value.items():
+            if isinstance(item, dict):
+                flattened.update(
+                    InstructionMetadataContractTests._flatten_paths(item, (*prefix, key))
+                )
+                continue
+            if isinstance(item, str):
+                flattened[".".join((*prefix, key))] = item
+        return flattened
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.config = tomllib.loads(CONFIG_PATH.read_text(encoding="utf-8"))
@@ -25,9 +38,13 @@ class InstructionMetadataContractTests(unittest.TestCase):
 
     def test_manifest_keys_match_active_instruction_overrides(self) -> None:
         expected = {"model_instructions_file"}
-        expected |= set(self.config.get("instruction_overrides", {}).keys())
+        expected |= set(
+            self._flatten_paths(
+                {"instruction_overrides": self.config.get("instruction_overrides", {})}
+            ).keys()
+        )
         expected |= {
-            key
+            f"memories.{key}"
             for key in self.memory.get("memories", {})
             if key.endswith("_instructions_file")
         }
@@ -45,10 +62,14 @@ class InstructionMetadataContractTests(unittest.TestCase):
 
     def test_default_disable_paths_match_config_values(self) -> None:
         expected = {"model_instructions_file": self.config["model_instructions_file"]}
-        expected.update(self.config.get("instruction_overrides", {}))
+        expected.update(
+            self._flatten_paths(
+                {"instruction_overrides": self.config.get("instruction_overrides", {})}
+            )
+        )
         expected.update(
             {
-                key: value
+                f"memories.{key}": value
                 for key, value in self.memory.get("memories", {}).items()
                 if key.endswith("_instructions_file")
             }

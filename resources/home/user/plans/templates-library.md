@@ -15,7 +15,7 @@ Use this plan when adding or updating templates.
 - Template overviews explain usage and constraints.
 
 ## Scope
-- In: `$CODEX_HOME/templates/` and related $CODEX_HOME/docs/index entries.
+- In: `$CODEX_HOME/templates/` and related runtime documentation and index entries.
 - Out: unrelated pack changes.
 
 ## Files and entry points
@@ -54,8 +54,8 @@ Use this plan when adding or updating templates.
 
 ## Examples
 
-- Example objective: "<short task statement>"
-- Example validation: "<command or check>"
+- Example objective: "Update a template family and keep its overview plus linked docs aligned."
+- Example validation: "make preflight && make verify"
 
 ## Open questions
 - None.

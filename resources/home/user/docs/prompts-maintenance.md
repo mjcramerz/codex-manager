@@ -11,10 +11,10 @@ Guidance for creating and maintaining slash-command prompt assets from pack sour
 
 
 ## Scope
-- Source of truth: `$CODEX_HOME/prompts/*`
-- Runtime mirrors: `$CODEX_HOME/prompts/*` (materialized, not source)
+- Use this guide for maintenance workflow and pack-level coordination only.
+- Use `$CODEX_HOME/docs/create-prompts.md` for the actual prompt-file contract and prompt catalog.
 
-## Use this guide for
+## Use this guide when
 - adding a new slash command prompt
 - refining existing prompt argument contracts (`$ARGUMENTS`)
 - removing or renaming prompts safely
@@ -28,9 +28,15 @@ Guidance for creating and maintaining slash-command prompt assets from pack sour
 - Template: `$CODEX_HOME/templates/prompts/slash-command-maintenance/`
 - Snippet: `$CODEX_HOME/snippets/docs/prompt_contract.md`
 
+## Maintenance flow
+1. Confirm whether the change affects prompt content, prompt catalog structure, or both.
+2. Update `$CODEX_HOME/docs/create-prompts.md` when prompt names, structure, or catalog membership changes.
+3. Update workflow, plan, template, snippet, and skill references when the maintenance surface changes.
+4. Run targeted checks before broader repo verification.
+
 ## Verification
-- `rg -n --sort path --color=never '\$ARGUMENTS' $CODEX_HOME/prompts`
 - Run the narrowest full validation command available for the active Codex worktree.
+- Confirm prompt documentation and workflow links still route through `$CODEX_HOME/docs/create-prompts.md`.
 
 ## Notes
 - Keep command naming deterministic and avoid hidden side effects in prompt instructions.

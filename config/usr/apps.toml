@@ -10,6 +10,7 @@ config = [
   { enabled = true, path = "${CODEX_SKILLS}/common" },
   { enabled = true, path = "${CODEX_SKILLS}/audit" },
 ]
+include_instructions = true
 
 [skills.bundled]
 enabled = true
@@ -66,6 +67,7 @@ enabled = true
 max_threads = 10
 max_depth = 2
 job_max_runtime_seconds = 5000
+interrupt_message = true
 
 # default agents
 [agents.default]
@@ -147,6 +149,91 @@ nickname_candidates = [
   "Probe",
   "Relay",
 ]
+
+[hooks]
+# installer-only runtime target, not part of the upstream hooks config schema
+#managed_dir = "${CODEX_HOME}/hooks"
+
+[[hooks.SessionStart]]
+matcher = "^(startup|resume)$"
+
+[[hooks.SessionStart.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/session_start.pl"
+timeout = 20
+statusMessage = "Injecting detected repository context"
+
+[[hooks.UserPromptSubmit]]
+
+[[hooks.UserPromptSubmit.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/user_prompt_submit.pl"
+timeout = 20
+statusMessage = "Injecting detected prompt context"
+
+[[hooks.PreToolUse]]
+
+[[hooks.PreToolUse.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/pre_tool_use.pl"
+timeout = 20
+statusMessage = "Evaluating pre-tool guardrails"
+
+[[hooks.PermissionRequest]]
+
+[[hooks.PermissionRequest.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/permission_request.pl"
+timeout = 20
+statusMessage = "Checking permission request scope"
+
+[[hooks.PostToolUse]]
+
+[[hooks.PostToolUse.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/post_tool_use.pl"
+timeout = 20
+statusMessage = "Reviewing post-tool follow-up"
+
+[[hooks.PreCompact]]
+
+[[hooks.PreCompact.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/pre_compact.pl"
+timeout = 20
+statusMessage = "Preserving context before compaction"
+
+[[hooks.PostCompact]]
+
+[[hooks.PostCompact.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/post_compact.pl"
+timeout = 20
+statusMessage = "Re-establishing context after compaction"
+
+[[hooks.SubagentStart]]
+
+[[hooks.SubagentStart.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/subagent_start.pl"
+timeout = 20
+statusMessage = "Injecting subagent role guidance"
+
+[[hooks.SubagentStop]]
+
+[[hooks.SubagentStop.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/subagent_stop.pl"
+timeout = 25
+statusMessage = "Checking subagent completion gates"
+
+[[hooks.Stop]]
+
+[[hooks.Stop.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/stop.pl"
+timeout = 25
+statusMessage = "Checking detected repository constraints"
 
 # openai docs mcp - http transport
 [mcp_servers.openaiDeveloperDocs]

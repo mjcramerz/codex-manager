@@ -13,13 +13,19 @@ export PYTHONPATH := $(CURDIR)/src/python
 
 PYTHON_ENV := LC_ALL=C TZ=UTC PYTHONPATH=$(CURDIR)/src/python PYTHONDONTWRITEBYTECODE=1 PYTHONHASHSEED=0 PYTHONPYCACHEPREFIX=$(PYTHON_PYCACHE_PREFIX)
 
-.PHONY: preflight verify install home admin upgrade export tmpfs-mnt tmpfs-umt vars-init vars-reset nuke
+.PHONY: preflight verify build-src build-install install home admin upgrade export tmpfs-mnt tmpfs-umt vars-init vars-reset nuke
 
 preflight:
 	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) preflight
 
 verify:
 	$(PYTHON_ENV) $(PYTHON) -m compileall -q src
+
+build-src:
+	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) build-src
+
+build-install:
+	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) build-install --compiled-dir $(COMPILED_DIR)
 
 install:
 	@printf "Confirm 'make install' will apply runtime changes. Continue? [y/N] "; \

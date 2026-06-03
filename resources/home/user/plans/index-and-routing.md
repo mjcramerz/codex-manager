@@ -59,8 +59,8 @@ Use this plan when changing entrypoints, related links, or index routing.
 
 ## Examples
 
-- Example objective: "<short task statement>"
-- Example validation: "<command or check>"
+- Example objective: "Update a router, entrypoint, or related-link contract in the runtime pack."
+- Example validation: "python3 -m unittest tests.test_runtime_pack_docs_contract tests.test_runtime_pack_structure_contract"
 
 ## Open questions
 - None.

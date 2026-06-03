@@ -20,5 +20,5 @@ Use when:
 Related:
 - `$CODEX_HOME/snippets/OVERVIEW.md`
 - `$CODEX_HOME/templates/OVERVIEW.md`
-- `$CODEX_SKILLS/OVERVIEW.md`
+- `$CODEX_HOME/index/pack/skills.md`
 <!-- END:related -->

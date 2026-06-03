@@ -19,8 +19,7 @@ Real API calls require **network access** + `OPENAI_API_KEY`. `--dry-run` does n
 Set a stable path to the skill CLI (default `CODEX_HOME` is `~/.codex`):
 
 ```
-export CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
-export SORA_CLI="$CODEX_HOME/skills/sora/scripts/sora.py"
+export SORA_CLI="scripts/sora.py"
 ```
 
 If you're in this repo, you can set the path directly:

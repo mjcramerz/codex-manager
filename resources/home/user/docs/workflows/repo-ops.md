@@ -41,8 +41,8 @@ Purpose: provide a repository operations playbook (git hygiene, releases, automa
 - Prefer CI-required checks over “tribal knowledge”.
 
 ## Contributor policy alignment (Codex source)
-- Keep issue-first intake and contributor expectations aligned with source `<codex-source-repo>/docs/contributing.md`.
-- Ensure CLA assumptions are reflected (`<codex-source-repo>/docs/CLA.md`) and do not assume PR template or CLA-automation files exist unless present in the active source repo.
+- Keep issue-first intake and contributor expectations aligned with the active source repository's `docs/contributing.md` when present.
+- Ensure CLA assumptions are reflected through the active source repository's `docs/CLA.md` when present, and do not assume PR template or CLA-automation files exist unless they are actually shipped.
 - When creating pack guidance for source contributions, include explicit policy links and expected evidence.
 
 ## Releases
@@ -61,7 +61,7 @@ Purpose: provide a repository operations playbook (git hygiene, releases, automa
 - Prefer deterministic scripts (no network unless necessary, pinned deps).
 - Automation scripts must be safe-by-default: refuse ambiguous state, validate inputs, and avoid destructive defaults.
 
-## codex-setup implementation notes
+## Pack implementation notes
 - Keep runtime module layout explicit: `src/python/`, `src/install/`, `src/misc/`, and `$CODEX_HOME/`.
 - Do not reintroduce previous flat loader fallback scripts under `lib/`.
 - The legacy `codex-db-fetch` / `$CODEX_ROOT/mem/*` memory-runtime flow has been removed; keep related guidance retired.

@@ -49,4 +49,3 @@ interface:
 ## References
 - `$CODEX_HOME/index/domains/desktop/thorium.md`
 - `$CODEX_HOME/docs/desktop/thorium.md`
-- `$CODEX_HOME/prompts/thorium_build.md`

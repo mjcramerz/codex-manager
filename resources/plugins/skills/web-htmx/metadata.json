@@ -6,6 +6,8 @@
   "references": [
     "https://htmx.org/docs/",
     "https://htmx.org/reference/",
-    "https://github.com/bigskysoftware/htmx/releases/tag/v2.0.7"
+    "https://github.com/bigskysoftware/htmx/releases/tag/v2.0.7",
+    "https://htmx.org/attributes/hx-boost/",
+    "https://htmx.org/attributes/hx-headers/"
   ]
 }

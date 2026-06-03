@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-"""
-Quick validation script for skills - minimal version
-"""
+"""Quick validation script for pack skills."""
 
 import re
 import sys
@@ -37,7 +35,7 @@ def validate_skill(skill_path):
     except yaml.YAMLError as e:
         return False, f"Invalid YAML in frontmatter: {e}"
 
-    allowed_properties = {"name", "description", "license", "allowed-tools", "metadata"}
+    allowed_properties = {"name", "description", "license", "allowed-tools", "metadata", "interface"}
 
     unexpected_keys = set(frontmatter.keys()) - allowed_properties
     if unexpected_keys:
@@ -99,6 +97,37 @@ def validate_skill(skill_path):
         return False, "metadata.short-description must be a string"
     if not isinstance(metadata.get("tags"), list):
         return False, "metadata.tags must be a list"
+
+    interface = frontmatter.get("interface")
+    if interface is not None:
+        if not isinstance(interface, dict):
+            return False, "interface must be a YAML object when present"
+        for field in ("display-name", "short-description"):
+            if not isinstance(interface.get(field), str):
+                return False, f"interface.{field} must be a string"
+
+    required_heading_patterns = (
+        r"^## Workflow\b",
+        r"^## Outputs\b",
+        r"^## References\b",
+    )
+    for pattern in required_heading_patterns:
+        if not re.search(pattern, content, re.MULTILINE):
+            return False, f"Missing required section heading matching: {pattern}"
+
+    required_files = [
+        skill_path / "metadata.json",
+        skill_path / "agents" / "openai.yaml",
+        skill_path / "assets" / "icon-32.png",
+        skill_path / "assets" / "icon-128.png",
+        skill_path / "rules" / "framework.md",
+        skill_path / "rules" / "rules.md",
+        skill_path / "references" / "latest-sources.md",
+        skill_path / "scripts" / "skill_helper.py",
+    ]
+    missing = [str(path.relative_to(skill_path)) for path in required_files if not path.exists()]
+    if missing:
+        return False, f"Missing required support files: {', '.join(missing)}"
 
     return True, "Skill is valid!"
 

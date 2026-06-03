@@ -16,7 +16,7 @@ import yaml
 
 SKILL_NAME = 'pack-prompts'
 SKILL_CATEGORY = 'PACK'
-SKILL_DESCRIPTION = 'Create or update slash-command prompts under $CODEX_HOME/prompts/. Use when adding prompt commands, tightening argument contracts, or improving prompt-library maintenance assets.'
+SKILL_DESCRIPTION = 'Create or update runtime prompt assets under $CODEX_HOME/.prompt/. Use when refining prompt contracts, adding operator-local prompt files, or improving prompt-maintenance assets.'
 LAST_REFRESH_UTC = '2026-02-15'
 COVERAGE_HEADINGS = [
     'Use this skill when',

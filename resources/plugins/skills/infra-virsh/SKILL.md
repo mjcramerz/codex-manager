@@ -70,4 +70,3 @@ interface:
 - `$CODEX_HOME/docs/virtualization/virsh.md`
 - `$CODEX_HOME/templates/virtualization/virsh-vm-skeleton/`
 - `$CODEX_HOME/snippets/virsh/domain.xml`
-- `$CODEX_HOME/prompts/virsh_vm.md`

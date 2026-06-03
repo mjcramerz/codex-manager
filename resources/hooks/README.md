@@ -5,11 +5,13 @@
 The `home` / `install` / `upgrade` flow materializes the hook runtime by:
 
 1. Syncs runtime hook assets from `resources/hooks/scripts/` into `$CODEX_HOME/hooks/`
-2. Generates `$CODEX_HOME/hooks/scripts/hook_driver.py` and `$CODEX_HOME/hooks.json` from `resources/hooks/manifest.json`
+2. Syncs vendored hook schemas from `resources/hooks/schema/generated/` into `$CODEX_HOME/.hooks/schema/generated/`
+3. Generates `$CODEX_HOME/hooks/scripts/hook_driver.pl` and the compatibility `$CODEX_HOME/hooks.json` bridge from `resources/hooks/manifest.json`
+4. Merges the inline `[hooks]` table from `config/usr/apps.toml` into `$CODEX_HOME/config.toml`
 
 Nothing generated belongs in this repository. If you need to change hook behavior,
 edit `resources/hooks/manifest.json` or the runtime driver under
-`resources/hooks/scripts/hook_driver.py`, then run `make home`. `make install`
+`resources/hooks/scripts/hook_driver.pl`, then run `make home`. `make install`
 and `make upgrade` also materialize the same generated hook runtime.
 
 `resources/hooks/manifest.json` supports real `#` comments. Use those for
@@ -26,6 +28,41 @@ The generated driver performs generic detection for:
 - local Codex hook source layout (`codex-rs/hooks/schema/generated`)
 
 The manifest is for runtime settings plus optional overlays.
+
+## Vendored schemas
+
+The JSON schemas under `resources/hooks/schema/generated/` are vendored into this
+repository and installed under `$CODEX_HOME/.hooks/schema/generated/`.
+
+The runtime wrappers seed `CODEX_HOOK_SCHEMA_DIR` automatically from either:
+
+- a repo-local `resources/hooks/schema/generated/` tree during development, or
+- the installed `$CODEX_HOME/.hooks/schema/generated/` tree at runtime.
+
+## Compatibility note
+
+The generated `$CODEX_HOME/hooks.json` compatibility bridge still only exposes
+`SessionStart`, `UserPromptSubmit`, and `Stop`.
+
+The richer inline `[hooks]` config under `config/usr/apps.toml` carries the
+broader event set used by current Codex runtimes:
+
+- `PreToolUse`
+- `PermissionRequest`
+- `PostToolUse`
+- `PreCompact`
+- `PostCompact`
+- `SessionStart`
+- `UserPromptSubmit`
+- `SubagentStart`
+- `SubagentStop`
+- `Stop`
+
+Event output payloads are not all equivalent:
+
+- `SessionStart`, `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, and `SubagentStart` can return `hookSpecificOutput.additionalContext`.
+- `PermissionRequest`, `PreCompact`, `PostCompact`, and the informational part of `SubagentStop` should use `systemMessage` instead.
+- `Stop` and the blocking portion of `SubagentStop` should use top-level `decision`, `reason`, and `stopReason` fields only.
 
 ## Shared multi-agent section
 

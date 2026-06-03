@@ -3,5 +3,7 @@
   "organization": "Codex Setup",
   "date": "March 9, 2026",
   "abstract": "Use when tasks involve reading, creating, or reviewing PDF files where rendering and layout matter; prefer visual checks by rendering pages (Poppler) and use Python tools such as `reportlab`, `pdfplumber`, and `pypdf` for generation and extraction.",
-  "references": []
+  "references": [
+    "SKILL.md"
+  ]
 }

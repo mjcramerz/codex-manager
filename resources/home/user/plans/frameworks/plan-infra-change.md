@@ -19,18 +19,18 @@ Use this plan when modifying infrastructure, deployment, or system services.
 - Out: unrelated product feature changes.
 
 ## Dependencies and assumptions
-- <target environments, ownership boundaries, and approvals>
-- <network/storage/identity dependencies and constraints>
-- <maintenance window and rollback prerequisites>
+- Identify the target environments, ownership boundaries, and required approvals.
+- Record network, storage, identity, and platform constraints.
+- Define the maintenance window and rollback prerequisites.
 
 ## Success metrics and exit criteria
-- <availability/reliability/performance targets after change>
-- <infrastructure drift checks and policy compliance criteria>
-- <go/no-go criteria for promotion and owner sign-off>
+- Define post-change availability, reliability, and performance targets.
+- Define drift checks and policy-compliance criteria.
+- State promotion go/no-go criteria and the sign-off owner.
 
 ## Files and entry points
-- <infra configs/manifests>
-- <service definitions and pipelines>
+- List the infra configs or manifests being changed.
+- List the service definitions, automation entrypoints, and pipelines involved.
 
 ## Action items
 [ ] Inventory current infra and dependencies.
@@ -41,10 +41,10 @@ Use this plan when modifying infrastructure, deployment, or system services.
 [ ] Validate in staging or dry-run where possible.
 
 ## Testing and validation
-- <linters, policy checks, staging deploys>
+- List linters, policy checks, dry-runs, and staging deploy steps in execution order.
 
 ## Rollout / migration
-- <phased rollout, backups, verification>
+- Describe phased rollout order, backups, and post-change verification steps.
 
 ## Security checkpoints
 - Confirm trust boundaries, credentials, and least-privilege assumptions before execution.
@@ -67,12 +67,11 @@ Use this plan when modifying infrastructure, deployment, or system services.
 - Receiving agent acknowledges handoff completeness before continuing execution.
 
 ## Risks and edge cases
-- <downtime, data loss, config drift>
+- Call out downtime, data-loss, secret-scoping, or drift risks explicitly.
 
 ## Examples
-
-- Example objective: "Change <infra> with rollback steps."
-- Example validation: "<infra validation>"
+- Example objective: "Change the runtime plugin marketplace generation flow with explicit rollback steps."
+- Example validation: "make preflight && python3 -m unittest tests.test_plugin_runtime_contracts"
 
 ## Open questions
-- <missing approvals or environment details>
+- Record only the missing approvals or environment details that block rollout.

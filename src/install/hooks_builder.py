@@ -446,7 +446,7 @@ def render_hooks_json(manifest: dict[str, Any]) -> str:
                     "hooks": [
                         {
                             "type": "command",
-                            "command": "python3 \"$CODEX_HOME/hooks/scripts/hook_driver.py\" session-start",
+                            "command": "perl \"$CODEX_HOME/hooks/scripts/session_start.pl\"",
                             "timeout": session_start["timeout"],
                             "statusMessage": session_start["status_message"],
                         }
@@ -458,7 +458,7 @@ def render_hooks_json(manifest: dict[str, Any]) -> str:
                     "hooks": [
                         {
                             "type": "command",
-                            "command": "python3 \"$CODEX_HOME/hooks/scripts/hook_driver.py\" user-prompt-submit",
+                            "command": "perl \"$CODEX_HOME/hooks/scripts/user_prompt_submit.pl\"",
                             "timeout": user_prompt_submit["timeout"],
                             "statusMessage": user_prompt_submit["status_message"],
                         }
@@ -470,7 +470,7 @@ def render_hooks_json(manifest: dict[str, Any]) -> str:
                     "hooks": [
                         {
                             "type": "command",
-                            "command": "python3 \"$CODEX_HOME/hooks/scripts/hook_driver.py\" stop",
+                            "command": "perl \"$CODEX_HOME/hooks/scripts/stop.pl\"",
                             "timeout": stop["timeout"],
                             "statusMessage": stop["status_message"],
                         }

@@ -18,16 +18,16 @@ Use this plan when restructuring code without changing external behavior.
 - Out: feature changes or large rewrites.
 
 ## Dependencies and assumptions
-- <test coverage assumptions and quality gates>
-- <shared component ownership and review dependencies>
+- Record test-coverage assumptions and the quality gates that must stay green.
+- Record shared-component ownership and review dependencies.
 
 ## Success metrics and exit criteria
-- <behavior preserved with passing regression suite>
-- <maintainability improvements (complexity/churn/readability) with no SLA regressions>
+- Define the regression suite that proves behavior is preserved.
+- Define the maintainability improvements expected without creating SLA regressions.
 
 ## Files and entry points
-- <modules to refactor>
-- <tests that cover behavior>
+- List the modules or services to refactor.
+- List the tests that cover the preserved behavior.
 
 ## Action items
 [ ] Define invariants and expected behavior.
@@ -38,10 +38,10 @@ Use this plan when restructuring code without changing external behavior.
 [ ] Validate performance and correctness.
 
 ## Testing and validation
-- <commands to run, ordered fast → comprehensive>
+- List validation commands from fastest to deepest.
 
 ## Rollback strategy
-- <revert plan if refactor introduces regressions>
+- Describe the revert plan if the refactor introduces regressions.
 
 ## Security checkpoints
 - Confirm trust boundaries, credentials, and least-privilege assumptions before execution.
@@ -64,12 +64,11 @@ Use this plan when restructuring code without changing external behavior.
 - Receiving agent acknowledges handoff completeness before continuing execution.
 
 ## Risks and edge cases
-- <hidden dependencies, performance regressions>
+- Call out hidden dependencies, coupling surprises, or performance regressions that could surface.
 
 ## Examples
-
-- Example objective: "Refactor <module> while preserving behavior."
-- Example validation: "make check"
+- Example objective: "Refactor the runtime routing layer while preserving every canonical entrypoint."
+- Example validation: "python3 -m unittest tests.test_runtime_pack_docs_contract tests.test_runtime_pack_structure_contract"
 
 ## Open questions
-- <gaps in coverage or unclear invariants>
+- Record only the coverage gaps or invariants that are still unclear.

@@ -4,7 +4,6 @@
   "date": "March 9, 2026",
   "abstract": "Publish and manage research papers on Hugging Face Hub. Supports creating paper pages, linking papers to models/datasets, claiming authorship, and generating professional markdown-based research articles.",
   "references": [
-    "https://huggingface.co/papers/{arxiv-id}`",
     "https://arxiv.org/abs/2301.12345",
     "https://huggingface.co/papers/2301.12345",
     "https://huggingface.co/papers",

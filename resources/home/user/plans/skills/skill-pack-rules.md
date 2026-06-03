@@ -54,8 +54,8 @@ Use this plan when applying or updating the `pack-rules` skill.
 
 ## Examples
 
-- Example objective: "<short task statement>"
-- Example validation: "<command or check>"
+- Example objective: "Apply the pack-rules skill to the scoped repository task with explicit validation evidence."
+- Example validation: "Run the skill's narrowest validation command plus the relevant pack contract tests."
 
 ## Open questions
 - None.

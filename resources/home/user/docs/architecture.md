@@ -1,6 +1,5 @@
 # Architecture notes
-Purpose: a minimal, scalable architecture pattern for APIs, CLIs, and services.
-
+Purpose: provide a default architecture shape for services, CLIs, and integration-heavy runtime components.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -9,28 +8,33 @@ Purpose: a minimal, scalable architecture pattern for APIs, CLIs, and services.
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-
-## When to use
+## Use when
 - bootstrapping a new service or major refactor
-- clarifying boundaries for validation, auth, and persistence
+- deciding where validation, policy, orchestration, and I/O boundaries belong
+- reviewing whether a design mixes transport, business logic, and infrastructure too tightly
 
-## Layers (default model)
-1) **Interfaces** (HTTP/CLI): parse, validate, auth, map errors
-2) **Application services**: orchestrate workflows, transactions, policies
-3) **Domain**: pure logic, invariants, types
-4) **Infrastructure**: DB, network clients, filesystem, queues
+## Default layers
+1. Interfaces: CLI, HTTP, hooks, or transport adapters
+2. Application services: orchestration, workflow, and policy decisions
+3. Domain: invariants, pure logic, and durable types
+4. Infrastructure: storage, network clients, filesystem, queues, and external integrations
 
-## Rules of thumb
-- Keep the domain pure and testable.
-- Keep I/O at boundaries; avoid leaking transport concerns into core logic.
-- Make errors explicit and typed; avoid leaking internals across boundaries.
-- Make configuration explicit and validated at startup.
-- Observability is first-class: logs, traces, metrics.
-- Put security controls at trust boundaries (validation, authz, size/time limits).
+## Design rules
+- Keep trust-boundary logic at the edge.
+- Keep domain logic transport-agnostic when possible.
+- Keep configuration explicit and validated at startup.
+- Keep observability and error taxonomy deliberate rather than incidental.
+- Keep long-running or side-effect-heavy operations behind explicit service boundaries.
 
-See also:
-- `workflows/build-an-app.md`
-- `security/overview.md`
-- `perf/overview.md`
-- `style/overview.md`
-- `$CODEX_HOME/index/pack/docs.md`
+## Review checklist
+- Are inputs validated at the interface boundary?
+- Are side effects isolated from pure logic?
+- Are retries, timeouts, and cancellation rules explicit?
+- Are security assumptions visible in the design?
+- Is there one clear place for operational verification?
+
+## Related
+- `$CODEX_HOME/docs/workflows/build-an-app.md`
+- `$CODEX_HOME/docs/security/overview.md`
+- `$CODEX_HOME/docs/perf/overview.md`
+- `$CODEX_HOME/docs/style/overview.md`

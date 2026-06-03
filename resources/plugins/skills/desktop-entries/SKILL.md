@@ -52,4 +52,3 @@ interface:
 - `$CODEX_HOME/docs/workflows/desktop-entries.md`
 - `$CODEX_HOME/templates/desktop/desktop-entry/`
 - `$CODEX_HOME/snippets/desktop/desktop-entry.desktop`
-- `$CODEX_HOME/prompts/desktop_entry.md`

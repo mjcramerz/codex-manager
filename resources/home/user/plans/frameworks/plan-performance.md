@@ -18,17 +18,17 @@ Use this plan when optimizing performance or reducing resource usage.
 - Out: unrelated refactors or feature work.
 
 ## Dependencies and assumptions
-- <benchmark environment parity and workload realism assumptions>
-- <instrumentation/profiling access and data retention assumptions>
+- Record benchmark-environment parity and workload-realism assumptions.
+- Record instrumentation, profiling access, and data-retention assumptions.
 
 ## Success metrics and exit criteria
-- <target latency/throughput/resource improvements>
-- <regression guard thresholds and acceptable trade-offs>
-- <approval owner for release readiness>
+- Define target latency, throughput, or resource improvements.
+- Define regression guard thresholds and acceptable trade-offs.
+- State the owner who approves release readiness.
 
 ## Files and entry points
-- <hot path modules>
-- <benchmarks or load tests>
+- List the hot-path modules under investigation.
+- List the benchmark or load-test entrypoints you will use.
 
 ## Action items
 [ ] Capture baseline metrics and reproduce workloads.
@@ -39,10 +39,10 @@ Use this plan when optimizing performance or reducing resource usage.
 [ ] Document results and tuning knobs.
 
 ## Testing and validation
-- <benchmarks, load tests, perf counters>
+- List benchmarks, load tests, and perf counters from fastest to deepest.
 
 ## Rollout / monitoring
-- <alerts for regressions, SLO impact>
+- Define regression alerts and any SLOs affected by the change.
 
 ## Security checkpoints
 - Confirm trust boundaries, credentials, and least-privilege assumptions before execution.
@@ -65,12 +65,11 @@ Use this plan when optimizing performance or reducing resource usage.
 - Receiving agent acknowledges handoff completeness before continuing execution.
 
 ## Risks and edge cases
-- <correctness trade-offs, caching pitfalls>
+- Call out correctness trade-offs, cache invalidation pitfalls, and measurement blind spots.
 
 ## Examples
-
-- Example objective: "Reduce <latency/CPU> for <path>."
-- Example validation: "hyperfine "<command>""
+- Example objective: "Reduce render latency for the runtime pack contract tests without changing coverage."
+- Example validation: "hyperfine 'python3 -m unittest tests.test_runtime_pack_structure_contract'"
 
 ## Open questions
-- <missing metrics or tooling>
+- Record only the missing metrics, profilers, or environments that block the work.

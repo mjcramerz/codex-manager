@@ -67,7 +67,6 @@ interface:
 - `$CODEX_HOME/docs/workflows/web-frontend.md`
 - `$CODEX_HOME/docs/web/nextjs.md`
 - `$CODEX_HOME/templates/web/nextjs-app/`
-- `$CODEX_HOME/prompts/nextjs_app.md`
 - `references/implementation-playbook.md`
 - `references/route-runtime-matrix.md`
 - `references/react-performance-rules.md`

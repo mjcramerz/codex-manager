@@ -84,4 +84,3 @@ If `gh` hits auth/rate issues mid-run, prompt re-auth (`gh auth login`) and retr
 - GitHub CLI `gh pr view` docs: `https://cli.github.com/manual/gh_pr_view`
 - GitHub GraphQL API docs: `https://docs.github.com/en/graphql`
 - `$CODEX_HOME/docs/workflows/code-review.md`
-- `$CODEX_HOME/prompts/code_review.md`

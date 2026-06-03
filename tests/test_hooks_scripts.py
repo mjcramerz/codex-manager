@@ -1,4 +1,5 @@
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -7,7 +8,7 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-HOOK_DRIVER = REPO_ROOT / "resources" / "hooks" / "scripts" / "hook_driver.py"
+HOOK_DRIVER = REPO_ROOT / "resources" / "hooks" / "scripts" / "hook_driver.pl"
 MANIFEST_PATH = REPO_ROOT / "resources" / "hooks" / "manifest.json"
 INSTALL_SRC = REPO_ROOT / "src" / "install"
 if str(INSTALL_SRC) not in sys.path:
@@ -17,21 +18,52 @@ from hooks_builder import render_hook_driver_from_manifest_path  # noqa: E402
 from hooks_builder import render_hooks_json_from_manifest_path  # noqa: E402
 
 
+def _prepare_runtime_hook_dir(tmpdir: str) -> tuple[Path, Path]:
+    runtime_root = Path(tmpdir)
+    rendered_driver_path = runtime_root / "hook_driver.pl"
+    rendered_driver_path.write_text(
+        render_hook_driver_from_manifest_path(MANIFEST_PATH, HOOK_DRIVER),
+        encoding="utf-8",
+    )
+    rendered_driver_path.chmod(0o755)
+
+    runtime_lib = runtime_root / "lib"
+    shutil.copytree(HOOK_DRIVER.parent / "lib", runtime_lib, dirs_exist_ok=True)
+    schema_src = REPO_ROOT / "resources" / "hooks" / "schema"
+    shutil.copytree(schema_src, runtime_root / "schema", dirs_exist_ok=True)
+    for script in (HOOK_DRIVER.parent).glob("*.pl"):
+        if script.name == "hook_driver.pl":
+            continue
+        target = runtime_root / script.name
+        shutil.copy2(script, target)
+        target.chmod(0o755)
+    return runtime_root, rendered_driver_path
+
+
 def run_hook(event_name: str, payload: dict) -> subprocess.CompletedProcess[str]:
-    with tempfile.NamedTemporaryFile("w", encoding="utf-8", delete=False) as handle:
-        handle.write(render_hook_driver_from_manifest_path(MANIFEST_PATH, HOOK_DRIVER))
-        rendered_driver_path = Path(handle.name)
-    try:
+    with tempfile.TemporaryDirectory() as tmpdir:
+        runtime_root, rendered_driver_path = _prepare_runtime_hook_dir(tmpdir)
         return subprocess.run(
-            ["python3", str(rendered_driver_path), event_name],
+            ["perl", str(rendered_driver_path), event_name],
             input=json.dumps(payload),
             text=True,
             capture_output=True,
             check=True,
-            cwd=REPO_ROOT,
+            cwd=runtime_root,
         )
-    finally:
-        rendered_driver_path.unlink(missing_ok=True)
+
+
+def run_hook_wrapper(wrapper_name: str, payload: dict) -> subprocess.CompletedProcess[str]:
+    with tempfile.TemporaryDirectory() as tmpdir:
+        runtime_root, _rendered_driver_path = _prepare_runtime_hook_dir(tmpdir)
+        return subprocess.run(
+            ["perl", str(runtime_root / wrapper_name)],
+            input=json.dumps(payload),
+            text=True,
+            capture_output=True,
+            check=True,
+            cwd=runtime_root,
+        )
 
 
 def init_git_repo(path: Path) -> None:
@@ -110,7 +142,7 @@ class HookScriptTests(unittest.TestCase):
         session_start = payload["hooks"]["SessionStart"][0]["hooks"][0]
         self.assertEqual(
             session_start["command"],
-            'python3 "$CODEX_HOME/hooks/scripts/hook_driver.py" session-start',
+            'perl "$CODEX_HOME/hooks/scripts/session_start.pl"',
         )
         self.assertEqual(session_start["timeout"], 20)
 
@@ -129,7 +161,7 @@ class HookScriptTests(unittest.TestCase):
 
             payload = json.loads(result.stdout)
             context = payload["hookSpecificOutput"]["additionalContext"]
-            self.assertIn("Active generated hook profiles: `c0d3x`", context)
+            self.assertIn("Active generated hook profiles: `codex-manager`", context)
             self.assertIn("Repo role: Codex installer and runtime-configuration source tree.", context)
 
     def test_session_start_injects_mirror_and_patch_context(self) -> None:
@@ -235,6 +267,90 @@ class HookScriptTests(unittest.TestCase):
             self.assertIn("`explorer`:", context)
             self.assertIn("`tester`:", context)
 
+    def test_pre_tool_use_blocks_destructive_git_reset(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_c0d3x_repo(tmpdir)
+
+            result = run_hook(
+                "pre-tool-use",
+                {
+                    "cwd": str(repo),
+                    "tool_name": "exec_command",
+                    "tool_input": "git reset --hard HEAD",
+                },
+            )
+
+            payload = json.loads(result.stdout)
+            self.assertEqual(payload["decision"], "block")
+            self.assertIn("destructive `git reset --hard` path", payload["reason"])
+
+    def test_wrapper_script_executes_driver_with_vendored_schema_tree(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_c0d3x_repo(tmpdir)
+
+            result = run_hook_wrapper(
+                "session_start.pl",
+                {
+                    "cwd": str(repo),
+                    "source": "startup",
+                },
+            )
+
+            payload = json.loads(result.stdout)
+            context = payload["hookSpecificOutput"]["additionalContext"]
+            self.assertIn("Repository context for `c0d3x`", context)
+
+    def test_permission_request_adds_scope_guidance(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_c0d3x_repo(tmpdir)
+
+            result = run_hook(
+                "permission-request",
+                {
+                    "cwd": str(repo),
+                    "tool_name": "exec_command",
+                    "tool_input": {"network": True},
+                },
+            )
+
+            payload = json.loads(result.stdout)
+            context = payload["systemMessage"]
+            self.assertIn("Permission request for `exec_command`", context)
+            self.assertIn("Keep the scope minimal", context)
+
+    def test_post_tool_use_emits_failure_follow_up_context(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_c0d3x_repo(tmpdir)
+
+            result = run_hook(
+                "post-tool-use",
+                {
+                    "cwd": str(repo),
+                    "tool_name": "exec_command",
+                    "tool_response": "permission denied while writing file",
+                },
+            )
+
+            payload = json.loads(result.stdout)
+            context = payload["hookSpecificOutput"]["additionalContext"]
+            self.assertIn("Post-tool follow-up for `exec_command`", context)
+            self.assertIn("failure or warning signal", context)
+
+    def test_pre_compact_uses_system_message_only(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_c0d3x_repo(tmpdir)
+
+            result = run_hook(
+                "pre-compact",
+                {
+                    "cwd": str(repo),
+                },
+            )
+
+            payload = json.loads(result.stdout)
+            self.assertIn("Pre compact guidance", payload["systemMessage"])
+            self.assertNotIn("hookSpecificOutput", payload)
+
     def test_codex_shape_detection_is_generic(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             repo = make_codex_repo(tmpdir)
@@ -256,7 +372,7 @@ class HookScriptTests(unittest.TestCase):
     def test_stop_hook_reentry_stops_instead_of_reblocking(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             repo = make_c0d3x_repo(tmpdir)
-            write_file(repo / "resources" / "hooks" / "scripts" / "hook_driver.py", "print('x')\n")
+            write_file(repo / "resources" / "hooks" / "scripts" / "hook_driver.pl", "print('x')\n")
 
             first = run_hook(
                 "stop",
@@ -285,10 +401,33 @@ class HookScriptTests(unittest.TestCase):
             self.assertFalse(second_payload["continue"])
             self.assertIn("ending instead of blocking again", second_payload["stopReason"])
 
+    def test_subagent_stop_reuses_stop_guardrails(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_c0d3x_repo(tmpdir)
+            write_file(repo / "resources" / "hooks" / "scripts" / "hook_driver.pl", "print('x')\n")
+
+            result = run_hook(
+                "subagent-stop",
+                {
+                    "cwd": str(repo),
+                    "agent_id": "agent-1",
+                    "agent_type": "worker",
+                    "last_assistant_message": "",
+                    "stop_hook_active": False,
+                },
+            )
+
+            outputs = [json.loads(line) for line in result.stdout.splitlines() if line.strip()]
+            self.assertGreaterEqual(len(outputs), 2)
+            context = outputs[0]["systemMessage"]
+            self.assertIn("Subagent stop guidance", context)
+            self.assertEqual(outputs[-1]["decision"], "block")
+            self.assertIn("validation follow-up", outputs[-1]["reason"])
+
     def test_stop_hook_allows_explicit_skip_rationale(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             repo = make_c0d3x_repo(tmpdir)
-            write_file(repo / "resources" / "hooks" / "scripts" / "hook_driver.py", "print('x')\n")
+            write_file(repo / "resources" / "hooks" / "scripts" / "hook_driver.pl", "print('x')\n")
 
             result = run_hook(
                 "stop",

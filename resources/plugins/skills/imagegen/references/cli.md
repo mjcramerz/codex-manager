@@ -13,8 +13,7 @@ Real API calls require **network access** + `OPENAI_API_KEY`. `--dry-run` does n
 Set a stable path to the skill CLI (default `CODEX_HOME` is `~/.codex`):
 
 ```
-export CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
-export IMAGE_GEN="$CODEX_HOME/skills/imagegen/scripts/image_gen.py"
+export IMAGE_GEN="scripts/image_gen.py"
 ```
 
 Dry-run (no API call; no network required; does not require the `openai` package):

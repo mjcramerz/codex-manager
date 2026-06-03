@@ -32,7 +32,7 @@ class PluginBundleSpec:
     developer_name: str | None
     category: str
     capabilities: list[str]
-    default_prompt: str
+    default_prompt: list[str]
     brand_color: str | None
     website_url: str | None
     privacy_policy_url: str | None
@@ -52,6 +52,32 @@ def render_runtime_plugin_marketplace(
     marketplace_name: str,
     entries: list[PluginBundleSpec],
 ) -> str:
+    def _marketplace_interface(entry: PluginBundleSpec) -> dict[str, Any]:
+        interface: dict[str, Any] = {
+            "displayName": entry.display_name,
+            "shortDescription": entry.short_description,
+            "longDescription": entry.long_description,
+            "developerName": entry.developer_name,
+            "category": entry.category,
+            "capabilities": entry.interface_capabilities(),
+            "defaultPrompt": entry.default_prompt or None,
+            "brandColor": entry.brand_color,
+        }
+        website_url = entry.website_url or entry.homepage
+        if website_url:
+            interface["websiteURL"] = website_url
+        if entry.privacy_policy_url:
+            interface["privacyPolicyURL"] = entry.privacy_policy_url
+        if entry.terms_of_service_url:
+            interface["termsOfServiceURL"] = entry.terms_of_service_url
+        if entry.composer_icon:
+            interface["composerIcon"] = entry.composer_icon
+        if entry.logo:
+            interface["logo"] = entry.logo
+        if entry.screenshots:
+            interface["screenshots"] = entry.screenshots
+        return interface
+
     payload = {
         "name": marketplace_name,
         "plugins": [
@@ -61,17 +87,13 @@ def render_runtime_plugin_marketplace(
                     "source": "local",
                     "path": f"./plugins/cache/{marketplace_name}/{entry.name}/local",
                 },
-                "description": entry.description,
-                "interface": {
-                    "displayName": entry.display_name,
-                    "shortDescription": entry.short_description,
-                    "longDescription": entry.long_description,
-                    "developerName": entry.developer_name,
-                    "category": entry.category,
-                    "capabilities": entry.interface_capabilities(),
-                    "defaultPrompt": entry.default_prompt,
-                    "brandColor": entry.brand_color,
+                "policy": {
+                    "installation": "AVAILABLE",
+                    "authentication": "ON_INSTALL" if entry.apps else "ON_USE",
                 },
+                "category": entry.category,
+                "description": entry.description,
+                "interface": _marketplace_interface(entry),
             }
             for entry in entries
         ],
@@ -104,6 +126,8 @@ def render_runtime_plugin_manifest(bundle: PluginBundleSpec) -> str:
         interface["composerIcon"] = bundle.composer_icon
     if bundle.logo:
         interface["logo"] = bundle.logo
+    if bundle.default_prompt:
+        interface["defaultPrompt"] = bundle.default_prompt
     interface["screenshots"] = bundle.screenshots
 
     payload: dict[str, Any] = {

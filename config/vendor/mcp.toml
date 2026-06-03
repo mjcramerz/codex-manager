@@ -1,4 +1,5 @@
-version = 1
+# legacy out-of-schema source marker retained for traceability
+#version = 1
 
 # Global MCP server definitions only. Bundle-scoped endpoints belong in `resources/plugins/manifest.json`.
 # Per-user enabled defaults belong in `config/usr/apps.toml`; installer rendering writes `$CODEX_HOME`

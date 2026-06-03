@@ -19,17 +19,17 @@ Use this plan when diagnosing and fixing a bug or regression.
 - Out: unrelated refactors or feature work.
 
 ## Dependencies and assumptions
-- <systems/environments needed to reproduce and validate>
-- <required access, logs, and telemetry availability>
+- List the systems and environments required to reproduce and validate the bug.
+- Record required access, logs, traces, and telemetry dependencies.
 
 ## Success metrics and exit criteria
-- <repro no longer fails and regression coverage exists>
-- <error-rate/performance impact within acceptable bounds>
-- <decision owner for release readiness>
+- Reproduction no longer fails and regression coverage exists for the fixed path.
+- Error rate, latency, and resource usage stay within acceptable bounds after the fix.
+- Name the release-readiness owner when the bug affects shipped behavior.
 
 ## Files and entry points
-- <repro entry points>
-- <files likely involved>
+- Record the reproduction entrypoints you inspected first.
+- List the files or modules most likely to contain the defect.
 
 ## Action items
 [ ] Reproduce the issue and capture evidence.
@@ -41,10 +41,10 @@ Use this plan when diagnosing and fixing a bug or regression.
 [ ] Document findings if user-facing or operational.
 
 ## Testing and validation
-- <commands to run, ordered fast → comprehensive>
+- List the validation commands from fastest to deepest, starting with the original repro.
 
 ## Rollout / mitigation
-- <rollback plan or mitigations if needed>
+- Describe the rollback or mitigation path if the fix cannot ship immediately.
 
 ## Security checkpoints
 - Confirm trust boundaries, credentials, and least-privilege assumptions before execution.
@@ -67,12 +67,11 @@ Use this plan when diagnosing and fixing a bug or regression.
 - Receiving agent acknowledges handoff completeness before continuing execution.
 
 ## Risks and edge cases
-- <related behaviors that could regress>
+- Identify nearby behaviors, fallback paths, or configuration states that could still regress.
 
 ## Examples
-
-- Example objective: "Fix crash in <component> when <trigger>."
-- Example validation: "cargo test <module>::<test_name>"
+- Example objective: "Fix the startup crash in the hook dispatcher when the manifest contains a malformed repo block."
+- Example validation: "python3 -m unittest tests.test_hooks_scripts"
 
 ## Open questions
-- <missing inputs if any>
+- Record only the missing inputs that block reproduction or release readiness.

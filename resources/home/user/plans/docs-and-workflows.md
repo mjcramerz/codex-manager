@@ -55,8 +55,8 @@ Use this plan when updating docs, workflows, or doc indexes.
 
 ## Examples
 
-- Example objective: "<short task statement>"
-- Example validation: "<command or check>"
+- Example objective: "Refresh runtime docs and workflow links after a routing or contract change."
+- Example validation: "python3 -m unittest tests.test_runtime_pack_docs_contract tests.test_runtime_pack_structure_contract"
 
 ## Open questions
 - None.

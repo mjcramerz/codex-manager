@@ -10,17 +10,17 @@ Purpose: stable index to prompt-library maintenance workflow guidance and assets
 <!-- END:nav -->
 
 
-Canonical content: `$CODEX_HOME/docs/prompts-maintenance.md`
+Canonical content: `$CODEX_HOME/docs/create-prompts.md`
 
 Use when:
-- creating, updating, or retiring prompt files under `$CODEX_HOME/prompts/*`
+- creating, updating, or retiring reusable prompt assets and their design guidance
 - tightening prompt `$ARGUMENTS` contracts and command naming
 - wiring prompt-maintenance docs, plans, templates, snippets, and skill links
 - validating prompt maintenance changes before runtime sync
 
 <!-- BEGIN:related -->
 Related:
-- `$CODEX_HOME/prompts/OVERVIEW.md`
+- `$CODEX_HOME/docs/create-prompts.md`
 - `$CODEX_HOME/docs/prompts-maintenance.md`
 - `$CODEX_HOME/docs/workflows/prompts-library.md`
 - `$CODEX_HOME/plans/prompts-library.md`

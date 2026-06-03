@@ -69,4 +69,3 @@ interface:
 - `$CODEX_HOME/docs/virtualization/proxmox.md`
 - `$CODEX_HOME/templates/virtualization/proxmox-vm-skeleton/`
 - `$CODEX_HOME/snippets/proxmox/storage.cfg`
-- `$CODEX_HOME/prompts/proxmox_vm.md`

@@ -53,4 +53,3 @@ interface:
 - `$CODEX_HOME/docs/workflows/usbguard.md`
 - `$CODEX_HOME/templates/system/usbguard-baseline/`
 - `$CODEX_HOME/snippets/system/usbguard.rules`
-- `$CODEX_HOME/prompts/usbguard_setup.md`

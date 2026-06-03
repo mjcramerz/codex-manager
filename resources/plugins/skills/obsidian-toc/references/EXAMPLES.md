@@ -17,10 +17,10 @@ updated: '2026-02-20'
 
 ## Update TOC for a note
 ```
-python $CODEX_SKILLS/NOTE/obsidian-toc/scripts/generate_toc.py --file notes/engineering/overview.md --max-depth 2
+python scripts/generate_toc.py --file notes/engineering/overview.md --max-depth 2
 ```
 
 ## Preview TOC
 ```
-python $CODEX_SKILLS/NOTE/obsidian-toc/scripts/generate_toc.py --file notes/engineering/overview.md --dry-run
+python scripts/generate_toc.py --file notes/engineering/overview.md --dry-run
 ```

@@ -49,4 +49,3 @@ interface:
 - `$CODEX_HOME/docs/observability/kibana.md`
 - `$CODEX_HOME/templates/observability/elastic-stack-compose/`
 - `$CODEX_HOME/snippets/elastic/kibana.yml`
-- `$CODEX_HOME/prompts/kibana_setup.md`

@@ -55,4 +55,3 @@ interface:
 - `$CODEX_HOME/docs/workflows/auditd.md`
 - `$CODEX_HOME/templates/observability/auditd-rules-skeleton/`
 - `$CODEX_HOME/snippets/auditd/audit.rules`
-- `$CODEX_HOME/prompts/auditd_setup.md`

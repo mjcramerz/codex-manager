@@ -23,30 +23,29 @@ Use this plan when implementing a new feature or significant enhancement.
 - Implementation mode: production-ready delivery with complete rollout, rollback, and operational readiness.
 
 ## PoC hypothesis and decision gate (required in PoC mode)
-- <hypothesis and why this PoC de-risks implementation>
-- <timebox start/end date and max acceptable effort/cost>
-- <success thresholds and evidence collection method>
-- <go/no-go owner and decision date>
+- State the hypothesis and why the PoC reduces implementation risk.
+- Record the timebox, budget, and the maximum acceptable scope for the PoC.
+- Define the success thresholds and how evidence will be collected.
+- Name the go/no-go owner and the decision date.
 
 ## Dependencies and assumptions
-- <internal/external dependencies and owners>
-- <environment/access/tooling assumptions>
-- <decision deadlines or approval checkpoints>
+- List internal and external dependencies plus an owner for each.
+- Record environment, access, and tooling assumptions that must hold.
+- Note approval checkpoints or decision deadlines that can block delivery.
 
 ## Success metrics and exit criteria
-- <business outcomes and user-impact metrics>
-- <technical SLO/SLA, reliability, and performance targets>
-- <go/no-go decision criteria and approver>
+- Define business outcomes and user-visible success metrics.
+- Define technical reliability, performance, and operational targets.
+- State the go/no-go decision criteria and the approver.
 
 ## Files and entry points
-- <entry points to inspect>
-- <files/modules likely to change>
+- Record the entrypoints you will inspect first.
+- List the files or modules most likely to change.
 
 ## Data model / API changes
-- <schemas/contracts affected>
-- <versioning or compatibility notes>
-
-- API surfaces: <OpenAPI/JSON schema contract, normalized error model (for example RFC 9457), and idempotency/retry policy>
+- Describe the schemas or contracts affected by the feature.
+- Record versioning or compatibility notes.
+- If API surfaces change, specify the contract source, normalized error model, and idempotency/retry policy.
 
 ## Action items
 [ ] Choose delivery mode (PoC vs implementation) and define decision gate.
@@ -59,16 +58,16 @@ Use this plan when implementing a new feature or significant enhancement.
 [ ] Implement core functionality.
 [ ] Add or update tests (unit/integration/contract).
 [ ] Verify non-functional targets (security/reliability/performance/operability).
-[ ] Update $CODEX_HOME/docs/runbooks and user-facing notes.
+[ ] Update `$CODEX_HOME/docs/workflows/` and user-facing notes.
 [ ] Validate behavior end-to-end.
 
 ## Testing and validation
-- <commands to run, ordered fast → comprehensive>
-- <evidence required for PoC go/no-go or implementation launch>
+- List the validation commands from fastest to deepest.
+- State the evidence required for PoC go/no-go or implementation launch.
 
 ## Rollout / migration
-- <backward compatibility, flags, migrations, rollback>
-- <phased rollout owners and post-deploy verification checkpoints>
+- Document backward-compatibility strategy, flags, migrations, and rollback steps.
+- Name phased rollout owners and post-deploy verification checkpoints.
 
 ## Security checkpoints
 - Confirm trust boundaries, credentials, and least-privilege assumptions before execution.
@@ -91,12 +90,11 @@ Use this plan when implementing a new feature or significant enhancement.
 - Receiving agent acknowledges handoff completeness before continuing execution.
 
 ## Risks and edge cases
-- <correctness/security/perf risks>
+- Call out correctness, security, performance, and rollout risks that still need explicit mitigation.
 
 ## Examples
-
-- Example objective: "Add <feature> with <acceptance criteria>."
-- Example validation: "make test"
+- Example objective: "Add a typed config lock export flow with clear validation and rollback criteria."
+- Example validation: "make preflight && python3 -m unittest tests.test_install_command_routing"
 
 ## Open questions
-- <blocking questions if any>
+- Record only the open questions that block implementation or rollout.

@@ -6,6 +6,8 @@
   "references": [
     "https://developer.mozilla.org/en-US/docs/Web",
     "https://html.spec.whatwg.org/multipage/",
-    "https://www.w3.org/TR/WCAG22/"
+    "https://www.w3.org/TR/WCAG22/",
+    "https://www.w3.org/WAI/WCAG22/quickref/",
+    "https://www.w3.org/WAI/ARIA/apg/"
   ]
 }

@@ -5,7 +5,7 @@
   "abstract": "Deploy applications and websites to Vercel. Use when the user requests deployment actions like \"deploy my app\", \"deploy and give me the link\", \"push this live\", or \"create a preview deployment\".",
   "references": [
     "https://my-app-abc123.vercel.app",
-    "https://vercel.com/claim-deployment?code=...",
+    "https://vercel.com/claim-deployment?code=",
     "https://claude.ai/settings/capabilities"
   ]
 }

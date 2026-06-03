@@ -26,7 +26,7 @@ Use this plan when following `$CODEX_HOME/docs/workflows/release.md`.
 [ ] Verify `mcr/staging` gates passed and `mcr/release` tip is the only release source.
 [ ] In fork mode, verify `origin/github/mcr/main -> github/mcr/main -> mcr/main` sync and completed patch checks on `mcr/main` before release promotion.
 [ ] Validate delivery include mode (`/github/validate.yml` + `/github/push.yml` with shared version/patch/visibility internals) and protected-ref rules.
-[ ] Verify release helper scripts exist (`<repo>/scripts/release/get_version.py`, `<repo>/scripts/release/bump_version.py`) and are wired through CI variables.
+[ ] Verify release helper scripts exist (for example `scripts/release/get_version.py` and `scripts/release/bump_version.py` in the target repository) and are wired through CI variables.
 [ ] Validate release/patch variables against `$CODEX_HOME/snippets/ci/gitlab_delivery_vars.env` (`GH_RELEASE_PUSH`, `APPEND_VERSION`, `RELEASE_VERSION`, `VERSION_BUMP_*`, `GH_FORCE_PUSH`, `GH_PUBLIC_REPO`, `APPLY_PATCHES*`, `PATCH_*`, `GH_ORG_RELEASE*`, `GIT_BRANCH_*`).
 [ ] When publishing GitLab release assets, validate `/gitlab/validate.yml`, `/gitlab/release.yml`, one stack build include, and `GL_RELEASE_ASSET` companion variables.
 [ ] Create and push an annotated release tag on the tip of `mcr/release`.

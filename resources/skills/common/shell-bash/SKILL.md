@@ -45,6 +45,12 @@ Use this skill whenever you need to:
 - Provide `--dry-run` for mutating operations and `--yes`/`ASSUME_YES=1` for automation.
 - Avoid parsing human output; prefer machine-readable flags.
 
+## Workflow
+1) Confirm the target runtime is Bash and identify any compatibility boundaries with zsh or `/bin/sh`.
+2) Inspect current script entrypoints, subprocess usage, and mutation surfaces before editing.
+3) Apply strict-mode, array-safe subprocess, and input-validation patterns deliberately.
+4) Validate with `bash -n`, `shellcheck` when available, and the narrowest behavior check that proves the change.
+
 ## Skeleton
 Use this as the baseline shape for scripts:
 

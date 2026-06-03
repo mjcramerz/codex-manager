@@ -16,7 +16,7 @@ Use this plan when updating execpolicy rules or guidance.
 - Execpolicy docs and indexes are updated.
 
 ## Scope
-- In: `$CODEX_HOME/rules/` and related $CODEX_HOME/docs/index entries.
+- In: `$CODEX_HOME/rules/` and related runtime documentation and index entries.
 - Out: unrelated pack changes.
 
 ## Files and entry points
@@ -58,8 +58,8 @@ Use this plan when updating execpolicy rules or guidance.
 
 ## Examples
 
-- Example objective: "<short task statement>"
-- Example validation: "<command or check>"
+- Example objective: "Update execpolicy rule guidance after adding a new command family."
+- Example validation: "make preflight && make verify"
 
 ## Open questions
 - None.

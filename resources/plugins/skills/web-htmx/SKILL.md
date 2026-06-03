@@ -66,7 +66,6 @@ interface:
 - `$CODEX_HOME/docs/web/htmx.md`
 - `$CODEX_HOME/templates/web/htmx-app/`
 - `$CODEX_HOME/snippets/web/htmx/index.html`
-- `$CODEX_HOME/prompts/htmx_page.md`
 - `references/implementation-playbook.md`
 - `references/endpoint-contracts.md`
 - `references/quality-gates.md`

@@ -1,6 +1,5 @@
-# Docs index (entrypoint)
-Purpose: stable link to the full documentation index for this pack.
-
+# Docs hub (entrypoint)
+Purpose: route to the runtime documentation tree when the task is documentation maintenance or doc discovery.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -9,16 +8,15 @@ Purpose: stable link to the full documentation index for this pack.
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-
 Canonical content: `$CODEX_HOME/docs/OVERVIEW.md`
 
-Use when:
-- you need a map of all playbooks and references
-- you want to browse by topic (security, perf, workflows, etc.)
-- you are maintaining pack docs
+## Use when
+- you need the map of runtime documentation
+- you are fixing stale links, routing, or doc structure
+- you are deciding which documentation domain to open next
 
+## Related
 <!-- BEGIN:related -->
-Related:
 - `$CODEX_HOME/index/pack/config.md`
 - `$CODEX_HOME/index/pack/plans.md`
 - `$CODEX_HOME/index/pack/workflows.md`

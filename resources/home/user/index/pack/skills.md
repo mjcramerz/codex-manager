@@ -1,6 +1,5 @@
-# Skills (entrypoint)
-Purpose: stable link to the skills catalog.
-
+# Skills hub (entrypoint)
+Purpose: route to reusable skill playbooks and the runtime skill catalog.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -9,15 +8,15 @@ Purpose: stable link to the skills catalog.
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-
 Canonical content: runtime skill roots under `$CODEX_SKILLS` and the managed admin skill root.
 
-Use when:
-- the task matches a domain workflow
-- you want a structured playbook
+## Use when
+- the task maps directly to a reusable skill
+- you are maintaining skill instructions, metadata, support files, or routing
+- you need to verify how a skill should be triggered or validated
 
+## Related
 <!-- BEGIN:related -->
-Related:
 - `$CODEX_HOME/docs/OVERVIEW.md`
 - `$CODEX_HOME/index/pack/plans.md`
 - `$CODEX_HOME/snippets/OVERVIEW.md`
@@ -31,19 +30,6 @@ Related:
 - Use skill `pack-templates`.
 - Use skill `pack-snippets`.
 - Use skill `pack-rules`.
-- Use skill `obsidian-docs`.
-- Use skill `obsidian-toc`.
-- Use skill `obsidian-meeting-intelligence`.
-- Use skill `obsidian-knowledge-capture`.
-- Use skill `obsidian-research-documentation`.
-- Use skill `obsidian-spec-to-implementation`.
-- Use skill `github-pr-comments`.
-- Use skill `ci-github-actions-fix`.
-- Use skill `pm-linear-issues`.
-- Use skill `notion-knowledge-capture`.
-- Use skill `notion-meeting-intelligence`.
-- Use skill `notion-research-documentation`.
-- Use skill `notion-spec-to-implementation`.
 - Use skill `appsec-hardening`.
 - Use skill `repo-ops`.
 - Use skill `shell-bash`.

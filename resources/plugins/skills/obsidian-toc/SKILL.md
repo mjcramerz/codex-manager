@@ -30,7 +30,7 @@ Create or refresh a TOC for Markdown notes using the bundled script.
 
 ## Workflow
 1) Identify the target Markdown file.
-2) Run `python $CODEX_SKILLS/NOTE/obsidian-toc/scripts/generate_toc.py` with appropriate depth.
+2) Run `python scripts/generate_toc.py` with appropriate depth.
 3) Verify the TOC placement and links.
 
 ## Agent orchestration
@@ -54,4 +54,4 @@ Create or refresh a TOC for Markdown notes using the bundled script.
 - **Examples**: See [EXAMPLES.md](references/EXAMPLES.md) for usage patterns.
 
 ## Resources
-- `$CODEX_SKILLS/NOTE/obsidian-toc/scripts/generate_toc.py` for deterministic TOC generation.
+- `scripts/generate_toc.py` for deterministic TOC generation.

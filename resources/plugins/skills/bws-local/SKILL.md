@@ -66,5 +66,4 @@ interface:
 ## References
 - `$CODEX_HOME/docs/security/bitwarden-secrets-local.md`
 - `$CODEX_HOME/docs/workflows/bws-local.md`
-- `$CODEX_HOME/prompts/bws_local.md`
 - `$CODEX_HOME/index/domains/system/bws-local.md`

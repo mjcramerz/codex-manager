@@ -53,8 +53,8 @@ Use this plan when following `$CODEX_HOME/docs/workflows/virsh.md`.
 
 ## Examples
 
-- Example objective: "<short task statement>"
-- Example validation: "<command or check>"
+- Example objective: "Execute the virsh workflow for the current repository scope."
+- Example validation: "Run the workflow's fast-path checks first, then the deeper verification commands if the risk profile requires them."
 
 ## Open questions
 - None.

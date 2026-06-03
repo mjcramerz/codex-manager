@@ -21,7 +21,8 @@ speaker = "default"
 
 # tools and web search
 [tools]
-view_image = true
+# legacy out-of-schema key retained for traceability
+#view_image = true
 
 [tools.web_search]
 context_size = "high"
@@ -37,10 +38,13 @@ timezone = "America/Los_Angeles"
 # otel logging
 [otel]
 environment = "dev"
-exporter = "none"
+# exporter selection is now nested under [otel.exporter.<transport>]
+#exporter = "none"
 log_user_prompt = false
-metrics_exporter = "none"
-trace_exporter = "none"
+# metrics exporter selection is now nested under [otel.metrics_exporter.<transport>]
+#metrics_exporter = "none"
+# trace exporter selection is now nested under [otel.trace_exporter.<transport>]
+#trace_exporter = "none"
 
 [analytics]
 enabled = false

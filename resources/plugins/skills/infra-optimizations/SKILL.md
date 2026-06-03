@@ -71,4 +71,3 @@ interface:
 - `$CODEX_HOME/index/domains/system/optimizations.md`
 - `$CODEX_HOME/docs/system/optimizations.md`
 - `$CODEX_HOME/docs/workflows/optimizations.md`
-- `$CODEX_HOME/prompts/optimizations_plan.md`

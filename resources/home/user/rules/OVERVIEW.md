@@ -1,55 +1,61 @@
-# Execpolicy rules (OVERVIEW) (`$CODEX_HOME/rules/*.rules`)
-These rules control command execution outside the sandbox.
+# Execpolicy rules catalog
+Purpose: explain how runtime execpolicy rules are organized, when to edit them, and what validation they require.
 
-Design intent of this pack:
-- Keep broad day-to-day automation available without constant approval prompts.
-- Keep explicit hard-deny coverage for destructive, privilege-escalating, and outage-causing commands.
-- Keep rule ordering deterministic so behavior is reviewable and reproducible.
+## Navigation
+<!-- BEGIN:nav -->
+- Pack index: `$CODEX_HOME/INDEX.md`
+- Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
+<!-- END:nav -->
 
-## Multi-agent handoffs
-- Share this entrypoint plus the AGENTS -> MEMORY -> INDEX -> plans/workflows -> skills -> `$CODEX_HOME/UNIX.md` -> entrypoint order with any agent you `spawn_agent`.
-- Log the handoff (entrypoint + stop condition) and keep status visible via `send_input`/`wait`/`close_agent` so reviewers can trace who handled each rule set.
+## Use this file when
+- you are changing command-allow or command-deny policy
+- you need to understand which rules file owns a class of commands
+- you are reviewing whether rule ordering or match coverage is still correct
+
+## Design intent
+- Keep routine engineering automation available without constant prompts.
+- Keep explicit hard-deny coverage for destructive, privilege-escalating, or outage-causing commands.
+- Keep rule ordering deterministic so policy decisions are reviewable.
 
 ## Rule evaluation
-- Codex picks the strictest decision when multiple rules match.
-- Keep broad allow rules in lower-numbered files and strict denies in `90-forbidden.rules`.
-- When adding new tooling, add/adjust allows in the closest domain file and add a deny if the command has obvious destructive modes.
+- The strictest matching decision wins.
+- Broad allow rules belong in lower-numbered files.
+- Hard-deny rules belong in `90-forbidden.rules`.
+- When adding a new command family, place the allow rule in the closest domain file and add a deny rule when destructive variants are obvious.
 
-## Rule format (schema)
-Rules are function calls using `prefix_rule`, which matches command-token prefixes.
+## Rule files
+- `$CODEX_HOME/rules/00-core.rules` — baseline shell and inspection tooling
+- `$CODEX_HOME/rules/10-vcs.rules` — git and version-control operations
+- `$CODEX_HOME/rules/12-scripting.rules` — language runtimes and script execution
+- `$CODEX_HOME/rules/20-network.rules` — network, cloud, and remote-access tooling
+- `$CODEX_HOME/rules/25-packages.rules` — package managers and toolchain installers
+- `$CODEX_HOME/rules/30-system.rules` — filesystem, service, and host operations
+- `$CODEX_HOME/rules/35-crypto.rules` — keys, certificates, and signing tools
+- `$CODEX_HOME/rules/40-infra.rules` — containers, orchestration, and infra tooling
+- `$CODEX_HOME/rules/90-forbidden.rules` — explicit hard-deny rules
 
-```
+## Rule schema
+Rules use `prefix_rule(...)` with explicit `pattern`, `decision`, `match`, and optional `not_match` examples.
+
+```toml
 prefix_rule(
-  pattern = ["git","status"],
+  pattern = ["git", "status"],
   decision = "allow",
   match = [
-    ["git","status","--porcelain=v1"],
+    ["git", "status", "--porcelain=v1"],
   ],
   not_match = [
-    ["git","status","--ignored"],
+    ["git", "status", "--ignored"],
   ],
 )
 ```
 
-Fields:
-- `pattern`: command tokens matched as a prefix.
-- `decision`: `allow` or `forbidden`.
-- `match`: examples that must match.
-- `not_match` (optional): examples that must not match.
-
-## Rule files
-- `$CODEX_HOME/rules/00-core.rules` - broad baseline shell and inspection tooling.
-- `$CODEX_HOME/rules/10-vcs.rules` - git and VCS workflows.
-- `$CODEX_HOME/rules/12-scripting.rules` - language runtime and script execution tooling.
-- `$CODEX_HOME/rules/20-network.rules` - network, cloud, and remote-access tooling.
-- `$CODEX_HOME/rules/25-packages.rules` - package manager and toolchain installers.
-- `$CODEX_HOME/rules/30-system.rules` - host, filesystem, service, and process operations.
-- `$CODEX_HOME/rules/35-crypto.rules` - key, certificate, and signing tools.
-- `$CODEX_HOME/rules/40-infra.rules` - containers, orchestration, and infra tooling.
-- `$CODEX_HOME/rules/90-forbidden.rules` - explicit hard-deny rules (privilege escalation, destructive ops, outage commands).
-
 ## Editing checklist
 - Keep command coverage broad enough for routine maintenance.
-- Add explicit forbids for high-risk subcommands and destructive command forms.
-- Add `match`/`not_match` examples so intent is self-tested.
-- Re-run `make preflight`, `make verify`, and any targeted `python3 -m py_compile` or `python3 -m unittest` checks after edits.
+- Add explicit denies for risky subcommands and destructive forms.
+- Include `match` / `not_match` examples so intent is self-tested.
+- Re-run targeted validation plus `make preflight` and `make verify` after edits.
+
+## Related
+- `$CODEX_HOME/index/pack/rules.md`
+- `$CODEX_HOME/docs/workflows/execpolicy.md`

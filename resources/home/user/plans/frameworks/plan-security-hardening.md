@@ -21,17 +21,17 @@ Use this plan for security reviews, mitigations, and hardening changes.
 - API-facing surfaces: map controls against OWASP API Security Top 10 (2023) categories.
 
 ## Dependencies and assumptions
-- <required security tooling, telemetry, and access>
-- <policy/compliance stakeholders and approval dependencies>
+- Record the required security tooling, telemetry, and access.
+- Record policy, compliance, and approval dependencies.
 
 ## Success metrics and exit criteria
-- <risk reduction metrics and control coverage targets>
-- <validation evidence required for sign-off (tests/scans/reviews)>
-- <incident-response and rollback readiness criteria>
+- Define risk-reduction metrics and control-coverage targets.
+- Define the validation evidence required for sign-off.
+- Define incident-response and rollback readiness criteria.
 
 ## Files and entry points
-- <security-sensitive boundaries>
-- <auth/authz or input validation points>
+- List the security-sensitive boundaries under review.
+- List the auth, authz, and input-validation points that must be inspected or changed.
 
 ## Action items
 [ ] Identify primary threats and abuse cases.
@@ -40,13 +40,13 @@ Use this plan for security reviews, mitigations, and hardening changes.
 [ ] Design mitigations (validation, auth, limits, logging).
 [ ] Implement changes with safe defaults.
 [ ] Add negative tests and regression coverage.
-[ ] Update security $CODEX_HOME/docs/runbooks.
+[ ] Update security documentation under `$CODEX_HOME/docs/`.
 
 ## Testing and validation
-- <security tests, linters, scans>
+- List the security tests, linters, scans, and manual review steps in execution order.
 
 ## Rollout / monitoring
-- <staged rollout, alerting, incident response>
+- Define staged rollout, alerting, and incident-response expectations.
 
 ## Security checkpoints
 - Confirm trust boundaries, credentials, and least-privilege assumptions before execution.
@@ -69,12 +69,11 @@ Use this plan for security reviews, mitigations, and hardening changes.
 - Receiving agent acknowledges handoff completeness before continuing execution.
 
 ## Risks and edge cases
-- <false positives/negatives, bypass risks>
+- Call out false positives, false negatives, bypass risks, and operational trade-offs.
 
 ## Examples
-
-- Example objective: "Harden <surface> against <threat>."
-- Example validation: "<security test or scan>"
+- Example objective: "Harden the plugin/runtime reference surfaces against stale-path regressions."
+- Example validation: "python3 -m unittest tests.test_runtime_reference_contract"
 
 ## Open questions
-- <policy or threat model gaps>
+- Record only the policy or threat-model gaps that block sign-off.

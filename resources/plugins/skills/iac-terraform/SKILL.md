@@ -67,4 +67,3 @@ interface:
 - `$CODEX_HOME/docs/infra/terraform.md`
 - `$CODEX_HOME/templates/infra/terraform-module-skeleton/`
 - `$CODEX_HOME/snippets/terraform/versions.tf`
-- `$CODEX_HOME/prompts/terraform_plan.md`

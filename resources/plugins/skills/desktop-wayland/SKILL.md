@@ -54,4 +54,3 @@ interface:
 - `$CODEX_HOME/docs/workflows/desktop-wayland.md`
 - `$CODEX_HOME/templates/desktop/wayland-skeleton/`
 - `$CODEX_HOME/snippets/desktop/`
-- `$CODEX_HOME/prompts/wayland_setup.md`

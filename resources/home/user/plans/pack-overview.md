@@ -23,7 +23,7 @@ Use this plan for multi-surface changes to the Codex pack.
 - `$CODEX_HOME/index/manifest.yml`
 - `$CODEX_HOME/INDEX.md`
 - `$CODEX_HOME/docs/OVERVIEW.md`
-- `$CODEX_SKILLS/OVERVIEW.md`
+- `$CODEX_HOME/index/pack/skills.md`
 
 ## Action items
 [ ] Review entrypoints and overviews for the affected surfaces.
@@ -57,8 +57,8 @@ Use this plan for multi-surface changes to the Codex pack.
 
 ## Examples
 
-- Example objective: "<short task statement>"
-- Example validation: "<command or check>"
+- Example objective: "Coordinate a multi-surface runtime-pack update across docs, plans, and routing."
+- Example validation: "make preflight && make verify"
 
 ## Open questions
 - None.

@@ -77,4 +77,3 @@ interface:
 - `$CODEX_HOME/templates/ci/github-actions/`
 - `$CODEX_HOME/snippets/ci/github_actions_min_permissions.yml`
 - `$CODEX_HOME/snippets/ci/github_release_vars.env`
-- `$CODEX_HOME/prompts/github_actions_add.md`

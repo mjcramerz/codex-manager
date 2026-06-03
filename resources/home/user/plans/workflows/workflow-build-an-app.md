@@ -23,7 +23,7 @@ Use this plan when following `$CODEX_HOME/docs/workflows/build-an-app.md`.
 [ ] Collect required inputs and constraints (stack, deployment target, auth/data boundaries, branch/release policy).
 [ ] Confirm branch strategy (`mcr/feature/*` -> `mcr/main` -> `mcr/staging` -> `mcr/release`) and fork-mode mirror policy (`origin/github/mcr/main -> github/mcr/main -> mcr/main`, read-only `github/*`, patch checks on `mcr/main` only).
 [ ] Confirm deterministic build/install commands and lockfile/toolchain pinning.
-[ ] Confirm repo delivery layout and version script strategy when release automation is in scope (`<repo>/scripts/release/get_version.py`, `<repo>/scripts/release/bump_version.py`).
+[ ] Confirm repo delivery layout and version script strategy when release automation is in scope (for example `scripts/release/get_version.py` and `scripts/release/bump_version.py` in the target repository).
 [ ] Execute the workflow steps in order.
 [ ] Validate outputs and document results.
 
@@ -56,8 +56,8 @@ Use this plan when following `$CODEX_HOME/docs/workflows/build-an-app.md`.
 
 ## Examples
 
-- Example objective: "<short task statement>"
-- Example validation: "<command or check>"
+- Example objective: "Execute the build-an-app workflow for the current repository scope."
+- Example validation: "Run the workflow's fast-path checks first, then the deeper verification commands if the risk profile requires them."
 
 ## Open questions
 - None.

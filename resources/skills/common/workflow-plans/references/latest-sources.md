@@ -24,7 +24,7 @@ Generate a plan for how an agent should accomplish a complex coding task. Use wh
 ## SKILL.md coverage checklist
 - Overview
 - Core rules
-- Decide the task
+- Workflow
 - Plan discovery
 - Plan creation workflow
 - Plan update workflow
@@ -52,4 +52,3 @@ Generate a plan for how an agent should accomplish a complex coding task. Use wh
 ## Proof-of-concept prompts
 - Build a minimum viable runbook for `workflow-plans` using the checklist above, then validate inputs, timeouts, and rollback notes.
 - Produce one positive-path and one negative-path test scenario aligned to `workflow-plans` before finalizing changes.
-

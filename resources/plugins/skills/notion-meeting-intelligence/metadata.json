@@ -5,6 +5,7 @@
   "abstract": "Prepare meeting materials with Notion context and Codex research; use when gathering context, drafting agendas/pre-reads, and tailoring materials to attendees.",
   "references": [
     "https://developers.notion.com/reference/intro",
-    "https://developers.notion.com/reference/post-database-query"
+    "https://developers.notion.com/reference/post-database-query",
+    "https://mcp.notion.com/mcp"
   ]
 }

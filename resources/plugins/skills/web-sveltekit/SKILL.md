@@ -65,7 +65,6 @@ interface:
 ## References
 - `$CODEX_HOME/docs/web/sveltekit.md`
 - `$CODEX_HOME/templates/web/sveltekit-app/`
-- `$CODEX_HOME/prompts/sveltekit_app.md`
 - `references/implementation-playbook.md`
 - `references/route-load-action-patterns.md`
 - `references/quality-gates.md`

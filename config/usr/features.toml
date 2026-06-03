@@ -4,13 +4,16 @@
 guardian_approval = false
 tool_call_mcp_elicitation = true
 elevated_windows_sandbox = false
+enable_experimental_windows_sandbox = false
+experimental_windows_sandbox = false
 default_mode_request_user_input = true
-# deprecated, replaced by exec_permission_approval. request_permissions = true
+request_permissions = true
 request_permissions_tool = true
 request_rule = false
 exec_permission_approvals = false
 use_linux_sandbox_bwrap = true
 use_legacy_landlock = false
+auth_elicitation = false
 
 # behavior
 collaboration_modes = true
@@ -19,36 +22,68 @@ fast_mode = false
 code_mode = false
 code_mode_only = false
 memories = true
+memory_tool = true
 personality = true
 child_agents_md = true
 multi_agent = false
-multi_agent_v2 = true
-# deprecated, replaced by fanout. spawn_csv = false
+# legacy alias, replaced by enable_fanout
+#spawn_csv = false
 remote_models = true
+goals = true
+connectors = true
+hooks = true
+browser_use = true
+browser_use_external = true
+computer_use = true
+in_app_browser = true
+plugin_sharing = true
+remote_plugin = false
+external_migration = false
+local_thread_store_compression = false
+chronicle = false
+mentions_v2 = false
+non_prefixed_mcp_tool_names = false
+remote_compaction_v2 = false
+remote_control = false
+standalone_web_search = false
+steer = true
+telepathy = false
+terminal_resize_reflow = true
+tool_search = false
+tool_search_always_defer_mcp_tools = false
+workspace_dependencies = false
+workspace_owner_usage_nudge = false
 
 # tools
-#collab = true
-# deprecated, replaced by memories. memory_tool = true
+collab = false
 tool_suggest = true
-artifact = true
+# legacy out-of-schema key retained for traceability
+#artifact = true
 plugins = true
 codex_hooks = true
-powershell_utf8 = false
 undo = true
 sqlite = true
 apply_patch_freeform = true
+apply_patch_streaming_events = false
 unified_exec = true
 apps = true
-apps_mcp_gateway = true
+enable_mcp_apps = true
+# legacy out-of-schema key retained for traceability
+#apps_mcp_gateway = true
 skill_env_var_dependency_prompt = false
 skill_mcp_dependency_install = true
 image_detail_original = false
-image_generation = false
+image_generation = true
+imagegenext = false
+search_tool = false
+# legacy out-of-schema key retained for traceability
+#powershell_utf8 = false
 
 # shell
 shell_tool = true
 shell_snapshot = true
 shell_zsh_fork = false
+unified_exec_zsh_fork = false
 
 # git
 codex_git_commit = false
@@ -57,10 +92,23 @@ js_repl_tools_only = false
 
 # device
 tui_app_server = false
-realtime_conversation_v2 = false
+# legacy out-of-schema key retained for traceability
+#realtime_conversation_v2 = false
 realtime_conversation = false
-voice_transcription = false
+# legacy out-of-schema key retained for traceability
+#voice_transcription = false
 runtime_metrics = false
 enable_request_compression = true
+responses_websocket_response_processed = false
+responses_websockets = false
 responses_websockets_v2 = true
 prevent_idle_sleep = false
+
+[features.multi_agent_v2]
+enabled = true
+
+[features.network_proxy]
+enabled = false
+
+[features.apps_mcp_path_override]
+enabled = false

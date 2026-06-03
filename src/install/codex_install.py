@@ -103,6 +103,12 @@ from skills import iter_skill_groups
 from skills import rewrite_openai_yaml_dependencies
 from skills import role_tools_from_skills
 from skills import validate_openai_yaml_mcp_dependencies
+from source_build import SourceBuildError
+from source_build import build_if_missing
+from source_build import build_from_settings
+from source_build import ensure_output_artifact
+from source_build import load_source_build_environment
+from source_build import load_source_build_settings
 
 ENV_REQUIRED = (
     "CODEX_ROOT_DIR",
@@ -186,7 +192,7 @@ USER_APPS_FILENAME = "apps.toml"
 PLUGINS_METADATA_FILENAME = "manifest.json"
 LOOKUP_SECRET_SERVICE_FILENAME = "lookup-secret-service.env"
 INSTRUCTIONS_GROUP_PATTERN = re.compile(r"^[a-z0-9][a-z0-9_-]*$")
-INSTRUCTIONS_ENTRY_KEY_PATTERN = re.compile(r"^[a-z][a-z0-9_]*$")
+INSTRUCTIONS_ENTRY_KEY_PATTERN = re.compile(r"^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)*$")
 INSTRUCTIONS_ENTRY_FILENAME_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*$")
 INSTRUCTIONS_ALLOWED_SUFFIXES = {".json", ".lark", ".md"}
 VERSION_PATTERN = re.compile(r"([0-9]+\.[0-9]+\.[0-9]+(?:\.[0-9]+)*(?:-[A-Za-z0-9._]+)*)")
@@ -335,6 +341,7 @@ class Installer:
             self.repo_layout.hooks_dir,
             self.repo_layout.hooks_scripts_dir,
             self.repo_layout.hooks_manifest_path,
+            self.repo_layout.hooks_dir / "schema" / "generated",
             self.repo_layout.instructions_dir,
             self.repo_layout.instructions_metadata_path,
             self.repo_layout.skills_dir,
@@ -549,6 +556,13 @@ class Installer:
     def _runtime_hooks_scripts_dir(self) -> Path:
         return self._runtime_hooks_dir() / "scripts"
 
+    def _runtime_hidden_hooks_dir(self) -> Path:
+        home_dir = ensure_safe_absolute_path("CODEX_HOME", self.runtime_vars["CODEX_HOME"])
+        return home_dir / ".hooks"
+
+    def _runtime_hooks_schema_dir(self) -> Path:
+        return self._runtime_hidden_hooks_dir() / "schema" / "generated"
+
     def _instructions_source_dir(self) -> Path:
         return self.repo_layout.instructions_dir
 
@@ -651,11 +665,14 @@ class Installer:
     def _hooks_manifest_source_path(self) -> Path:
         return self.repo_layout.hooks_manifest_path
 
+    def _hooks_schema_source_dir(self) -> Path:
+        return self.repo_layout.hooks_dir / "schema" / "generated"
+
     def _render_runtime_hooks_config(self) -> str:
         return render_hooks_json_from_manifest_path(self._hooks_manifest_source_path())
 
     def _render_runtime_hook_driver(self) -> str:
-        template_path = self.repo_layout.hooks_scripts_dir / "hook_driver.py"
+        template_path = self.repo_layout.hooks_scripts_dir / "hook_driver.pl"
         return render_hook_driver_from_manifest_path(self._hooks_manifest_source_path(), template_path)
 
     def _plugins_source_dir(self) -> Path:
@@ -822,6 +839,16 @@ class Installer:
         else:
             dst.mkdir(parents=True, exist_ok=True)
             shutil.copytree(src, dst, dirs_exist_ok=True)
+
+    def _sync_tree(self, src: Path, dst: Path, *, mirror_deletions: bool) -> None:
+        self._sync_tree_filtered(
+            src,
+            dst,
+            skip_root_toml=False,
+            preserve_root_dirs=set(),
+            preserve_root_files=set(),
+            mirror_deletions=mirror_deletions,
+        )
 
     def _render_schema_wrapper(
         self,
@@ -1004,7 +1031,7 @@ class Installer:
             if system_only and not self._is_system_skill_target(target):
                 continue
             source = self._resolve_group_source_path(group)
-            self._copy_tree(source, target)
+            self._sync_tree(source, target, mirror_deletions=True)
 
             dependency_block = render_dependency_block(role_tools, mcp_servers)
             if not target.is_dir():
@@ -1096,8 +1123,14 @@ class Installer:
             skip_root_toml=False,
             mirror_deletions=True,
         )
+        self._sync_tree_filtered(
+            self._hooks_schema_source_dir(),
+            self._runtime_hooks_schema_dir(),
+            skip_root_toml=False,
+            mirror_deletions=True,
+        )
         self._write_file(
-            self._runtime_hooks_scripts_dir() / "hook_driver.py",
+            self._runtime_hooks_scripts_dir() / "hook_driver.pl",
             self._render_runtime_hook_driver(),
             mode=0o755,
         )
@@ -1237,7 +1270,7 @@ class Installer:
                 fail(f"runtime preserve path must be a directory: {src_dir}")
             if dst_dir.exists() and not dst_dir.is_dir():
                 fail(f"repo preserve target must be a directory: {dst_dir}")
-            self._copy_tree(src_dir, dst_dir)
+            self._sync_tree(src_dir, dst_dir, mirror_deletions=False)
 
         for filename in HOME_RUNTIME_MERGED_FILES:
             src_file = runtime_home / filename
@@ -1534,6 +1567,15 @@ class Installer:
             except RuntimeRenderError as exc:
                 fail(str(exc))
             self._write_file(shim_path, shim_content, mode=0o755)
+
+    def _install_runtime_binary_wrappers(self, binary_names: list[str]) -> None:
+        self._log("installing lookup secret service helper")
+        self._sync_lookup_secret_env_helper()
+        self._sync_release_shims(binary_names)
+        self._log("installing shell completion files")
+        self._install_user_shell_completions()
+        self._log("installing schema helper wrappers")
+        self._sync_schema_helpers()
 
     def _existing_release_shim_names(self) -> list[str]:
         shims_dir = self._share_dir() / "shims"
@@ -2003,12 +2045,33 @@ class Installer:
     def _sync_local_plugins(self) -> None:
         sync_local_plugins(self)
 
+    @staticmethod
+    def _parse_toml_table_path(line: str) -> list[str] | None:
+        match = re.match(r"^\s*\[([^\]]+)\]\s*$", line)
+        if not match:
+            return None
+        raw = match.group(1).strip()
+        if not raw:
+            return []
+        parts = [part.strip().strip("\"'") for part in raw.split(".")]
+        return [part for part in parts if part]
+
     def _replace_toml_assignment(self, text: str, key: str, value: str) -> tuple[str, bool]:
         lines = text.splitlines()
+        key_path = [part for part in key.split(".") if part]
+        table_path = key_path[:-1]
+        assignment_key = key_path[-1]
         line_pattern = re.compile(
-            rf"^(\s*{re.escape(key)}\s*=\s*)(\"[^\"]*\"|'[^']*')(\s*(?:#.*)?)$"
+            rf"^(\s*{re.escape(assignment_key)}\s*=\s*)(\"[^\"]*\"|'[^']*')(\s*(?:#.*)?)$"
         )
+        current_table: list[str] = []
         for idx, line in enumerate(lines):
+            parsed_table = self._parse_toml_table_path(line)
+            if parsed_table is not None:
+                current_table = parsed_table
+                continue
+            if current_table != table_path:
+                continue
             match = line_pattern.match(line)
             if not match:
                 continue
@@ -2504,6 +2567,88 @@ class Installer:
                 fail("release package did not produce installed binaries")
             return installed
 
+    def _install_source_build_binary(self, output_dir: Path) -> list[str]:
+        release_bin_dir = Path(self.env["CODEX_SHARE_DIR"]) / "bin"
+        resolved_output_dir = output_dir.resolve(strict=False)
+        if not resolved_output_dir.is_dir():
+            fail(f"source build output directory is not a directory: {resolved_output_dir}")
+
+        try:
+            discovered = discover_release_binaries(resolved_output_dir)
+        except (RuntimeError, ReleaseAssetError) as exc:
+            fail(str(exc))
+
+        schema_source = resolved_output_dir / "share" / RELEASE_SCHEMA_FILENAME
+        if not schema_source.is_file():
+            fail(f"source build output is missing share/{RELEASE_SCHEMA_FILENAME}: {resolved_output_dir}")
+
+        if self.dry_run:
+            print(f"[dry-run] install source-built binaries from {resolved_output_dir} -> {release_bin_dir}")
+            print(
+                "[dry-run] install patched schema snapshot "
+                f"from {schema_source} -> {self._schema_latest_snapshot_path()}"
+            )
+            return [binary.name for binary in discovered]
+
+        self._copy_file(schema_source, self._schema_latest_snapshot_path(), mode=0o644)
+        installed: list[str] = []
+        for binary in discovered:
+            target = release_bin_dir / binary.name
+            self._copy_file(binary, target, mode=0o755)
+            installed.append(binary.name)
+
+        if not installed:
+            fail("source build output did not produce installed binaries")
+        return installed
+
+    def build_install(self, artifacts: CompiledArtifacts) -> None:
+        try:
+            source_build_env = dict(self.env)
+            source_build_env.update(load_source_build_environment(self.repo_root))
+            source_build_settings = load_source_build_settings(source_build_env)
+        except SourceBuildError as exc:
+            fail(str(exc))
+
+        if self.dry_run:
+            existing_output = ensure_output_artifact(source_build_settings.output_dir)
+            if existing_output is not None:
+                print(f"[dry-run] install source-built binaries from {existing_output}")
+            else:
+                print(
+                    "[dry-run] build codex from source "
+                    f"({source_build_settings.repo_url}) into {source_build_settings.output_dir}"
+                )
+                print(
+                    "[dry-run] install source-built binaries "
+                    f"from {source_build_settings.output_dir} into {Path(self.env['CODEX_SHARE_DIR']) / 'bin'}"
+                )
+            return
+
+        self._log("building source artifacts if needed")
+        try:
+            build_result = build_if_missing(source_build_settings)
+        except SourceBuildError as exc:
+            fail(str(exc))
+
+        self._log("creating install backup")
+        self._backup_install_state(flow="install")
+        self._log("ensuring runtime directories")
+        self._ensure_runtime_directories()
+        self._log("ensuring lookup secret service file")
+        self._ensure_lookup_secret_service_file()
+        self._log("hardening executable directories")
+        self._secure_exec_directories()
+        self.apply_home_bundle()
+        self.apply_admin(artifacts)
+        self.setup_environment()
+        self._log("installing tmpfs helper")
+        self._sync_tmpfs_helper()
+        self._log("ensuring runtime tmpfs mount")
+        self.mount_runtime_tmpfs()
+        self._log("installing source-built binaries and patched schema snapshot")
+        installed_binaries = self._install_source_build_binary(build_result.output_dir)
+        self._install_runtime_binary_wrappers(installed_binaries)
+
     def apply(self, artifacts: CompiledArtifacts) -> None:
         self._log("creating install backup")
         self._backup_install_state(flow="install")
@@ -2523,13 +2668,7 @@ class Installer:
 
         self._log("installing release binaries")
         installed_binaries = self._install_release_binary()
-        self._log("installing lookup secret service helper")
-        self._sync_lookup_secret_env_helper()
-        self._sync_release_shims(installed_binaries)
-        self._log("installing shell completion files")
-        self._install_user_shell_completions()
-        self._log("installing schema helper wrappers")
-        self._sync_schema_helpers()
+        self._install_runtime_binary_wrappers(installed_binaries)
 
     def apply_home(self) -> None:
         home_src = self.repo_layout.home_user_dir
@@ -2625,13 +2764,7 @@ class Installer:
 
         self._log("installing release binaries and latest release schema snapshot")
         installed_binaries = self._install_release_binary()
-        self._log("installing lookup secret service helper")
-        self._sync_lookup_secret_env_helper()
-        self._sync_release_shims(installed_binaries)
-        self._log("installing shell completion files")
-        self._install_user_shell_completions()
-        self._log("installing schema helper wrappers")
-        self._sync_schema_helpers()
+        self._install_runtime_binary_wrappers(installed_binaries)
 
     def verify(self, output_dir: Path | None = None) -> None:
         self._render_requirements_toml()
@@ -2832,6 +2965,8 @@ def parse_args() -> argparse.Namespace:
         choices=(
             "preflight",
             "verify",
+            "build-src",
+            "build-install",
             "install",
             "home",
             "apps",
@@ -2858,6 +2993,27 @@ def parse_args() -> argparse.Namespace:
 def run() -> int:
     args = parse_args()
     ensure_non_root_user()
+
+    if args.command == "build-src":
+        repo_root = Path(__file__).resolve().parents[2]
+        try:
+            source_build_settings = load_source_build_settings(load_source_build_environment(repo_root))
+        except SourceBuildError as exc:
+            fail(str(exc))
+        if args.dry_run:
+            print(f"[dry-run] source repo url={source_build_settings.repo_url}")
+            print(f"[dry-run] source checkout={source_build_settings.checkout_dir}")
+            print(f"[dry-run] build root={source_build_settings.build_root}")
+            print(f"[dry-run] cache root={source_build_settings.cache_root}")
+            print(f"[dry-run] published output={source_build_settings.output_dir}")
+            return 0
+        try:
+            result = build_from_settings(source_build_settings)
+        except SourceBuildError as exc:
+            fail(str(exc))
+        print(f"[ok] build-src complete ({result.output_dir})")
+        return 0
+
     repo_root = Path(__file__).resolve().parents[2]
     installer = Installer(repo_root=repo_root, dry_run=args.dry_run)
 
@@ -2934,6 +3090,17 @@ def run() -> int:
             print("[ok] dry-run complete")
             return 0
         print("[ok] tmpfs-umt complete")
+        return 0
+
+    if args.command == "build-install":
+        installer.validate()
+        compiled_dir = (repo_root / args.compiled_dir).resolve(strict=False)
+        artifacts = installer.compile(compiled_dir)
+        installer.build_install(artifacts)
+        if args.dry_run:
+            print("[ok] dry-run complete")
+            return 0
+        print("[ok] build-install complete")
         return 0
 
     installer.validate()

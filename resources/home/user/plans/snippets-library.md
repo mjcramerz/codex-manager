@@ -56,8 +56,8 @@ Use this plan when adding or updating snippets.
 
 ## Examples
 
-- Example objective: "<short task statement>"
-- Example validation: "<command or check>"
+- Example objective: "Add a new hardened snippet and document where it should be used."
+- Example validation: "python3 -m py_compile src/install/codex_install.py"
 
 ## Open questions
 - None.

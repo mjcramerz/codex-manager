@@ -210,8 +210,7 @@ def rewrite_runtime_plugin_skill_dependencies(
         if isinstance(raw_tool, str):
             server = mcp_servers.get(tool_name)
             if not isinstance(server, dict):
-                _warn(f"{label} references unknown MCP server: {tool_name}; skipping dependency")
-                continue
+                fail(f"{label} references unknown MCP server: {tool_name}")
             effective_mcp_servers[tool_name] = dict(server)
         else:
             server = copy.deepcopy(raw_tool)

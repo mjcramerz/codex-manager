@@ -19,7 +19,7 @@ Use when:
 
 <!-- BEGIN:related -->
 Related:
-- `$CODEX_HOME/prompts/bws_local.md`
+- `$CODEX_HOME/docs/prompt-writing.md`
 - `$CODEX_HOME/docs/security/bitwarden-secrets-local.md`
 - `$CODEX_HOME/docs/workflows/bws-local.md`
 - Use skill `bws-local`.

@@ -44,7 +44,7 @@ This skill can also be used to draft codebase or system overviews.
 - If a plan is not found, state it clearly and offer to create one.
 - Allow overview-style plans that document flows, architecture, or context without a work checklist.
 
-## Decide the task
+## Workflow
 
 1. **Find/list**: discover plans by frontmatter summary under `$CODEX_HOME/plans`; confirm if multiple matches exist.
 2. **Read/use**: validate frontmatter from `$CODEX_HOME/plans`; present summary and full contents.
@@ -236,4 +236,4 @@ metadata:
 ## References
 - `$CODEX_HOME/plans/OVERVIEW.md`
 - workflow-plans skill script `scripts/create_plan.py`
-- `$CODEX_HOME/prompts/plan.md`
+- `$CODEX_HOME/docs/prompt-writing.md`

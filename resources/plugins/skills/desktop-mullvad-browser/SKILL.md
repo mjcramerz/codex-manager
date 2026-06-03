@@ -49,4 +49,3 @@ interface:
 ## References
 - `$CODEX_HOME/index/domains/desktop/mullvad-browser.md`
 - `$CODEX_HOME/docs/desktop/mullvad-browser.md`
-- `$CODEX_HOME/prompts/mullvad_browser_setup.md`

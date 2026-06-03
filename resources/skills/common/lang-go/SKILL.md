@@ -51,4 +51,4 @@ interface:
 - `$CODEX_HOME/docs/style/go.md`
 - `$CODEX_HOME/templates/go/cli-app/`
 - `$CODEX_HOME/snippets/go/main.go`
-- `$CODEX_HOME/prompts/go_module.md`
+- `$CODEX_HOME/docs/prompt-writing.md`

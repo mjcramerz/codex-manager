@@ -52,4 +52,3 @@ interface:
 - `$CODEX_HOME/docs/observability/elasticsearch.md`
 - `$CODEX_HOME/templates/observability/elastic-stack-compose/`
 - `$CODEX_HOME/snippets/elastic/elasticsearch.yml`
-- `$CODEX_HOME/prompts/elasticsearch_setup.md`

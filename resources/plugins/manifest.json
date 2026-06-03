@@ -49,7 +49,9 @@
         ],
         "default_prompt": "Use the Codex Runtime plugin for managed runtime configuration, schema diff, and setup audit work.",
         "brand_color": "#2563EB"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://gitlab.com/computes/apps/codex-manager"
     },
     "codex-repo": {
       "name": "codex-repo",
@@ -91,7 +93,9 @@
         ],
         "default_prompt": "Use the Codex Repo plugin to inspect and modify the active Codex source tree with runtime awareness.",
         "brand_color": "#2563EB"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://gitlab.com/computes/apps/codex-manager"
     },
     "openai-apps": {
       "name": "openai-apps",
@@ -126,7 +130,9 @@
         ],
         "default_prompt": "Use the OpenAI Apps plugin for OpenAI docs research and ChatGPT app scaffolding work.",
         "brand_color": "#10A37F"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://developers.openai.com/"
     },
     "github": {
       "name": "github",
@@ -171,7 +177,9 @@
         ],
         "default_prompt": "Use the GitHub plugin for GitHub review, PR-comment, and GitHub Actions workflows.",
         "brand_color": "#24292F"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://github.com/"
     },
     "gitlab": {
       "name": "gitlab",
@@ -202,7 +210,9 @@
         ],
         "default_prompt": "Use the GitLab plugin for GitLab CI/CD pipeline authoring, hardening, and delivery workflow changes.",
         "brand_color": "#FC6D26"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://docs.gitlab.com/ee/ci/"
     },
     "linear": {
       "name": "linear",
@@ -330,7 +340,9 @@
         ],
         "default_prompt": "Use the Notion plugin for Notion capture, research, and planning workflows.",
         "brand_color": "#111827"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://developers.notion.com/"
     },
     "obsidian": {
       "name": "obsidian",
@@ -368,7 +380,9 @@
         ],
         "default_prompt": "Use the Obsidian plugin for documentation, capture, research, and planning workflows.",
         "brand_color": "#7C3AED"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://obsidian.md/"
     },
     "health-planning": {
       "name": "health-planning",
@@ -400,7 +414,9 @@
         ],
         "default_prompt": "Use the Health Planning plugin for ADHD and CBT planning packs and printable workflow generation.",
         "brand_color": "#16A34A"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://gitlab.com/computes/apps/codex-manager"
     },
     "backend": {
       "name": "backend",
@@ -439,7 +455,9 @@
         ],
         "default_prompt": "Use the Backend plugin for backend APIs, scaffolding, VS Code extension work, and ASP.NET Core implementation.",
         "brand_color": "#2563EB"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://gitlab.com/computes/apps/codex-manager"
     },
     "frontend": {
       "name": "frontend",
@@ -481,7 +499,9 @@
         ],
         "default_prompt": "Use the Frontend plugin for frontend framework implementation and interactive web UI work.",
         "brand_color": "#F97316"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://gitlab.com/computes/apps/codex-manager"
     },
     "design-ui": {
       "name": "design-ui",
@@ -513,7 +533,9 @@
         ],
         "default_prompt": "Use the Design UI plugin for generic UI review, accessibility, and design-quality workflows.",
         "brand_color": "#8B5CF6"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://gitlab.com/computes/apps/codex-manager"
     },
     "browser-automation": {
       "name": "browser-automation",
@@ -548,7 +570,9 @@
         ],
         "default_prompt": "Use the Browser Automation plugin for Playwright, interactive browser loops, and screenshot work.",
         "brand_color": "#0EA5E9"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://gitlab.com/computes/apps/codex-manager"
     },
     "document-artifacts": {
       "name": "document-artifacts",
@@ -585,7 +609,9 @@
         ],
         "default_prompt": "Use the Document Artifacts plugin for docs, PDFs, slides, spreadsheets, and notebook workflows.",
         "brand_color": "#A855F7"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://gitlab.com/computes/apps/codex-manager"
     },
     "adobe-acrobat": {
       "name": "adobe-acrobat",
@@ -623,6 +649,7 @@
         "long_description": "Use this plugin for Adobe Acrobat reading, annotation, forms, signing, compare, and review workflows with clear handoffs to local document tooling.",
         "developer_name": "Adobe",
         "capabilities": [
+          "Interactive",
           "Read",
           "Write"
         ],
@@ -631,7 +658,8 @@
         "website_url": "https://www.adobe.com/acrobat.html",
         "privacy_policy_url": "https://www.adobe.com/privacy/policy.html",
         "terms_of_service_url": "https://www.adobe.com/legal/terms.html"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager"
     },
     "adobe-photoshop": {
       "name": "adobe-photoshop",
@@ -667,6 +695,7 @@
         "long_description": "Use this plugin for Adobe Photoshop image retouching, layer edits, compositing, and production export workflows.",
         "developer_name": "Adobe",
         "capabilities": [
+          "Interactive",
           "Read",
           "Write"
         ],
@@ -711,6 +740,7 @@
         "long_description": "Use this plugin for Adobe Express social creative, posters, invitations, and quick multi-format design workflows.",
         "developer_name": "Adobe",
         "capabilities": [
+          "Interactive",
           "Read",
           "Write"
         ],
@@ -755,7 +785,9 @@
         ],
         "default_prompt": "Use the AI Media plugin for image, video, speech, and transcription workflows.",
         "brand_color": "#10A37F"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://platform.openai.com/docs/guides"
     },
     "vercel": {
       "name": "vercel",
@@ -793,6 +825,7 @@
         "long_description": "Use this plugin for Vercel deployment workflows, including claimable deployment flows and direct project deployment guidance.",
         "developer_name": "Vercel",
         "capabilities": [
+          "Interactive",
           "Read",
           "Write"
         ],
@@ -836,7 +869,9 @@
         ],
         "default_prompt": "Use the Hosting Platforms plugin to choose and coordinate Vercel, Render, or Netlify deployment workflows.",
         "brand_color": "#0F766E"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://gitlab.com/computes/apps/codex-manager"
     },
     "web-browser-linux": {
       "name": "web-browser-linux",
@@ -875,7 +910,9 @@
         ],
         "default_prompt": "Use the Web Browser Linux plugin for Linux desktop browsers, browser hardening, and related desktop workflow tasks.",
         "brand_color": "#0EA5E9"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://gitlab.com/computes/apps/codex-manager"
     },
     "iac": {
       "name": "iac",
@@ -907,7 +944,9 @@
         ],
         "default_prompt": "Use the IaC plugin for Ansible and Terraform infrastructure-as-code workflows.",
         "brand_color": "#0F766E"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://gitlab.com/computes/apps/codex-manager"
     },
     "containers": {
       "name": "containers",
@@ -937,7 +976,9 @@
         ],
         "default_prompt": "Use the Containers plugin for Docker, Podman, compose, and container runtime workflows.",
         "brand_color": "#2563EB"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://gitlab.com/computes/apps/codex-manager"
     },
     "kubernetes": {
       "name": "kubernetes",
@@ -967,7 +1008,9 @@
         ],
         "default_prompt": "Use the Kubernetes plugin for k8s manifests, workloads, and cluster operations.",
         "brand_color": "#1D4ED8"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://kubernetes.io/docs/"
     },
     "system-infra": {
       "name": "system-infra",
@@ -1008,7 +1051,9 @@
         ],
         "default_prompt": "Use the System Infra plugin for host tuning, storage, boot, kernel, and base system automation workflows.",
         "brand_color": "#14B8A6"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://gitlab.com/computes/apps/codex-manager"
     },
     "virtualization": {
       "name": "virtualization",
@@ -1042,7 +1087,9 @@
         ],
         "default_prompt": "Use the Virtualization plugin for Proxmox, libvirt, and VM operations workflows.",
         "brand_color": "#0EA5E9"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://gitlab.com/computes/apps/codex-manager"
     },
     "observability": {
       "name": "observability",
@@ -1077,7 +1124,9 @@
         ],
         "default_prompt": "Use the Observability plugin for Elastic stack and Sentry workflows.",
         "brand_color": "#EAB308"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://gitlab.com/computes/apps/codex-manager"
     },
     "security-controls": {
       "name": "security-controls",
@@ -1121,7 +1170,9 @@
         ],
         "default_prompt": "Use the Security Controls plugin for application, host, and supply-chain control workflows.",
         "brand_color": "#DC2626"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://gitlab.com/computes/apps/codex-manager"
     },
     "security-labs": {
       "name": "security-labs",
@@ -1159,7 +1210,9 @@
         ],
         "default_prompt": "Use the Cybersecurity Labs plugin for purple-team validation, mobile defense, NetHunter research, and scoped security ops.",
         "brand_color": "#991B1B"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://gitlab.com/computes/apps/codex-manager"
     },
     "cloudflare-workers": {
       "name": "cloudflare-workers",
@@ -1200,7 +1253,9 @@
         ],
         "default_prompt": "Use the Cloudflare Workers plugin for Workers platform, Durable Objects, bindings, and edge-runtime workflows.",
         "brand_color": "#F97316"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://developers.cloudflare.com/workers/"
     },
     "wrangler": {
       "name": "wrangler",
@@ -1237,7 +1292,9 @@
         ],
         "default_prompt": "Use the Wrangler plugin for Wrangler CLI, deployment, and build workflows on Cloudflare.",
         "brand_color": "#F97316"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://developers.cloudflare.com/workers/wrangler/"
     },
     "cloudflare-agents": {
       "name": "cloudflare-agents",
@@ -1274,7 +1331,9 @@
         ],
         "default_prompt": "Use the Cloudflare Agents plugin for Agents SDK, agent design, and MCP-on-Workers workflows.",
         "brand_color": "#F97316"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://developers.cloudflare.com/agents/"
     },
     "huggingface": {
       "name": "huggingface",
@@ -1320,7 +1379,9 @@
         ],
         "default_prompt": "Use the Hugging Face plugin for Hub datasets, evaluation, jobs, training, Trackio, Gradio, and CLI workflows.",
         "brand_color": "#FF9D00"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://huggingface.co/docs"
     },
     "docs-research": {
       "name": "docs-research",
@@ -1357,7 +1418,9 @@
         ],
         "default_prompt": "Use the Docs Research plugin for official-docs comparison, API reference extraction, and implementation research.",
         "brand_color": "#0EA5E9"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://gitlab.com/computes/apps/codex-manager"
     },
     "stripe": {
       "name": "stripe",
@@ -1396,6 +1459,7 @@
         "long_description": "Use this plugin for Stripe payment flows, billing operations, invoicing, subscriptions, and webhook implementation work.",
         "developer_name": "Stripe",
         "capabilities": [
+          "Interactive",
           "Read",
           "Write"
         ],
@@ -1439,7 +1503,9 @@
         ],
         "default_prompt": "Use the Microsoft Learn plugin for Microsoft documentation research and Azure implementation planning.",
         "brand_color": "#2563EB"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://learn.microsoft.com/"
     },
     "jina-ai": {
       "name": "jina-ai",
@@ -1474,7 +1540,9 @@
         ],
         "default_prompt": "Use the Jina AI plugin for Jina Reader, grounded search, and web extraction workflows.",
         "brand_color": "#0EA5E9"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://jina.ai/"
     },
     "atlassian": {
       "name": "atlassian",
@@ -1509,7 +1577,9 @@
         ],
         "default_prompt": "Use the Atlassian plugin for Jira, Confluence, and Atlassian cloud workflow guidance.",
         "brand_color": "#1D4ED8"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://developer.atlassian.com/cloud/"
     },
     "figma": {
       "name": "figma",
@@ -1548,6 +1618,7 @@
         "long_description": "Use this plugin for Figma MCP design context, screenshots, assets, and implementation workflows.",
         "developer_name": "Figma, Inc.",
         "capabilities": [
+          "Interactive",
           "Read",
           "Write"
         ],
@@ -1590,7 +1661,9 @@
         ],
         "default_prompt": "Use the Vercel UI plugin for Vercel-authored React and UI architecture guidance.",
         "brand_color": "#111827"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://vercel.com/blog"
     },
     "winui": {
       "name": "winui",
@@ -1624,7 +1697,9 @@
         ],
         "default_prompt": "Use the WinUI plugin for Microsoft WinUI and Windows App SDK workflows.",
         "brand_color": "#2563EB"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://learn.microsoft.com/windows/apps/winui/"
     },
     "render": {
       "name": "render",
@@ -1657,7 +1732,9 @@
         ],
         "default_prompt": "Use the Render plugin for Render deployment and blueprint workflows.",
         "brand_color": "#46E3B7"
-      }
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://render.com/docs"
     },
     "netlify": {
       "name": "netlify",
@@ -1692,6 +1769,7 @@
         "long_description": "Use this plugin for Netlify deployment, site linking, and preview or production publish workflows.",
         "developer_name": "Netlify",
         "capabilities": [
+          "Interactive",
           "Read",
           "Write"
         ],

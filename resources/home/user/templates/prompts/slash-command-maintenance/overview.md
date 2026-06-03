@@ -9,11 +9,11 @@ Use this template when creating or refactoring slash-command prompt files.
 
 ## Outputs
 - `prompt-template.md` adapted for the target command.
-- Updated entry in `$CODEX_HOME/prompts/OVERVIEW.md`.
+- Updated entry in `$CODEX_HOME/docs/create-prompts.md`.
 - Validation evidence from prompt and pack checks.
 
 ## Steps
-1) Copy `prompt-template.md` into `$CODEX_HOME/prompts/<command>.md`.
+1) Create or update the target prompt file in the runtime prompt directory and document it in `$CODEX_HOME/docs/create-prompts.md`.
 2) Fill objective, constraints, inputs, and verification sections.
 3) Confirm referenced entrypoints and maintenance assets are current.
 4) Run prompt checks, then pack checks.

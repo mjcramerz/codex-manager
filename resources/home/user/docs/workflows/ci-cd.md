@@ -112,8 +112,8 @@ Purpose: provide canonical CI/CD guidance for this pack.
 - Keep artifact-build/tag-guard behavior aligned with `.github/workflows/build-codex-rs.yml`.
 - Keep release publish orchestration aligned with `.github/workflows/release-codex-rs.yml` (including reusable workflow SHA pinning).
 - Keep post-publish release hooks aligned with `.github/workflows/publish-codex-rs.yml`.
-- Keep GitLab delivery include/rules/variables aligned with `<codex-source-repo>/.gitlab-ci.yml` and `${GL_CICD_SHARED_PROJ}` shared templates.
-- Validate helper script expectations against `<codex-source-repo>/scripts/release/bump_version.py`, `<codex-source-repo>/scripts/release/codex_version.py`, and `<codex-source-repo>/scripts/release/check_release_patches.sh`.
+- Keep GitLab delivery include/rules/variables aligned with the active source repository's `.gitlab-ci.yml` and `${GL_CICD_SHARED_PROJ}` shared templates.
+- Validate helper script expectations against the active source repository's release helpers such as `scripts/release/bump_version.py`, `scripts/release/codex_version.py`, and `scripts/release/check_release_patches.sh` when those files exist.
 
 ## Security checkpoints
 - Enforce least-privilege tokens per stage; keep deploy credentials unavailable to untrusted branches.

@@ -67,4 +67,3 @@ interface:
 - `$CODEX_HOME/docs/infra/ansible.md`
 - `$CODEX_HOME/templates/infra/ansible-role-skeleton/`
 - `$CODEX_HOME/snippets/ansible/playbook.yml`
-- `$CODEX_HOME/prompts/ansible_playbook.md`

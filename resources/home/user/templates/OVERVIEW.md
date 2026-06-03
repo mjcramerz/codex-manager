@@ -1,125 +1,44 @@
-# $CODEX_HOME/templates/ (OVERVIEW)
-Purpose: provide project skeletons and repo hygiene files you can copy into a new (or existing) repo.
+# Template catalog
+Purpose: provide reusable project skeletons, repo hygiene assets, and operational scaffolds.
 
-Maintenance contract:
-- Create/update templates in `$CODEX_HOME/templates/`.
-- Treat `$CODEX_HOME/templates/` as runtime materialized content.
+## Navigation
+<!-- BEGIN:nav -->
+- Pack index: `$CODEX_HOME/INDEX.md`
+- Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
+<!-- END:nav -->
 
-## Multi-agent handoffs
-- Share this entrypoint plus the AGENTS → INDEX → entrypoint order with any agent you `spawn_agent`.
-- Log the handoff (entrypoint + stop condition) and keep status visible via `send_input`/`wait`/`close_agent` so reviewers can trace who handled which area.
+## Use this file when
+- you need a larger scaffold than a snippet can provide
+- you are choosing a starting layout for a new app, service, CI pipeline, or host workflow
+- you are maintaining template families and their overview contracts
 
-## Inputs
-- Template source path under `$CODEX_HOME/templates/`.
-- Destination repository path.
-- Pinned runtime/image/action versions and repo policy constraints.
+## Template contract
+- Each template directory should include an `overview.md`.
+- Each template overview should state Inputs, Outputs, and Next steps.
+- Templates should be copyable with deterministic paths and explicit placeholder replacement guidance.
+- Templates should point to the narrowest relevant docs, workflows, and plans rather than duplicating long explanations.
 
-## Outputs
-- Copied template files with deterministic paths.
-- Template-specific Inputs/Outputs/Next steps from each `overview.md`.
-- Optional repo hygiene files from `common/`.
+## Major template families
+- Common repo hygiene
+- Prompt-maintenance scaffolds
+- Shell, CI, infra, containers, systemd, filesystems, virtualization
+- Language and framework app skeletons
+- Observability, system hardening, and desktop stacks
 
-## Next steps
-1) Copy a template directory into your repo (for example `cp -a`) and follow its `overview.md`.
-2) Replace placeholders (`CHANGE_ME`, sample versions, org names) with pinned repo values before first commit.
-3) Use `$CODEX_HOME/docs/templates/using-templates.md` for the full checklist.
+## Selection rules
+- Use a template when multiple files must stay aligned.
+- Use a snippet when one file or one compact pattern is enough.
+- Use a workflow or plan when execution order and validation matter more than scaffold content.
 
-## Template contract (required)
-- Each template `overview.md` must declare **Inputs** (variables, versions, paths).
-- List **Outputs** (files created/modified) and **Next steps**.
-- Include exact commands to build/test/run when applicable.
-- CI template overviews must include branch/tag guardrails and shared include contracts when applicable.
-
-## Common (repo hygiene)
-- `common/`: `common/CODEOWNERS`, `common/CONTRIBUTING.md`, `common/SECURITY.md` (add `common/.editorconfig`/`common/.gitattributes` if your org requires them)
-- `common/.github/`: shared `.github/` defaults (`dependabot.yml`, `pull_request_template.md`)
-- `common/repo-delivery-layout/`: root `patches/` + `scripts/` layout with `get_version.py`/`bump_version.py`
-- `common/posix-sh-script/`: POSIX/BusyBox shell script skeleton
-
-## Prompts
-- `$CODEX_HOME/templates/prompts/slash-command-maintenance/`: slash-command prompt maintenance scaffold
-
-## Bash / sh
-- Read `$CODEX_HOME/UNIX.md` before choosing a shell-specific template.
-- `bash/script-skeleton/`: Bash script skeleton
-- `sh/posix-sh-script/`: POSIX sh script skeleton
-
-## CI (GitHub Actions)
-- `ci/github-actions/`: ready-to-copy workflows (node/python/rust/security + release build/publish scaffolds for protected release tags)
-## CI (GitLab)
-- `ci/gitlab-ci/`: ready-to-copy pipelines (node/python/rust/security + `github-delivery.yml` + `rust-release-delivery.yml` scaffolds using `/github/validate.yml` + `/github/push.yml`; shared internals `/github/version.yml`, `/patches/patches.yml`, `/github/visibility.yml`)
-
-## Infrastructure
-- `infra/terraform-module-skeleton/`: Terraform module skeleton
-- `infra/ansible-role-skeleton/`: Ansible role skeleton
-- `infra/kubernetes-app-skeleton/`: Kubernetes manifest skeleton
-
-## Containers
-- `containers/docker-compose-skeleton/`: compose scaffold with online/offline templates + Podman keep-id override
-- `containers/dockerfile-skeleton/`: rootless-friendly Dockerfile + `.dockerignore` scaffold
-- `containers/devlab-codelab-skeleton/`: dev container scaffold with common tooling (Docker + Podman)
-
-## systemd
-- `systemd/service-skeleton/`: service and timer unit skeletons
-- `systemd/user-service-skeleton/`: user-level service skeletons
-
-## Filesystems
-- `filesystems/ops-scripts/`: safe plan/apply helpers for mkfs/fstab
-
-## Virtualization
-- `virtualization/vagrant-libvirt-skeleton/`: Vagrantfile scaffold for libvirt
-- `virtualization/debian-preseed/`: Debian unattended install baseline
-- `virtualization/proxmox-vm-skeleton/`: Proxmox VM notes + cloud-init
-- `virtualization/virsh-vm-skeleton/`: libvirt domain skeleton
-
-## Python
-- `python/fastapi-app/`: FastAPI API scaffold
-- `python/cli-app/`: Python CLI scaffold
-
-## Rust
-- `rust/axum-api/`: Axum API scaffold
-- `rust/cli-app/`: Rust CLI scaffold
-
-## Go
-- `go/cli-app/`: Go CLI scaffold
-
-## TypeScript
-- `typescript/ts-lib/`: TypeScript library skeleton
-
-## Web
-- `web/react-vite-app/`: React + Vite + TypeScript scaffold
-- `web/nextjs-app/`: Next.js scaffold wrapper
-- `web/sveltekit-app/`: SvelteKit scaffold wrapper
-- `web/vue-app/`: Vue scaffold wrapper
-- `web/nuxt-app/`: Nuxt scaffold wrapper
-- `web/htmx-app/`: HTMX skeleton
-- `web/html-static/`: static HTML skeleton
-
-## Observability
-- `observability/elastic-stack-compose/`: Elastic Stack compose skeleton
-- `observability/auditd-rules-skeleton/`: auditd rules baseline
-- `observability/logrotate-skeleton/`: logrotate baseline
-- `observability/aide-skeleton/`: AIDE baseline
-- `observability/crowdsec-skeleton/`: CrowdSec baseline
-
-## System hardening
-- `system/kernel-build-skeleton/`: kernel build notes + config fragment
-- `system/grub-baseline/`: GRUB defaults
-- `system/sysctl-baseline/`: sysctl baseline
-- `system/offsec-defense-kit/`: scoped offsec-defense starter kit
-- `system/mobile-wireless-defense-kit/`: scoped mobile and wireless defense starter kit
-- `system/nethunter-pixel9a-kit/`: scoped Pixel 9a NetHunter kernel-porting and root-lab starter kit
-- `system/usbguard-baseline/`: USBGuard rules baseline
-
-## Desktop
-- `desktop/wayland-skeleton/`: Labwc/Wayland configs
-- `desktop/desktop-entry/`: `.desktop` launcher template
+## Copy and adaptation rules
+1. Copy the template directory into the target repo.
+2. Replace placeholders and sample values before first commit.
+3. Run the exact validation commands listed by the template and the target repo.
+4. Remove template-only explanatory content that should not ship downstream.
 
 ## Related
-- Docs: `$CODEX_HOME/docs/`
-- Templates overview: `$CODEX_HOME/docs/templates/overview.md`
-- Usage guide: `$CODEX_HOME/docs/templates/using-templates.md`
-- Templates plan: `$CODEX_HOME/plans/templates-library.md`
-- Prompts plan: `$CODEX_HOME/plans/prompts-library.md`
-- Snippets: `$CODEX_HOME/snippets/`
-- Entry point: `$CODEX_HOME/index/pack/templates.md`
+- `$CODEX_HOME/index/pack/templates.md`
+- `$CODEX_HOME/docs/templates/overview.md`
+- `$CODEX_HOME/docs/templates/using-templates.md`
+- `$CODEX_HOME/plans/templates-library.md`
+- `$CODEX_HOME/snippets/OVERVIEW.md`

@@ -17,7 +17,7 @@ updated: '2026-02-20'
 
 ## Usage
 ```
-python $CODEX_SKILLS/NOTE/obsidian-toc/scripts/generate_toc.py --file path/to/note.md --max-depth 3
+python scripts/generate_toc.py --file path/to/note.md --max-depth 3
 ```
 
 ## Behavior

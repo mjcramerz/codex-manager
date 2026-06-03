@@ -54,4 +54,3 @@ interface:
 - `$CODEX_HOME/docs/workflows/logrotate.md`
 - `$CODEX_HOME/templates/observability/logrotate-skeleton/`
 - `$CODEX_HOME/snippets/logrotate/app.logrotate`
-- `$CODEX_HOME/prompts/logrotate_setup.md`

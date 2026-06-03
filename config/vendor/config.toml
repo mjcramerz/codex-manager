@@ -5,8 +5,10 @@ cli_auth_credentials_store = "file"
 mcp_oauth_credentials_store = "file"
 mcp_oauth_callback_port = 8088
 suppress_unstable_features_warning = false
-windows_wsl_setup_acknowledged = false
-approval_policy = "never"
+# legacy Windows-only acknowledgment flag retained for traceability
+#windows_wsl_setup_acknowledged = false
+# legacy approval-policy scalar retained for traceability
+#approval_policy = "never"
 #sandbox_mode = "workspace-write"
 
 default_permissions = "full"

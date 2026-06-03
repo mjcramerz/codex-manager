@@ -53,4 +53,4 @@ interface:
 - `$CODEX_HOME/docs/style/typescript.md`
 - `$CODEX_HOME/templates/typescript/ts-lib/`
 - `$CODEX_HOME/snippets/typescript/tsconfig.json`
-- `$CODEX_HOME/prompts/typescript_lib.md`
+- `$CODEX_HOME/docs/prompt-writing.md`

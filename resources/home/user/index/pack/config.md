@@ -19,8 +19,8 @@ Use when:
 
 <!-- BEGIN:related -->
 Related:
-- `$CODEX_HOME/.models/OVERVIEW.md`
-- `$CODEX_HOME/.models/instructions/model.md`
-- `$CODEX_HOME/.models/instructions/compact.md`
+- `$CODEX_HOME/.models/model_catalog.json`
+- `$CODEX_HOME/.models/instructions/models/model-instructions.md`
+- `$CODEX_HOME/.models/instructions/models/compact-prompt.md`
 - `$CODEX_HOME/index/pack/docs.md`
 <!-- END:related -->

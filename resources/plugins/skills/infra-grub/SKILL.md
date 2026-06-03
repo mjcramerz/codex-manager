@@ -67,4 +67,3 @@ interface:
 - `$CODEX_HOME/docs/workflows/grub.md`
 - `$CODEX_HOME/templates/system/grub-baseline/`
 - `$CODEX_HOME/snippets/system/grub-default`
-- `$CODEX_HOME/prompts/grub_config.md`

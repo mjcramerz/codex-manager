@@ -1,16 +1,22 @@
 ---
-title: AGENTS.md (sanitized operating contract)
+title: AGENTS.md (runtime pack operating contract)
 status: active
 owner: Matthew Cramer
 tags:
 - home
 - agents-md
 - agents
-updated: '2026-03-04'
+updated: '2026-06-03'
 ---
-# AGENTS.md (sanitized operating contract)
+# Runtime pack operating contract
+Purpose: define the operating contract for the runtime-home source pack under `resources/home/user/**`.
 
-This contract applies to this tree and child paths unless a deeper `AGENTS.md` overrides it.
+This contract applies to `resources/home/user` and every child path unless a deeper `AGENTS.md` overrides it.
+
+## Mission
+- Keep the runtime-home source pack coherent, fast to route, and correct for the installed Codex layout.
+- Treat `resources/home/user/**` as pack source material, not as a scratch area or speculative runtime dump.
+- Favor concise, high-signal documentation that helps the next agent pick one correct path quickly.
 
 ## Priorities
 1) Correctness
@@ -19,60 +25,81 @@ This contract applies to this tree and child paths unless a deeper `AGENTS.md` o
 4) Maintainability
 5) Polish
 
-## Scope and hierarchy
-- Authority order: system -> developer -> user -> this file -> deeper instructions.
-- Preserve behavior unless a request explicitly changes behavior.
+## Authority and scope
+- Follow this order: system -> developer -> user -> this file -> deeper instructions.
+- Preserve behavior unless the request explicitly changes behavior.
 - Keep diffs minimal, reviewable, and deterministic.
-- Apply all active instruction files for each touched path.
-- When the task targets shell assets or shell runtime behavior, load the matching shell skill (`shell-bash`, `shell-zsh`, or `shell-sh`); when it targets repo automation or git delivery controls, load `repo-ops`.
+- Apply every active instruction file for each touched path.
 
-## Core rules
-- Treat inputs as untrusted; validate shape, size, and ranges.
-- Use bounded retries/timeouts for network and I/O.
-- Avoid destructive operations unless explicitly requested and acknowledged.
-- Do not add compatibility branches or legacy toggles without explicit request.
-- Fallback behavior is only allowed when the user explicitly requests it.
-- Keep secrets out of logs and avoid dumping environment values.
-- Prefer deterministic commands and explicit formats.
-- For shell-sensitive work, use the shell guide already selected by the surrounding session contract and explicitly invoke that matching shell when running commands.
-- Read `$CODEX_HOME/UNIX.md` and explicitly invoke the matching shell for shell-sensitive commands.
-- Keep shell-specific assets honest: Bash assets stay Bash-only, and shared shell assets must be validated in the supported runtimes.
-- Avoid machine-specific project references in user-facing guidance.
-- Runtime-home docs, prompts, templates, snippets, and plans must refer only to installed runtime paths such as `$CODEX_HOME`, `$CODEX_SKILLS`, and the managed runtime/admin directories; do not point back into the installer repository.
+## Required operating order
+1) Read the active `AGENTS.md`.
+2) Load memory only when the task is repo-aware, ambiguous, or depends on prior decisions.
+3) Route through `$CODEX_HOME/INDEX.md`.
+4) Read `$CODEX_HOME/index/pack/plans.md` and `$CODEX_HOME/index/pack/workflows.md`.
+5) Load only the minimum skills required.
+6) Follow `$CODEX_HOME/UNIX.md` before shell-sensitive work.
+7) Open one concrete entrypoint, then stop broad browsing.
 
-## Branch and workflow policy
-- Use `mcr/*` branches for implementation work.
-- Fetch and prune remotes before branch operations.
-- Keep protected promotion flow in order: `mcr/main -> mcr/staging -> mcr/release`.
-- Keep working trees auditable and isolated.
+## Source-of-truth map
+- `resources/home/user/INDEX.md` is the top router for the runtime pack.
+- `resources/home/user/index/manifest.yml` is the routing metadata source for index entrypoints and related-link intent.
+- `resources/home/user/docs/**` contains the runtime documentation source.
+- `resources/home/user/plans/**` contains the plan template source.
+- `resources/home/user/.models/**` contains model catalog and instruction-source assets referenced by runtime config.
+- `resources/home/user/docs/create-prompts.md` owns the prompt-file catalog and direct prompt-file references for this tree.
 
-## Routing protocol
-1) Read the active AGENTS contract.
-2) Read `$CODEX_HOME/INDEX.md` and select one entrypoint.
-3) Load only the minimum skill(s) needed for the request.
-4) Use `$CODEX_HOME/UNIX.md`.
-5) Explicitly invoke the matching shell for shell-sensitive commands.
-6) Open deeper docs only when the selected entrypoint requires them.
+## Documentation rules
+- Keep top-level routing docs concise. Route first, dive deeper only when needed.
+- Update cross-links in the same change when files move or canonical paths change.
+- If a doc references a runtime path, verify that path exists in the current source pack or clearly qualify it as optional.
+- Do not leave stale machine-specific repository references in user-facing guidance.
+- Do not leave unresolved placeholders in non-template docs, plans, or workflow guides.
+- Prefer one canonical explanation for a concept instead of repeating it across multiple overview files.
 
-## Runtime layout reminders
-- Runtime plugin marketplace metadata lives at `$CODEX_HOME/.agents/plugins/marketplace.json`.
-- Runtime plugin bundles live under `$CODEX_HOME/plugins/cache/<marketplace>/<plugin>/local/`.
-- Shared runtime skills live under `$CODEX_SKILLS/**` and the managed admin skill root.
-- Installed instruction assets live under the managed runtime instructions directory.
+## Index and routing rules
+- When changing pack entrypoint semantics, update both the rendered entrypoint doc and `resources/home/user/index/manifest.yml` when the canonical target or related-link contract changes.
+- Keep one clear purpose per overview file:
+  - `INDEX.md` chooses a router
+  - `index/OVERVIEW.md` explains routing behavior
+  - router overviews choose one entrypoint
+  - docs/plans/workflows overviews explain catalog structure and usage
+- Stop once the right router or entrypoint is chosen. Do not turn overviews into encyclopedias.
 
-## Tooling discipline
-- Prefer read-only discovery first, then minimal edits.
-- Prefer `rg`/`rg --files` for search.
-- Use `apply_patch` for focused single-file edits.
-- Use deterministic scripts for broad, repeated changes.
-- When editing shell-facing scripts, snippets, templates, or startup files, preserve shebang/runtime alignment and validate with the matching shell entrypoint.
+## Prompt asset rules
+- Prompt asset files must be Markdown.
+- The first line of every prompt file must be a short HTML comment describing the prompt.
+- Prompt assets should be concise, directive, and reusable as direct Codex requests.
+- Keep all direct prompt-file references centralized in `docs/create-prompts.md`.
 
-## Testing and verification
-- Run the narrowest tests/build checks that prove the change.
-- Validate error paths, auth boundaries, and timeout behavior when relevant.
-- If checks are skipped, explain why and list what should run next.
+## Shell and runtime rules
+- For shell-sensitive work, explicitly invoke the matching shell and keep shell-specific assets honest about their supported runtime.
+- Read `$CODEX_HOME/UNIX.md` before running shell-sensitive commands.
+- Use deterministic commands and machine-readable output where possible.
+- Prefer read-only discovery first, then the smallest deterministic change.
 
-## Output expectations
-- Provide: Summary -> Tests -> Risks/TODOs -> Next steps.
-- Include concrete file references with line numbers for key edits.
-- State assumptions explicitly when behavior depends on permissions or credentials.
+## Structured-format rules
+- Validate shape, size, and ranges for untrusted inputs.
+- Re-parse edited JSON, YAML, and TOML before finishing the turn.
+- Keep comments out of files that claim to be strict JSON.
+- Keep generated marker blocks (`BEGIN` / `END`) syntactically intact when editing surrounding text.
+
+## Editing discipline
+- Prefer `rg` / `rg --files` for discovery.
+- Use `apply_patch` for focused manual edits.
+- Use deterministic scripts only when broad repetition makes them safer than manual patching.
+- Do not invent fallback paths, compatibility branches, or legacy toggles unless explicitly requested.
+
+## Validation requirements
+- Run the narrowest checks that prove the change.
+- When touching the governing pack files (`AGENTS.md`, `INDEX.md`, `docs/**`, `index/**`, `plans/**`, `resources/skills/**`), also run focused contract checks for stale links or structural drift.
+- If you skip a check, say exactly why and name the next command that should run.
+
+## Multi-agent guidance
+- Use the role model in `$CODEX_HOME/MULTI_AGENT.md`.
+- Prefer role-oriented language over tool-specific control primitives unless the active runtime explicitly provides those primitives.
+- Keep ownership boundaries explicit: one owner for the final patch, separate owners only for genuinely independent discovery or validation slices.
+
+## Output contract
+- Return: Summary -> Tests -> Risks/Follow-ups -> Next steps.
+- Include concrete file references with line numbers for the important edits.
+- State assumptions explicitly when behavior depends on credentials, permissions, or optional runtime assets.

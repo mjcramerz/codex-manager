@@ -50,4 +50,3 @@ interface:
 - `$CODEX_HOME/index/domains/desktop/librewolf.md`
 - `$CODEX_HOME/docs/desktop/librewolf.md`
 - `$CODEX_HOME/snippets/desktop/librewolf.overrides.cfg`
-- `$CODEX_HOME/prompts/librewolf_setup.md`

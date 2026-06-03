@@ -176,7 +176,7 @@ def resolve_placeholders(value: str, variables: dict[str, str], context: str) ->
         return resolved
 
     rendered = PLACEHOLDER_PATTERN.sub(repl, value)
-    if "$" in rendered:
+    if PLACEHOLDER_PATTERN.search(rendered):
         fail(f"unresolved variable token remains in {context}: {rendered}")
     return rendered
 

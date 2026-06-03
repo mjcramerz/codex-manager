@@ -1,6 +1,5 @@
 # Agent orchestration workflow (entrypoint)
-Purpose: stable link to multi-agent orchestration workflow guidance.
-
+Purpose: stable link to multi-agent orchestration guidance.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -9,18 +8,15 @@ Purpose: stable link to multi-agent orchestration workflow guidance.
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-
 Canonical content: `$CODEX_HOME/docs/workflows/agent-orchestration.md`
 
-Use when:
-- a task is large enough to benefit from multiple parallel agents
-- you need explicit ownership boundaries and deterministic handoffs
-- reviewers need a clean accountability trail for files, tests, and risks
-- you want codex-agent style delegation with `spawn_agent`/`send_input`/`wait`/`close_agent`
-- you need the role-selection matrix in `$CODEX_HOME/MULTI_AGENT.md`
+## Use when
+- a task is large enough to benefit from multiple coordinated roles
+- you need explicit ownership, handoff, and reconciliation rules
+- review and testing should be owned separately from implementation
 
+## Related
 <!-- BEGIN:related -->
-Related:
 - `$CODEX_HOME/MULTI_AGENT.md`
 - `$CODEX_HOME/docs/workflows/planning.md`
 - `$CODEX_HOME/docs/workflows/repo-ops.md`

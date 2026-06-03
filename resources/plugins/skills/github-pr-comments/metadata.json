@@ -7,6 +7,9 @@
     "https://git-scm.com/doc",
     "https://docs.github.com/actions",
     "https://docs.gitlab.com/ci/",
-    "https://cli.github.com/manual/gh_pr_comment"
+    "https://cli.github.com/manual/gh_pr_comment",
+    "https://docs.github.com/en/graphql",
+    "https://cli.github.com/manual/gh_pr_view",
+    "https://cli.github.com/manual/gh_api"
   ]
 }

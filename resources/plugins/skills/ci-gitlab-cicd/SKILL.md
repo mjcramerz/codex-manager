@@ -80,4 +80,3 @@ interface:
 - `$CODEX_HOME/templates/ci/gitlab-ci/`
 - `$CODEX_HOME/templates/ci/gitlab-ci/rust-release-delivery.yml`
 - `$CODEX_HOME/snippets/ci/gitlab_delivery_vars.env`
-- `$CODEX_HOME/prompts/gitlab_ci_add.md`

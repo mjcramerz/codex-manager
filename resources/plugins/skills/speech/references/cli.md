@@ -13,8 +13,7 @@ Real API calls require network access + `OPENAI_API_KEY`. `--dry-run` does not.
 Set a stable path to the skill CLI (default `CODEX_HOME` is `~/.codex`):
 
 ```
-export CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
-export TTS_GEN="$CODEX_HOME/skills/speech/scripts/text_to_speech.py"
+export TTS_GEN="scripts/text_to_speech.py"
 ```
 
 Dry-run (no API call; no network required; does not require the `openai` package):

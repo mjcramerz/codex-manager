@@ -18,16 +18,16 @@ Use this plan when producing or revising documentation and operational runbooks.
 - Out: product behavior changes.
 
 ## Dependencies and assumptions
-- <source-of-truth docs, SMEs, and review owners>
-- <publication targets, formatting constraints, and tooling assumptions>
+- Name the source-of-truth docs, subject-matter owners, and final reviewers.
+- Record publication targets, formatting constraints, and tooling assumptions.
 
 ## Success metrics and exit criteria
-- <docs/runbook completeness and review sign-off>
-- <navigation/link integrity and operational usability criteria>
+- The doc or runbook covers the required operator or reader tasks end to end.
+- Links, routing references, and operational steps are correct and review sign-off is complete.
 
 ## Files and entry points
-- <docs to update>
-- <entrypoints/indexes to refresh>
+- List the docs to update directly.
+- List the entrypoints, indexes, or overviews that must be refreshed.
 
 ## Action items
 [ ] Identify required inputs and sources of truth.
@@ -36,7 +36,7 @@ Use this plan when producing or revising documentation and operational runbooks.
 [ ] Validate links and routing.
 
 ## Testing and validation
-- <link checks, verification scripts>
+- List the link checks, structure checks, and verification scripts you will run.
 
 ## Security checkpoints
 - Confirm trust boundaries, credentials, and least-privilege assumptions before execution.
@@ -59,12 +59,11 @@ Use this plan when producing or revising documentation and operational runbooks.
 - Receiving agent acknowledges handoff completeness before continuing execution.
 
 ## Risks and edge cases
-- <stale references or ambiguous guidance>
+- Call out stale references, duplicated guidance, or audience ambiguity that could survive the update.
 
 ## Examples
-
-- Example objective: "Document <process> runbook."
-- Example validation: "markdownlint <file>"
+- Example objective: "Document the release rollback runbook for the runtime pack."
+- Example validation: "python3 -m unittest tests.test_runtime_pack_docs_contract tests.test_runtime_pack_structure_contract"
 
 ## Open questions
-- <missing inputs or ownership>
+- Record only the missing ownership or source-of-truth details that block completion.

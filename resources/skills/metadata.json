@@ -793,7 +793,7 @@
         "groups": [
           "user_common"
         ],
-        "description": "Create or update slash-command prompts under $CODEX_HOME/prompts/. Use when adding prompt commands, tightening argument contracts, or improving prompt-library maintenance assets.",
+        "description": "Create or update runtime prompt assets under $CODEX_HOME/.prompt/. Use when refining prompt contracts, adding operator-local prompt files, or improving prompt-maintenance assets.",
         "skill_path": "common/pack-prompts",
         "skill_file": "common/pack-prompts/SKILL.md",
         "metadata_file": "common/pack-prompts/metadata.json",
@@ -818,7 +818,7 @@
           "version": "1.0",
           "organization": "Codex Setup",
           "date": "February 15, 2026",
-          "abstract": "Create or update slash-command prompts under $CODEX_HOME/prompts/. Use when adding prompt commands, tightening argument contracts, or improving prompt-library maintenance assets.",
+          "abstract": "Create or update runtime prompt assets under $CODEX_HOME/.prompt/. Use when refining prompt contracts, adding operator-local prompt files, or improving prompt-maintenance assets.",
           "references": [
             "https://yaml.org/spec/1.2.2/",
             "https://developers.openai.com/docs/guides/prompt-engineering"
@@ -1362,9 +1362,9 @@
         "skill_file": "common/shell-zsh/SKILL.md",
         "metadata_file": "common/shell-zsh/metadata.json",
         "agent_file": "common/shell-zsh/agents/openai.yaml",
-        "references_file": null,
+        "references_file": "common/shell-zsh/references/latest-sources.md",
         "short_description": "Write robust zsh scripts, wrappers, and shell integrations",
-        "default_prompt": "Act as the \"SHELL-Zsh\" specialist. Inspect zsh runtime behavior, wrapper semantics, and shell integration with deterministic shell-aware reasoning.",
+        "default_prompt": "Act as the \"SHELL-Zsh\" specialist for \"Write robust zsh scripts, wrappers, and shell integrations\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
         "tags": [
           "zsh",
           "shell",
@@ -1374,24 +1374,27 @@
         ],
         "interface": {
           "display-name": "SHELL-Zsh",
-          "short-description": "Focus on zsh shell behavior, wrappers, and execution flow",
-          "default-prompt": "Act as the \"SHELL-Zsh\" specialist. Inspect zsh runtime behavior, wrapper semantics, and shell integration with deterministic shell-aware reasoning."
+          "short-description": "Write robust zsh scripts, wrappers, and shell integrations",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#6F32CC",
+          "default-prompt": "Act as the \"SHELL-Zsh\" specialist for \"Write robust zsh scripts, wrappers, and shell integrations\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
         },
         "metadata": {
           "version": "1.0",
           "organization": "Codex Setup",
           "date": "March 11, 2026",
-          "abstract": "Write and review zsh-specific shell code, wrappers, and runtime integrations.",
+          "abstract": "Write and review zsh-specific shell code, wrappers, and runtime integrations. Use when the confirmed runtime is zsh or when wrapper semantics, completion behavior, globbing, or zsh startup files matter.",
           "references": [
             "https://zsh.sourceforge.io/Doc/",
             "https://zsh.sourceforge.io/Guide/"
           ]
         },
         "support": {
-          "has_assets": false,
-          "has_rules": false,
-          "has_scripts": false,
-          "has_references": false
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
         }
       },
       {

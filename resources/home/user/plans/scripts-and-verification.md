@@ -55,8 +55,8 @@ Use this plan when modifying pack scripts or verification workflows.
 
 ## Examples
 
-- Example objective: "<short task statement>"
-- Example validation: "<command or check>"
+- Example objective: "Tighten a verification script and align the referenced docs with its current behavior."
+- Example validation: "python3 -m unittest discover -s tests"
 
 ## Open questions
 - None.

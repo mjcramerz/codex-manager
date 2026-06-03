@@ -128,4 +128,3 @@ Documentation & Collaboration: `list_documents`, `get_document`, `search_documen
 ## References
 - `$CODEX_HOME/plans/skills/skill-pm-linear-issues.md`
 - `$CODEX_HOME/docs/workflows/planning.md`
-- `$CODEX_HOME/prompts/plan.md`

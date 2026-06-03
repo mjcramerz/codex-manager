@@ -43,7 +43,7 @@ Purpose: ship reproducible, auditable releases.
 - Tag from the exact tip commit of `mcr/release`; fail closed if tag SHA and `origin/mcr/release` differ.
 - In fork mode (`github/*` mirrors present), verify `origin/github/mcr/main -> github/mcr/main -> mcr/main` sync and successful patch checks on `mcr/main` before promoting to `mcr/release`.
 - Keep consumer includes minimal (`/github/validate.yml`, `/github/push.yml`) so shared includes (`/github/version.yml`, `/patches/patches.yml`, `/github/visibility.yml`) stay centrally managed in `GL_CICD_SHARED_PROJ`.
-- Keep repository release automation in `<repo>/scripts/release/get_version.py` and `<repo>/scripts/release/bump_version.py`; avoid manual version edits in release commits.
+- Keep repository release automation in repo-local release helper scripts (for example `scripts/release/get_version.py` and `scripts/release/bump_version.py`) and avoid manual version edits in release commits.
 - Keep variable contracts aligned with `$CODEX_HOME/snippets/ci/gitlab_delivery_vars.env`.
 - Prefer shared include defaults for delivery variables; set repo-local overrides only when release behavior intentionally differs.
 - Keep release overlays in `patches/release/series` (fallback sorted `patches/release/*.patch`) so GitLab delivery patch application stays deterministic.
