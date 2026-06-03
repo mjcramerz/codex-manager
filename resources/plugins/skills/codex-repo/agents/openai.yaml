@@ -1,0 +1,7 @@
+interface:
+  display_name: Codex Repo
+  short_description: Focus on the active Codex source tree and upstream runtime behavior
+  default_prompt: Act as the Codex Repo specialist. Work against the active Codex source tree, upstream plugin/runtime behavior, and config contracts with current evidence.
+
+policy:
+  allow_implicit_invocation: true

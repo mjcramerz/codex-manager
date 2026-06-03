@@ -1,0 +1,13 @@
+---
+interface:
+  display_name: Docs Research Workbench
+  short_description: >-
+    Compare official docs and turn findings into engineering decisions
+  brand_color: '#0EA5E9'
+  default_prompt: >-
+    Act as the Docs Research Workbench specialist. Use current evidence,
+    keep changes reviewable, and report assumptions and validation
+    clearly.
+
+policy:
+  allow_implicit_invocation: true

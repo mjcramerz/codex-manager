@@ -1,0 +1,49 @@
+# tui chatcomposer
+[tui]
+alternate_screen = "auto"
+notification_method = "auto"
+notifications = true
+show_tooltips = true
+animations = true
+theme = "1337"
+status_line = [
+  "context-remaining", 
+  "current-dir",
+  "git-branch",
+  "fast-mode",
+  "project-root",
+]
+
+# audio device
+[audio]
+microphone = "default"
+speaker = "default"
+
+# tools and web search
+[tools]
+view_image = true
+
+[tools.web_search]
+context_size = "high"
+#allowed_domains = ["*"]
+
+[tools.web_search.location]
+#type = "approximate"
+country = "US"
+region = "CA"
+city = "San Francisco"
+timezone = "America/Los_Angeles"
+
+# otel logging
+[otel]
+environment = "dev"
+exporter = "none"
+log_user_prompt = false
+metrics_exporter = "none"
+trace_exporter = "none"
+
+[analytics]
+enabled = false
+
+[feedback]
+enabled = false

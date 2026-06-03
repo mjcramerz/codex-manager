@@ -1,0 +1,238 @@
+{
+  "version": 1,
+  "groups": [
+    {
+      "name": "agents",
+      "enabled": true,
+      "short_description": "Agent prompt override assets rendered from canonical instruction sources.",
+      "entries": [
+        {
+          "name": "hierarchical_agents_instructions",
+          "config_key": "hierarchical_agents_instructions_file",
+          "file": "hierarchical_agents.md",
+          "source_group": "agents",
+          "short_description": "Hierarchical agent coordination instructions.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/agents/hierarchical_agents.md",
+          "default_disable_path": "./.models/instructions/prompt_overrides/hierarchical_agents_instructions.md"
+        },
+        {
+          "name": "init_instructions",
+          "config_key": "init_instructions_file",
+          "file": "init.md",
+          "source_group": "agents",
+          "short_description": "Agent initialization instructions.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/agents/init.md",
+          "default_disable_path": "./.models/instructions/prompt_overrides/init_instructions.md"
+        },
+        {
+          "name": "orchestrator_instructions",
+          "config_key": "orchestrator_instructions_file",
+          "file": "orchestrator.md",
+          "source_group": "agents",
+          "short_description": "Orchestrator coordination instructions.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/agents/orchestrator.md",
+          "default_disable_path": "./.models/instructions/prompt_overrides/orchestrator_instructions.md"
+        },
+        {
+          "name": "spawn_agent_instructions",
+          "config_key": "spawn_agent_instructions_file",
+          "file": "spawn_agent.md",
+          "source_group": "agents",
+          "short_description": "Agent spawning instructions.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/agents/spawn_agent.md",
+          "default_disable_path": "./.models/instructions/prompt_overrides/spawn_agent_instructions.md"
+        }
+      ]
+    },
+    {
+      "name": "models",
+      "enabled": true,
+      "short_description": "Model-scoped instruction assets.",
+      "entries": [
+        {
+          "name": "model_instructions",
+          "config_key": "model_instructions_file",
+          "file": "model-instructions.md",
+          "source_group": "models",
+          "short_description": "Primary model behavior instructions.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/models/model-instructions.md",
+          "default_disable_path": "./.models/instructions/models/model-instructions.md"
+        },
+        {
+          "name": "model_personality_instructions",
+          "config_key": "model_personality_instructions_file",
+          "file": "model-personality-instructions.md",
+          "source_group": "models",
+          "short_description": "Model personality override instructions.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/models/model-personality-instructions.md",
+          "default_disable_path": "./.models/instructions/prompt_overrides/model_personality_instructions.md"
+        }
+      ]
+    },
+    {
+      "name": "workflows",
+      "enabled": true,
+      "short_description": "Workflow prompt overrides for execution, planning, and review.",
+      "entries": [
+        {
+          "name": "default_mode_instructions",
+          "config_key": "default_mode_instructions_file",
+          "file": "default.md",
+          "source_group": "workflows",
+          "short_description": "Default collaboration mode instructions.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/workflows/default.md",
+          "default_disable_path": "./.models/instructions/prompt_overrides/default_mode_instructions.md"
+        },
+        {
+          "name": "execute_mode_instructions",
+          "config_key": "execute_mode_instructions_file",
+          "file": "execute.md",
+          "source_group": "workflows",
+          "short_description": "Execute mode instructions.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/workflows/execute.md",
+          "default_disable_path": "./.models/instructions/prompt_overrides/execute_mode_instructions.md"
+        },
+        {
+          "name": "pair_programming_mode_instructions",
+          "config_key": "pair_programming_mode_instructions_file",
+          "file": "pair_programming.md",
+          "source_group": "workflows",
+          "short_description": "Pair-programming mode instructions.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/workflows/pair_programming.md",
+          "default_disable_path": "./.models/instructions/prompt_overrides/pair_programming_mode_instructions.md"
+        },
+        {
+          "name": "plan_mode_instructions",
+          "config_key": "plan_mode_instructions_file",
+          "file": "plan.md",
+          "source_group": "workflows",
+          "short_description": "Plan mode instructions.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/workflows/plan.md",
+          "default_disable_path": "./.models/instructions/prompt_overrides/plan_mode_instructions.md"
+        },
+        {
+          "name": "review_base_branch_instructions",
+          "config_key": "review_base_branch_instructions_file",
+          "file": "base_branch_prompt.md",
+          "source_group": "workflows",
+          "short_description": "Base-branch review prompt instructions.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/workflows/base_branch_prompt.md",
+          "default_disable_path": "./.models/instructions/prompt_overrides/review_base_branch_instructions.md"
+        },
+        {
+          "name": "review_commit_instructions",
+          "config_key": "review_commit_instructions_file",
+          "file": "commit_prompt.md",
+          "source_group": "workflows",
+          "short_description": "Commit review prompt instructions.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/workflows/commit_prompt.md",
+          "default_disable_path": "./.models/instructions/prompt_overrides/review_commit_instructions.md"
+        },
+        {
+          "name": "review_mode_instructions",
+          "config_key": "review_mode_instructions_file",
+          "file": "review_mode.md",
+          "source_group": "workflows",
+          "short_description": "Review mode instructions.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/workflows/review_mode.md",
+          "default_disable_path": "./.models/instructions/prompt_overrides/review_mode_instructions.md"
+        },
+        {
+          "name": "review_uncommitted_instructions",
+          "config_key": "review_uncommitted_instructions_file",
+          "file": "uncommitted_prompt.md",
+          "source_group": "workflows",
+          "short_description": "Uncommitted-changes review instructions.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/workflows/uncommitted_prompt.md",
+          "default_disable_path": "./.models/instructions/prompt_overrides/review_uncommitted_instructions.md"
+        }
+      ]
+    },
+    {
+      "name": "tools",
+      "enabled": true,
+      "short_description": "Tool prompt overrides sourced from canonical tool instruction assets.",
+      "entries": [
+        {
+          "name": "apply_patch_instructions",
+          "config_key": "apply_patch_instructions_file",
+          "file": "apply_patch.md",
+          "source_group": "tools",
+          "short_description": "Apply-patch usage instructions.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/tools/apply_patch.md",
+          "default_disable_path": "./.models/instructions/prompt_overrides/apply_patch_instructions.md"
+        },
+        {
+          "name": "presentation_artifact_instructions",
+          "config_key": "presentation_artifact_instructions_file",
+          "file": "presentation_artifact.md",
+          "source_group": "tools",
+          "short_description": "Presentation artifact instructions.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/tools/presentation_artifact.md",
+          "default_disable_path": "./.models/instructions/prompt_overrides/presentation_artifact_instructions.md"
+        },
+        {
+          "name": "request_user_input_instructions",
+          "config_key": "request_user_input_instructions_file",
+          "file": "request_user_input.md",
+          "source_group": "tools",
+          "short_description": "Request-user-input tool instructions.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/tools/request_user_input.md",
+          "default_disable_path": "./.models/instructions/prompt_overrides/request_user_input_instructions.md"
+        },
+        {
+          "name": "search_tool_instructions",
+          "config_key": "search_tool_instructions_file",
+          "file": "tool_description.md",
+          "source_group": "tools",
+          "short_description": "Search tool description override.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/tools/tool_description.md",
+          "default_disable_path": "./.models/instructions/prompt_overrides/search_tool_instructions.md"
+        },
+        {
+          "name": "search_tool_suggest_instructions",
+          "config_key": "search_tool_suggest_instructions_file",
+          "file": "tool_suggest_description.md",
+          "source_group": "tools",
+          "short_description": "Search tool suggestion description override.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/tools/tool_suggest_description.md",
+          "default_disable_path": "./.models/instructions/prompt_overrides/search_tool_suggest_instructions.md"
+        }
+      ]
+    },
+    {
+      "name": "memories",
+      "enabled": true,
+      "short_description": "Memory pipeline instruction overrides.",
+      "entries": [
+        {
+          "name": "read_path_instructions",
+          "config_key": "read_path_instructions_file",
+          "file": "read_path.md",
+          "source_group": "memories",
+          "short_description": "Memory read-path instructions.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/memories/read_path.md",
+          "default_disable_path": "./.models/instructions/memories/read_path.md"
+        },
+        {
+          "name": "extraction_instructions",
+          "config_key": "extraction_instructions_file",
+          "file": "stage_one_system.md",
+          "source_group": "memories",
+          "short_description": "Memory extraction instructions.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/memories/stage_one_system.md",
+          "default_disable_path": "./.models/instructions/memories/stage_one_system.md"
+        },
+        {
+          "name": "consolidation_instructions",
+          "config_key": "consolidation_instructions_file",
+          "file": "consolidation.md",
+          "source_group": "memories",
+          "short_description": "Memory consolidation instructions.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/memories/consolidation.md",
+          "default_disable_path": "./.models/instructions/memories/consolidation.md"
+        }
+      ]
+    }
+  ]
+}

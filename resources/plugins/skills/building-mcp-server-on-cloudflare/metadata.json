@@ -1,0 +1,18 @@
+{
+  "version": "1.0",
+  "organization": "Codex Setup",
+  "date": "March 9, 2026",
+  "abstract": "Builds remote MCP (Model Context Protocol) servers on Cloudflare Workers\nwith tools, OAuth authentication, and production deployment. Generates\nserver code, configures auth providers, and deploys to Workers.\n\nUse when: user wants to \"build MCP server\", \"create MCP tools\", \"remote\nMCP\", \"deploy MCP\", add \"OAuth to MCP\", or mentions Model Context Protocol\non Cloudflare. Also triggers on \"MCP authentication\" or \"MCP deployment\".\nBiases towards retrieval from Cloudflare docs over pre-trained knowledge.",
+  "references": [
+    "https://developers.cloudflare.com/agents/mcp/`",
+    "https://modelcontextprotocol.io/`",
+    "https://developers.cloudflare.com/workers/`",
+    "http://localhost:8788/mcp`",
+    "https://api.weather.com/${city}`",
+    "http://localhost:5173,",
+    "http://localhost:8788/mcp",
+    "https://[worker-name",
+    "https://my-mcp.workers.dev/mcp",
+    "http://localhost:8788/callback`"
+  ]
+}

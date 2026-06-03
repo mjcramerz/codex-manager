@@ -1,0 +1,247 @@
+{
+  "version": 1,
+  "groups": [
+    {
+      "name": "agents",
+      "enabled": true,
+      "short_description": "Agent bootstrap and hierarchical orchestration instructions.",
+      "entries": [
+        {
+          "name": "hierarchical_agents_message",
+          "config_key": "hierarchical_agents_message_file",
+          "file": "hierarchical_agents.md",
+          "source_group": "agents",
+          "short_description": "Hierarchical agent handoff and coordination guidance.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/agents/hierarchical_agents.md",
+          "default_disable_path": "./.models/instructions/agents/hierarchical_agents.md"
+        },
+        {
+          "name": "init_agents_instructions",
+          "config_key": "init_agents_instructions_file",
+          "file": "init_agents_prompt.md",
+          "source_group": "agents",
+          "short_description": "Agent initialization instructions.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/agents/init_agents_prompt.md",
+          "default_disable_path": "./.models/instructions/agents/init_agents_prompt.md"
+        },
+        {
+          "name": "seed_agents_instructions",
+          "config_key": "seed_agents_instructions_file",
+          "file": "seed_agents_instructions.md",
+          "source_group": "agents",
+          "short_description": "Seed prompt for spawned agents.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/agents/seed_agents_instructions.md",
+          "default_disable_path": "./.models/instructions/agents/seed_agents_instructions.md"
+        },
+        {
+          "name": "personality_spec_message_template",
+          "config_key": "personality_spec_message_template_file",
+          "file": "personality_spec_message_template.md",
+          "source_group": "agents",
+          "short_description": "Personality message template for agent roles.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/agents/personality_spec_message_template.md",
+          "default_disable_path": "./.models/instructions/agents/personality_spec_message_template.md"
+        }
+      ]
+    },
+    {
+      "name": "models",
+      "enabled": true,
+      "short_description": "Model catalog and compact/context instructions.",
+      "entries": [
+        {
+          "name": "model_instructions",
+          "config_key": "model_instructions_file",
+          "file": "model.md",
+          "source_group": "models",
+          "short_description": "Primary model behavior instructions.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/models/model.md",
+          "default_disable_path": "./.models/model.md"
+        },
+        {
+          "name": "experimental_compact_prompt",
+          "config_key": "experimental_compact_prompt_file",
+          "file": "compact.md",
+          "source_group": "models",
+          "short_description": "Compact prompt used for history reduction.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/models/compact.md",
+          "default_disable_path": "./.models/compact.md"
+        },
+        {
+          "name": "model_catalog",
+          "config_key": "model_catalog_json",
+          "file": "model_catalog.json",
+          "source_group": "models",
+          "short_description": "Model catalog data used by the runtime.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/models/model_catalog.json",
+          "default_disable_path": "./.models/model_catalog.json"
+        }
+      ]
+    },
+    {
+      "name": "workflow",
+      "enabled": true,
+      "short_description": "Plan/default mode and review workflow prompts.",
+      "entries": [
+        {
+          "name": "plan_mode_instructions",
+          "config_key": "plan_mode_instructions_file",
+          "file": "plan_mode.md",
+          "source_group": "workflow",
+          "short_description": "Plan mode behavior instructions.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/workflow/plan_mode.md",
+          "default_disable_path": "./.models/instructions/workflow/plan_mode.md"
+        },
+        {
+          "name": "default_mode_instructions",
+          "config_key": "default_mode_instructions_file",
+          "file": "default_mode.md",
+          "source_group": "workflow",
+          "short_description": "Default mode behavior instructions.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/workflow/default_mode.md",
+          "default_disable_path": "./.models/instructions/workflow/default_mode.md"
+        },
+        {
+          "name": "review_base_guidelines",
+          "config_key": "review_base_guidelines_file",
+          "file": "review_base.md",
+          "source_group": "workflow",
+          "short_description": "Base review checklist and constraints.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/workflow/review_base.md",
+          "default_disable_path": "./.models/instructions/workflow/review_base.md"
+        },
+        {
+          "name": "base_branch_prompt",
+          "config_key": "base_branch_prompt_file",
+          "file": "base_branch_prompt.md",
+          "source_group": "workflow",
+          "short_description": "Prompt used for base branch selection.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/workflow/base_branch_prompt.md",
+          "default_disable_path": "./.models/instructions/workflow/base_branch_prompt.md"
+        },
+        {
+          "name": "base_branch_prompt_backup",
+          "config_key": "base_branch_prompt_backup_file",
+          "file": "base_branch_prompt_backup.md",
+          "source_group": "workflow",
+          "short_description": "Fallback prompt for base branch selection.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/workflow/base_branch_prompt_backup.md",
+          "default_disable_path": "./.models/instructions/workflow/base_branch_prompt_backup.md"
+        },
+        {
+          "name": "uncommitted_prompt",
+          "config_key": "uncommitted_prompt_file",
+          "file": "uncommitted_changes.md",
+          "source_group": "workflow",
+          "short_description": "Prompt shown for uncommitted-change handling.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/workflow/uncommitted_changes.md",
+          "default_disable_path": "./.models/instructions/workflow/uncommitted_changes.md"
+        }
+      ]
+    },
+    {
+      "name": "tools",
+      "enabled": true,
+      "short_description": "Tool descriptions and apply-patch instructions.",
+      "entries": [
+        {
+          "name": "search_tool_instructions",
+          "config_key": "search_tool_instructions_file",
+          "file": "search_tool_description.md",
+          "source_group": "tools",
+          "short_description": "Search tool usage guidance.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/tools/search_tool_description.md",
+          "default_disable_path": "./.models/instructions/tools/search_tool_description.md"
+        },
+        {
+          "name": "request_user_input_tool_description",
+          "config_key": "request_user_input_tool_description_file",
+          "file": "request_user_input_tool_description.md",
+          "source_group": "tools",
+          "short_description": "Description for the request-user-input tool.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/tools/request_user_input_tool_description.md",
+          "default_disable_path": "./.models/instructions/tools/request_user_input_tool_description.md"
+        },
+        {
+          "name": "apply_patch_instructions",
+          "config_key": "apply_patch_instructions_file",
+          "file": "apply_patch_instructions.md",
+          "source_group": "tools",
+          "short_description": "User-facing apply-patch instructions.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/tools/apply_patch_instructions.md",
+          "default_disable_path": "./.models/instructions/tools/apply_patch_instructions.md"
+        },
+        {
+          "name": "apply_patch_grammar",
+          "config_key": "apply_patch_grammar_file",
+          "file": "tool_apply_patch.lark",
+          "source_group": "tools",
+          "short_description": "Grammar for the apply-patch tool.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/tools/tool_apply_patch.lark",
+          "default_disable_path": "./.models/instructions/tools/tool_apply_patch.lark"
+        }
+      ]
+    },
+    {
+      "name": "memories",
+      "enabled": true,
+      "short_description": "Memory extraction and consolidation instruction assets.",
+      "entries": [
+        {
+          "name": "phase_1_instructions",
+          "config_key": "phase_1_instructions_file",
+          "file": "phase_1_instructions.md",
+          "source_group": "memories",
+          "short_description": "Memory phase 1 extraction instructions.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/memories/phase_1_instructions.md",
+          "default_disable_path": "./.models/instructions/memories/phase_1_instructions.md"
+        },
+        {
+          "name": "phase_2_instructions",
+          "config_key": "phase_2_instructions_file",
+          "file": "phase_2_instructions.md",
+          "source_group": "memories",
+          "short_description": "Memory phase 2 consolidation instructions.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/memories/phase_2_instructions.md",
+          "default_disable_path": "./.models/instructions/memories/phase_2_instructions.md"
+        },
+        {
+          "name": "phase_3_instructions",
+          "config_key": null,
+          "file": "phase_3_instructions.md",
+          "source_group": "memories",
+          "short_description": "Optional memory phase 3 instructions kept for manual use.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/memories/phase_3_instructions.md",
+          "default_disable_path": null
+        },
+        {
+          "name": "phase_4_instructions",
+          "config_key": "phase_4_instructions_file",
+          "file": "phase_4_instructions.md",
+          "source_group": "memories",
+          "short_description": "Memory phase 4 ranking instructions.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/memories/phase_4_instructions.md",
+          "default_disable_path": "./.models/instructions/memories/phase_4_instructions.md"
+        },
+        {
+          "name": "phase_5_instructions",
+          "config_key": "phase_5_instructions_file",
+          "file": "phase_5_instructions.md",
+          "source_group": "memories",
+          "short_description": "Memory phase 5 execution instructions.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/memories/phase_5_instructions.md",
+          "default_disable_path": "./.models/instructions/memories/phase_5_instructions.md"
+        },
+        {
+          "name": "phase_6_instructions",
+          "config_key": "phase_6_instructions_file",
+          "file": "phase_6_instructions.md",
+          "source_group": "memories",
+          "short_description": "Memory phase 6 policy instructions.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/memories/phase_6_instructions.md",
+          "default_disable_path": "./.models/instructions/memories/phase_6_instructions.md"
+        }
+      ]
+    }
+  ]
+}

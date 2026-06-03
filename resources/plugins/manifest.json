@@ -1,0 +1,1706 @@
+{
+  "version": 2,
+  "marketplace_name": "codex-local",
+  "shared_mcp": {
+    "refs": [
+      "context7",
+      "fetch",
+      "filesystem",
+      "git",
+      "linear",
+      "sequential_thinking"
+    ]
+  },
+  "plugins": {
+    "codex-runtime": {
+      "name": "codex-runtime",
+      "description": "Runtime configuration, schema diff, and install-audit plugins for managed Codex setups.",
+      "category": "Operations",
+      "keywords": [
+        "codex",
+        "runtime",
+        "operations",
+        "config",
+        "schema",
+        "diff",
+        "setup",
+        "audit"
+      ],
+      "skills": [
+        "runtime-config",
+        "schema-diff",
+        "setup-audit"
+      ],
+      "apps": [],
+      "mcp": [
+        "openaiDeveloperDocs"
+      ],
+      "author": {
+        "name": "Codex Setup"
+      },
+      "interface": {
+        "display_name": "Codex Runtime",
+        "short_description": "Runtime config, schema diff, and setup audit",
+        "long_description": "Use this plugin for managed Codex runtime configuration, schema comparisons, and installer verification work.",
+        "developer_name": "Codex Setup",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the Codex Runtime plugin for managed runtime configuration, schema diff, and setup audit work.",
+        "brand_color": "#2563EB"
+      }
+    },
+    "codex-repo": {
+      "name": "codex-repo",
+      "description": "Codex source-tree implementation and runtime-contract work.",
+      "category": "Development",
+      "keywords": [
+        "codex",
+        "repo",
+        "development"
+      ],
+      "skills": [
+        "codex-repo"
+      ],
+      "apps": [
+        {
+          "name": "github",
+          "id": "github"
+        },
+        {
+          "name": "linear",
+          "id": "linear"
+        }
+      ],
+      "mcp": [
+        "openaiDeveloperDocs"
+      ],
+      "author": {
+        "name": "Codex Setup"
+      },
+      "interface": {
+        "display_name": "Codex Repo",
+        "short_description": "Codex source tree and runtime contracts",
+        "long_description": "Use this plugin when the task targets the active Codex source tree, runtime behavior, or plugin contracts.",
+        "developer_name": "Codex Setup",
+        "capabilities": [
+          "Interactive",
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the Codex Repo plugin to inspect and modify the active Codex source tree with runtime awareness.",
+        "brand_color": "#2563EB"
+      }
+    },
+    "openai-apps": {
+      "name": "openai-apps",
+      "description": "OpenAI platform application scaffolding and documentation workflows.",
+      "category": "Development",
+      "keywords": [
+        "openai",
+        "apps",
+        "development",
+        "docs",
+        "chatgpt"
+      ],
+      "skills": [
+        "openai-docs",
+        "chatgpt-apps"
+      ],
+      "apps": [],
+      "mcp": [
+        "openaiDeveloperDocs"
+      ],
+      "author": {
+        "name": "OpenAI"
+      },
+      "interface": {
+        "display_name": "OpenAI Apps",
+        "short_description": "OpenAI docs and ChatGPT app workflows",
+        "long_description": "Use this plugin for OpenAI developer documentation and ChatGPT Apps SDK scaffolding workflows.",
+        "developer_name": "OpenAI",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the OpenAI Apps plugin for OpenAI docs research and ChatGPT app scaffolding work.",
+        "brand_color": "#10A37F"
+      }
+    },
+    "github": {
+      "name": "github",
+      "description": "GitHub review, PR-comment, and Actions workflow plugins.",
+      "category": "Development",
+      "keywords": [
+        "github",
+        "development",
+        "pr",
+        "comments",
+        "ci",
+        "actions",
+        "fix"
+      ],
+      "skills": [
+        "github-pr-comments",
+        "ci-github-actions",
+        "ci-github-actions-fix",
+        "gh-address-comments",
+        "gh-fix-ci",
+        "yeet"
+      ],
+      "apps": [
+        {
+          "name": "github",
+          "id": "github"
+        }
+      ],
+      "mcp": [],
+      "author": {
+        "name": "Codex Setup"
+      },
+      "interface": {
+        "display_name": "GitHub",
+        "short_description": "GitHub review and Actions workflows",
+        "long_description": "Use this plugin for GitHub PR comments, review response work, and GitHub Actions authoring or repair.",
+        "developer_name": "Codex Setup",
+        "capabilities": [
+          "Interactive",
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the GitHub plugin for GitHub review, PR-comment, and GitHub Actions workflows.",
+        "brand_color": "#24292F"
+      }
+    },
+    "gitlab": {
+      "name": "gitlab",
+      "description": "GitLab CI/CD delivery and pipeline-hardening workflows.",
+      "category": "Development",
+      "keywords": [
+        "gitlab",
+        "development",
+        "ci",
+        "cicd"
+      ],
+      "skills": [
+        "ci-gitlab-cicd"
+      ],
+      "apps": [],
+      "mcp": [],
+      "author": {
+        "name": "Codex Setup"
+      },
+      "interface": {
+        "display_name": "GitLab",
+        "short_description": "GitLab CI/CD delivery workflows",
+        "long_description": "Use this plugin for GitLab CI/CD pipeline authoring, hardening, and delivery workflow changes.",
+        "developer_name": "Codex Setup",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the GitLab plugin for GitLab CI/CD pipeline authoring, hardening, and delivery workflow changes.",
+        "brand_color": "#FC6D26"
+      }
+    },
+    "linear": {
+      "name": "linear",
+      "description": "Linear issue and workflow management.",
+      "category": "Productivity",
+      "homepage": "https://linear.app/integrations/codex-mcp",
+      "repository": "https://github.com/openai/plugins",
+      "license": "MIT",
+      "keywords": [
+        "linear",
+        "productivity"
+      ],
+      "skills": [
+        "linear"
+      ],
+      "apps": [
+        {
+          "name": "linear",
+          "id": "linear"
+        }
+      ],
+      "mcp": [],
+      "author": {
+        "name": "OpenAI",
+        "email": "support@openai.com",
+        "url": "https://openai.com/"
+      },
+      "interface": {
+        "display_name": "Linear",
+        "short_description": "Linear issue and workflow management",
+        "long_description": "Use Codex with Linear to triage, create, and update issues, projects, and team workflows directly from task prompts.",
+        "developer_name": "OpenAI",
+        "capabilities": [
+          "Interactive",
+          "Write"
+        ],
+        "website_url": "https://linear.app/",
+        "privacy_policy_url": "https://linear.app/privacy",
+        "terms_of_service_url": "https://linear.app/terms",
+        "default_prompt": "Use Linear context to triage or update relevant issues for this task, with clear next actions.",
+        "brand_color": "#222326"
+      }
+    },
+    "google-calendar": {
+      "name": "google-calendar",
+      "description": "Google Calendar scheduling, availability, and event management.",
+      "category": "Productivity",
+      "homepage": "https://workspace.google.com/products/calendar/",
+      "repository": "https://github.com/openai/plugins",
+      "license": "MIT",
+      "keywords": [
+        "google",
+        "calendar",
+        "productivity"
+      ],
+      "skills": [
+        "google-calendar"
+      ],
+      "apps": [
+        {
+          "name": "google-calendar",
+          "id": "connector_947e0d954944416db111db556030eea6"
+        }
+      ],
+      "mcp": [],
+      "author": {
+        "name": "OpenAI",
+        "email": "support@openai.com",
+        "url": "https://openai.com/"
+      },
+      "interface": {
+        "display_name": "Google Calendar",
+        "short_description": "Google Calendar schedules and events",
+        "long_description": "Use Google Calendar to summarize a day, check availability, list calendars, and create, update, or delete events directly from task prompts.",
+        "developer_name": "OpenAI",
+        "capabilities": [
+          "Interactive",
+          "Write"
+        ],
+        "website_url": "https://workspace.google.com/products/calendar/",
+        "privacy_policy_url": "https://policies.google.com/privacy",
+        "terms_of_service_url": "https://policies.google.com/terms",
+        "default_prompt": "Use Google Calendar to summarize my day, find availability this week, and schedule, update, or cancel the right event.",
+        "brand_color": "#4285F4"
+      }
+    },
+    "notion": {
+      "name": "notion",
+      "description": "Notion capture, meeting, research, and implementation-planning workflows.",
+      "category": "Productivity",
+      "keywords": [
+        "notion",
+        "productivity",
+        "knowledge",
+        "capture",
+        "meeting",
+        "intelligence",
+        "research",
+        "documentation"
+      ],
+      "skills": [
+        "notion-knowledge-capture",
+        "notion-meeting-intelligence",
+        "notion-research-documentation",
+        "notion-spec-to-implementation"
+      ],
+      "apps": [
+        {
+          "name": "notion",
+          "id": "notion"
+        }
+      ],
+      "mcp": [],
+      "author": {
+        "name": "Codex Setup"
+      },
+      "interface": {
+        "display_name": "Notion",
+        "short_description": "Notion capture and planning workflows",
+        "long_description": "Use this plugin for Notion knowledge capture, meeting prep, research documentation, and spec-to-implementation planning.",
+        "developer_name": "Codex Setup",
+        "capabilities": [
+          "Interactive",
+          "Write"
+        ],
+        "default_prompt": "Use the Notion plugin for Notion capture, research, and planning workflows.",
+        "brand_color": "#111827"
+      }
+    },
+    "obsidian": {
+      "name": "obsidian",
+      "description": "Obsidian documentation, capture, research, and planning workflows.",
+      "category": "Knowledge",
+      "keywords": [
+        "obsidian",
+        "knowledge",
+        "docs",
+        "capture",
+        "meeting",
+        "intelligence"
+      ],
+      "skills": [
+        "obsidian-docs",
+        "obsidian-knowledge-capture",
+        "obsidian-meeting-intelligence",
+        "obsidian-research-documentation",
+        "obsidian-spec-to-implementation",
+        "obsidian-toc"
+      ],
+      "apps": [],
+      "mcp": [],
+      "author": {
+        "name": "Codex Setup"
+      },
+      "interface": {
+        "display_name": "Obsidian",
+        "short_description": "Obsidian docs and planning workflows",
+        "long_description": "Use this plugin for Obsidian documentation, knowledge capture, meeting prep, research, and planning workflows.",
+        "developer_name": "Codex Setup",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the Obsidian plugin for documentation, capture, research, and planning workflows.",
+        "brand_color": "#7C3AED"
+      }
+    },
+    "health-planning": {
+      "name": "health-planning",
+      "description": "ADHD and CBT planning packs with printable workflow support.",
+      "category": "Productivity",
+      "keywords": [
+        "health",
+        "planning",
+        "productivity",
+        "adhd",
+        "cbt"
+      ],
+      "skills": [
+        "health-adhd-cbt"
+      ],
+      "apps": [],
+      "mcp": [],
+      "author": {
+        "name": "Codex Setup"
+      },
+      "interface": {
+        "display_name": "Health Planning",
+        "short_description": "ADHD and CBT planning packs",
+        "long_description": "Use this plugin for ADHD and CBT planning packs, printable workflows, and structured self-management templates.",
+        "developer_name": "Codex Setup",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the Health Planning plugin for ADHD and CBT planning packs and printable workflow generation.",
+        "brand_color": "#16A34A"
+      }
+    },
+    "backend": {
+      "name": "backend",
+      "description": "Backend APIs, scaffolding, VS Code extensions, and ASP.NET Core workflows.",
+      "category": "Development",
+      "keywords": [
+        "backend",
+        "development",
+        "axum",
+        "fastapi",
+        "aspnet",
+        "core"
+      ],
+      "skills": [
+        "backend-axum",
+        "backend-fastapi",
+        "aspnet-core",
+        "devtools-app-scaffolder",
+        "devtools-vscode-extension"
+      ],
+      "apps": [],
+      "mcp": [
+        "microsoft-learn"
+      ],
+      "author": {
+        "name": "Codex Setup"
+      },
+      "interface": {
+        "display_name": "Backend",
+        "short_description": "Backend APIs and scaffolding",
+        "long_description": "Use this plugin for backend framework work, app scaffolding, VS Code extensions, and ASP.NET Core implementation.",
+        "developer_name": "Codex Setup",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the Backend plugin for backend APIs, scaffolding, VS Code extension work, and ASP.NET Core implementation.",
+        "brand_color": "#2563EB"
+      }
+    },
+    "frontend": {
+      "name": "frontend",
+      "description": "Frontend framework implementation and interactive web UI workflows.",
+      "category": "Development",
+      "keywords": [
+        "frontend",
+        "development",
+        "web",
+        "html",
+        "htmx",
+        "nextjs"
+      ],
+      "skills": [
+        "web-html",
+        "web-htmx",
+        "web-nextjs",
+        "web-nuxt",
+        "web-react",
+        "web-sveltekit",
+        "web-vue",
+        "develop-web-game"
+      ],
+      "apps": [],
+      "mcp": [
+        "jina-ai"
+      ],
+      "author": {
+        "name": "Codex Setup"
+      },
+      "interface": {
+        "display_name": "Frontend",
+        "short_description": "Frontend frameworks and interactive web UIs",
+        "long_description": "Use this plugin for frontend framework implementation across HTML, HTMX, Next.js, Nuxt, React, SvelteKit, Vue, and browser-based web games.",
+        "developer_name": "Codex Setup",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the Frontend plugin for frontend framework implementation and interactive web UI work.",
+        "brand_color": "#F97316"
+      }
+    },
+    "design-ui": {
+      "name": "design-ui",
+      "description": "Generic UI review, accessibility, and design-quality workflows.",
+      "category": "Development",
+      "keywords": [
+        "design",
+        "ui",
+        "review",
+        "accessibility",
+        "guidelines"
+      ],
+      "skills": [
+        "web-design-guidelines"
+      ],
+      "apps": [],
+      "mcp": [],
+      "author": {
+        "name": "Codex Setup"
+      },
+      "interface": {
+        "display_name": "Design UI",
+        "short_description": "Generic UI review and design-quality workflows",
+        "long_description": "Use this plugin for UI review, web design guidelines, accessibility checks, and vendor-neutral design quality work.",
+        "developer_name": "Codex Setup",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the Design UI plugin for generic UI review, accessibility, and design-quality workflows.",
+        "brand_color": "#8B5CF6"
+      }
+    },
+    "browser-automation": {
+      "name": "browser-automation",
+      "description": "Browser automation, screenshots, and interactive Playwright workflows.",
+      "category": "Development",
+      "keywords": [
+        "browser",
+        "automation",
+        "development",
+        "playwright",
+        "interactive",
+        "screenshot"
+      ],
+      "skills": [
+        "playwright",
+        "playwright-interactive",
+        "screenshot"
+      ],
+      "apps": [],
+      "mcp": [],
+      "author": {
+        "name": "Codex Setup"
+      },
+      "interface": {
+        "display_name": "Browser Automation",
+        "short_description": "Playwright and screenshot workflows",
+        "long_description": "Use this plugin for browser automation, interactive Playwright loops, and screenshot capture workflows.",
+        "developer_name": "Codex Setup",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the Browser Automation plugin for Playwright, interactive browser loops, and screenshot work.",
+        "brand_color": "#0EA5E9"
+      }
+    },
+    "document-artifacts": {
+      "name": "document-artifacts",
+      "description": "Document, spreadsheet, slide, notebook, and other artifact-generation workflows.",
+      "category": "Development",
+      "keywords": [
+        "document",
+        "artifacts",
+        "development",
+        "doc",
+        "pdf",
+        "slides"
+      ],
+      "skills": [
+        "doc",
+        "pdf",
+        "slides",
+        "spreadsheet",
+        "jupyter-notebook"
+      ],
+      "apps": [],
+      "mcp": [],
+      "author": {
+        "name": "Codex Setup"
+      },
+      "interface": {
+        "display_name": "Document Artifacts",
+        "short_description": "Docs, spreadsheets, slides, and notebooks",
+        "long_description": "Use this plugin for document editing, PDFs, slides, spreadsheets, and notebook-style artifact workflows.",
+        "developer_name": "Codex Setup",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the Document Artifacts plugin for docs, PDFs, slides, spreadsheets, and notebook workflows.",
+        "brand_color": "#A855F7"
+      }
+    },
+    "adobe-acrobat": {
+      "name": "adobe-acrobat",
+      "description": "Adobe Acrobat workflows for PDF reading, forms, signing, reviews, and document handoffs.",
+      "category": "Productivity",
+      "keywords": [
+        "acrobat",
+        "adobe",
+        "pdf",
+        "forms",
+        "signing",
+        "review",
+        "documents"
+      ],
+      "skills": [
+        "acrobat-reader",
+        "acrobat-forms",
+        "acrobat-forms-sign",
+        "acrobat-review"
+      ],
+      "apps": [
+        {
+          "name": "adobe-acrobat",
+          "id": "connector_6938a7d323f48191aeabaf579802bf45"
+        }
+      ],
+      "mcp": [],
+      "author": {
+        "name": "Adobe"
+      },
+      "homepage": "https://www.adobe.com/acrobat.html",
+      "interface": {
+        "display_name": "Adobe Acrobat",
+        "short_description": "PDF reading, forms, signing, and review workflows",
+        "long_description": "Use this plugin for Adobe Acrobat reading, annotation, forms, signing, compare, and review workflows with clear handoffs to local document tooling.",
+        "developer_name": "Adobe",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the Adobe Acrobat plugin to review, organize, annotate, fill, sign, compare, and route PDFs with explicit handoffs.",
+        "brand_color": "#FA0F00",
+        "website_url": "https://www.adobe.com/acrobat.html",
+        "privacy_policy_url": "https://www.adobe.com/privacy/policy.html",
+        "terms_of_service_url": "https://www.adobe.com/legal/terms.html"
+      }
+    },
+    "adobe-photoshop": {
+      "name": "adobe-photoshop",
+      "description": "Adobe Photoshop workflows for image retouching, compositing, and export handoffs.",
+      "category": "Productivity",
+      "homepage": "https://www.adobe.com/products/photoshop/online.html",
+      "repository": "https://github.com/openai/plugins",
+      "license": "MIT",
+      "keywords": [
+        "adobe",
+        "photoshop",
+        "image",
+        "editing",
+        "retouch"
+      ],
+      "skills": [
+        "adobe-photoshop"
+      ],
+      "apps": [
+        {
+          "name": "adobe-photoshop",
+          "id": "connector_69312da8e4dc81919370cb86fd172b6c"
+        }
+      ],
+      "mcp": [],
+      "author": {
+        "name": "Adobe",
+        "url": "https://www.adobe.com/products/photoshop/online.html"
+      },
+      "interface": {
+        "display_name": "Adobe Photoshop",
+        "short_description": "Edit, stylize, and refine images",
+        "long_description": "Use this plugin for Adobe Photoshop image retouching, layer edits, compositing, and production export workflows.",
+        "developer_name": "Adobe",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "website_url": "https://www.adobe.com/products/photoshop/online.html",
+        "privacy_policy_url": "https://www.adobe.com/privacy/policy.html",
+        "terms_of_service_url": "https://www.adobe.com/legal/terms.html",
+        "default_prompt": "Use the Adobe Photoshop plugin to retouch, stylize, and export images with explicit output requirements.",
+        "brand_color": "#001E36"
+      }
+    },
+    "adobe-express": {
+      "name": "adobe-express",
+      "description": "Adobe Express workflows for quick visual design, social assets, and campaign-ready exports.",
+      "category": "Productivity",
+      "homepage": "https://www.adobe.com/express/",
+      "repository": "https://github.com/openai/plugins",
+      "license": "MIT",
+      "keywords": [
+        "adobe",
+        "express",
+        "design",
+        "social",
+        "marketing"
+      ],
+      "skills": [
+        "adobe-express"
+      ],
+      "apps": [
+        {
+          "name": "adobe-express",
+          "id": "connector_6938a61c70f88191bbdca2dedb90d08b"
+        }
+      ],
+      "mcp": [],
+      "author": {
+        "name": "Adobe",
+        "url": "https://www.adobe.com/express/"
+      },
+      "interface": {
+        "display_name": "Adobe Express",
+        "short_description": "Design posts, flyers, and quick campaign assets",
+        "long_description": "Use this plugin for Adobe Express social creative, posters, invitations, and quick multi-format design workflows.",
+        "developer_name": "Adobe",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "website_url": "https://www.adobe.com/express/",
+        "privacy_policy_url": "https://www.adobe.com/privacy/policy.html",
+        "terms_of_service_url": "https://www.adobe.com/legal/terms.html",
+        "default_prompt": "Use the Adobe Express plugin to create and iterate social and marketing graphics with explicit size and format targets.",
+        "brand_color": "#5D3BFF"
+      }
+    },
+    "ai-media": {
+      "name": "ai-media",
+      "description": "Image, video, speech, and transcription workflows for generated media.",
+      "category": "Development",
+      "keywords": [
+        "ai",
+        "media",
+        "development",
+        "imagegen",
+        "sora",
+        "speech"
+      ],
+      "skills": [
+        "imagegen",
+        "sora",
+        "speech",
+        "transcribe"
+      ],
+      "apps": [],
+      "mcp": [],
+      "author": {
+        "name": "OpenAI"
+      },
+      "interface": {
+        "display_name": "AI Media",
+        "short_description": "Image, video, speech, and transcription",
+        "long_description": "Use this plugin for generated image, video, speech, and transcription workflows.",
+        "developer_name": "OpenAI",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the AI Media plugin for image, video, speech, and transcription workflows.",
+        "brand_color": "#10A37F"
+      }
+    },
+    "vercel": {
+      "name": "vercel",
+      "description": "Vercel deployment workflows for claimable and direct deployment paths.",
+      "category": "Development",
+      "homepage": "https://vercel.com/",
+      "repository": "https://github.com/openai/plugins",
+      "license": "MIT",
+      "keywords": [
+        "vercel",
+        "development",
+        "deploy",
+        "to"
+      ],
+      "skills": [
+        "deploy-to-vercel",
+        "vercel-deploy"
+      ],
+      "apps": [
+        {
+          "name": "vercel",
+          "id": "connector_690a90ec05c881918afb6a55dc9bbaa1"
+        }
+      ],
+      "mcp": [
+        "vercel"
+      ],
+      "author": {
+        "name": "Vercel",
+        "url": "https://vercel.com/"
+      },
+      "interface": {
+        "display_name": "Vercel",
+        "short_description": "Vercel deployment workflows",
+        "long_description": "Use this plugin for Vercel deployment workflows, including claimable deployment flows and direct project deployment guidance.",
+        "developer_name": "Vercel",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "website_url": "https://vercel.com/",
+        "privacy_policy_url": "https://vercel.com/legal/privacy-policy",
+        "terms_of_service_url": "https://vercel.com/legal/terms",
+        "default_prompt": "Use the Vercel plugin for Vercel deployment workflows.",
+        "brand_color": "#111827"
+      }
+    },
+    "hosting-platforms": {
+      "name": "hosting-platforms",
+      "description": "Cross-platform hosting and deployment routing across Vercel, Render, and Netlify workflows.",
+      "category": "Development",
+      "keywords": [
+        "hosting",
+        "deployment",
+        "vercel",
+        "render",
+        "netlify"
+      ],
+      "skills": [
+        "hosting-platforms"
+      ],
+      "apps": [],
+      "mcp": [
+        "vercel",
+        "render"
+      ],
+      "author": {
+        "name": "Codex Setup"
+      },
+      "interface": {
+        "display_name": "Hosting Platforms",
+        "short_description": "Route deployments across Vercel, Render, and Netlify",
+        "long_description": "Use this plugin when a deployment task spans Vercel, Render, or Netlify, or when the right hosting target still needs to be chosen.",
+        "developer_name": "Codex Setup",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the Hosting Platforms plugin to choose and coordinate Vercel, Render, or Netlify deployment workflows.",
+        "brand_color": "#0F766E"
+      }
+    },
+    "web-browser-linux": {
+      "name": "web-browser-linux",
+      "description": "Linux desktop browser, browser-hardening, and supporting desktop workflow plugins.",
+      "category": "Desktop",
+      "keywords": [
+        "web",
+        "browser",
+        "linux",
+        "desktop",
+        "hardening",
+        "entries",
+        "librewolf"
+      ],
+      "skills": [
+        "desktop-browser-hardening",
+        "desktop-entries",
+        "desktop-librewolf",
+        "desktop-mullvad-browser",
+        "desktop-thorium",
+        "desktop-wayland"
+      ],
+      "apps": [],
+      "mcp": [],
+      "author": {
+        "name": "Codex Setup"
+      },
+      "interface": {
+        "display_name": "Web Browser Linux",
+        "short_description": "Linux desktop browsers and browser hardening",
+        "long_description": "Use this plugin for Linux desktop browser setup, browser hardening, desktop entries, and Wayland browser workflow support.",
+        "developer_name": "Codex Setup",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the Web Browser Linux plugin for Linux desktop browsers, browser hardening, and related desktop workflow tasks.",
+        "brand_color": "#0EA5E9"
+      }
+    },
+    "iac": {
+      "name": "iac",
+      "description": "Infrastructure-as-code workflows for Ansible and Terraform automation.",
+      "category": "Infrastructure",
+      "keywords": [
+        "iac",
+        "infrastructure",
+        "ansible",
+        "terraform"
+      ],
+      "skills": [
+        "iac-ansible",
+        "iac-terraform"
+      ],
+      "apps": [],
+      "mcp": [],
+      "author": {
+        "name": "Codex Setup"
+      },
+      "interface": {
+        "display_name": "IaC",
+        "short_description": "Ansible and Terraform workflows",
+        "long_description": "Use this plugin for infrastructure-as-code planning, authoring, refactors, and drift remediation with Ansible and Terraform.",
+        "developer_name": "Codex Setup",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the IaC plugin for Ansible and Terraform infrastructure-as-code workflows.",
+        "brand_color": "#0F766E"
+      }
+    },
+    "containers": {
+      "name": "containers",
+      "description": "Container build, runtime, and compose workflows for Docker and Podman.",
+      "category": "Infrastructure",
+      "keywords": [
+        "containers",
+        "infrastructure",
+        "infra"
+      ],
+      "skills": [
+        "infra-containers"
+      ],
+      "apps": [],
+      "mcp": [],
+      "author": {
+        "name": "Codex Setup"
+      },
+      "interface": {
+        "display_name": "Containers",
+        "short_description": "Docker and Podman workflows",
+        "long_description": "Use this plugin for container images, compose stacks, rootless runtimes, and containerized development environments.",
+        "developer_name": "Codex Setup",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the Containers plugin for Docker, Podman, compose, and container runtime workflows.",
+        "brand_color": "#2563EB"
+      }
+    },
+    "kubernetes": {
+      "name": "kubernetes",
+      "description": "Kubernetes workload, manifest, and cluster-operation workflows.",
+      "category": "Infrastructure",
+      "keywords": [
+        "kubernetes",
+        "infrastructure",
+        "infra"
+      ],
+      "skills": [
+        "infra-kubernetes"
+      ],
+      "apps": [],
+      "mcp": [],
+      "author": {
+        "name": "Codex Setup"
+      },
+      "interface": {
+        "display_name": "Kubernetes",
+        "short_description": "Kubernetes manifests and operations",
+        "long_description": "Use this plugin for Kubernetes manifests, workload design, deployment troubleshooting, and cluster operation patterns.",
+        "developer_name": "Codex Setup",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the Kubernetes plugin for k8s manifests, workloads, and cluster operations.",
+        "brand_color": "#1D4ED8"
+      }
+    },
+    "system-infra": {
+      "name": "system-infra",
+      "description": "Host infrastructure workflows for boot, kernel, storage, tuning, logging, and base system automation.",
+      "category": "Infrastructure",
+      "keywords": [
+        "system",
+        "infra",
+        "infrastructure",
+        "grub",
+        "kernel",
+        "optimizations"
+      ],
+      "skills": [
+        "infra-grub",
+        "infra-kernel",
+        "infra-optimizations",
+        "infra-sysctl",
+        "infra-systemd",
+        "ops-logrotate",
+        "os-debian-preseed",
+        "perf-profiling",
+        "storage-filesystems"
+      ],
+      "apps": [],
+      "mcp": [],
+      "author": {
+        "name": "Codex Setup"
+      },
+      "interface": {
+        "display_name": "System Infra",
+        "short_description": "Host tuning, storage, and system automation",
+        "long_description": "Use this plugin for GRUB, kernel settings, sysctl, systemd, filesystems, performance tuning, Debian preseed, and host log rotation workflows.",
+        "developer_name": "Codex Setup",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the System Infra plugin for host tuning, storage, boot, kernel, and base system automation workflows.",
+        "brand_color": "#14B8A6"
+      }
+    },
+    "virtualization": {
+      "name": "virtualization",
+      "description": "Virtualization workflows for Proxmox, libvirt, and VM lifecycle operations.",
+      "category": "Infrastructure",
+      "keywords": [
+        "virtualization",
+        "infrastructure",
+        "infra",
+        "proxmox",
+        "virsh"
+      ],
+      "skills": [
+        "infra-proxmox",
+        "infra-virsh",
+        "infra-virtualization"
+      ],
+      "apps": [],
+      "mcp": [],
+      "author": {
+        "name": "Codex Setup"
+      },
+      "interface": {
+        "display_name": "Virtualization",
+        "short_description": "Proxmox and libvirt VM workflows",
+        "long_description": "Use this plugin for Proxmox, virsh/libvirt, and general virtualization workflows across VM provisioning and operations.",
+        "developer_name": "Codex Setup",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the Virtualization plugin for Proxmox, libvirt, and VM operations workflows.",
+        "brand_color": "#0EA5E9"
+      }
+    },
+    "observability": {
+      "name": "observability",
+      "description": "Observability and logging workflows across Elasticsearch, Kibana, Logstash, and Sentry.",
+      "category": "Observability",
+      "keywords": [
+        "observability",
+        "obs",
+        "elasticsearch",
+        "kibana",
+        "logstash"
+      ],
+      "skills": [
+        "obs-elasticsearch",
+        "obs-kibana",
+        "obs-logstash",
+        "sentry"
+      ],
+      "apps": [],
+      "mcp": [],
+      "author": {
+        "name": "Codex Setup"
+      },
+      "interface": {
+        "display_name": "Observability",
+        "short_description": "Elastic stack and Sentry workflows",
+        "long_description": "Use this plugin for observability and logging workflows across the Elastic stack and Sentry.",
+        "developer_name": "Codex Setup",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the Observability plugin for Elastic stack and Sentry workflows.",
+        "brand_color": "#EAB308"
+      }
+    },
+    "security-controls": {
+      "name": "security-controls",
+      "description": "Application, host, and supply-chain security control workflows.",
+      "category": "Security",
+      "keywords": [
+        "security",
+        "controls",
+        "appsec",
+        "hardening",
+        "bws",
+        "local",
+        "secops",
+        "aide"
+      ],
+      "skills": [
+        "appsec-hardening",
+        "bws-local",
+        "secops-aide",
+        "secops-auditd",
+        "secops-crowdsec",
+        "secops-supply-chain",
+        "secops-usbguard",
+        "security-best-practices",
+        "security-ownership-map",
+        "security-threat-model"
+      ],
+      "apps": [],
+      "mcp": [],
+      "author": {
+        "name": "Codex Setup"
+      },
+      "interface": {
+        "display_name": "Security Controls",
+        "short_description": "Application, host, and supply-chain controls",
+        "long_description": "Use this plugin for security hardening, supply-chain controls, secrets tooling, and defensive host control workflows.",
+        "developer_name": "Codex Setup",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the Security Controls plugin for application, host, and supply-chain control workflows.",
+        "brand_color": "#DC2626"
+      }
+    },
+    "security-labs": {
+      "name": "security-labs",
+      "description": "Cybersecurity lab workflows for purple-team validation, mobile security, NetHunter research, and defensive security operations.",
+      "category": "Security",
+      "keywords": [
+        "security",
+        "labs",
+        "cybersecurity",
+        "c2",
+        "defense",
+        "ops",
+        "mobile",
+        "wireless"
+      ],
+      "skills": [
+        "c2-defense-ops",
+        "mobile-wireless-defense",
+        "nethunter-pixel9a",
+        "offsec-defense"
+      ],
+      "apps": [],
+      "mcp": [],
+      "author": {
+        "name": "Codex Setup"
+      },
+      "interface": {
+        "display_name": "Cybersecurity Labs",
+        "short_description": "Purple-team, mobile, and security research workflows",
+        "long_description": "Use this plugin for purple-team validation, mobile and wireless defense, NetHunter research, and scoped offensive-security defense workflows.",
+        "developer_name": "Codex Setup",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the Cybersecurity Labs plugin for purple-team validation, mobile defense, NetHunter research, and scoped security ops.",
+        "brand_color": "#991B1B"
+      }
+    },
+    "cloudflare-workers": {
+      "name": "cloudflare-workers",
+      "description": "Cloudflare Workers platform, Durable Objects, sandboxing, and Workers best-practice workflows.",
+      "category": "Infrastructure",
+      "keywords": [
+        "cloudflare",
+        "workers",
+        "durable-objects",
+        "edge",
+        "performance"
+      ],
+      "skills": [
+        "cloudflare",
+        "durable-objects",
+        "sandbox-sdk",
+        "web-perf",
+        "workers-best-practices"
+      ],
+      "apps": [],
+      "mcp": [
+        "cloudflare-api",
+        "cloudflare-docs",
+        "cloudflare-bindings",
+        "cloudflare-observability"
+      ],
+      "author": {
+        "name": "Cloudflare"
+      },
+      "interface": {
+        "display_name": "Cloudflare Workers",
+        "short_description": "Workers, Durable Objects, and edge-runtime workflows",
+        "long_description": "Use this plugin for Cloudflare Workers platform work, Durable Objects, Workers sandboxing, and production edge-runtime implementation patterns.",
+        "developer_name": "Cloudflare",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the Cloudflare Workers plugin for Workers platform, Durable Objects, bindings, and edge-runtime workflows.",
+        "brand_color": "#F97316"
+      }
+    },
+    "wrangler": {
+      "name": "wrangler",
+      "description": "Wrangler CLI, Cloudflare deployment, and build workflow automation.",
+      "category": "Infrastructure",
+      "keywords": [
+        "wrangler",
+        "cloudflare",
+        "deploy",
+        "workers",
+        "cli"
+      ],
+      "skills": [
+        "wrangler",
+        "cloudflare-deploy"
+      ],
+      "apps": [],
+      "mcp": [
+        "cloudflare-api",
+        "cloudflare-docs",
+        "cloudflare-builds"
+      ],
+      "author": {
+        "name": "Cloudflare"
+      },
+      "interface": {
+        "display_name": "Wrangler",
+        "short_description": "Wrangler CLI and Cloudflare deployment workflows",
+        "long_description": "Use this plugin for Wrangler CLI usage, deployment configuration, build pipelines, and Cloudflare release automation.",
+        "developer_name": "Cloudflare",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the Wrangler plugin for Wrangler CLI, deployment, and build workflows on Cloudflare.",
+        "brand_color": "#F97316"
+      }
+    },
+    "cloudflare-agents": {
+      "name": "cloudflare-agents",
+      "description": "Cloudflare Agents SDK, agent-building, and MCP-on-Workers workflows.",
+      "category": "Infrastructure",
+      "keywords": [
+        "cloudflare",
+        "agents",
+        "sdk",
+        "mcp",
+        "workers"
+      ],
+      "skills": [
+        "agents-sdk",
+        "building-ai-agent-on-cloudflare",
+        "building-mcp-server-on-cloudflare"
+      ],
+      "apps": [],
+      "mcp": [
+        "cloudflare-api",
+        "cloudflare-docs"
+      ],
+      "author": {
+        "name": "Cloudflare"
+      },
+      "interface": {
+        "display_name": "Cloudflare Agents",
+        "short_description": "Agents SDK and MCP-on-Workers workflows",
+        "long_description": "Use this plugin for Cloudflare Agents SDK, agent design, and Model Context Protocol services deployed on Workers.",
+        "developer_name": "Cloudflare",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the Cloudflare Agents plugin for Agents SDK, agent design, and MCP-on-Workers workflows.",
+        "brand_color": "#F97316"
+      }
+    },
+    "huggingface": {
+      "name": "huggingface",
+      "description": "Hugging Face Hub datasets, evaluation, jobs, training, and tooling workflows.",
+      "category": "Development",
+      "keywords": [
+        "huggingface",
+        "development",
+        "hf",
+        "cli",
+        "hugging",
+        "face",
+        "dataset",
+        "viewer"
+      ],
+      "skills": [
+        "hf-cli",
+        "huggingface-dataset-viewer",
+        "huggingface-datasets",
+        "huggingface-evaluation",
+        "huggingface-jobs",
+        "huggingface-model-trainer",
+        "huggingface-paper-publisher",
+        "huggingface-tool-builder",
+        "huggingface-trackio",
+        "huggingface-gradio"
+      ],
+      "apps": [],
+      "mcp": [
+        "huggingface"
+      ],
+      "author": {
+        "name": "Hugging Face"
+      },
+      "interface": {
+        "display_name": "Hugging Face",
+        "short_description": "Hugging Face Hub and ML workflows",
+        "long_description": "Use this plugin for Hugging Face Hub datasets, evaluation, jobs, training, Trackio, Gradio, and CLI workflows.",
+        "developer_name": "Hugging Face",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the Hugging Face plugin for Hub datasets, evaluation, jobs, training, Trackio, Gradio, and CLI workflows.",
+        "brand_color": "#FF9D00"
+      }
+    },
+    "docs-research": {
+      "name": "docs-research",
+      "description": "Official-docs comparison and implementation research workflows.",
+      "category": "Development",
+      "keywords": [
+        "research",
+        "docs",
+        "api",
+        "reference",
+        "implementation"
+      ],
+      "skills": [
+        "docs-research-workbench",
+        "api-reference-research"
+      ],
+      "apps": [],
+      "mcp": [
+        "openaiDeveloperDocs",
+        "microsoft-learn",
+        "jina-ai"
+      ],
+      "author": {
+        "name": "Codex Setup"
+      },
+      "interface": {
+        "display_name": "Docs Research",
+        "short_description": "Official docs comparison and implementation research",
+        "long_description": "Use this plugin for primary-source documentation research, API reference extraction, and turning vendor guidance into implementation plans.",
+        "developer_name": "Codex Setup",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the Docs Research plugin for official-docs comparison, API reference extraction, and implementation research.",
+        "brand_color": "#0EA5E9"
+      }
+    },
+    "stripe": {
+      "name": "stripe",
+      "description": "Stripe payment, billing, and webhook implementation workflows.",
+      "category": "Development",
+      "homepage": "https://stripe.com",
+      "repository": "https://github.com/openai/plugins",
+      "license": "MIT",
+      "keywords": [
+        "stripe",
+        "payments",
+        "billing",
+        "webhooks",
+        "subscriptions"
+      ],
+      "skills": [
+        "stripe-payments",
+        "stripe-billing-ops"
+      ],
+      "apps": [
+        {
+          "name": "stripe",
+          "id": "connector_690ab09fa43c8191bca40280e4563238"
+        }
+      ],
+      "mcp": [
+        "stripe"
+      ],
+      "author": {
+        "name": "Stripe",
+        "url": "https://stripe.com"
+      },
+      "interface": {
+        "display_name": "Stripe",
+        "short_description": "Stripe payments and billing workflows",
+        "long_description": "Use this plugin for Stripe payment flows, billing operations, invoicing, subscriptions, and webhook implementation work.",
+        "developer_name": "Stripe",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "website_url": "https://stripe.com",
+        "privacy_policy_url": "https://stripe.com/privacy",
+        "terms_of_service_url": "https://stripe.com/legal/ssa",
+        "default_prompt": "Use the Stripe plugin for Stripe payments, billing, invoices, subscriptions, and webhook workflows.",
+        "brand_color": "#635BFF"
+      }
+    },
+    "microsoft-learn": {
+      "name": "microsoft-learn",
+      "description": "Microsoft Learn and Azure implementation research workflows.",
+      "category": "Development",
+      "keywords": [
+        "microsoft",
+        "learn",
+        "azure",
+        "docs",
+        "research"
+      ],
+      "skills": [
+        "microsoft-learn-research",
+        "azure-implementation-guide"
+      ],
+      "apps": [],
+      "mcp": [
+        "microsoft-learn"
+      ],
+      "author": {
+        "name": "Microsoft"
+      },
+      "interface": {
+        "display_name": "Microsoft Learn",
+        "short_description": "Microsoft Learn and Azure implementation workflows",
+        "long_description": "Use this plugin for Microsoft Learn research, Azure implementation guidance, and turning Microsoft docs into concrete engineering plans.",
+        "developer_name": "Microsoft",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the Microsoft Learn plugin for Microsoft documentation research and Azure implementation planning.",
+        "brand_color": "#2563EB"
+      }
+    },
+    "jina-ai": {
+      "name": "jina-ai",
+      "description": "Jina AI search, reader, and grounding workflows.",
+      "category": "Development",
+      "keywords": [
+        "jina",
+        "search",
+        "reader",
+        "grounding",
+        "research"
+      ],
+      "skills": [
+        "jina-reader-research",
+        "jina-grounded-search"
+      ],
+      "apps": [],
+      "mcp": [
+        "jina-ai"
+      ],
+      "author": {
+        "name": "Jina AI"
+      },
+      "interface": {
+        "display_name": "Jina AI",
+        "short_description": "Jina AI search and grounding workflows",
+        "long_description": "Use this plugin for Jina AI Reader, grounded search, and documentation extraction workflows tied to implementation tasks.",
+        "developer_name": "Jina AI",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the Jina AI plugin for Jina Reader, grounded search, and web extraction workflows.",
+        "brand_color": "#0EA5E9"
+      }
+    },
+    "atlassian": {
+      "name": "atlassian",
+      "description": "Atlassian cloud, Jira, and Confluence workflow research and implementation guidance.",
+      "category": "Productivity",
+      "keywords": [
+        "atlassian",
+        "jira",
+        "confluence",
+        "workflow",
+        "cloud"
+      ],
+      "skills": [
+        "atlassian-work-management",
+        "atlassian-cloud-implementation"
+      ],
+      "apps": [],
+      "mcp": [
+        "atlassian"
+      ],
+      "author": {
+        "name": "Atlassian"
+      },
+      "interface": {
+        "display_name": "Atlassian",
+        "short_description": "Atlassian cloud workflow and implementation guidance",
+        "long_description": "Use this plugin for Jira, Confluence, Atlassian cloud workflows, and implementation planning grounded in Atlassian documentation.",
+        "developer_name": "Atlassian",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the Atlassian plugin for Jira, Confluence, and Atlassian cloud workflow guidance.",
+        "brand_color": "#1D4ED8"
+      }
+    },
+    "figma": {
+      "name": "figma",
+      "description": "Figma design handoff and implementation workflows.",
+      "category": "Development",
+      "homepage": "https://www.figma.com",
+      "repository": "https://github.com/openai/plugins",
+      "license": "MIT",
+      "keywords": [
+        "figma",
+        "design",
+        "handoff",
+        "implementation",
+        "mcp"
+      ],
+      "skills": [
+        "figma",
+        "figma-implement-design"
+      ],
+      "apps": [
+        {
+          "name": "figma",
+          "id": "connector_68df038e0ba48191908c8434991bbac2"
+        }
+      ],
+      "mcp": [
+        "figma"
+      ],
+      "author": {
+        "name": "Figma, Inc.",
+        "url": "https://www.figma.com"
+      },
+      "interface": {
+        "display_name": "Figma",
+        "short_description": "Figma design handoff and implementation",
+        "long_description": "Use this plugin for Figma MCP design context, screenshots, assets, and implementation workflows.",
+        "developer_name": "Figma, Inc.",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "website_url": "https://www.figma.com",
+        "privacy_policy_url": "https://www.figma.com/legal/privacy/",
+        "terms_of_service_url": "https://www.figma.com/legal/tos/",
+        "default_prompt": "Use the Figma plugin for Figma MCP design handoff and implementation work.",
+        "brand_color": "#A259FF"
+      }
+    },
+    "vercel-ui": {
+      "name": "vercel-ui",
+      "description": "Vercel-authored React and component-architecture guidance workflows.",
+      "category": "Development",
+      "keywords": [
+        "vercel",
+        "react",
+        "ui",
+        "composition",
+        "performance"
+      ],
+      "skills": [
+        "composition-patterns",
+        "react-best-practices",
+        "react-native-skills"
+      ],
+      "apps": [],
+      "mcp": [],
+      "author": {
+        "name": "Vercel"
+      },
+      "interface": {
+        "display_name": "Vercel UI",
+        "short_description": "Vercel React and UI architecture guidance",
+        "long_description": "Use this plugin for Vercel-authored React, component composition, and React Native guidance.",
+        "developer_name": "Vercel",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the Vercel UI plugin for Vercel-authored React and UI architecture guidance.",
+        "brand_color": "#111827"
+      }
+    },
+    "winui": {
+      "name": "winui",
+      "description": "Microsoft WinUI and Windows App SDK desktop application workflows.",
+      "category": "Development",
+      "keywords": [
+        "microsoft",
+        "winui",
+        "windows",
+        "desktop",
+        "xaml"
+      ],
+      "skills": [
+        "winui-app"
+      ],
+      "apps": [],
+      "mcp": [
+        "microsoft-learn"
+      ],
+      "author": {
+        "name": "Microsoft"
+      },
+      "interface": {
+        "display_name": "WinUI",
+        "short_description": "Microsoft WinUI desktop app workflows",
+        "long_description": "Use this plugin for WinUI 3, Windows App SDK, and Microsoft desktop application implementation workflows.",
+        "developer_name": "Microsoft",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the WinUI plugin for Microsoft WinUI and Windows App SDK workflows.",
+        "brand_color": "#2563EB"
+      }
+    },
+    "render": {
+      "name": "render",
+      "description": "Render deployment and blueprint workflows.",
+      "category": "Development",
+      "keywords": [
+        "render",
+        "deploy",
+        "hosting",
+        "blueprint"
+      ],
+      "skills": [
+        "render-deploy"
+      ],
+      "apps": [],
+      "mcp": [
+        "render"
+      ],
+      "author": {
+        "name": "Render"
+      },
+      "interface": {
+        "display_name": "Render",
+        "short_description": "Render deployment and blueprint workflows",
+        "long_description": "Use this plugin for Render deployment, blueprint generation, and hosted service setup workflows.",
+        "developer_name": "Render",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the Render plugin for Render deployment and blueprint workflows.",
+        "brand_color": "#46E3B7"
+      }
+    },
+    "netlify": {
+      "name": "netlify",
+      "description": "Netlify deployment and site-linking workflows.",
+      "category": "Development",
+      "homepage": "https://www.netlify.com",
+      "repository": "https://github.com/openai/plugins",
+      "license": "MIT",
+      "keywords": [
+        "netlify",
+        "deploy",
+        "hosting",
+        "site"
+      ],
+      "skills": [
+        "netlify-deploy"
+      ],
+      "apps": [
+        {
+          "name": "netlify",
+          "id": "asdk_app_691f1f8f72408191afdbbdf8242bdf86"
+        }
+      ],
+      "mcp": [],
+      "author": {
+        "name": "Netlify",
+        "url": "https://www.netlify.com"
+      },
+      "interface": {
+        "display_name": "Netlify",
+        "short_description": "Netlify deployment workflows",
+        "long_description": "Use this plugin for Netlify deployment, site linking, and preview or production publish workflows.",
+        "developer_name": "Netlify",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "website_url": "https://www.netlify.com",
+        "privacy_policy_url": "https://www.netlify.com/privacy/",
+        "terms_of_service_url": "https://www.netlify.com/legal/terms-of-use/",
+        "default_prompt": "Use the Netlify plugin for Netlify deployment and site-linking workflows.",
+        "brand_color": "#00AD9F"
+      }
+    }
+  }
+}

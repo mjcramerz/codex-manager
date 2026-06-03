@@ -1,0 +1,10 @@
+interface:
+  display_name: Web Design Guidelines
+  short_description: 'Review UI code for Web Interface Guidelines compliance. Use
+    when asked to "review my UI", "check accessibility", "audit '
+  default_prompt: 'Use the Web Design Guidelines skill when the task matches this
+    scope: Review UI code for Web Interface Guidelines compliance. Use when asked
+    to "review my UI", "check accessibility", "audit design", "review UX", or "check
+    my site against best practices".'
+policy:
+  allow_implicit_invocation: true

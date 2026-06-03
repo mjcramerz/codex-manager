@@ -1,0 +1,373 @@
+# apps
+[apps._default]
+enabled = true
+destructive_enabled = true
+open_world_enabled = true
+
+# skills
+[skills]
+config = [
+  { enabled = true, path = "${CODEX_SKILLS}/common" },
+  { enabled = true, path = "${CODEX_SKILLS}/audit" },
+]
+
+[skills.bundled]
+enabled = true
+
+# plugins
+[plugins]
+"codex-runtime@codex-local" = { enabled = true }
+"codex-repo@codex-local" = { enabled = true }
+"openai-apps@codex-local" = { enabled = true }
+"microsoft-learn@codex-local" = { enabled = true }
+"jina-ai@codex-local" = { enabled = true }
+"atlassian@codex-local" = { enabled = true }
+"docs-research@codex-local" = { enabled = true }
+"figma@codex-local" = { enabled = true }
+"github@codex-local" = { enabled = true }
+"gitlab@codex-local" = { enabled = true }
+"linear@codex-local" = { enabled = true }
+"google-calendar@codex-local" = { enabled = true }
+"netlify@codex-local" = { enabled = true }
+"notion@codex-local" = { enabled = true }
+"obsidian@codex-local" = { enabled = true }
+"health-planning@codex-local" = { enabled = true }
+"backend@codex-local" = { enabled = true }
+"frontend@codex-local" = { enabled = true }
+"design-ui@codex-local" = { enabled = true }
+"browser-automation@codex-local" = { enabled = true }
+"document-artifacts@codex-local" = { enabled = true }
+"adobe-acrobat@codex-local" = { enabled = true }
+"adobe-photoshop@codex-local" = { enabled = true }
+"adobe-express@codex-local" = { enabled = true }
+"ai-media@codex-local" = { enabled = true }
+"vercel@codex-local" = { enabled = true }
+"render@codex-local" = { enabled = true }
+"stripe@codex-local" = { enabled = true }
+"hosting-platforms@codex-local" = { enabled = true }
+"vercel-ui@codex-local" = { enabled = true }
+"web-browser-linux@codex-local" = { enabled = true }
+"winui@codex-local" = { enabled = true }
+"iac@codex-local" = { enabled = true }
+"containers@codex-local" = { enabled = true }
+"kubernetes@codex-local" = { enabled = true }
+"system-infra@codex-local" = { enabled = true }
+"virtualization@codex-local" = { enabled = true }
+"observability@codex-local" = { enabled = true }
+"security-controls@codex-local" = { enabled = true }
+"security-labs@codex-local" = { enabled = true }
+"cloudflare-workers@codex-local" = { enabled = true }
+"wrangler@codex-local" = { enabled = true }
+"cloudflare-agents@codex-local" = { enabled = true }
+"huggingface@codex-local" = { enabled = true }
+
+# agents
+[agents]
+max_threads = 10
+max_depth = 2
+job_max_runtime_seconds = 5000
+
+# default agents
+[agents.default]
+description = "Baseline generalist agent for most coding, configuration, and integration tasks with live web-search access."
+config_file = "${CODEX_AGENTS}/default.toml"
+nickname_candidates = [
+  "Atlas",
+  "Forge",
+]
+
+# manager agents
+[agents.manager]
+description = "Project manager that owns planning, gating, artifact checks, and multi-agent handoffs."
+config_file = "${CODEX_AGENTS}/manager.toml"
+nickname_candidates = [
+  "North",
+  "Ledger",
+]
+
+# worker agents
+[agents.worker]
+description = "Scoped delivery agent for bounded tasks with explicit file ownership and tight handoffs."
+config_file = "${CODEX_AGENTS}/worker.toml"
+nickname_candidates = [
+  "Sage",
+  "Orbit",
+]
+
+# coder agents
+[agents.coder]
+description = "Implementation-heavy coding agent for complex root-cause fixes and cross-cutting changes."
+config_file = "${CODEX_AGENTS}/coder.toml"
+nickname_candidates = [
+  "Anchor",
+  "Helm",
+]
+
+# integrator agents
+[agents.integrator]
+description = "Read-first integration agent that checks mirror sync and release patch readiness without applying patches."
+config_file = "${CODEX_AGENTS}/integrator.toml"
+nickname_candidates = [
+  "Aegis",
+  "Sentinel",
+]
+
+# hunter agents
+[agents.hunter]
+description = "Search-forward research agent for current docs, APIs, runtime behavior, and external evidence."
+config_file = "${CODEX_AGENTS}/hunter.toml"
+nickname_candidates = [
+  "Harbor",
+  "Nimbus",
+]
+
+# explorer agents
+[agents.explorer]
+description = "Read-heavy explorer for repository mapping, dependency tracing, and codebase discovery."
+config_file = "${CODEX_AGENTS}/explorer.toml"
+nickname_candidates = [
+  "Beacon",
+  "Lens",
+]
+
+# reviewer agents
+[agents.reviewer]
+description = "Review agent for syntax, hardening, functionality, regressions, and best-practice checks."
+config_file = "${CODEX_AGENTS}/reviewer.toml"
+nickname_candidates = [
+  "Signal",
+  "Quill",
+]
+
+# tester agents
+[agents.tester]
+description = "Verification agent that reproduces issues, runs targeted tests, and validates completed work."
+config_file = "${CODEX_AGENTS}/tester.toml"
+nickname_candidates = [
+  "Probe",
+  "Relay",
+]
+
+# openai docs mcp - http transport
+[mcp_servers.openaiDeveloperDocs]
+url = "https://developers.openai.com/mcp"
+enabled = true
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+# linear projects - http transport
+[mcp_servers.linear]
+url = "https://mcp.linear.app/mcp"
+enabled = false
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+# figma - http transport
+[mcp_servers.figma]
+url = "https://mcp.figma.com/mcp"
+enabled = false
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+# render - http transport
+[mcp_servers.render]
+url = "https://mcp.render.com/mcp"
+enabled = false
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+# vercel - http transport
+[mcp_servers.vercel]
+url = "https://mcp.vercel.com"
+enabled = true
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+# microsoft-learn - http transport
+[mcp_servers.microsoft-learn]
+url = "https://learn.microsoft.com/api/mcp"
+enabled = true
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+# jina-ai - http transport
+[mcp_servers.jina-ai]
+url = "https://mcp.jina.ai/v1"
+enabled = true
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+# atlassian - http transport
+[mcp_servers.atlassian]
+url = "https://mcp.atlassian.com/v1/mcp"
+enabled = false
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+# stripe - http transport
+[mcp_servers.stripe]
+url = "https://mcp.stripe.com"
+enabled = false
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+# cloudflare-api - http transport
+[mcp_servers.cloudflare-api]
+url = "https://mcp.cloudflare.com/mcp"
+enabled = true
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+# cloudflare-docs - http transport
+[mcp_servers.cloudflare-docs]
+url = "https://docs.mcp.cloudflare.com/mcp"
+enabled = true
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+# cloudflare-bindings - http transport
+[mcp_servers.cloudflare-bindings]
+url = "https://bindings.mcp.cloudflare.com/mcp"
+enabled = true
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+# cloudflare-builds - http transport
+[mcp_servers.cloudflare-builds]
+url = "https://builds.mcp.cloudflare.com/mcp"
+enabled = true
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+# cloudflare-observability - http transport
+[mcp_servers.cloudflare-observability]
+url = "https://observability.mcp.cloudflare.com/mcp"
+enabled = true
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+# huggingface - http transport
+[mcp_servers.huggingface]
+url = "https://huggingface.co/mcp?login"
+enabled = true
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+# github_router - stdio transport
+[mcp_servers.github_router]
+command = "$CODEX_MCP_DIR/wrappers/mcp-github-router-wrapper.sh"
+enabled = true
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+# context7 - stdio transport
+[mcp_servers.context7]
+command = "$CODEX_MCP_DIR/wrappers/mcp-context7-wrapper.sh"
+enabled = true
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+# filesystem - stdio transport
+[mcp_servers.filesystem]
+command = "$CODEX_MCP_DIR/wrappers/mcp-filesystem-wrapper.sh"
+enabled = true
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+# memory - stdio transport
+[mcp_servers.memory]
+command = "$CODEX_MCP_DIR/wrappers/mcp-memory-wrapper.sh"
+enabled = false
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+# squential-thinking - stdio transport
+[mcp_servers.sequential_thinking]
+command = "$CODEX_MCP_DIR/wrappers/mcp-sequential-thinking-wrapper.sh"
+enabled = true
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+# fetch - stdio transport
+[mcp_servers.fetch]
+command = "$CODEX_MCP_DIR/wrappers/mcp-fetch-wrapper.sh"
+enabled = true
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+# git - stdio transport
+[mcp_servers.git]
+command = "$CODEX_MCP_DIR/wrappers/mcp-git-wrapper.sh"
+enabled = true
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+# time - stdio transport
+[mcp_servers.time]
+command = "$CODEX_MCP_DIR/wrappers/mcp-time-wrapper.sh"
+enabled = true
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+# sqlite - stdio transport
+[mcp_servers.sqlite]
+command = "$CODEX_MCP_DIR/wrappers/mcp-sqlite-wrapper.sh"
+enabled = false
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+# github - stdio transport
+[mcp_servers.github]
+command = "$CODEX_MCP_DIR/wrappers/mcp-github-wrapper.sh"
+enabled = false
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+# playwright - stdio transport
+[mcp_servers.playwright]
+command = "$CODEX_MCP_DIR/wrappers/mcp-playwright-wrapper.sh"
+enabled = false
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+# postgres - stdio transport
+[mcp_servers.postgres]
+command = "$CODEX_MCP_DIR/wrappers/mcp-postgres-wrapper.sh"
+enabled = false
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+# mcp - stdio transport
+[mcp_servers.redis]
+command = "$CODEX_MCP_DIR/wrappers/mcp-redis-wrapper.sh"
+enabled = false
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 120

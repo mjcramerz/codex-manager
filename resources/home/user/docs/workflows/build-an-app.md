@@ -1,0 +1,94 @@
+# Workflow: build an app (end-to-end)
+
+Start with `$CODEX_HOME/plans/workflows/workflow-build-an-app.md` before executing this workflow.
+Purpose: a reliable, repeatable path from idea to a secure, testable MVP.
+
+
+## Navigation
+<!-- BEGIN:nav -->
+- Parent: `$CODEX_HOME/docs/workflows/overview.md`
+- Pack index: `$CODEX_HOME/INDEX.md`
+- Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
+<!-- END:nav -->
+
+
+## Plan
+- Start from the linked workflow plan template above, then tailor scope, constraints, and validation commands before editing.
+- Keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
+
+## 1) Define scope
+- MVP vs production target
+- Required endpoints/features and non-goals
+- Data persistence and auth strategy
+- Deployment target (local, container, cloud)
+
+## 2) Select a template
+- Python API: `$CODEX_HOME/templates/python/fastapi-app`
+- Rust API: `$CODEX_HOME/templates/rust/axum-api`
+- Web app: `$CODEX_HOME/templates/web/react-vite-app`
+- CLI apps: `$CODEX_HOME/templates/python/cli-app`, `$CODEX_HOME/templates/rust/cli-app`
+- Containers/VMs: `$CODEX_HOME/templates/containers/`, `$CODEX_HOME/templates/virtualization/`
+
+
+## 3) Wire baseline (before features)
+- Config validation at startup
+- Structured logging + request IDs (APIs)
+- Error handling without leaking internals
+- Health endpoint and basic tests
+- Security headers and request limits (APIs)
+
+## 4) Implement a vertical slice
+- One feature end-to-end with tests.
+- Keep diffs small and reviewable.
+
+## 5) Hardening pass
+- Input validation + explicit size limits.
+- Timeouts and bounded retries on all I/O.
+- Add rate limiting/quotas if public-facing.
+- Dependency audits and lockfiles.
+
+## 6) CI/CD
+- Add workflows from `$CODEX_HOME/templates/ci/github-actions/` or `$CODEX_HOME/templates/ci/gitlab-ci/`.
+- Lint, test, and audit gates with minimal permissions.
+
+## Branching & release flow
+- Implement on `mcr/feature/<name>` and merge into `mcr/main` only after checks pass.
+- Promote tested changes in order: `mcr/main -> mcr/staging -> mcr/release`.
+- In fork mode (`github/*` mirrors present), treat `github/*` as read-only and never implement directly on mirror branches.
+- In fork mode, sync `origin/github/mcr/main -> github/mcr/main -> mcr/main` before release patch checks.
+- In fork mode, run release patch checks on `mcr/main` only, then create test branches from synced `mcr/main`.
+- For GitLab-delivered GitHub releases, tag from the tip of `mcr/release` using your protected release tag contract.
+- Keep delivery mutation order deterministic for release syncs: `checkout -> true sync -> version bump -> patch apply -> push` (with patches sourced from `patches/release/series`).
+
+## Deterministic build checklist
+- Pin toolchains and base images; avoid `:latest`.
+- Commit lockfiles and use deterministic installs (`cargo --locked`, `npm ci`, `pnpm install --frozen-lockfile`).
+- Keep version changes script-driven (`<repo>/scripts/release/get_version.py`, `<repo>/scripts/release/bump_version.py`).
+
+## 7) Docs + runbook
+- Update README with setup/run/test commands.
+- Document config and operational notes.
+
+## Security checkpoints
+- Lock auth model, trust boundaries, and secret storage approach before shipping the first endpoint.
+- Enforce request/body/file-size limits and timeout defaults in the initial scaffold.
+- Audit new dependencies before merge and document any temporary vulnerability waiver.
+
+## Testing checkpoints
+- Require one happy-path and one abuse-path test for each externally reachable feature slice.
+- Keep startup, health, and config-validation checks in the always-on smoke suite.
+- Gate merges on template-aligned lint/unit/integration commands captured in README or CI.
+
+## Deployment checkpoints
+- Define the environment contract (required vars, secrets source, migrations) before first deploy.
+- Promote local -> staging -> production with health checks and explicit rollback criteria.
+- Publish a runbook with release command, rollback command, and on-call owner.
+
+## Multi-agent handoff
+- Feature owner hands API/schema contract and config deltas to test and deploy owners.
+- Test owner hands failing repro, added tests, and expected outputs back to implementer.
+- Release owner confirms artifact version/digest and rollout status before final sign-off.
+See also:
+- `overview.md`
+- `$CODEX_HOME/templates/OVERVIEW.md`
+- `$CODEX_HOME/index/pack/workflows.md`

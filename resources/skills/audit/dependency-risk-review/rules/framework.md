@@ -1,0 +1,16 @@
+---
+title: dependency-risk-review framework
+status: active
+owner: Matthew Cramer
+tags:
+- skills
+- dependency-risk-review
+- framework
+updated: '2026-03-12'
+---
+# dependency-risk-review framework
+
+- Skill: `dependency-risk-review`
+- Category: `AUDIT`
+- Source of truth: `../SKILL.md`
+- Runtime agent config: `../agents/openai.yaml`

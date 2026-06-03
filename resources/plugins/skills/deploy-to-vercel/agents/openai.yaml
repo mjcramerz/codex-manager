@@ -1,0 +1,10 @@
+interface:
+  display_name: Deploy To Vercel
+  short_description: 'Deploy applications and websites to Vercel. Use when the user
+    requests deployment actions like "deploy my app", "deploy '
+  default_prompt: 'Use the Deploy To Vercel skill when the task matches this scope:
+    Deploy applications and websites to Vercel. Use when the user requests deployment
+    actions like "deploy my app", "deploy and give me the link", "push this live",
+    or "create a preview deployment".'
+policy:
+  allow_implicit_invocation: true

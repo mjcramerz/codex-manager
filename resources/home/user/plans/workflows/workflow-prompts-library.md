@@ -1,0 +1,59 @@
+# Plan
+
+Use this plan when following `$CODEX_HOME/docs/workflows/prompts-library.md`.
+
+## Navigation
+<!-- BEGIN:nav -->
+- Parent: `$CODEX_HOME/plans/workflows/overview.md`
+- Pack index: `$CODEX_HOME/INDEX.md`
+- Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
+<!-- END:nav -->
+
+## Inputs
+- `$CODEX_HOME/docs/workflows/prompts-library.md`
+- `$CODEX_HOME/plans/prompts-library.md`
+
+## Scope
+- In: maintaining prompt source files and prompt-maintenance support assets.
+- Out: unrelated pack changes outside prompt maintenance.
+
+- For API/protocol surfaces, define contract versioning, timeout/retry ceilings, and idempotency/error-model expectations.
+
+## Action items
+[ ] Review `$CODEX_HOME/docs/workflows/prompts-library.md` and confirm target commands/contracts.
+[ ] Update prompt source-of-truth files under `$CODEX_HOME/prompts/*`.
+[ ] Update linked maintenance assets (docs, index, template, snippet, skill references) when required.
+
+## Testing and validation
+
+## Security checkpoints
+- Confirm trust boundaries and disallow prompt text that bypasses required controls.
+- Validate input bounds and expected verification steps before shipping prompt edits.
+- Record approved exceptions with owner and expiry.
+
+## Testing checkpoints
+- Validate updated prompt listings and command names in `$CODEX_HOME/prompts/OVERVIEW.md`.
+- Confirm routing and plan links resolve after any file rename or move.
+- Re-run impacted checks after every contract or command change.
+
+## Deployment checkpoints
+- Sync runtime prompts only after source checks pass.
+- Document user-impacting command changes and rollback instructions.
+- Confirm post-sync spot checks of affected commands.
+
+## Multi-agent handoff
+- Coordinator shares prompt scope, stop conditions, and required checks.
+- Executor reports touched files, command outputs, blockers, and next action.
+- Receiving agent confirms workflow scope completeness before continuing.
+
+## Risks and edge cases
+- Command contract drift between prompt files and maintenance docs.
+- Broken links from renamed commands or moved maintenance assets.
+- Runtime/source mismatch when sync happens before validation.
+
+## Examples
+
+- Example objective: "Add a new slash command with explicit `$ARGUMENTS` contract and verification steps."
+
+## Open questions
+- None.

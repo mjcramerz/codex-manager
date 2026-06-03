@@ -1,0 +1,22 @@
+interface:
+  display_name: LANG-TypeScript
+  short_description: Configure TypeScript projects with strict defaults
+  icon_small: assets/icon-32.png
+  icon_large: assets/icon-128.png
+  brand_color: '#CC3260'
+  default_prompt: Act as the "LANG-TypeScript" specialist for "Configure TypeScript projects with strict
+    defaults". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions.
+    Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete
+    actions, evidence, and residual risks.
+
+dependencies:
+  tools:
+  - type: mcp
+    value: filesystem
+    description: Filesystem MCP server
+    transport: stdio
+    command: ssh -i $CODEX_MCP_DIR/ssh/mcp_servers_ed25519 -o BatchMode=yes -o IdentitiesOnly=yes -o UserKnownHostsFile=$CODEX_MCP_DIR/ssh/known_hosts
+      -o StrictHostKeyChecking=accept-new -T -p 2225 docker@127.0.0.1 mcp-run /workspace
+
+policy:
+  allow_implicit_invocation: true

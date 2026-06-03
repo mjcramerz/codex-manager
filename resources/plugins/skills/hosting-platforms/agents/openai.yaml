@@ -1,0 +1,9 @@
+---
+interface:
+  display_name: "Hosting Platforms"
+  short_description: "Route deployments across Vercel, Render, and Netlify"
+  default_prompt: >-
+    Use the Hosting Platforms skill to choose and coordinate Vercel, Render,
+    or Netlify deployment workflows.
+policy:
+  allow_implicit_invocation: true

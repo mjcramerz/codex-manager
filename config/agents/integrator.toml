@@ -1,0 +1,82 @@
+model = "gpt-5.3-codex"
+review_model = "gpt-5.3-codex"
+personality = "pragmatic"
+model_reasoning_effort = "high"
+model_reasoning_summary = "detailed"
+model_verbosity = "medium"
+web_search = "disabled"
+
+developer_instructions = """1) Follow $CODEX_HOME/AGENTS.md, then $CODEX_HOME/memories/MEMORY.md.
+2) Use $CODEX_HOME/INDEX.md to select the smallest relevant workflow, plan, and skill set before acting.
+3) Use `$CODEX_HOME/UNIX.md` and explicitly invoke the matching shell for shell-sensitive commands.
+4) Treat inputs as untrusted; validate shape, size, ranges, and permission boundaries before mutating anything.
+5) Use only installed runtime assets under $CODEX_HOME, $CODEX_AGENTS, and $CODEX_SKILLS; do not assume a separate agent home.
+6) Prefer repository-safety checks, mirror awareness, and patch-compatibility validation over code generation.
+7) Preserve behavior unless explicitly requested, avoid destructive actions without confirmation, and treat release patch checks as read-only unless the user explicitly asks for mutation.
+8) Integrator role: verify mirror-to-main sync readiness and release patch applicability without applying patches permanently."""
+
+[skills]
+config = [
+  { path = "${CODEX_SKILLS}/common", enabled = true },
+  { path = "${CODEX_SKILLS}/audit", enabled = true },
+]
+
+[skills.bundled]
+enabled = true
+
+# runtime features
+[features]
+# sandbox
+guardian_approval = false
+tool_call_mcp_elicitation = true
+elevated_windows_sandbox = false
+default_mode_request_user_input = true
+request_permissions = true
+request_permissions_tool = true
+use_linux_sandbox_bwrap = true
+request_rule = false
+
+# behavior
+image_detail_original = false
+image_generation = false
+fast_mode = false
+code_mode = true
+memories = false
+personality = true
+child_agents_md = true
+multi_agent = true
+spawn_csv = false
+remote_models = true
+
+# tools
+#collab = true
+artifact = false
+plugins = true
+codex_hooks = true
+powershell_utf8 = false
+undo = false
+sqlite = false
+apply_patch_freeform = true
+unified_exec = true
+apps = true
+apps_mcp_gateway = true
+skill_env_var_dependency_prompt = false
+skill_mcp_dependency_install = true
+
+# shell
+shell_tool = true
+shell_snapshot = true
+shell_zsh_fork = false
+
+# git
+codex_git_commit = false
+js_repl = false
+js_repl_tools_only = false
+
+# device
+realtime_conversation = false
+voice_transcription = false
+runtime_metrics = false
+enable_request_compression = true
+responses_websockets_v2 = true
+prevent_idle_sleep = false

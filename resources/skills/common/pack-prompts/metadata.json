@@ -1,0 +1,10 @@
+{
+  "version": "1.0",
+  "organization": "Codex Setup",
+  "date": "February 15, 2026",
+  "abstract": "Create or update slash-command prompts under $CODEX_HOME/prompts/. Use when adding prompt commands, tightening argument contracts, or improving prompt-library maintenance assets.",
+  "references": [
+    "https://yaml.org/spec/1.2.2/",
+    "https://developers.openai.com/docs/guides/prompt-engineering"
+  ]
+}

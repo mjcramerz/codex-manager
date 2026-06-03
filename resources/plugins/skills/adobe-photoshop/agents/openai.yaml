@@ -1,0 +1,13 @@
+---
+interface:
+  display_name: Adobe Photoshop
+  short_description: Photoshop image retouching and compositing workflow
+  icon_small: assets/app-icon.png
+  icon_large: assets/app-icon.png
+  brand_color: '#001E36'
+  default_prompt: >-
+    Act as the Adobe Photoshop specialist. Use Adobe Photoshop for retouching,
+    compositing, and image export workflows with explicit file-level handoffs.
+
+policy:
+  allow_implicit_invocation: true

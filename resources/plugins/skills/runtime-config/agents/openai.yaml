@@ -1,0 +1,7 @@
+interface:
+  display_name: Runtime Config
+  short_description: Inspect rendered config, instruction rewrites, and home sync behavior
+  default_prompt: Act as the Runtime Config specialist. Inspect rendered config.toml, instruction path rewrites, and CODEX_HOME synchronization with concise, deterministic analysis.
+
+policy:
+  allow_implicit_invocation: true

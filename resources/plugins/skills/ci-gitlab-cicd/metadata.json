@@ -1,0 +1,12 @@
+{
+  "version": "1.0",
+  "organization": "Codex Setup",
+  "date": "February 12, 2026",
+  "abstract": "Build and troubleshoot GitLab CI/CD pipelines with deterministic jobs, pinned images, reusable templates, and security gates. Use when the user asks to create or fix .gitlab-ci.yml pipelines.",
+  "references": [
+    "https://git-scm.com/doc",
+    "https://docs.github.com/actions",
+    "https://docs.gitlab.com/ci/",
+    "https://docs.gitlab.com/ee/ci/yaml/"
+  ]
+}

@@ -1,0 +1,11 @@
+interface:
+  display_name: Hugging Face Datasets
+  short_description: 'Create and manage datasets on Hugging Face Hub. Supports initializing
+    repos, defining configs/system prompts, streaming '
+  default_prompt: 'Use the Hugging Face Datasets skill when the task matches this
+    scope: Create and manage datasets on Hugging Face Hub. Supports initializing repos,
+    defining configs/system prompts, streaming row updates, and SQL-based dataset
+    querying/transformation. Designed to work alongside HF MCP server for comprehensive
+    dataset workflows.'
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,11 @@
+interface:
+  display_name: Hugging Face Evaluation
+  short_description: Add and manage evaluation results in Hugging Face model cards.
+    Supports extracting eval tables from README content, impo
+  default_prompt: 'Use the Hugging Face Evaluation skill when the task matches this
+    scope: Add and manage evaluation results in Hugging Face model cards. Supports
+    extracting eval tables from README content, importing scores from Artificial Analysis
+    API, and running custom model evaluations with vLLM/lighteval. Works with the
+    model-index metadata format.'
+policy:
+  allow_implicit_invocation: true

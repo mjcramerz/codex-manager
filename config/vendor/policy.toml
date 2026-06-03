@@ -1,0 +1,302 @@
+[shell_environment_policy]
+inherit = "all"
+ignore_default_excludes = false
+exclude = [
+  ".*TOKEN.*",
+  ".*KEY.*",
+  ".*SECRET.*",
+  ".*PASSWORD.*",
+  ".*PASS.*",
+  "^AWS_.*",
+  "^AZURE_.*",
+  "^GCP_.*",
+  "^OPENAI_.*",
+  "^ANTHROPIC_.*",
+  "^GITHUB_.*",
+  "^GITLAB_.*",
+  "^SSH_.*",
+  "^KUBECONFIG$",
+  "^DOCKER_.*",
+  "^NPM_TOKEN$",
+  "^NODE_AUTH_TOKEN$",
+  "^PIP_INDEX_URL$",
+  "^PIP_EXTRA_INDEX_URL$",
+]
+include_only = []
+set = { LANG = "C.UTF-8", LC_CTYPE = "C.UTF-8" }
+
+# full access filesystem
+[permissions.full.filesystem]
+":root" = "write"
+":tmpdir" = "write"
+
+# full access network
+[permissions.full.network]
+enabled = false
+mode = "full"
+admin_url = "http://127.0.0.1:2019"
+proxy_url = "http://127.0.0.1:8080"
+socks_url = "socks5://127.0.0.1:1080"
+enable_socks5 = true
+enable_socks5_udp = true
+allow_upstream_proxy = true
+dangerously_allow_non_loopback_admin = false
+dangerously_allow_non_loopback_proxy = false
+dangerously_allow_all_unix_sockets = false
+allow_local_binding = true
+allow_unix_sockets = [
+  "/data/codex/mcp/sockets/openai-developer-docs.sock",
+  "/data/codex/mcp/sockets/context7.sock",
+]
+allowed_domains = [
+  "api.openai.com",
+  "chatgpt.com",
+  "developers.openai.com",
+  "platform.openai.com",
+  "github.com",
+  "api.github.com",
+  "docs.github.com",
+  "raw.githubusercontent.com",
+  "gitlab.com",
+  "docs.gitlab.com",
+  "context7.com",
+  "mcp.context7.com",
+  "modelcontextprotocol.io",
+  "docs.python.org",
+  "packaging.python.org",
+  "pypi.org",
+  "docs.ansible.com",
+  "www.gnu.org",
+  "developer.mozilla.org",
+  "developer.chrome.com",
+  "nodejs.org",
+  "docs.npmjs.com",
+  "go.dev",
+  "pkg.go.dev",
+  "doc.rust-lang.org",
+  "docs.rs",
+  "crates.io",
+  "kubernetes.io",
+  "helm.sh",
+  "docs.docker.com",
+  "podman.io",
+  "playwright.dev",
+  "www.postgresql.org",
+  "redis.io",
+  "mcp.linear.app",
+  "linear.app",
+  "mcp.figma.com",
+  "figma.com",
+  "mcp.render.com",
+  "render.com",
+  "mcp.cloudflare.com",
+  "docs.mcp.cloudflare.com",
+  "bindings.mcp.cloudflare.com",
+  "builds.mcp.cloudflare.com",
+  "observability.mcp.cloudflare.com",
+  "developers.cloudflare.com",
+  "cloudflare.com",
+  "huggingface.co",
+]
+denied_domains = [
+  "metadata.google.internal",
+  "metadata.azure.internal",
+  "metadata.oraclecloud.com",
+  "metadata.packet.net",
+  "instance-data.ec2.internal",
+  "kubernetes.default.svc",
+  "169.254.169.254",
+  "169.254.169.253",
+  "169.254.170.2",
+  "169.254.170.23",
+  "100.100.100.200",
+]
+
+# workspace filesystem
+[permissions.workspace.filesystem]
+":minimal" = "read"
+":project_roots" = { "." = "write", ".mcr" = "write", "docs" = "read", "patches" = "read" }
+":tmpdir" = "write"
+"/data/codex/share/bin" = "read"
+"/data/codex/share/helpers" = "read"
+"/data/codex/share/shims" = "read"
+"/data/codex/mcp" = "read"
+"/data/codex/usr/agents" = "read"
+"/data/codex/usr/skills" = "read"
+"/data/codex/usr/instructions" = "read"
+"/data/codex/usr/home/memories" = "write"
+
+# workspace network
+[permissions.workspace.network]
+enabled = false
+mode = "limited"
+admin_url = "http://127.0.0.1:2019"
+proxy_url = "http://127.0.0.1:8080"
+socks_url = "socks5://127.0.0.1:1080"
+enable_socks5 = true
+enable_socks5_udp = false
+allow_upstream_proxy = true
+dangerously_allow_non_loopback_admin = false
+dangerously_allow_non_loopback_proxy = false
+dangerously_allow_all_unix_sockets = false
+allow_local_binding = true
+allow_unix_sockets = [
+  "/data/codex/mcp/sockets/openai-developer-docs.sock",
+  "/data/codex/mcp/sockets/context7.sock",
+]
+allowed_domains = [
+  "api.openai.com",
+  "chatgpt.com",
+  "developers.openai.com",
+  "platform.openai.com",
+  "github.com",
+  "api.github.com",
+  "docs.github.com",
+  "raw.githubusercontent.com",
+  "gitlab.com",
+  "docs.gitlab.com",
+  "context7.com",
+  "mcp.context7.com",
+  "modelcontextprotocol.io",
+  "docs.python.org",
+  "packaging.python.org",
+  "pypi.org",
+  "docs.ansible.com",
+  "www.gnu.org",
+  "developer.mozilla.org",
+  "developer.chrome.com",
+  "nodejs.org",
+  "docs.npmjs.com",
+  "go.dev",
+  "pkg.go.dev",
+  "doc.rust-lang.org",
+  "docs.rs",
+  "crates.io",
+  "kubernetes.io",
+  "helm.sh",
+  "docs.docker.com",
+  "podman.io",
+  "playwright.dev",
+  "www.postgresql.org",
+  "redis.io",
+  "mcp.linear.app",
+  "linear.app",
+  "mcp.figma.com",
+  "figma.com",
+  "mcp.render.com",
+  "render.com",
+  "mcp.cloudflare.com",
+  "docs.mcp.cloudflare.com",
+  "bindings.mcp.cloudflare.com",
+  "builds.mcp.cloudflare.com",
+  "observability.mcp.cloudflare.com",
+  "developers.cloudflare.com",
+  "cloudflare.com",
+  "huggingface.co",
+]
+denied_domains = [
+  "metadata.google.internal",
+  "metadata.azure.internal",
+  "metadata.oraclecloud.com",
+  "metadata.packet.net",
+  "instance-data.ec2.internal",
+  "kubernetes.default.svc",
+  "169.254.169.254",
+  "169.254.169.253",
+  "169.254.170.2",
+  "169.254.170.23",
+  "100.100.100.200",
+]
+
+# readonly filesystem
+[permissions.readonly.filesystem]
+":minimal" = "read"
+":project_roots" = { "." = "read", ".mcr" = "read", "docs" = "read", "patches" = "read" }
+":tmpdir" = "read"
+"/data/codex/share/bin" = "read"
+"/data/codex/share/helpers" = "read"
+"/data/codex/share/shims" = "read"
+"/data/codex/mcp" = "read"
+"/data/codex/usr/agents" = "read"
+"/data/codex/usr/skills" = "read"
+"/data/codex/usr/instructions" = "read"
+"/data/codex/usr/home/memories" = "read"
+
+# readonly network
+[permissions.readonly.network]
+enabled = false
+mode = "limited"
+admin_url = "http://127.0.0.1:2019"
+proxy_url = "http://127.0.0.1:8080"
+socks_url = "socks5://127.0.0.1:1080"
+enable_socks5 = false
+enable_socks5_udp = false
+allow_upstream_proxy = false
+dangerously_allow_non_loopback_admin = false
+dangerously_allow_non_loopback_proxy = false
+dangerously_allow_all_unix_sockets = false
+allow_local_binding = false
+allow_unix_sockets = []
+allowed_domains = [
+  "api.openai.com",
+  "chatgpt.com",
+  "developers.openai.com",
+  "platform.openai.com",
+  "github.com",
+  "api.github.com",
+  "docs.github.com",
+  "raw.githubusercontent.com",
+  "gitlab.com",
+  "docs.gitlab.com",
+  "context7.com",
+  "mcp.context7.com",
+  "modelcontextprotocol.io",
+  "docs.python.org",
+  "packaging.python.org",
+  "pypi.org",
+  "docs.ansible.com",
+  "www.gnu.org",
+  "developer.mozilla.org",
+  "developer.chrome.com",
+  "nodejs.org",
+  "docs.npmjs.com",
+  "go.dev",
+  "pkg.go.dev",
+  "doc.rust-lang.org",
+  "docs.rs",
+  "crates.io",
+  "kubernetes.io",
+  "helm.sh",
+  "docs.docker.com",
+  "podman.io",
+  "playwright.dev",
+  "www.postgresql.org",
+  "redis.io",
+  "mcp.linear.app",
+  "linear.app",
+  "mcp.figma.com",
+  "figma.com",
+  "mcp.render.com",
+  "render.com",
+  "mcp.cloudflare.com",
+  "docs.mcp.cloudflare.com",
+  "bindings.mcp.cloudflare.com",
+  "builds.mcp.cloudflare.com",
+  "observability.mcp.cloudflare.com",
+  "developers.cloudflare.com",
+  "cloudflare.com",
+  "huggingface.co",
+]
+denied_domains = [
+  "metadata.google.internal",
+  "metadata.azure.internal",
+  "metadata.oraclecloud.com",
+  "metadata.packet.net",
+  "instance-data.ec2.internal",
+  "kubernetes.default.svc",
+  "169.254.169.254",
+  "169.254.169.253",
+  "169.254.170.2",
+  "169.254.170.23",
+  "100.100.100.200",
+]

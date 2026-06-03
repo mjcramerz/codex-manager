@@ -1,0 +1,12 @@
+---
+interface:
+  display_name: Stripe Payments
+  short_description: >-
+    Stripe payment flows, checkout, subscriptions, and webhooks
+  brand_color: '#635BFF'
+  default_prompt: >-
+    Act as the Stripe Payments specialist. Use current evidence, keep
+    changes reviewable, and report assumptions and validation clearly.
+
+policy:
+  allow_implicit_invocation: true

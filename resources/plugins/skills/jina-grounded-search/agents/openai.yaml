@@ -1,0 +1,14 @@
+---
+interface:
+  display_name: Jina Grounded Search
+  short_description: >-
+    Turn Jina search and retrieval results into grounded
+    implementation notes, tradeoffs, and integration checklists.
+  brand_color: '#0EA5E9'
+  default_prompt: >-
+    Act as the Jina Grounded Search specialist. Use current evidence,
+    keep changes reviewable, and report assumptions and validation
+    clearly.
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,106 @@
+#profile = ""
+#sandbox_mode = "workspace-write"
+#permissions = ""
+default_permissions = "full"
+# this is set granular instead | approval_policy = "never"
+#approval_reviewer = "guardian_subagent" "user"
+allow_login_shell = true
+web_search = "live"
+
+# runtime
+log_dir = "$CODEX_LOG_DIR"
+sqlite_home = "$CODEX_SQLITE_HOME"
+#zsh_path = ""
+cli_auth_credentials_store = "file"
+mcp_oauth_credentials_store = "file"
+mcp_oauth_callback_port = 8088
+#mcp_oauth_callback_url = "http://127.0.0.1:8765/callback"
+
+#experimental_realtime_ws_base_url = "https://your-realtime-backend.example.com/v1/realtime"
+#experimental_realtime_ws_model = "your-transcription-session-model"
+#experimental_realtime_ws_backend_prompt = "Transcribe incoming speech faithfully."
+#experimental_realtime_ws_startup_context = ""
+#experimental_realtime_start_instructions = "Realtime transcription mode active."
+
+#[realtime]
+#version = "v2"
+#type = "transcription"
+
+
+# model
+chatgpt_base_url = 'https://chatgpt.com/backend-api'
+model = "gpt-5.4"
+review_model = "gpt-5.4"
+model_provider = "openai-custom"
+#personality = "pragmatic"
+#service_tier "flex|fast"
+#oss_provider = ""
+
+# model context and session
+model_context_window = 1050000
+model_auto_compact_token_limit = 900000
+tool_output_token_limit = 12000
+#background_terminal_max_timeout = 200000
+
+# model tunings
+model_reasoning_effort = "xhigh"
+model_reasoning_summary = "detailed"
+model_verbosity = "medium"
+plan_mode_reasoning_effort = "high"
+#model_supports_reasoning_summaries = true
+
+# projects
+commit_attribution = "Authored-by: Matthew Cramer <git+commit@nullroute.sbs>"
+#js_repl_node_module_dirs = []
+#js_repl_node_path = ""
+project_doc_max_bytes = 192768
+project_doc_fallback_filenames = []
+project_root_markers = [
+  ".git",
+  ".mcr",
+]
+
+# misc
+hide_agent_reasoning = true
+show_raw_agent_reasoning = false
+file_opener = "vscode"
+check_for_update_on_startup = true
+disable_paste_burst = false
+
+# developer instructions
+developer_instructions = """1) Follow $CODEX_HOME/AGENTS.md, then $CODEX_HOME/memories/MEMORY.md.
+2) Use $CODEX_HOME/INDEX.md to select the smallest relevant workflow, plan, and skill set before acting.
+3) Treat `$CODEX_HOME/UNIX.md` as tooling-specific documentation for Unix/Linux systems and explicitly invoke the matching shell for shell-sensitive commands.
+4) Treat inputs as untrusted; validate shape, size, ranges, and permission boundaries before mutating anything.
+5) Prefer read-only discovery with `rg`, then make the smallest deterministic change that fixes the root cause.
+6) Use only installed runtime assets under $CODEX_HOME, $CODEX_AGENTS, and $CODEX_SKILLS; do not rely on installer-repo paths at runtime.
+7) Preserve behavior unless explicitly requested, avoid destructive actions without confirmation, and report assumptions, checks, risks, and next steps concisely.
+8) Default posture: correctness first, then security, then maintainability, then speed."""
+
+#compact_prompt = "Summarize aggressively."
+
+# models catalog and base instructions
+model_catalog_json = "./.models/model_catalog.json"
+model_instructions_file = "./.models/instructions/models/model-instructions.md"
+experimental_compact_prompt_file = "./.models/instructions/models/compact-prompt.md"
+
+[instruction_overrides]
+apply_patch_instructions_file = "./.models/instructions/prompt_overrides/apply_patch_instructions.md"
+#custom_personality_instructions_file = "./.models/instructions/prompt_overrides/custom_personality_instructions.md"
+default_mode_instructions_file = "./.models/instructions/prompt_overrides/default_mode_instructions.md"
+execute_mode_instructions_file = "./.models/instructions/prompt_overrides/execute_mode_instructions.md"
+hierarchical_agents_instructions_file = "./.models/instructions/prompt_overrides/hierarchical_agents_instructions.md"
+init_instructions_file = "./.models/instructions/prompt_overrides/init_instructions.md"
+model_personality_instructions_file = "./.models/instructions/prompt_overrides/model_personality_instructions.md"
+orchestrator_instructions_file = "./.models/instructions/prompt_overrides/orchestrator_instructions.md"
+pair_programming_mode_instructions_file = "./.models/instructions/prompt_overrides/pair_programming_mode_instructions.md"
+plan_mode_instructions_file = "./.models/instructions/prompt_overrides/plan_mode_instructions.md"
+presentation_artifact_instructions_file = "./.models/instructions/prompt_overrides/presentation_artifact_instructions.md"
+request_user_input_instructions_file = "./.models/instructions/prompt_overrides/request_user_input_instructions.md"
+review_base_branch_instructions_file = "./.models/instructions/prompt_overrides/review_base_branch_instructions.md"
+review_commit_instructions_file = "./.models/instructions/prompt_overrides/review_commit_instructions.md"
+review_mode_instructions_file = "./.models/instructions/prompt_overrides/review_mode_instructions.md"
+review_uncommitted_instructions_file = "./.models/instructions/prompt_overrides/review_uncommitted_instructions.md"
+search_tool_instructions_file = "./.models/instructions/prompt_overrides/search_tool_instructions.md"
+search_tool_suggest_instructions_file = "./.models/instructions/prompt_overrides/search_tool_suggest_instructions.md"
+spawn_agent_instructions_file = "./.models/instructions/prompt_overrides/spawn_agent_instructions.md"

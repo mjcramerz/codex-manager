@@ -1,0 +1,11 @@
+interface:
+  display_name: Hugging Face Tool Builder
+  short_description: Use this skill when the user wants to build tool/scripts or achieve
+    a task where using data from the Hugging Face API wo
+  default_prompt: 'Use the Hugging Face Tool Builder skill when the task matches this
+    scope: Use this skill when the user wants to build tool/scripts or achieve a task
+    where using data from the Hugging Face API would help. This is especially useful
+    when chaining or combining API calls or the task will be repeated/automated. This
+    Skill creates a reusable script to fetch, enrich or process data.'
+policy:
+  allow_implicit_invocation: true

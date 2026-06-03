@@ -1,0 +1,13 @@
+#[windows]
+
+[ghost_snapshot]
+disable_warnings = false
+ignore_large_untracked_files = 10485760
+ignore_large_untracked_dirs = 200
+
+[notice]
+hide_full_access_warning = true
+"hide_gpt-5.1-codex-max_migration_prompt" = true
+hide_gpt5_1_migration_prompt = true
+hide_rate_limit_model_nudge = true
+hide_world_writable_warning = true

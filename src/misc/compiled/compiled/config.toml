@@ -1,0 +1,449 @@
+forced_login_method = "chatgpt"
+#forced_chatgpt_workspace_id = "workspace-id"
+chatgpt_base_url = "https://chatgpt.com/backend-api/codex"
+#chatgpt_base_url = "https://chatgpt.com/backend-api"
+cli_auth_credentials_store = "file"
+mcp_oauth_credentials_store = "file"
+mcp_oauth_callback_port = 0
+
+#experimental_realtime_ws_model = ""
+#experimental_realtime_ws_backend_prompt = "Use low-latency streaming with deterministic tool confirmations."
+#experimental_realtime_ws_base_url = "wss://api.openai.com/v1/realtime"
+
+#oss_provider = "ollama"
+
+suppress_unstable_features_warning = false
+windows_wsl_setup_acknowledged = false
+
+approval_policy = "never"
+sandbox_mode = "workspace-write"
+
+# RejectConfig example:
+#approval_policy = { reject = { sandbox_approval = true, rules = true, mcp_elicitations = true } }
+
+[model_providers.openai-custom]
+name = "OpenAI (Custom)"
+#model = "gpt-5.3-codex"
+#model_reasoning_summary = "xhigh"
+requires_openai_auth = true
+#forced_login_method = "api"
+base_url = "https://chatgpt.com/backend-api/codex"
+#base_url = "https://api.openai.com/v1"
+wire_api = "responses"
+query_params = {}
+http_headers = {}
+#env_key = "OPENAI_API_KEY"
+env_http_headers = { "OpenAI-Organization" = "OPENAI_ORGANIZATION", "OpenAI-Project" = "OPENAI_PROJECT" }
+request_max_retries = 4
+stream_max_retries = 3
+stream_idle_timeout_ms = 11000
+supports_websockets = true
+
+[features]
+powershell_utf8 = false
+
+[sandbox_workspace_write]
+writable_roots = [
+  "/data/workspace",
+  "/data/codex/usr",
+  "/tmp",
+  "/data/codex/tmp",
+]
+network_access = true
+exclude_tmpdir_env_var = false
+exclude_slash_tmp = false
+
+#instructions = """..."""
+#compact_prompt = """..."""
+#init_agents_instructions = """..."""
+#seed_agents_instructions """..."""
+#plan_mode_instructions """..."""
+#default_mode_instructions """..."""
+#search_tool_instructions = """..."""
+#request_user_input_tool_description = """..."""
+#review_base_guidelines = """..."""
+#hierarchical_agents_message = """..."""
+#apply_patch_instructions = """..."""
+#apply_patch_grammar = """..."""
+#base_branch_prompt = """..."""
+#base_branch_prompt_backup = """..."""
+#personality_spec_message_template = """..."""
+
+#commit_attribution = "string"
+
+#js_repl_node_module_dirs = [
+#  "$CODEX_HOME/.cache/js_repl/node_modules",
+#  "/data/codex/mcp/filesystems/gitlab/source/codex-setup/node_modules",
+#]
+#js_repl_node_path = "/usr/bin/node"
+
+# User policy network example.
+#[permissions.workspace.network]
+#enabled = true
+#mode = "limited"
+#allowed_domains = [
+#  "api.openai.com",
+#  "chatgpt.com",
+#  "developers.openai.com",
+#  "raw.githubusercontent.com",
+#]
+#denied_domains = [
+#  "metadata.google.internal",
+#  "169.254.169.254",
+#]
+#
+# Full web-search tool config example.
+#[tools.web_search]
+#mode = "auto"
+#context_size = "medium"
+#
+#[tools.web_search.location]
+#type = "approximate"
+#country = ""
+#region = ""
+#city = ""
+#timezone = ""
+
+[windows]
+#sandbox = "elevated"
+
+# [apps._default]
+# enabled = true
+# destructive_enabled = true
+# open_world_enabled = true
+#
+# [skills.bundled]
+# enabled = true
+
+[shell_environment_policy]
+inherit = "all"
+ignore_default_excludes = false
+exclude = [
+  ".*TOKEN.*",
+  ".*KEY.*",
+  ".*SECRET.*",
+  ".*PASSWORD.*",
+  ".*PASS.*",
+  "^AWS_.*",
+  "^AZURE_.*",
+  "^GCP_.*",
+  "^OPENAI_.*",
+  "^ANTHROPIC_.*",
+  "^GITHUB_.*",
+  "^GITLAB_.*",
+  "^SSH_.*",
+  "^KUBECONFIG$",
+  "^DOCKER_.*",
+  "^NPM_TOKEN$",
+  "^NODE_AUTH_TOKEN$",
+  "^PIP_INDEX_URL$",
+  "^PIP_EXTRA_INDEX_URL$",
+]
+set = { LANG = "C.UTF-8", LC_ALL = "C.UTF-8" }
+include_only = []
+
+[ghost_snapshot]
+disable_warnings = false
+ignore_large_untracked_files = 10485760
+ignore_large_untracked_dirs = 200
+
+[notice]
+hide_full_access_warning = true
+"hide_gpt-5.1-codex-max_migration_prompt" = true
+hide_gpt5_1_migration_prompt = true
+hide_rate_limit_model_nudge = true
+hide_world_writable_warning = true
+#model_migrations = maplist
+
+[analytics]
+enabled = false
+
+[feedback]
+enabled = false
+
+#[otel]
+#log_user_prompt = false
+#environment = "dev"
+#exporter = "none"
+#trace_exporter = "none"
+
+[mcp_servers.context7]
+args = []
+env_vars = []
+scopes = [
+  "*",
+]
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+[mcp_servers.fetch]
+args = []
+command = "/data/codex/mcp/wrappers/mcp-fetch-wrapper.sh"
+enabled = true
+enabled_tools = [
+  "fetch",
+]
+env_vars = []
+scopes = [
+  "*",
+]
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+[mcp_servers.filesystem]
+args = []
+env_vars = []
+scopes = [
+  "*",
+]
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+[mcp_servers.git]
+args = []
+command = "/data/codex/mcp/wrappers/mcp-git-wrapper.sh"
+enabled = true
+enabled_tools = [
+  "git_status",
+  "git_diff_unstaged",
+  "git_diff_staged",
+  "git_diff",
+  "git_commit",
+  "git_add",
+  "git_reset",
+  "git_log",
+  "git_create_branch",
+  "git_checkout",
+  "git_show",
+  "git_branch",
+]
+env_vars = []
+scopes = [
+  "*",
+]
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+[mcp_servers.github]
+args = []
+command = "/data/codex/mcp/wrappers/mcp-github-wrapper.sh"
+enabled = false
+enabled_tools = [
+  "create_or_update_file",
+  "push_files",
+  "search_repositories",
+  "create_repository",
+  "get_file_contents",
+  "create_issue",
+  "create_pull_request",
+  "fork_repository",
+  "create_branch",
+  "list_issues",
+  "update_issue",
+  "add_issue_comment",
+  "search_code",
+  "search_issues",
+  "search_users",
+  "list_commits",
+  "get_issue",
+  "get_pull_request",
+  "list_pull_requests",
+  "create_pull_request_review",
+  "merge_pull_request",
+  "get_pull_request_files",
+  "get_pull_request_status",
+  "update_pull_request_branch",
+  "get_pull_request_comments",
+  "get_pull_request_reviews",
+]
+env_vars = []
+scopes = [
+  "*",
+]
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+[mcp_servers.github_router]
+args = []
+env_vars = []
+scopes = [
+  "*",
+]
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+[mcp_servers.memory]
+args = []
+command = "/data/codex/mcp/wrappers/mcp-memory-wrapper.sh"
+enabled = false
+enabled_tools = [
+  "add_observations",
+  "create_entities",
+  "create_relations",
+  "delete_entities",
+  "delete_observations",
+  "delete_relations",
+  "open_nodes",
+  "read_graph",
+  "search_nodes",
+]
+env_vars = []
+scopes = [
+  "*",
+]
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+[mcp_servers.openaiDeveloperDocs]
+enabled = true
+enabled_tools = [
+  "fetch_openai_doc",
+  "get_openapi_spec",
+  "list_api_endpoints",
+  "list_openai_docs",
+  "search_openai_docs",
+]
+scopes = [
+  "*",
+]
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+url = "https://developers.openai.com/mcp"
+
+[mcp_servers.playwright]
+args = []
+command = "/data/codex/mcp/wrappers/mcp-playwright-wrapper.sh"
+enabled = false
+enabled_tools = [
+  "browser_click",
+  "browser_close",
+  "browser_console_messages",
+  "browser_drag",
+  "browser_evaluate",
+  "browser_file_upload",
+  "browser_handle_dialog",
+  "browser_hover",
+  "browser_install",
+  "browser_navigate",
+  "browser_navigate_back",
+  "browser_navigate_forward",
+  "browser_network_requests",
+  "browser_press_key",
+  "browser_resize",
+  "browser_select_option",
+  "browser_snapshot",
+  "browser_tab_close",
+  "browser_tab_list",
+  "browser_tab_new",
+  "browser_tab_select",
+  "browser_take_screenshot",
+  "browser_type",
+  "browser_wait_for",
+]
+env_vars = []
+scopes = [
+  "*",
+]
+startup_timeout_sec = 45
+tool_timeout_sec = 180
+
+[mcp_servers.postgres]
+args = []
+command = "/data/codex/mcp/wrappers/mcp-postgres-wrapper.sh"
+enabled = false
+enabled_tools = [
+  "query",
+]
+env_vars = []
+scopes = [
+  "*",
+]
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+[mcp_servers.redis]
+args = []
+command = "/data/codex/mcp/wrappers/mcp-redis-wrapper.sh"
+enabled = false
+enabled_tools = [
+  "set",
+  "get",
+  "delete",
+  "list",
+]
+env_vars = []
+scopes = [
+  "*",
+]
+startup_timeout_sec = 45
+tool_timeout_sec = 120
+
+[mcp_servers.sequential_thinking]
+args = []
+command = "/data/codex/mcp/wrappers/mcp-sequential-thinking-wrapper.sh"
+enabled = true
+enabled_tools = [
+  "sequentialthinking",
+]
+env_vars = []
+scopes = [
+  "*",
+]
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+[mcp_servers.sqlite]
+args = []
+command = "/data/codex/mcp/wrappers/mcp-sqlite-wrapper.sh"
+enabled = false
+enabled_tools = [
+  "read_query",
+  "write_query",
+  "create_table",
+  "list_tables",
+  "describe_table",
+  "append_insight",
+]
+env_vars = []
+scopes = [
+  "*",
+]
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+[mcp_servers.time]
+args = [
+  "-i",
+  "/data/codex/mcp/ssh/mcp_servers_ed25519",
+  "-o",
+  "BatchMode=yes",
+  "-o",
+  "ControlMaster=no",
+  "-o",
+  "ControlPersist=no",
+  "-o",
+  "ControlPath=none",
+  "-o",
+  "IdentitiesOnly=yes",
+  "-o",
+  "UserKnownHostsFile=/data/codex/mcp/ssh/known_hosts",
+  "-o",
+  "StrictHostKeyChecking=accept-new",
+  "-T",
+  "-p",
+  "2228",
+  "docker@127.0.0.1",
+  "mcp-run",
+]
+command = "ssh"
+enabled = true
+enabled_tools = [
+  "get_current_time",
+  "convert_time",
+]
+env_vars = []
+scopes = [
+  "*",
+]
+startup_timeout_sec = 20
+tool_timeout_sec = 120

@@ -1,0 +1,9 @@
+{
+  "version": "1.0",
+  "organization": "Codex Setup",
+  "date": "February 12, 2026",
+  "abstract": "Create Debian preseed automation files for unattended installations with deterministic installer behavior. Use when the user asks for Debian auto-install or image provisioning via preseed.",
+  "references": [
+    "https://www.debian.org/releases/stable/amd64/apbs04.en.html"
+  ]
+}

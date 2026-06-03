@@ -1,0 +1,9 @@
+interface:
+  display_name: Gradio
+  short_description: Build Gradio web UIs and demos in Python. Use when creating or
+    editing Gradio apps, components, event listeners, layouts
+  default_prompt: 'Use the Gradio skill when the task matches this scope: Build Gradio
+    web UIs and demos in Python. Use when creating or editing Gradio apps, components,
+    event listeners, layouts, or chatbots.'
+policy:
+  allow_implicit_invocation: true

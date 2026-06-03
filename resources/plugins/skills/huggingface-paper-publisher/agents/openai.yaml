@@ -1,0 +1,10 @@
+interface:
+  display_name: Hugging Face Paper Publisher
+  short_description: Publish and manage research papers on Hugging Face Hub. Supports
+    creating paper pages, linking papers to models/datasets
+  default_prompt: 'Use the Hugging Face Paper Publisher skill when the task matches
+    this scope: Publish and manage research papers on Hugging Face Hub. Supports creating
+    paper pages, linking papers to models/datasets, claiming authorship, and generating
+    professional markdown-based research articles.'
+policy:
+  allow_implicit_invocation: true

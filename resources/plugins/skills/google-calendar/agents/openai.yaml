@@ -1,0 +1,13 @@
+---
+interface:
+  display_name: Google Calendar
+  short_description: Manage Google Calendar schedules and events
+  icon_small: ./assets/icon.png
+  icon_large: ./assets/logo.png
+  default_prompt: >-
+    Act as the Google Calendar plugin specialist. Manage availability checks,
+    scheduling, and event updates with explicit dates, attendees, and timezone
+    clarity.
+
+policy:
+  allow_implicit_invocation: true

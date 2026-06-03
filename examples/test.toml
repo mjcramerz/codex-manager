@@ -1,0 +1,5 @@
+  rerank_provider = "candle"
+  rerank_model = "cross-encoder/ms-marco-MiniLM-L6-v2"
+  candle_runner_path = "/abs/path/to/candle-memory-runner"
+  candle_model_dir = "/home/YOU/.cache/codex-models/ms-marco-MiniLM-L6-v2"
+  candle_tokenizer_path = "/home/YOU/.cache/codex-models/ms-marco-MiniLM-L6-v2/tokenizer.json"

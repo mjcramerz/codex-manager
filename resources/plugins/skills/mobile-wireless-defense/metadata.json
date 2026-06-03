@@ -1,0 +1,12 @@
+{
+  "version": "1.0",
+  "organization": "Codex Setup",
+  "date": "February 12, 2026",
+  "abstract": "Run scoped mobile and wireless defense operations covering Wi-Fi assessment controls, NetHunter lab build governance, rooted-device risk management, and BadUSB/Rubber Ducky resilience testing in documented scope.",
+  "references": [
+    "https://www.kali.org/docs/nethunter/",
+    "https://source.android.com/",
+    "https://wireless.wiki.kernel.org/",
+    "https://www.cisa.gov/"
+  ]
+}

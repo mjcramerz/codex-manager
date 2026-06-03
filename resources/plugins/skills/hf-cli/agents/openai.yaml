@@ -1,0 +1,10 @@
+interface:
+  display_name: Hf Cli
+  short_description: Hugging Face Hub CLI (`hf`) for downloading, uploading, and managing
+    repositories, models, datasets, and Spaces on the H
+  default_prompt: 'Use the Hf Cli skill when the task matches this scope: Hugging
+    Face Hub CLI (`hf`) for downloading, uploading, and managing repositories, models,
+    datasets, and Spaces on the Hugging Face Hub. Replaces now deprecated `huggingface-cli`
+    command.'
+policy:
+  allow_implicit_invocation: true

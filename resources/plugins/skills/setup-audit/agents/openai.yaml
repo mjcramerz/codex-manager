@@ -1,0 +1,7 @@
+interface:
+  display_name: Setup Audit
+  short_description: Audit installer behavior, rollout state, and verification coverage
+  default_prompt: Act as the Setup Audit specialist. Audit installer behavior, runtime rollout state, and verification commands with focused, reviewable findings.
+
+policy:
+  allow_implicit_invocation: true

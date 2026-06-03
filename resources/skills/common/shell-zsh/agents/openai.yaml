@@ -1,0 +1,7 @@
+interface:
+  display_name: SHELL-Zsh
+  short_description: Focus on zsh shell behavior, wrappers, and execution flow
+  default_prompt: Act as the "SHELL-Zsh" specialist. Inspect zsh runtime behavior, wrapper semantics, and shell integration with deterministic shell-aware reasoning.
+
+policy:
+  allow_implicit_invocation: true

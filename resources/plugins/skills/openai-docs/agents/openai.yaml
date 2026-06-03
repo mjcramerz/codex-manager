@@ -1,0 +1,13 @@
+interface:
+  display_name: OpenAI Docs
+  short_description: Reference the official OpenAI Developer docs
+  icon_small: assets/openai-small.svg
+  icon_large: assets/openai.png
+  brand_color: '#10A37F'
+  default_prompt: Act as the "OpenAI Docs" specialist for "Reference the official OpenAI Developer docs".
+    Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions.
+    Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete
+    actions, evidence, and residual risks.
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,10 @@
+interface:
+  display_name: Hugging Face Dataset Viewer
+  short_description: Use this skill for Hugging Face Dataset Viewer API workflows
+    that fetch subset/split metadata, paginate rows, search tex
+  default_prompt: 'Use the Hugging Face Dataset Viewer skill when the task matches
+    this scope: Use this skill for Hugging Face Dataset Viewer API workflows that
+    fetch subset/split metadata, paginate rows, search text, apply filters, download
+    parquet URLs, and read size or statistics.'
+policy:
+  allow_implicit_invocation: true

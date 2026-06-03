@@ -1,0 +1,14 @@
+---
+interface:
+  display_name: Acrobat Forms
+  short_description: Acrobat forms and fill-sign workflow
+  icon_small: assets/app-icon.png
+  icon_large: assets/app-icon.png
+  brand_color: '#FA0F00'
+  default_prompt: >-
+    Act as the Acrobat Forms specialist. Use Adobe Acrobat for forms,
+    fill-and-sign, and field QA work, surface missing inputs quickly, and
+    keep signer handoffs explicit.
+
+policy:
+  allow_implicit_invocation: true

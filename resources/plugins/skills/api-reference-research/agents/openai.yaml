@@ -1,0 +1,13 @@
+---
+interface:
+  display_name: API Reference Research
+  short_description: >-
+    Translate API docs into concrete integration checklists
+  brand_color: '#0284C7'
+  default_prompt: >-
+    Act as the API Reference Research specialist. Use current evidence,
+    keep changes reviewable, and report assumptions and validation
+    clearly.
+
+policy:
+  allow_implicit_invocation: true

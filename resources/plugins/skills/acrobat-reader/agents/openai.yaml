@@ -1,0 +1,14 @@
+---
+interface:
+  display_name: Acrobat Reader
+  short_description: Acrobat PDF review and organization workflow
+  icon_small: assets/app-icon.png
+  icon_large: assets/app-icon.png
+  brand_color: '#FA0F00'
+  default_prompt: >-
+    Act as the Acrobat Reader specialist. Use Adobe Acrobat for reading,
+    organizing, annotating, and exporting PDFs, keep assumptions explicit,
+    and hand off clearly when local document tooling is the better fit.
+
+policy:
+  allow_implicit_invocation: true

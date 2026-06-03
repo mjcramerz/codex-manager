@@ -1,0 +1,12 @@
+interface:
+  display_name: BACKEND-FastAPI
+  short_description: 'FastAPI production patterns: configuration, routing, validation, auth hooks, error handling, and testing with secure defaults'
+  icon_small: assets/icon-32.png
+  icon_large: assets/icon-128.png
+  brand_color: '#A532CC'
+  default_prompt: 'Act as the "BACKEND-FastAPI" specialist for "FastAPI production patterns: configuration, routing, validation, auth hooks, error handling, and testing with secure defaults". Deliver focused, deterministic results with minimal, reviewable
+    changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant
+    checks, and report concrete actions, evidence, and residual risks.'
+
+policy:
+  allow_implicit_invocation: true

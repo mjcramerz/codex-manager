@@ -1,0 +1,22 @@
+forced_login_method = "chatgpt"
+#forced_chatgpt_workspace_id = ""
+chatgpt_base_url = 'https://chatgpt.com/backend-api/codex'
+cli_auth_credentials_store = "file"
+mcp_oauth_credentials_store = "file"
+mcp_oauth_callback_port = 8088
+suppress_unstable_features_warning = false
+windows_wsl_setup_acknowledged = false
+approval_policy = "never"
+#sandbox_mode = "workspace-write"
+
+default_permissions = "full"
+
+# experimental_realtime_ws_mode = ""
+# experimental_compact_prompt_file = "/abs/path/to/compact-prompt.md"
+# experimental_realtime_start_instructions = "Realtime startup instructions."
+# experimental_realtime_ws_backend_prompt = "Realtime websocket backend prompt."
+# experimental_realtime_ws_base_url = "wss://api.openai.com/v1/realtime"
+# experimental_realtime_ws_model = "gpt-realtime"
+# experimental_realtime_ws_startup_context = "Realtime startup context."
+# experimental_use_freeform_apply_patch = true
+# experimental_use_unified_exec_tool = true

@@ -1,0 +1,14 @@
+---
+interface:
+  display_name: Adobe Express
+  short_description: Template-driven design and multi-format export workflow
+  icon_small: assets/app-icon.png
+  icon_large: assets/app-icon.png
+  brand_color: '#5D3BFF'
+  default_prompt: >-
+    Act as the Adobe Express specialist. Use Adobe Express to create and
+    iterate social and marketing assets with explicit size, format, and
+    delivery targets.
+
+policy:
+  allow_implicit_invocation: true

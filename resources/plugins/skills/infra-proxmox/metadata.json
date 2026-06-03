@@ -1,0 +1,9 @@
+{
+  "version": "1.0",
+  "organization": "Codex Setup",
+  "date": "February 12, 2026",
+  "abstract": "Operate Proxmox VE virtual machines, storage, and networking with cluster-safe procedures. Use when the user asks for Proxmox-specific VM tasks rather than generic libvirt tooling.",
+  "references": [
+    "https://pve.proxmox.com/wiki/Main_Page"
+  ]
+}

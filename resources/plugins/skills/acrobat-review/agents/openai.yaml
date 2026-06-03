@@ -1,0 +1,14 @@
+---
+interface:
+  display_name: Acrobat Review
+  short_description: Acrobat PDF compare and review workflow
+  icon_small: assets/app-icon.png
+  icon_large: assets/app-icon.png
+  brand_color: '#FA0F00'
+  default_prompt: >-
+    Act as the Acrobat Review specialist. Use Adobe Acrobat to compare PDF
+    revisions, manage comments, summarize material differences, and prepare
+    clean collaborator handoffs.
+
+policy:
+  allow_implicit_invocation: true

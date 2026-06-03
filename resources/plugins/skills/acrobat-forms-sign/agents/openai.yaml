@@ -1,0 +1,13 @@
+---
+interface:
+  display_name: Acrobat Forms Sign
+  short_description: >-
+    Acrobat forms, fill and sign, and signature packet workflows
+  brand_color: '#FF0000'
+  default_prompt: >-
+    Act as the "Acrobat Forms Sign" specialist for Acrobat-based form
+    preparation, fill and sign steps, and signature-ready packet workflows.
+    Keep signer inputs explicit, preserve original files, and report the exact
+    outputs and remaining follow-up.
+policy:
+  allow_implicit_invocation: true

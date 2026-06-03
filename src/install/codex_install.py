@@ -1,0 +1,2994 @@
+#!/usr/bin/env python3
+"""Codex installer.
+
+This installer compiles runtime outputs from repository configuration:
+- .env
+- vars.toml
+- config/vendor/*
+- config/usr/*
+- resources/*/metadata.json
+- resources/plugins/manifest.json
+- resources/hooks/*
+"""
+
+from __future__ import annotations
+
+import argparse
+import base64
+import copy
+import filecmp
+import getpass
+import hashlib
+import json
+import os
+import re
+import shutil
+import stat
+import subprocess
+import sys
+import tarfile
+import tempfile
+import time
+import tomllib
+import urllib.parse
+import urllib.request
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Iterable
+
+sys.dont_write_bytecode = True
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+INSTALL_SRC = Path(__file__).resolve().parent
+PYTHON_SRC = REPO_ROOT / "src" / "python"
+if str(INSTALL_SRC) not in sys.path:
+    sys.path.insert(0, str(INSTALL_SRC))
+if str(PYTHON_SRC) not in sys.path:
+    sys.path.insert(0, str(PYTHON_SRC))
+
+from common import InstallError
+from common import _first_unresolved_codex_placeholder_outside_toml_multiline_strings
+from common import _replace_known_placeholders_outside_toml_multiline_strings
+from common import _toml_multiline_string_spans
+from common import ensure_gitlab_url
+from common import ensure_https_url
+from common import ensure_safe_absolute_path
+from common import ensure_safe_shell_export_value
+from common import ensure_sha256
+from common import fail
+from common import is_within
+from common import normalize_path
+from common import parse_env_file
+from common import parse_json_file
+from common import parse_toml_file
+from common import parse_variable_table
+from common import replace_known_placeholders_in_text
+from common import resolve_object_placeholders
+from common import resolve_placeholders
+from common import toml_key
+from common import toml_value
+from config_merge import compile_vendor_config
+from hooks_builder import render_hook_driver_from_manifest_path
+from hooks_builder import render_hooks_json_from_manifest_path
+from layout import RepoLayout
+from layout import RuntimeLayout
+from plugin_bundles import PluginBundleSpec
+from plugin_bundles import render_runtime_plugin_marketplace
+from apps_config import effective_plugins_inventory_payload
+from lib.fs_ops import needs_sudo_remove, needs_sudo_write
+from lib.release_assets import ReleaseAssetError, discover_release_binaries
+from lib.runtime import (
+    RuntimeRenderError,
+    TMPFS_HELPER_FILENAME,
+    derive_runtime_globals_from_env,
+    render_codex_shim,
+    render_codex_tmpfs_helper,
+    render_shell_export_block,
+    render_shell_exec_block,
+    render_shell_path_profile,
+)
+from lib.tar_utils import ArchiveSafetyError, safe_extractall
+from plugins import PLUGINS_BUNDLE_PATTERN
+from plugins import PLUGINS_MANIFEST_VERSION
+from plugins import PLUGINS_MARKETPLACE_PATTERN
+from plugins import local_plugin_bundle_dirs
+from plugins import plugin_manifest_bundles
+from plugins import plugin_manifest_marketplace_name
+from plugins import plugin_skill_source_path
+from plugins import sync_local_plugins
+from plugins import sync_runtime_plugin_bundle
+from plugins import validate_plugin_bundle_inventory
+from skills import render_dependency_block
+from skills import iter_skill_groups
+from skills import rewrite_openai_yaml_dependencies
+from skills import role_tools_from_skills
+from skills import validate_openai_yaml_mcp_dependencies
+
+ENV_REQUIRED = (
+    "CODEX_ROOT_DIR",
+    "CODEX_SYSTEM_DIR",
+    "CODEX_USER_DIR",
+    "CODEX_SHARE_DIR",
+    "CODEX_MCP_DIR",
+    "CODEX_BACKUP_DIR",
+    "CODEX_DOWNLOAD_URL",
+    "CODEX_DOWNLOAD_SHA",
+    "CODEX_DOWNLOAD_PKG",
+    "BWS_RELEASE_COMMIT_SHA",
+    "BWS_RELEASE_URL",
+    "BWS_RELEASE_SHA256",
+)
+
+ENV_ROOT_KEYS = (
+    "CODEX_ROOT_DIR",
+    "CODEX_SYSTEM_DIR",
+    "CODEX_USER_DIR",
+    "CODEX_SHARE_DIR",
+    "CODEX_MCP_DIR",
+    "CODEX_BACKUP_DIR",
+)
+
+RUNTIME_REQUIRED = (
+    "CODEX_HOME",
+    "CODEX_AGENTS",
+    "CODEX_SKILLS",
+    "CODEX_LOG_DIR",
+    "CODEX_SQLITE_HOME",
+    "CODEX_TMPDIR",
+)
+GLOBAL_EXPORT_REQUIRED = (
+    "CODEX_HOME",
+    "CODEX_AGENTS",
+    "CODEX_SKILLS",
+    "CODEX_SQLITE_HOME",
+    "CODEX_LOG_DIR",
+    "CODEX_TMPDIR",
+)
+GLOBAL_EXPORT_PATH_KEYS = GLOBAL_EXPORT_REQUIRED
+
+PROCESS_TEMP_ENV_KEYS = ("TMPDIR", "TEMP", "TMP")
+SAFE_PROCESS_TMPDIR = "/tmp"
+TMPFS_MOUNT_OPTIONS = "size=36%,mode=1777,nodev,nosuid"
+
+SCHEMA_TOOL_SOURCE_FILENAME = "codex_schema_tool.py"
+SCHEMA_HELPER_COMMANDS = {
+    "codex-schema-newest": "newest",
+    "codex-schema-diff": "diff",
+}
+SCHEMA_HELPER_NAMES = tuple(SCHEMA_HELPER_COMMANDS.keys())
+RELEASE_SCHEMA_FILENAME = "config.schema.json"
+ENV_PROFILE_FILENAME = "50-codex-user-env.sh"
+SHELL_COMPLETION_TARGETS = {
+    "bash": Path(".local") / "share" / "bash-completion" / "completions" / "codex",
+}
+
+HOME_RUNTIME_STATE_DIRS = ("memories", "sessions", "shell_snapshots")
+HOME_RUNTIME_MERGED_FILES = (
+    ".credentials.json",
+    ".personality_migration",
+    "history.jsonl",
+    "session_index.jsonl",
+    "version.json",
+)
+HOME_FILTER_PRESERVE_DIRS = (*HOME_RUNTIME_STATE_DIRS, "tmp", ".agents", "plugins")
+HOME_FILTER_PRESERVE_FILES = (*HOME_RUNTIME_MERGED_FILES, "auth.json")
+BACKUP_ACCOUNT_KEY_PATTERN = re.compile(r"^[A-Za-z0-9]{8}$")
+BACKUP_UNKNOWN_ACCOUNT_KEY = "unknown"
+BACKUP_SOURCE_KEY_TO_LABEL = (
+    ("CODEX_SQLITE_HOME", "sqlite"),
+    ("CODEX_HOME", "home"),
+    ("CODEX_SKILLS", "skills"),
+    ("CODEX_AGENTS", "agents"),
+)
+HOME_BACKUP_EXCLUDE_ROOT_CHILDREN = frozenset({"tmp"})
+INSTRUCTIONS_MANIFEST_FILENAME = "metadata.json"
+USER_APPS_FILENAME = "apps.toml"
+PLUGINS_METADATA_FILENAME = "manifest.json"
+LOOKUP_SECRET_SERVICE_FILENAME = "lookup-secret-service.env"
+INSTRUCTIONS_GROUP_PATTERN = re.compile(r"^[a-z0-9][a-z0-9_-]*$")
+INSTRUCTIONS_ENTRY_KEY_PATTERN = re.compile(r"^[a-z][a-z0-9_]*$")
+INSTRUCTIONS_ENTRY_FILENAME_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*$")
+INSTRUCTIONS_ALLOWED_SUFFIXES = {".json", ".lark", ".md"}
+VERSION_PATTERN = re.compile(r"([0-9]+\.[0-9]+\.[0-9]+(?:\.[0-9]+)*(?:-[A-Za-z0-9._]+)*)")
+SHA1_PATTERN = re.compile(r"^[A-Fa-f0-9]{40}$")
+ENV_KEY_PATTERN = re.compile(r"^[A-Z][A-Z0-9_]*$")
+INSTALL_BWS_SECRET_SERVICE = "bws-cli"
+INSTALL_BWS_KWALLET_FOLDER = "Passwords"
+KWALLET_QUERY_TIMEOUT_SECONDS = 15
+
+
+def parse_launch_env_table(
+    payload: dict[str, Any],
+    *,
+    path_label: str,
+    variables: dict[str, str],
+) -> dict[str, str]:
+    table = payload.get("launch_env")
+    if table is None:
+        return {}
+    if not isinstance(table, dict):
+        fail(f"{path_label} [launch_env] must be an object")
+
+    parsed: dict[str, str] = {}
+    for key, value in table.items():
+        if not isinstance(key, str) or not ENV_KEY_PATTERN.fullmatch(key):
+            fail(f"invalid launch env key in {path_label}: {key}")
+        if not isinstance(value, str):
+            fail(f"launch env value must be string in {path_label}: {key}")
+        parsed[key] = resolve_placeholders(value.strip(), variables, f"{path_label}.launch_env.{key}")
+    return parsed
+
+
+def ensure_non_root_user() -> None:
+    if hasattr(os, "geteuid") and os.geteuid() == 0:
+        fail("run installer as a regular user; it will prompt for sudo only when needed")
+
+
+@dataclass
+class CompiledArtifacts:
+    config_toml: Path
+
+
+class Installer:
+    def __init__(self, repo_root: Path, dry_run: bool) -> None:
+        self.repo_root = repo_root
+        self.repo_layout = RepoLayout.from_repo_root(repo_root)
+        self.runtime_layout: RuntimeLayout | None = None
+        self.dry_run = dry_run
+        self.user_home = Path.home()
+
+        self.env_path = repo_root / ".env"
+        self.vars_path = repo_root / "vars.toml"
+        self.mcp_path = self.repo_layout.vendor_mcp_path
+        self.skills_path = self.repo_layout.skills_metadata_path
+        self.plugins_path = self.repo_layout.user_apps_path
+        self.plugins_json_path = self.repo_layout.plugins_inventory_path
+        self.user_env_path = self.repo_layout.user_env_path
+        self.sandbox_path = self.repo_layout.user_policy_path
+        self.config_path = self.repo_layout.vendor_config_path
+        self.requirements_path = self.repo_layout.vendor_requirements_path
+
+        self.env: dict[str, str] = {}
+        self.runtime_vars: dict[str, str] = {}
+        self.global_vars: dict[str, str] = {}
+        self.launch_env: dict[str, str] = {}
+        self.variables: dict[str, str] = {}
+        self.mcp_payload: dict[str, Any] = {}
+        self.skills_payload: dict[str, Any] = {}
+        self.plugins_payload: dict[str, Any] = {}
+        self.plugins_metadata_payload: dict[str, Any] = {}
+        self.effective_plugins_metadata_payload: dict[str, Any] = {}
+        self.allowed_roots: list[Path] = []
+        self._keyring_secret_cache: dict[str, str] = {}
+        self._release_credentials_cache: tuple[str, str] | None = None
+        self._warnings_emitted: set[str] = set()
+
+    def load(self) -> None:
+        self.env = parse_env_file(self.env_path)
+        vars_payload = parse_toml_file(self.vars_path)
+        mcp_payload_raw = parse_toml_file(self.mcp_path)
+        self.skills_payload = parse_json_file(self.skills_path)
+        self.plugins_payload = parse_toml_file(self.plugins_path) if self.plugins_path.is_file() else {}
+        if self.plugins_json_path.is_file():
+            try:
+                self.plugins_metadata_payload = json.loads(self.plugins_json_path.read_text(encoding="utf-8"))
+            except json.JSONDecodeError as exc:
+                fail(f"invalid {self.plugins_json_path}: {exc}")
+        else:
+            self.plugins_metadata_payload = {}
+
+        parsed_globals = parse_variable_table(
+            vars_payload,
+            path_label="vars.toml",
+            table_name="global_variables",
+            item_label="global variable",
+        )
+        if "session_variables" in vars_payload:
+            fail("vars.toml [session_variables] has been replaced by config/usr/env.toml [launch_env]")
+
+        try:
+            self.runtime_vars = derive_runtime_globals_from_env(self.env)
+        except RuntimeRenderError as exc:
+            fail(str(exc))
+        self.global_vars = dict(parsed_globals)
+        sqlite_home = self.global_vars.get("CODEX_SQLITE_HOME", "").strip()
+        if sqlite_home:
+            self.runtime_vars["CODEX_SQLITE_HOME"] = sqlite_home
+
+        self.runtime_layout = RuntimeLayout.from_env(self.env, self.runtime_vars)
+        self._sanitize_process_tmpdir()
+        self.variables = dict(self.env)
+        self.variables.update(self.runtime_vars)
+        self.effective_plugins_metadata_payload = effective_plugins_inventory_payload(
+            self.plugins_metadata_payload,
+            self.plugins_json_path,
+            variables=self.variables,
+        )
+        user_env_payload = parse_toml_file(self.user_env_path)
+        if "launch_env" not in user_env_payload:
+            self._warn_once(f"{self.user_env_path} does not define [launch_env]; continuing with no launch_env exports")
+        self.launch_env = parse_launch_env_table(
+            user_env_payload,
+            path_label="config/usr/env.toml",
+            variables=self.variables,
+        )
+
+        self.mcp_payload = resolve_object_placeholders(mcp_payload_raw, self.variables, "config/vendor/mcp.toml")
+
+    def _validate_repo_layout(self) -> None:
+        required_paths = (
+            self.repo_layout.vendor_config_path,
+            self.repo_layout.vendor_providers_path,
+            self.repo_layout.vendor_pref_path,
+            self.repo_layout.vendor_policy_path,
+            self.repo_layout.vendor_mcp_path,
+            self.repo_layout.vendor_requirements_path,
+            self.repo_layout.agents_config_dir,
+            self.repo_layout.user_config_path,
+            self.repo_layout.user_features_path,
+            self.repo_layout.user_memory_path,
+            self.repo_layout.user_pref_path,
+            self.repo_layout.user_env_path,
+            self.repo_layout.user_apps_path,
+            self.repo_layout.user_policy_path,
+            self.repo_layout.home_user_dir,
+            self.repo_layout.hooks_dir,
+            self.repo_layout.hooks_scripts_dir,
+            self.repo_layout.hooks_manifest_path,
+            self.repo_layout.instructions_dir,
+            self.repo_layout.instructions_metadata_path,
+            self.repo_layout.skills_dir,
+            self.repo_layout.skills_metadata_path,
+            self.repo_layout.plugins_inventory_path,
+            self.repo_layout.plugins_skills_dir,
+            self._lookup_secret_service_source_path(),
+        )
+        for path in required_paths:
+            if not path.exists():
+                fail(f"missing required source path: {path}")
+        for blocked_name in ("etc", "usr", "local"):
+            blocked_path = self.repo_root / blocked_name
+            if blocked_path.exists():
+                fail(f"unexpected source path must not exist after rollout: {blocked_path}")
+
+    def validate(self) -> None:
+        for key in ENV_REQUIRED:
+            value = self.env.get(key, "").strip()
+            if not value:
+                fail(f"missing required .env key: {key}")
+
+        for key in ENV_ROOT_KEYS:
+            ensure_safe_absolute_path(key, self.env[key])
+
+        ensure_sha256("CODEX_DOWNLOAD_SHA", self.env["CODEX_DOWNLOAD_SHA"])
+        ensure_sha256("BWS_RELEASE_SHA256", self.env["BWS_RELEASE_SHA256"])
+        if not SHA1_PATTERN.fullmatch(self.env["BWS_RELEASE_COMMIT_SHA"]):
+            fail("BWS_RELEASE_COMMIT_SHA must be 40 hex characters")
+
+        ensure_gitlab_url("CODEX_DOWNLOAD_URL", self.env["CODEX_DOWNLOAD_URL"])
+        ensure_https_url("BWS_RELEASE_URL", self.env["BWS_RELEASE_URL"])
+
+        self.allowed_roots = [ensure_safe_absolute_path(key, self.env[key]) for key in ENV_ROOT_KEYS]
+
+        for key in RUNTIME_REQUIRED:
+            if not self.runtime_vars.get(key, "").strip():
+                fail(f"missing required runtime path derived from .env: {key}")
+
+        for key in GLOBAL_EXPORT_REQUIRED:
+            if not self.global_vars.get(key, "").strip():
+                fail(f"missing required exported global variable in vars.toml: {key}")
+
+        sqlite_home = ensure_safe_absolute_path("CODEX_SQLITE_HOME", self.runtime_vars["CODEX_SQLITE_HOME"])
+        expected_sqlite_home = self._default_sqlite_home()
+        if sqlite_home != expected_sqlite_home:
+            fail(f"CODEX_SQLITE_HOME must be {expected_sqlite_home}")
+
+        for key, value in self.runtime_vars.items():
+            path = ensure_safe_absolute_path(f"runtime.{key}", value)
+            if not any(is_within(path, root) for root in self.allowed_roots):
+                fail(f"runtime path {key} is outside .env roots: {value}")
+
+        for key in GLOBAL_EXPORT_PATH_KEYS:
+            path = ensure_safe_absolute_path(f"global_variables.{key}", self.global_vars[key])
+            if not any(is_within(path, root) for root in self.allowed_roots):
+                fail(f"global path {key} is outside .env roots: {self.global_vars[key]}")
+            runtime_value = self.runtime_vars.get(key, "").strip()
+            if runtime_value and normalize_path(runtime_value) != path:
+                fail(f"vars.toml {key} must match the path derived from .env")
+
+        for key, value in self.global_vars.items():
+            if key in GLOBAL_EXPORT_PATH_KEYS:
+                continue
+            ensure_safe_shell_export_value(f"global_variables.{key}", value)
+        for key, value in self.launch_env.items():
+            if key in self.runtime_vars:
+                fail(f"launch_env {key} cannot override installer-managed runtime variables")
+            if key in self.global_vars:
+                fail(f"launch_env {key} cannot override vars.toml [global_variables]")
+            ensure_safe_shell_export_value(f"launch_env.{key}", value)
+
+        groups = iter_skill_groups(self.skills_payload)
+        if not groups:
+            fail("resources/skills/metadata.json must declare at least one skill group")
+
+        for group in groups:
+            if not bool(group.get("enabled", True)):
+                continue
+            role_name = str(group.get("role", "")).strip()
+            if not role_name:
+                fail("group entry missing role in resources/skills/metadata.json")
+
+        self._plugin_manifest_bundles(enabled_only=True)
+        validate_plugin_bundle_inventory(self, self.repo_layout.plugins_skills_dir)
+        if self.sandbox_path.is_file():
+            parse_toml_file(self.sandbox_path)
+        self._validate_repo_layout()
+        self._render_runtime_hooks_config()
+        self._render_user_config_toml("", Path(self.runtime_vars["CODEX_HOME"]) / "config.toml")
+
+    def _sanitize_process_tmpdir(self) -> None:
+        tmpdir_value = self.runtime_vars.get("CODEX_TMPDIR", "").strip()
+        if not tmpdir_value:
+            return
+        codex_tmpdir = ensure_safe_absolute_path("CODEX_TMPDIR", tmpdir_value)
+        updated = False
+        for key in PROCESS_TEMP_ENV_KEYS:
+            raw_value = os.environ.get(key, "").strip()
+            if not raw_value:
+                continue
+            try:
+                env_path = ensure_safe_absolute_path(key, raw_value)
+            except InstallError:
+                continue
+            if env_path == codex_tmpdir or is_within(env_path, codex_tmpdir):
+                os.environ[key] = SAFE_PROCESS_TMPDIR
+                updated = True
+        if updated:
+            tempfile.tempdir = None
+
+    def compile(self, output_dir: Path) -> CompiledArtifacts:
+        output_dir.mkdir(parents=True, exist_ok=True)
+        merged_config = compile_vendor_config(self.repo_layout, self.variables)
+        config_out = output_dir / "config.toml"
+        config_out.write_text(merged_config, encoding="utf-8")
+        return CompiledArtifacts(config_toml=config_out)
+
+    def _log(self, message: str) -> None:
+        print(f"[install] {message}")
+
+    def _warn_once(self, message: str) -> None:
+        if message in self._warnings_emitted:
+            return
+        self._warnings_emitted.add(message)
+        print(f"[warn] {message}")
+
+    def _share_dir(self) -> Path:
+        return ensure_safe_absolute_path("CODEX_SHARE_DIR", self.env["CODEX_SHARE_DIR"])
+
+    def _schema_root_dir(self) -> Path:
+        return ensure_safe_absolute_path("CODEX_ROOT_DIR", self.env["CODEX_ROOT_DIR"]) / "schema"
+
+    def _schema_latest_snapshot_path(self) -> Path:
+        return self._schema_root_dir() / "latest" / "config.schema.latest.json"
+
+    def _helpers_dir(self) -> Path:
+        return self._share_dir() / "helpers"
+
+    def _tmpfs_helper_target(self) -> Path:
+        return self._helpers_dir() / TMPFS_HELPER_FILENAME
+
+    def _lookup_secret_service_dir(self) -> Path:
+        return ensure_safe_absolute_path("CODEX_ROOT_DIR", self.env["CODEX_ROOT_DIR"]) / "lookup"
+
+    def _lookup_secret_service_path(self) -> Path:
+        return self._lookup_secret_service_dir() / LOOKUP_SECRET_SERVICE_FILENAME
+
+    def _lookup_secret_service_source_path(self) -> Path:
+        return self.repo_root / LOOKUP_SECRET_SERVICE_FILENAME
+
+    def _lookup_secret_env_helper_source_path(self) -> Path:
+        return self.repo_root / "src" / "python" / "lib" / "keyring_env.py"
+
+    def _lookup_secret_env_helper_target(self) -> Path:
+        return self._helpers_dir() / "codex-bws-env.py"
+
+    def _mcp_dir(self) -> Path:
+        return ensure_safe_absolute_path("CODEX_MCP_DIR", self.env["CODEX_MCP_DIR"])
+
+    def _mcp_ssh_key_path(self) -> Path:
+        return self._mcp_dir() / "ssh" / "mcp_servers_ed25519"
+
+    def _mcp_known_hosts_path(self) -> Path:
+        return self._mcp_dir() / "ssh" / "known_hosts"
+
+    def _codex_binary_path(self) -> Path:
+        return self._share_dir() / "bin" / "codex"
+
+    def _path_profile_target(self) -> Path:
+        system_dir = ensure_safe_absolute_path("CODEX_SYSTEM_DIR", self.env["CODEX_SYSTEM_DIR"])
+        return system_dir.parent / "profile.d" / ENV_PROFILE_FILENAME
+
+    def _codex_user_dir(self) -> Path:
+        return ensure_safe_absolute_path("CODEX_USER_DIR", self.env["CODEX_USER_DIR"])
+
+    def _default_sqlite_home(self) -> Path:
+        return ensure_safe_absolute_path("CODEX_ROOT_DIR", self.env["CODEX_ROOT_DIR"]) / "sqlite"
+
+    def _runtime_instructions_dir(self) -> Path:
+        return self._codex_user_dir() / "instructions"
+
+    def _runtime_plugins_dir(self) -> Path:
+        if self.runtime_layout is not None:
+            return self.runtime_layout.plugin_cache_dir
+        home_dir = ensure_safe_absolute_path("CODEX_HOME", self.runtime_vars["CODEX_HOME"])
+        return home_dir / "plugins" / "cache"
+
+    def _runtime_plugin_marketplace_dir(self) -> Path:
+        if self.runtime_layout is not None:
+            return self.runtime_layout.plugin_marketplace_dir
+        home_dir = ensure_safe_absolute_path("CODEX_HOME", self.runtime_vars["CODEX_HOME"])
+        return home_dir / ".agents" / "plugins"
+
+    def _runtime_plugin_marketplace_path(self) -> Path:
+        if self.runtime_layout is not None:
+            return self.runtime_layout.plugin_marketplace_path
+        return self._runtime_plugin_marketplace_dir() / "marketplace.json"
+
+    def _runtime_hooks_dir(self) -> Path:
+        if self.runtime_layout is not None:
+            return self.runtime_layout.hooks_dir
+        home_dir = ensure_safe_absolute_path("CODEX_HOME", self.runtime_vars["CODEX_HOME"])
+        return home_dir / "hooks"
+
+    def _runtime_hooks_config_path(self) -> Path:
+        if self.runtime_layout is not None:
+            return self.runtime_layout.hooks_config_path
+        home_dir = ensure_safe_absolute_path("CODEX_HOME", self.runtime_vars["CODEX_HOME"])
+        return home_dir / "hooks.json"
+
+    def _runtime_hooks_scripts_dir(self) -> Path:
+        return self._runtime_hooks_dir() / "scripts"
+
+    def _instructions_source_dir(self) -> Path:
+        return self.repo_layout.instructions_dir
+
+    def _instruction_manifest_entries(self) -> list[dict[str, Any]]:
+        manifest_path = self._instructions_manifest_path()
+        if not manifest_path.is_file():
+            return []
+        manifest = parse_json_file(manifest_path)
+        version = manifest.get("version")
+        if version != 1:
+            fail(f"{manifest_path} must declare version = 1")
+        groups = manifest.get("groups")
+        if not isinstance(groups, list):
+            fail(f"{manifest_path} must declare a groups array")
+
+        source_root = self._instructions_source_dir()
+        seen_keys: set[str] = set()
+        entries: list[dict[str, Any]] = []
+        for group in groups:
+            if not isinstance(group, dict):
+                fail(f"{manifest_path} group entry must be an object")
+            group_name = str(group.get("name", "")).strip()
+            if not INSTRUCTIONS_GROUP_PATTERN.fullmatch(group_name):
+                fail(f"{manifest_path} group name is invalid: {group_name}")
+            group_enabled = group.get("enabled", True)
+            if not isinstance(group_enabled, bool):
+                fail(f"{manifest_path} group.enabled must be boolean for {group_name}")
+            group_entries = group.get("entries", [])
+            if not isinstance(group_entries, list):
+                fail(f"{manifest_path} group.entries must be a list for {group_name}")
+
+            for entry in group_entries:
+                if not isinstance(entry, dict):
+                    fail(f"{manifest_path} group.entries items must be objects for {group_name}")
+
+                entry_name = str(entry.get("name", "")).strip()
+                if not entry_name:
+                    fail(f"{manifest_path} entry missing name in group {group_name}")
+
+                key_value = entry.get("config_key")
+                config_key: str | None
+                if key_value in (None, ""):
+                    config_key = None
+                else:
+                    config_key = str(key_value).strip()
+                    if not INSTRUCTIONS_ENTRY_KEY_PATTERN.fullmatch(config_key):
+                        fail(f"{manifest_path} entry key is invalid: {config_key}")
+                    if config_key in seen_keys:
+                        fail(f"{manifest_path} duplicate key mapping: {config_key}")
+                    seen_keys.add(config_key)
+
+                file_name = str(entry.get("file", "")).strip()
+                if not file_name:
+                    fail(f"{manifest_path} entry for {entry_name} must define file")
+                if not INSTRUCTIONS_ENTRY_FILENAME_PATTERN.fullmatch(file_name):
+                    fail(f"{manifest_path} entry file is invalid for {entry_name}: {file_name}")
+                if "/" in file_name or "\\" in file_name:
+                    fail(f"{manifest_path} entry file must be a basename for {entry_name}: {file_name}")
+                if Path(file_name).suffix not in INSTRUCTIONS_ALLOWED_SUFFIXES:
+                    allowed = ", ".join(sorted(INSTRUCTIONS_ALLOWED_SUFFIXES))
+                    fail(f"{manifest_path} entry file must end with one of ({allowed}) for {entry_name}: {file_name}")
+
+                source_group = str(entry.get("source_group", group_name)).strip() or group_name
+                source_path = source_root / source_group / file_name
+                if not source_path.is_file():
+                    fail(f"instructions source file not found for {entry_name}: {source_path}")
+
+                entry_enabled = entry.get("enabled", group_enabled)
+                if not isinstance(entry_enabled, bool):
+                    fail(f"{manifest_path} entry.enabled must be boolean for {entry_name}")
+
+                resolved_targets: dict[str, str | None] = {}
+                for field_name in ("default_enable_path", "default_disable_path"):
+                    raw_target = entry.get(field_name)
+                    if raw_target in (None, ""):
+                        resolved_targets[field_name] = None
+                        continue
+                    if not isinstance(raw_target, str):
+                        fail(f"{manifest_path} {entry_name}.{field_name} must be a string when provided")
+                    resolved_targets[field_name] = resolve_placeholders(
+                        raw_target.strip(),
+                        self.variables,
+                        f"{manifest_path} entry {entry_name}.{field_name}",
+                    )
+
+                entries.append(
+                    {
+                        "config_key": config_key,
+                        "enabled": entry_enabled,
+                        "source_path": source_path,
+                        "default_enable_path": resolved_targets["default_enable_path"],
+                        "default_disable_path": resolved_targets["default_disable_path"],
+                    }
+                )
+        return entries
+
+    def _hooks_source_dir(self) -> Path:
+        return self.repo_layout.hooks_scripts_dir
+
+    def _hooks_manifest_source_path(self) -> Path:
+        return self.repo_layout.hooks_manifest_path
+
+    def _render_runtime_hooks_config(self) -> str:
+        return render_hooks_json_from_manifest_path(self._hooks_manifest_source_path())
+
+    def _render_runtime_hook_driver(self) -> str:
+        template_path = self.repo_layout.hooks_scripts_dir / "hook_driver.py"
+        return render_hook_driver_from_manifest_path(self._hooks_manifest_source_path(), template_path)
+
+    def _plugins_source_dir(self) -> Path:
+        return self.repo_layout.plugins_skills_dir
+
+    def _instructions_manifest_path(self) -> Path:
+        return self.repo_layout.instructions_metadata_path
+
+    def _backup_source_paths(self) -> list[tuple[str, Path]]:
+        sources: list[tuple[str, Path]] = []
+        for env_key, label in BACKUP_SOURCE_KEY_TO_LABEL:
+            source = ensure_safe_absolute_path(env_key, self.runtime_vars[env_key])
+            if source.exists() and not source.is_dir():
+                fail(f"backup source must be a directory: {source}")
+            sources.append((label, source))
+        return sources
+
+    def _backup_account_key(self, sources: list[tuple[str, Path]]) -> str:
+        home_dir = ensure_safe_absolute_path("CODEX_HOME", self.runtime_vars["CODEX_HOME"])
+        auth_path = home_dir / "auth.json"
+        if not auth_path.is_file():
+            return BACKUP_UNKNOWN_ACCOUNT_KEY
+        try:
+            payload = json.loads(auth_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            self._log(f"falling back to unknown backup bucket because CODEX_HOME/auth.json is unreadable: {exc}")
+            return BACKUP_UNKNOWN_ACCOUNT_KEY
+        if not isinstance(payload, dict):
+            return BACKUP_UNKNOWN_ACCOUNT_KEY
+        account_ids: set[str] = set()
+        pending: list[Any] = [payload]
+        while pending:
+            current = pending.pop()
+            if isinstance(current, dict):
+                for key, value in current.items():
+                    if key == "account_id" and isinstance(value, str):
+                        account_ids.add(value.strip())
+                        continue
+                    pending.append(value)
+            elif isinstance(current, list):
+                pending.extend(current)
+        if not account_ids:
+            return BACKUP_UNKNOWN_ACCOUNT_KEY
+        if len(account_ids) > 1:
+            return BACKUP_UNKNOWN_ACCOUNT_KEY
+        account_id = next(iter(account_ids))
+        account_key = account_id.strip()[:8]
+        if not BACKUP_ACCOUNT_KEY_PATTERN.fullmatch(account_key):
+            return BACKUP_UNKNOWN_ACCOUNT_KEY
+        return account_key
+
+    def _backup_run_root(self, backup_root: Path, *, account_key: str, flow: str) -> Path:
+        timestamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
+        base_name = f"{timestamp}-{flow}-{account_key}"
+        candidate = backup_root / base_name
+        suffix = 1
+        while candidate.exists():
+            suffix += 1
+            candidate = backup_root / f"{base_name}-{suffix}"
+        return candidate
+
+    def _user_home_dir(self) -> Path:
+        if not self.user_home.is_absolute():
+            fail(f"user home must be an absolute path: {self.user_home}")
+        return self.user_home
+
+    def _env_script_path(self) -> Path:
+        script = self.repo_root / "src" / "python" / "lib" / "codex_env.sh"
+        if not script.is_file():
+            fail(f"missing CODEX environment helper script: {script}")
+        return script
+
+    def _run_with_sudo(self, args: list[str]) -> None:
+        cmd = ["sudo", *args]
+        try:
+            subprocess.run(cmd, check=True)
+        except FileNotFoundError as exc:
+            fail(f"sudo is required for privileged operation but is unavailable: {exc}")
+        except subprocess.CalledProcessError as exc:
+            fail(f"sudo command failed ({' '.join(args)}), exit code {exc.returncode}")
+
+    def _run_command(self, args: list[str]) -> None:
+        try:
+            subprocess.run(args, check=True)
+        except FileNotFoundError as exc:
+            fail(f"required command is unavailable: {exc}")
+        except subprocess.CalledProcessError as exc:
+            fail(f"command failed ({' '.join(args)}), exit code {exc.returncode}")
+
+    def _needs_sudo_write(self, path: Path) -> bool:
+        return needs_sudo_write(path)
+
+    def _mkdir_path(self, path: Path) -> None:
+        if self.dry_run:
+            print(f"[dry-run] mkdir -p {path}")
+            return
+        if self._needs_sudo_write(path):
+            self._run_with_sudo(["mkdir", "-p", str(path)])
+        else:
+            path.mkdir(parents=True, exist_ok=True)
+
+    def _install_file_with_sudo(self, src: Path, dst: Path, mode: int) -> None:
+        self._run_with_sudo(["mkdir", "-p", str(dst.parent)])
+        self._run_with_sudo(["install", "-m", f"{mode:04o}", str(src), str(dst)])
+
+    def _write_file(self, path: Path, content: str, mode: int = 0o644) -> None:
+        if self.dry_run:
+            print(f"[dry-run] write {path}")
+            return
+        if path.is_file():
+            try:
+                current = path.read_text(encoding="utf-8")
+                current_mode = stat.S_IMODE(path.stat().st_mode)
+            except OSError:
+                current = ""
+                current_mode = -1
+            if current == content and current_mode == mode:
+                return
+        if self._needs_sudo_write(path.parent):
+            with tempfile.NamedTemporaryFile(
+                mode="w",
+                encoding="utf-8",
+                delete=False,
+                prefix="codex-install-",
+            ) as handle:
+                handle.write(content)
+                temp_path = Path(handle.name)
+            try:
+                self._install_file_with_sudo(temp_path, path, mode)
+            finally:
+                temp_path.unlink(missing_ok=True)
+        else:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(content, encoding="utf-8")
+            os.chmod(path, mode)
+
+    def _copy_file(self, src: Path, dst: Path, mode: int = 0o644) -> None:
+        if self.dry_run:
+            print(f"[dry-run] copy {src} -> {dst}")
+            return
+        if dst.is_file():
+            try:
+                dst_mode = stat.S_IMODE(dst.stat().st_mode)
+                if dst_mode == mode and filecmp.cmp(src, dst, shallow=False):
+                    return
+            except OSError:
+                pass
+        if self._needs_sudo_write(dst.parent):
+            self._install_file_with_sudo(src, dst, mode)
+        else:
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src, dst)
+            os.chmod(dst, mode)
+
+    def _copy_tree(self, src: Path, dst: Path) -> None:
+        if not src.is_dir():
+            fail(f"copy source directory not found: {src}")
+        if self.dry_run:
+            print(f"[dry-run] sync tree {src} -> {dst}")
+            return
+        if self._needs_sudo_write(dst):
+            self._run_with_sudo(["mkdir", "-p", str(dst)])
+            self._run_with_sudo(["cp", "-a", f"{src}{os.sep}.", str(dst)])
+        else:
+            dst.mkdir(parents=True, exist_ok=True)
+            shutil.copytree(src, dst, dirs_exist_ok=True)
+
+    def _render_schema_wrapper(
+        self,
+        command: str,
+        launch_env: dict[str, str] | None = None,
+    ) -> str:
+        if command not in {"newest", "diff"}:
+            fail(f"unsupported schema helper command: {command}")
+        schema_root = self._schema_root_dir()
+        release_package = self._share_dir() / "release" / "pkg" / self.env["CODEX_DOWNLOAD_PKG"]
+        home_config_path = ensure_safe_absolute_path("CODEX_HOME", self.runtime_vars["CODEX_HOME"]) / "config.toml"
+        tool_path = self._helpers_dir() / SCHEMA_TOOL_SOURCE_FILENAME
+        try:
+            effective_launch_env = self.launch_env if launch_env is None else launch_env
+            export_block = render_shell_export_block(effective_launch_env)
+            tmpfs_block = render_shell_exec_block("codex tmpfs helper", self._tmpfs_helper_target())
+        except RuntimeRenderError as exc:
+            fail(str(exc))
+        if command == "newest":
+            return (
+                "#!/usr/bin/env bash\n"
+                "set -euo pipefail\n"
+                f"{export_block}"
+                f"{tmpfs_block}"
+                "if (($# != 0)); then\n"
+                "  echo \"usage: codex-schema-newest\" >&2\n"
+                "  exit 2\n"
+                "fi\n"
+                f'exec /usr/bin/env python3 "{tool_path}" "newest" '
+                f'--schema-root "{schema_root}" --release-package "{release_package}" '
+                f'--host-config "{home_config_path}"\n'
+            )
+
+        return (
+            "#!/usr/bin/env bash\n"
+            "set -euo pipefail\n"
+            f"{export_block}"
+            f"{tmpfs_block}"
+            "if (($# > 1)); then\n"
+            "  echo \"usage: codex-schema-diff [--output]\" >&2\n"
+            "  exit 2\n"
+            "fi\n"
+            "if (($# == 1)) && [[ \"$1\" != \"--output\" ]]; then\n"
+            "  echo \"usage: codex-schema-diff [--output]\" >&2\n"
+            "  exit 2\n"
+            "fi\n"
+            f'exec /usr/bin/env python3 "{tool_path}" "diff" '
+            f'--schema-root "{schema_root}" --release-package "{release_package}" '
+            f'--host-config "{home_config_path}" "$@"\n'
+        )
+
+    def _ensure_runtime_directories(self) -> None:
+        path_values: set[str] = {self.env[key] for key in ENV_ROOT_KEYS if key != "CODEX_MCP_DIR"}
+        for key, value in self.runtime_vars.items():
+            if key == "CODEX_TMPDIR":
+                continue
+            path_values.add(value)
+        path_values.add(str(self._default_sqlite_home()))
+        path_values.add(str(Path(self.env["CODEX_SYSTEM_DIR"]) / "skills"))
+        path_values.add(str(Path(self.env["CODEX_SHARE_DIR"]) / "bin"))
+        path_values.add(str(Path(self.env["CODEX_SHARE_DIR"]) / "shims"))
+        path_values.add(str(Path(self.env["CODEX_SHARE_DIR"]) / "helpers"))
+        path_values.add(str(Path(self.env["CODEX_SHARE_DIR"]) / "release" / "pkg"))
+        path_values.add(str(self._lookup_secret_service_dir()))
+        path_values.add(str(self._runtime_instructions_dir()))
+        path_values.add(str(self._runtime_plugins_dir()))
+        path_values.add(str(self._runtime_plugin_marketplace_dir()))
+
+        for raw in sorted(path_values):
+            path = Path(raw)
+            self._mkdir_path(path)
+
+    def _ensure_upgrade_directories(self) -> None:
+        path_values = {
+            Path(self.env["CODEX_SYSTEM_DIR"]),
+            Path(self.env["CODEX_SYSTEM_DIR"]) / "skills",
+            Path(self.env["CODEX_SHARE_DIR"]),
+            Path(self.env["CODEX_SHARE_DIR"]) / "bin",
+            Path(self.env["CODEX_SHARE_DIR"]) / "shims",
+            Path(self.env["CODEX_SHARE_DIR"]) / "helpers",
+            Path(self.env["CODEX_SHARE_DIR"]) / "release" / "pkg",
+            self._schema_root_dir(),
+            Path(self.runtime_vars["CODEX_SKILLS"]),
+            self._default_sqlite_home(),
+            self._lookup_secret_service_dir(),
+        }
+        for path in sorted(path_values):
+            self._mkdir_path(path)
+
+    def _ensure_lookup_secret_service_file(self) -> None:
+        path = self._lookup_secret_service_path()
+        source = self._lookup_secret_service_source_path()
+        if not source.is_file():
+            fail(f"missing lookup secret service source file: {source}")
+        self._mkdir_path(path.parent)
+        if path.exists():
+            if not path.is_file():
+                fail(f"lookup secret service file must be a regular file: {path}")
+            return
+        self._copy_file(source, path, mode=0o644)
+
+    def _secure_exec_directories(self) -> None:
+        desired_mode = 0o755
+        secure_paths = {
+            Path(self.env["CODEX_SHARE_DIR"]) / "bin",
+            Path(self.env["CODEX_SHARE_DIR"]) / "shims",
+            Path(self.env["CODEX_SHARE_DIR"]) / "helpers",
+        }
+        for path in sorted(secure_paths):
+            if self.dry_run:
+                print(f"[dry-run] secure root-owned exec dir {path} mode {desired_mode:o}")
+                continue
+
+            needs_hardening = False
+            try:
+                st = path.stat()
+            except (FileNotFoundError, PermissionError):
+                needs_hardening = True
+            else:
+                mode = stat.S_IMODE(st.st_mode)
+                needs_hardening = st.st_uid != 0 or st.st_gid != 0 or mode != desired_mode
+
+            if not needs_hardening:
+                continue
+
+            self._run_with_sudo(["mkdir", "-p", str(path)])
+            self._run_with_sudo(["chown", "root:root", str(path)])
+            self._run_with_sudo(["chmod", f"{desired_mode:o}", str(path)])
+
+    def _resolve_group_target_path(self, group: dict[str, Any]) -> Path:
+        raw_path = str(group.get("runtime_path") or group.get("path") or "").strip()
+        if not raw_path:
+            fail(f"group missing runtime_path in resources/skills/metadata.json: {group}")
+        rendered = resolve_placeholders(
+            raw_path,
+            self.variables,
+            f"skills.group[{group.get('name', '?')}].runtime_path",
+        )
+        target = ensure_safe_absolute_path(f"group path {group.get('name', '?')}", rendered)
+        if not any(is_within(target, root) for root in self.allowed_roots):
+            fail(f"group path outside allowed roots: {target}")
+        return target
+
+    def _resolve_group_source_path(self, group: dict[str, Any]) -> Path:
+        raw_source = str(group.get("source_path", "")).strip()
+        if raw_source:
+            source = (self.repo_layout.skills_dir / raw_source).resolve(strict=False)
+        else:
+            namespace = str(group.get("namespace", "")).strip()
+            if not namespace:
+                fail(f"group missing namespace in resources/skills/metadata.json: {group}")
+            source = (self.repo_layout.skills_dir / namespace).resolve(strict=False)
+        skills_root = self.repo_layout.skills_dir.resolve(strict=False)
+        if not is_within(source, skills_root):
+            fail(f"group source path is outside resources/skills: {source}")
+        if not source.is_dir():
+            fail(f"group source path not found: {source}")
+        return source
+
+    def _is_user_skill_target(self, target: Path) -> bool:
+        return is_within(normalize_path(str(target)), normalize_path(self.runtime_vars["CODEX_SKILLS"]))
+
+    def _is_system_skill_target(self, target: Path) -> bool:
+        system_skills_root = normalize_path(self.env["CODEX_SYSTEM_DIR"]) / "skills"
+        return is_within(normalize_path(str(target)), system_skills_root)
+
+    def _sync_skill_groups(self, *, user_only: bool = False, system_only: bool = False) -> None:
+        if user_only and system_only:
+            fail("skill group sync cannot be both user_only and system_only")
+        groups = iter_skill_groups(self.skills_payload)
+        mcp_servers = self.mcp_payload.get("mcp_servers", {})
+        for group in groups:
+            if not bool(group.get("enabled", True)):
+                continue
+            role_name = str(group.get("role", "")).strip()
+            role_tools = role_tools_from_skills(self.skills_payload, role_name)
+            target = self._resolve_group_target_path(group)
+            if user_only and not self._is_user_skill_target(target):
+                continue
+            if system_only and not self._is_system_skill_target(target):
+                continue
+            source = self._resolve_group_source_path(group)
+            self._copy_tree(source, target)
+
+            dependency_block = render_dependency_block(role_tools, mcp_servers)
+            if not target.is_dir():
+                if self.dry_run:
+                    print(f"[dry-run] skip dependency rewrite for missing target {target}")
+                    continue
+                fail(f"group target directory missing after sync: {target}")
+
+            for child in sorted(target.iterdir()):
+                if not child.is_dir():
+                    continue
+                openai_yaml = child / "agents" / "openai.yaml"
+                if openai_yaml.is_file():
+                    rewrite_openai_yaml_dependencies(openai_yaml, dependency_block, self.dry_run)
+
+    def _rewrite_skill_group_dependencies_only(
+        self,
+        *,
+        skip_missing: bool = False,
+        user_only: bool = False,
+        system_only: bool = False,
+    ) -> None:
+        if user_only and system_only:
+            fail("dependency rewrite cannot be both user_only and system_only")
+        groups = iter_skill_groups(self.skills_payload)
+        mcp_servers = self.mcp_payload.get("mcp_servers", {})
+        for group in groups:
+            if not bool(group.get("enabled", True)):
+                continue
+            role_name = str(group.get("role", "")).strip()
+            role_tools = role_tools_from_skills(self.skills_payload, role_name)
+            target = self._resolve_group_target_path(group)
+            if user_only and not self._is_user_skill_target(target):
+                continue
+            if system_only and not self._is_system_skill_target(target):
+                continue
+            dependency_block = render_dependency_block(role_tools, mcp_servers)
+            if not target.is_dir():
+                if skip_missing or self.dry_run:
+                    print(f"[dry-run] skip dependency rewrite for missing target {target}")
+                    continue
+                fail(f"group target directory missing for dependency rewrite: {target}")
+
+            for child in sorted(target.iterdir()):
+                if not child.is_dir():
+                    continue
+                openai_yaml = child / "agents" / "openai.yaml"
+                if openai_yaml.is_file():
+                    rewrite_openai_yaml_dependencies(openai_yaml, dependency_block, self.dry_run)
+
+    def _sync_instruction_assets(self) -> None:
+        self._sync_tree_filtered(
+            self._instructions_source_dir(),
+            self._runtime_instructions_dir(),
+            skip_root_toml=True,
+            mirror_deletions=True,
+        )
+
+    def _resolve_runtime_config_path(self, raw_path: str, *, label: str) -> Path:
+        candidate = Path(raw_path)
+        if candidate.is_absolute():
+            target = ensure_safe_absolute_path(label, raw_path)
+        else:
+            base_dir = ensure_safe_absolute_path("CODEX_HOME", self.runtime_vars["CODEX_HOME"])
+            target = (base_dir / candidate).resolve(strict=False)
+        if not any(is_within(target, root) for root in self.allowed_roots):
+            fail(f"{label} resolves outside allowed roots: {target}")
+        return target
+
+    def _materialize_instruction_default_assets(self) -> None:
+        for entry in self._instruction_manifest_entries():
+            raw_target = entry.get("default_disable_path")
+            if not raw_target:
+                continue
+            target = self._resolve_runtime_config_path(
+                raw_target,
+                label=f"instruction default asset for {entry.get('config_key') or entry['source_path'].name}",
+            )
+            if target.exists() and target.is_dir():
+                self._remove_path_force(target)
+            source_path = entry["source_path"]
+            mode = stat.S_IMODE(source_path.stat().st_mode)
+            self._copy_file(source_path, target, mode=mode)
+
+    def _sync_hooks_assets(self) -> None:
+        self._sync_tree_filtered(
+            self._hooks_source_dir(),
+            self._runtime_hooks_scripts_dir(),
+            skip_root_toml=False,
+            mirror_deletions=True,
+        )
+        self._write_file(
+            self._runtime_hooks_scripts_dir() / "hook_driver.py",
+            self._render_runtime_hook_driver(),
+            mode=0o755,
+        )
+        self._write_file(self._runtime_hooks_config_path(), self._render_runtime_hooks_config())
+
+    def _sync_tree_filtered(
+        self,
+        src: Path,
+        dst: Path,
+        *,
+        skip_root_toml: bool,
+        preserve_root_dirs: set[str] | None = None,
+        preserve_root_files: set[str] | None = None,
+        mirror_deletions: bool = False,
+    ) -> None:
+        if not src.is_dir():
+            fail(f"copy source directory not found: {src}")
+        preserve_dirs = preserve_root_dirs or set()
+        preserve_files = preserve_root_files or set()
+        if dst.exists() and not dst.is_dir():
+            fail(f"copy destination must be a directory: {dst}")
+        self._mkdir_path(dst)
+
+        if mirror_deletions:
+            self._prune_filtered_tree(
+                src,
+                dst,
+                skip_root_toml=skip_root_toml,
+                preserve_root_dirs=preserve_dirs,
+                preserve_root_files=preserve_files,
+            )
+
+        for root, dirs, files in os.walk(src, topdown=True, followlinks=False):
+            root_path = Path(root)
+            rel_root = root_path.relative_to(src)
+            rel_root_str = "" if rel_root == Path(".") else str(rel_root)
+            target_root = dst if rel_root_str == "" else (dst / rel_root_str)
+            if target_root.exists() and not target_root.is_dir():
+                self._remove_path_force(target_root)
+            self._mkdir_path(target_root)
+
+            ordered_dirs = sorted(dirs)
+            dirs[:] = [
+                dirname
+                for dirname in ordered_dirs
+                if not (
+                    rel_root_str == ""
+                    and dirname in preserve_dirs
+                )
+            ]
+
+            for filename in sorted(files):
+                if rel_root_str == "":
+                    if filename in preserve_files:
+                        continue
+                    if skip_root_toml and filename.endswith(".toml"):
+                        continue
+                rel_file = Path(filename) if rel_root_str == "" else Path(rel_root_str) / filename
+                source_file = root_path / filename
+                if not source_file.is_file():
+                    continue
+                target_file = dst / rel_file
+                if target_file.exists() and target_file.is_dir():
+                    self._remove_path_force(target_file)
+                mode = stat.S_IMODE(source_file.stat().st_mode)
+                if mode == 0:
+                    mode = 0o644
+                self._copy_file(source_file, target_file, mode=mode)
+
+    def _is_filtered_preserve_path(
+        self,
+        rel_path: Path,
+        *,
+        skip_root_toml: bool,
+        preserve_root_dirs: set[str],
+        preserve_root_files: set[str],
+    ) -> bool:
+        parts = rel_path.parts
+        if not parts:
+            return False
+        root_name = parts[0]
+        if root_name in preserve_root_dirs:
+            return True
+        if len(parts) == 1 and root_name in preserve_root_files:
+            return True
+        return bool(skip_root_toml and len(parts) == 1 and rel_path.suffix == ".toml")
+
+    def _prune_filtered_tree(
+        self,
+        src: Path,
+        dst: Path,
+        *,
+        skip_root_toml: bool,
+        preserve_root_dirs: set[str],
+        preserve_root_files: set[str],
+    ) -> None:
+        if not dst.exists():
+            return
+
+        pending = [dst]
+        while pending:
+            current_dst = pending.pop()
+            for child in sorted(current_dst.iterdir(), key=lambda item: item.name):
+                rel_child = child.relative_to(dst)
+                if self._is_filtered_preserve_path(
+                    rel_child,
+                    skip_root_toml=skip_root_toml,
+                    preserve_root_dirs=preserve_root_dirs,
+                    preserve_root_files=preserve_root_files,
+                ):
+                    continue
+                source_child = src / rel_child
+                if not source_child.exists():
+                    self._remove_path_force(child)
+                    continue
+                if child.is_dir():
+                    if not source_child.is_dir():
+                        self._remove_path_force(child)
+                        continue
+                    pending.append(child)
+                    continue
+                if source_child.is_dir():
+                    self._remove_path_force(child)
+
+    def _sync_home_runtime_state_to_repo(self, runtime_home: Path, repo_home: Path) -> None:
+        if not runtime_home.exists():
+            if self.dry_run:
+                print(f"[dry-run] skip runtime->repo sync (runtime home missing): {runtime_home}")
+            return
+
+        for dirname in HOME_RUNTIME_STATE_DIRS:
+            src_dir = runtime_home / dirname
+            dst_dir = repo_home / dirname
+            if not src_dir.exists():
+                continue
+            if not src_dir.is_dir():
+                fail(f"runtime preserve path must be a directory: {src_dir}")
+            if dst_dir.exists() and not dst_dir.is_dir():
+                fail(f"repo preserve target must be a directory: {dst_dir}")
+            self._copy_tree(src_dir, dst_dir)
+
+        for filename in HOME_RUNTIME_MERGED_FILES:
+            src_file = runtime_home / filename
+            dst_file = repo_home / filename
+            if not src_file.exists():
+                continue
+            if not src_file.is_file():
+                fail(f"runtime preserve path must be a file: {src_file}")
+            if dst_file.exists() and dst_file.is_dir():
+                fail(f"repo preserve target must be a file: {dst_file}")
+            self._copy_file(src_file, dst_file)
+
+    def _merge_missing_tree(self, src: Path, dst: Path) -> None:
+        if not src.is_dir():
+            fail(f"merge source directory not found: {src}")
+        if dst.exists():
+            if not dst.is_dir():
+                fail(f"merge destination must be a directory: {dst}")
+        else:
+            self._mkdir_path(dst)
+
+        for root, dirs, files in os.walk(src, topdown=True, followlinks=False):
+            root_path = Path(root)
+            rel_root = root_path.relative_to(src)
+            target_root = dst if rel_root == Path(".") else (dst / rel_root)
+            if target_root.exists():
+                if not target_root.is_dir():
+                    fail(f"merge destination must be a directory: {target_root}")
+            else:
+                self._mkdir_path(target_root)
+
+            keep_dirs: list[str] = []
+            for dirname in sorted(dirs):
+                source_dir = root_path / dirname
+                target_dir = target_root / dirname
+                if target_dir.exists():
+                    if not target_dir.is_dir():
+                        fail(f"merge destination must be a directory: {target_dir}")
+                    keep_dirs.append(dirname)
+                    continue
+                self._copy_tree(source_dir, target_dir)
+            dirs[:] = keep_dirs
+
+            for filename in sorted(files):
+                source_file = root_path / filename
+                if not source_file.is_file():
+                    continue
+                target_file = target_root / filename
+                if target_file.exists():
+                    if not target_file.is_file():
+                        fail(f"merge destination must be a file: {target_file}")
+                    continue
+                mode = stat.S_IMODE(source_file.stat().st_mode)
+                if mode == 0:
+                    mode = 0o644
+                self._copy_file(source_file, target_file, mode=mode)
+
+    def _seed_missing_home_runtime_state_from_repo(self, repo_home: Path, runtime_home: Path) -> None:
+        for dirname in HOME_RUNTIME_STATE_DIRS:
+            src_dir = repo_home / dirname
+            dst_dir = runtime_home / dirname
+            if dst_dir.exists():
+                if not dst_dir.is_dir():
+                    fail(f"runtime preserve target must be a directory: {dst_dir}")
+                if src_dir.exists():
+                    if not src_dir.is_dir():
+                        fail(f"repo preserve source must be a directory: {src_dir}")
+                    self._merge_missing_tree(src_dir, dst_dir)
+                continue
+            if src_dir.exists():
+                if not src_dir.is_dir():
+                    fail(f"repo preserve source must be a directory: {src_dir}")
+                self._copy_tree(src_dir, dst_dir)
+                continue
+            self._mkdir_path(dst_dir)
+
+        for filename in HOME_RUNTIME_MERGED_FILES:
+            src_file = repo_home / filename
+            dst_file = runtime_home / filename
+            if dst_file.exists():
+                if not dst_file.is_file():
+                    fail(f"runtime preserve target must be a file: {dst_file}")
+                continue
+            if not src_file.exists():
+                continue
+            if not src_file.is_file():
+                fail(f"repo preserve source must be a file: {src_file}")
+            self._copy_file(src_file, dst_file)
+
+    def _sync_schema_helpers(self, launch_env: dict[str, str] | None = None) -> None:
+        source_tool = self.repo_root / "src" / "misc" / SCHEMA_TOOL_SOURCE_FILENAME
+        if not source_tool.is_file():
+            fail(f"missing schema helper source script: {source_tool}")
+
+        helpers_dir = self._helpers_dir()
+        self._mkdir_path(helpers_dir)
+        self._copy_file(source_tool, helpers_dir / SCHEMA_TOOL_SOURCE_FILENAME, mode=0o755)
+
+        for name, command in SCHEMA_HELPER_COMMANDS.items():
+            wrapper_content = self._render_schema_wrapper(command, launch_env=launch_env)
+            self._write_file(helpers_dir / name, wrapper_content, mode=0o755)
+
+    def _sync_tmpfs_helper(self, launch_env: dict[str, str] | None = None) -> None:
+        try:
+            effective_launch_env = self.launch_env if launch_env is None else launch_env
+            content = render_codex_tmpfs_helper(launch_env=effective_launch_env)
+        except RuntimeRenderError as exc:
+            fail(str(exc))
+        self._write_file(self._tmpfs_helper_target(), content, mode=0o755)
+
+    def _sync_lookup_secret_env_helper(self) -> None:
+        self._copy_file(
+            self._lookup_secret_env_helper_source_path(),
+            self._lookup_secret_env_helper_target(),
+            mode=0o755,
+        )
+
+    def _verify_schema_helpers(self) -> None:
+        helpers_dir = self._helpers_dir()
+        tool_path = helpers_dir / SCHEMA_TOOL_SOURCE_FILENAME
+        if not tool_path.is_file():
+            fail(f"missing installed schema helper tool: {tool_path}")
+        if not os.access(tool_path, os.X_OK):
+            fail(f"schema helper tool is not executable: {tool_path}")
+
+        for name in SCHEMA_HELPER_NAMES:
+            helper_path = helpers_dir / name
+            if not helper_path.is_file():
+                fail(f"missing installed schema helper wrapper: {helper_path}")
+            if not os.access(helper_path, os.X_OK):
+                fail(f"schema helper wrapper is not executable: {helper_path}")
+
+    def _verify_release_schema_snapshot(self) -> None:
+        latest_path = self._schema_latest_snapshot_path()
+        if not latest_path.is_file():
+            fail(f"missing latest release schema snapshot: {latest_path}")
+        try:
+            payload = json.loads(latest_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            fail(f"latest release schema snapshot is not valid JSON: {latest_path}: {exc}")
+        if not isinstance(payload, dict):
+            fail(f"latest release schema snapshot must be a JSON object: {latest_path}")
+
+    def _install_shell_path_profile(self) -> None:
+        target = self._path_profile_target()
+        try:
+            content = render_shell_path_profile(
+                self._share_dir(),
+                self.global_vars,
+                guard_user=self._current_username(),
+            )
+        except RuntimeRenderError as exc:
+            fail(str(exc))
+        self._write_file(target, content, mode=0o644)
+
+    def _current_username(self) -> str:
+        username = getpass.getuser().strip()
+        if not username:
+            fail("unable to determine current username for environment guard")
+        if any(ch in username for ch in ("\x00", "\n", "\r", '"')):
+            fail("current username contains unsupported characters")
+        return username
+
+    def _install_user_shell_hooks(self) -> None:
+        args = [
+            "bash",
+            str(self._env_script_path()),
+            "hook",
+            "--user-home",
+            str(self._user_home_dir()),
+            "--profile-path",
+            str(self._path_profile_target()),
+        ]
+        if self.dry_run:
+            args.append("--dry-run")
+        self._run_command(args)
+
+    def _completion_targets(self) -> dict[str, Path]:
+        home = self._user_home_dir()
+        return {shell: home / relative for shell, relative in SHELL_COMPLETION_TARGETS.items()}
+
+    def _render_shell_completion(self, shell: str) -> str:
+        if shell not in SHELL_COMPLETION_TARGETS:
+            fail(f"unsupported completion shell: {shell}")
+        binary_path = self._codex_binary_path()
+        if not binary_path.is_file():
+            fail(f"missing codex binary for completion generation: {binary_path}")
+        if not os.access(binary_path, os.X_OK):
+            fail(f"codex binary is not executable for completion generation: {binary_path}")
+        try:
+            proc = subprocess.run(
+                [str(binary_path), "completion", shell],
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                timeout=30,
+            )
+        except FileNotFoundError as exc:
+            fail(f"required command is unavailable: {exc}")
+        except subprocess.TimeoutExpired as exc:
+            fail(f"completion generation timed out for {shell}: {exc}")
+        except subprocess.CalledProcessError as exc:
+            fail(f"completion generation failed for {shell}, exit code {exc.returncode}")
+
+        rendered = proc.stdout
+        if not rendered.strip():
+            fail(f"completion output is empty for {shell}")
+        if "\x00" in rendered:
+            fail(f"completion output contains unsupported characters for {shell}")
+        if not rendered.endswith("\n"):
+            rendered += "\n"
+        return rendered
+
+    def _install_user_shell_completions(self) -> None:
+        for shell, target in sorted(self._completion_targets().items()):
+            if self.dry_run:
+                print(f"[dry-run] mkdir -p {target.parent}")
+                print(f"[dry-run] write {target}")
+                continue
+            content = self._render_shell_completion(shell)
+            self._mkdir_path(target.parent)
+            self._write_file(target, content, mode=0o644)
+
+    def _verify_shell_path_profile(self) -> None:
+        target = self._path_profile_target()
+        if not target.is_file():
+            fail(f"missing shell PATH profile: {target}")
+        text = target.read_text(encoding="utf-8")
+        shims = str(self._share_dir() / "shims")
+        helpers = str(self._share_dir() / "helpers")
+        bin_dir = str(self._share_dir() / "bin")
+        if shims not in text:
+            fail(f"shell PATH profile missing shims directory: {target}")
+        if helpers not in text:
+            fail(f"shell PATH profile missing helpers directory: {target}")
+        if bin_dir in text:
+            fail(f"shell PATH profile must not add share/bin to PATH: {target}")
+        guard_marker = f'codex_target_user="{self._current_username()}"'
+        if guard_marker not in text:
+            fail(f"shell PATH profile missing current-user guard: {target}")
+        for key, value in self.global_vars.items():
+            marker = f'export {key}="{value}"'
+            if marker not in text:
+                fail(f"shell PATH profile missing environment export for {key}: {target}")
+
+    def _verify_user_shell_hooks(self) -> None:
+        args = [
+            "bash",
+            str(self._env_script_path()),
+            "hook",
+            "--verify",
+            "--user-home",
+            str(self._user_home_dir()),
+            "--profile-path",
+            str(self._path_profile_target()),
+        ]
+        self._run_command(args)
+
+    def _verify_user_shell_completions(self) -> None:
+        for shell, target in sorted(self._completion_targets().items()):
+            if not target.is_file():
+                fail(f"missing {shell} completion file: {target}")
+            rendered = target.read_text(encoding="utf-8")
+            if not rendered.strip():
+                fail(f"{shell} completion file is empty: {target}")
+
+    def _sync_release_shims(
+        self,
+        binary_names: list[str],
+        launch_env: dict[str, str] | None = None,
+    ) -> None:
+        if self.dry_run and not binary_names:
+            print("[dry-run] write shims for all release binaries discovered at install time")
+            return
+        if not binary_names:
+            fail("release install did not produce any binaries for shim generation")
+
+        share_dir = self._share_dir()
+        effective_launch_env = self.launch_env if launch_env is None else launch_env
+        lookup_secret_service_path = self._lookup_secret_service_path()
+        lookup_helper_path = self._lookup_secret_env_helper_target()
+        for name in sorted(set(binary_names)):
+            shim_path = share_dir / "shims" / name
+            binary_path = share_dir / "bin" / name
+            try:
+                shim_content = render_codex_shim(
+                    binary_path,
+                    launch_env=effective_launch_env,
+                    share_dir=share_dir,
+                    lookup_secret_service_path=lookup_secret_service_path,
+                    lookup_helper_path=lookup_helper_path,
+                )
+            except RuntimeRenderError as exc:
+                fail(str(exc))
+            self._write_file(shim_path, shim_content, mode=0o755)
+
+    def _existing_release_shim_names(self) -> list[str]:
+        shims_dir = self._share_dir() / "shims"
+        if not shims_dir.is_dir():
+            return []
+        shim_names = sorted(path.name for path in shims_dir.iterdir() if path.is_file())
+        if shim_names:
+            return shim_names
+        bin_dir = self._share_dir() / "bin"
+        if not bin_dir.is_dir():
+            return []
+        return sorted(path.name for path in bin_dir.iterdir() if path.is_file())
+
+    def _refresh_runtime_launch_wrappers(self, launch_env: dict[str, str]) -> None:
+        self._sync_lookup_secret_env_helper()
+        shim_names = self._existing_release_shim_names()
+        if shim_names:
+            self._sync_release_shims(shim_names, launch_env=launch_env)
+
+        helpers_dir = self._helpers_dir()
+        if not helpers_dir.is_dir():
+            return
+
+        self._sync_tmpfs_helper(launch_env=launch_env)
+        schema_targets_present = (helpers_dir / SCHEMA_TOOL_SOURCE_FILENAME).is_file() or any(
+            (helpers_dir / name).is_file() for name in SCHEMA_HELPER_NAMES
+        )
+        if schema_targets_present:
+            self._sync_schema_helpers(launch_env=launch_env)
+
+    def apply_vars_init(self) -> None:
+        self.setup_environment()
+        self._log("refreshing launch environment in runtime shims/helpers")
+        self._refresh_runtime_launch_wrappers(self.launch_env)
+
+    def apply_vars_reset(self) -> None:
+        self._log("removing launch environment from runtime shims/helpers")
+        self._refresh_runtime_launch_wrappers({})
+        self.reset_environment()
+
+    def _verify_release_shims(self) -> None:
+        share_dir = self._share_dir()
+        bin_dir = share_dir / "bin"
+        shims_dir = share_dir / "shims"
+        if not bin_dir.is_dir():
+            fail(f"missing release bin directory: {bin_dir}")
+        if not shims_dir.is_dir():
+            fail(f"missing release shims directory: {shims_dir}")
+
+        binaries = sorted(path for path in bin_dir.iterdir() if path.is_file())
+        if not binaries:
+            fail(f"release bin directory has no binaries: {bin_dir}")
+
+        for binary in binaries:
+            if not os.access(binary, os.X_OK):
+                fail(f"release binary is not executable: {binary}")
+            shim_path = shims_dir / binary.name
+            if not shim_path.is_file():
+                fail(f"missing shim for release binary {binary.name}: {shim_path}")
+            if not os.access(shim_path, os.X_OK):
+                fail(f"shim is not executable for release binary {binary.name}: {shim_path}")
+
+    def _copy_backup_source(
+        self,
+        source: Path,
+        target: Path,
+        *,
+        exclude_root_children: frozenset[str] = frozenset(),
+    ) -> None:
+        def ignore(dir_path: str, names: list[str]) -> list[str]:
+            if normalize_path(dir_path) != source:
+                return []
+            return sorted(name for name in names if name in exclude_root_children)
+
+        if self._needs_sudo_write(target.parent):
+            script = (
+                "import json, shutil, sys\n"
+                "from pathlib import Path\n"
+                "src = Path(sys.argv[1])\n"
+                "dst = Path(sys.argv[2])\n"
+                "excluded = set(json.loads(sys.argv[3]))\n"
+                "def ignore(dir_path, names):\n"
+                "    if Path(dir_path).resolve(strict=False) != src:\n"
+                "        return []\n"
+                "    return sorted(name for name in names if name in excluded)\n"
+                "if not src.exists():\n"
+                "    dst.mkdir(parents=True, exist_ok=True)\n"
+                "elif not src.is_dir():\n"
+                "    raise SystemExit(f'backup source must be a directory: {src}')\n"
+                "else:\n"
+                "    dst.parent.mkdir(parents=True, exist_ok=True)\n"
+                "    shutil.copytree(src, dst, symlinks=True, ignore=ignore)\n"
+            )
+            self._run_with_sudo(
+                ["python3", "-c", script, str(source), str(target), json.dumps(sorted(exclude_root_children))]
+            )
+            return
+
+        if not source.exists():
+            target.mkdir(parents=True, exist_ok=True)
+            return
+
+        if not os.access(source, os.R_OK | os.X_OK):
+            fail(f"backup source is not readable: {source}")
+
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(source, target, symlinks=True, ignore=ignore)
+
+    def _backup_to_run_root(
+        self,
+        *,
+        backup_root: Path,
+        run_root: Path,
+        source: Path,
+        label: str,
+        flow: str,
+    ) -> None:
+        if is_within(source, backup_root) or is_within(backup_root, source):
+            fail(f"backup root must not overlap source {source}: backup={backup_root}")
+        target = run_root / label
+        exclude_root_children = HOME_BACKUP_EXCLUDE_ROOT_CHILDREN if label == "home" else frozenset()
+
+        if self.dry_run:
+            print(f"[dry-run] backup[{flow}] {source} -> {target}")
+            return
+
+        if target.exists():
+            self._remove_path_force(target)
+        self._copy_backup_source(source, target, exclude_root_children=exclude_root_children)
+
+    def _backup_install_state(self, *, flow: str) -> None:
+        backup_root = ensure_safe_absolute_path("CODEX_BACKUP_DIR", self.env["CODEX_BACKUP_DIR"])
+        if flow not in {"install", "upgrade", "uninstall"}:
+            fail(f"unsupported backup flow: {flow}")
+        sources = self._backup_source_paths()
+        account_key = self._backup_account_key(sources)
+
+        if self.dry_run:
+            print(f"[dry-run] mkdir -p {backup_root}")
+        else:
+            self._mkdir_path(backup_root)
+
+        run_root = self._backup_run_root(backup_root, account_key=account_key, flow=flow)
+        if self.dry_run:
+            print(f"[dry-run] mkdir -p {run_root}")
+        else:
+            self._mkdir_path(run_root)
+
+        for label, source in sources:
+            self._backup_to_run_root(
+                backup_root=backup_root,
+                run_root=run_root,
+                source=source,
+                label=label,
+                flow=flow,
+            )
+
+    def _is_same_or_within(self, path: Path, root: Path) -> bool:
+        return path == root or is_within(path, root)
+
+    def _is_preserved_path(self, path: Path, preserve_roots: list[Path]) -> bool:
+        return any(self._is_same_or_within(path, root) for root in preserve_roots)
+
+    def _contains_preserved_descendant(self, path: Path, preserve_roots: list[Path]) -> bool:
+        return any(self._is_same_or_within(root, path) for root in preserve_roots)
+
+    def _remove_path_force(self, path: Path) -> None:
+        if self.dry_run:
+            print(f"[dry-run] rm -rf {path}")
+            return
+        if needs_sudo_remove(path):
+            self._run_with_sudo(["rm", "-rf", "--", str(path)])
+        else:
+            self._run_command(["rm", "-rf", "--", str(path)])
+
+    def _nuke_path_preserving(self, path: Path, preserve_roots: list[Path]) -> None:
+        if self._is_preserved_path(path, preserve_roots):
+            return
+        if not path.exists():
+            return
+        if not self._contains_preserved_descendant(path, preserve_roots):
+            self._remove_path_force(path)
+            return
+        if not path.is_dir():
+            self._remove_path_force(path)
+            return
+
+        for child in sorted(path.iterdir()):
+            self._nuke_path_preserving(child, preserve_roots)
+
+    def _sync_global_environment(self) -> None:
+        self._log("installing current-user environment exports and hooks")
+        self._install_shell_path_profile()
+        self._install_user_shell_hooks()
+
+    def _managed_tmpfs_targets(self) -> list[Path]:
+        raw_targets: list[tuple[str, str]] = []
+        session_tmpdir = self.launch_env.get("TMPDIR", "").strip()
+        if session_tmpdir:
+            raw_targets.append(("TMPDIR", session_tmpdir))
+        codex_tmpdir = self.runtime_vars.get("CODEX_TMPDIR", "").strip()
+        if codex_tmpdir:
+            raw_targets.append(("CODEX_TMPDIR", codex_tmpdir))
+        if not raw_targets:
+            fail("missing TMPDIR/CODEX_TMPDIR mount target")
+
+        targets: list[Path] = []
+        seen: set[str] = set()
+        for label, value in raw_targets:
+            target = ensure_safe_absolute_path(label, value)
+            rendered = str(target)
+            if rendered in seen:
+                continue
+            seen.add(rendered)
+            targets.append(target)
+        return targets
+
+    def _primary_tmpfs_target(self) -> Path:
+        return self._managed_tmpfs_targets()[0]
+
+    def _decode_mountinfo_path(self, encoded: str) -> str:
+        if "\\" not in encoded:
+            return encoded
+        chars: list[str] = []
+        index = 0
+        while index < len(encoded):
+            current = encoded[index]
+            if current == "\\" and index + 3 < len(encoded):
+                octal = encoded[index + 1 : index + 4]
+                if all(ch in "01234567" for ch in octal):
+                    chars.append(chr(int(octal, 8)))
+                    index += 4
+                    continue
+            chars.append(current)
+            index += 1
+        return "".join(chars)
+
+    def _mount_fstype(self, path: Path) -> str | None:
+        target = str(path.resolve(strict=False))
+        mountinfo = Path("/proc/self/mountinfo")
+        if not mountinfo.is_file():
+            return "mounted" if os.path.ismount(target) else None
+
+        try:
+            lines = mountinfo.read_text(encoding="utf-8").splitlines()
+        except OSError:
+            return "mounted" if os.path.ismount(target) else None
+
+        for raw_line in lines:
+            fields = raw_line.split()
+            if len(fields) < 5:
+                continue
+            mount_point = self._decode_mountinfo_path(fields[4])
+            if mount_point == target:
+                try:
+                    separator = fields.index("-")
+                except ValueError:
+                    return "mounted"
+                if separator + 1 >= len(fields):
+                    return "mounted"
+                return fields[separator + 1]
+        return None
+
+    def _is_mount_point(self, path: Path) -> bool:
+        return self._mount_fstype(path) is not None
+
+    def _mount_tmpfs_target(self, target: Path) -> None:
+        rendered = str(target.resolve(strict=False))
+        current_fstype = self._mount_fstype(target)
+        if current_fstype not in (None, "tmpfs", "mounted"):
+            fail(f"TMPDIR target is already mounted with unsupported filesystem {current_fstype}: {rendered}")
+
+        if current_fstype in ("tmpfs", "mounted"):
+            return
+
+        if self.dry_run:
+            print(f"[dry-run] sudo mkdir -p {rendered}")
+            print(f"[dry-run] sudo mount -t tmpfs -o {TMPFS_MOUNT_OPTIONS} tmpfs {rendered}")
+            print(f"[dry-run] sudo chmod 1777 -- {rendered}")
+            return
+
+        self._run_with_sudo(["mkdir", "-p", rendered])
+        try:
+            self._run_with_sudo(["mount", "-t", "tmpfs", "-o", TMPFS_MOUNT_OPTIONS, "tmpfs", rendered])
+        except InstallError:
+            current_fstype = self._mount_fstype(target)
+            if current_fstype not in ("tmpfs", "mounted"):
+                raise
+
+        current_fstype = self._mount_fstype(target)
+        if current_fstype not in ("tmpfs", "mounted"):
+            fail(f"failed to mount TMPDIR target as tmpfs: {rendered}")
+        self._run_with_sudo(["chmod", "1777", "--", rendered])
+
+    def mount_runtime_tmpfs(self) -> None:
+        self._mount_tmpfs_target(self._primary_tmpfs_target())
+
+    def _unmount_tmpfs_target_if_mounted(self, target: Path) -> None:
+        rendered = str(target.resolve(strict=False))
+        if not self._is_mount_point(target):
+            return
+        if self.dry_run:
+            print(f"[dry-run] sudo umount -- {rendered}")
+            return
+
+        try:
+            self._run_with_sudo(["umount", "--", rendered])
+        except InstallError:
+            # Busy tmpfs mounts can require lazy detach before deletion.
+            self._run_with_sudo(["umount", "-l", "--", rendered])
+
+        if self._is_mount_point(target):
+            fail(f"failed to unmount TMPDIR mountpoint before cleanup: {rendered}")
+
+    def _unmount_codex_tmpdir_if_mounted(self) -> None:
+        for target in self._managed_tmpfs_targets():
+            self._unmount_tmpfs_target_if_mounted(target)
+
+    def unmount_runtime_tmpfs(self) -> None:
+        self._unmount_codex_tmpdir_if_mounted()
+
+    def _purge_codex_environment(self) -> None:
+        env_script = self._env_script_path()
+        args = [
+            "bash",
+            str(env_script),
+            "unhook",
+            "--user-home",
+            str(self._user_home_dir()),
+            "--profile-path",
+            str(self._path_profile_target()),
+        ]
+        if self.dry_run:
+            args.append("--dry-run")
+        self._run_command(args)
+
+    def reset_environment(self) -> None:
+        self._log("removing current-user CODEX shell hooks and profile exports")
+        self._purge_codex_environment()
+
+    def uninstall(self) -> None:
+        required_env = (
+            "CODEX_ROOT_DIR",
+            "CODEX_SYSTEM_DIR",
+            "CODEX_USER_DIR",
+            "CODEX_SHARE_DIR",
+            "CODEX_MCP_DIR",
+            "CODEX_BACKUP_DIR",
+        )
+        required_runtime = (
+            "CODEX_HOME",
+            "CODEX_AGENTS",
+            "CODEX_SKILLS",
+            "CODEX_LOG_DIR",
+            "CODEX_SQLITE_HOME",
+            "CODEX_TMPDIR",
+        )
+
+        for key in required_env:
+            value = self.env.get(key, "").strip()
+            if not value:
+                fail(f"missing required .env key for nuke: {key}")
+        for key in required_runtime:
+            value = self.runtime_vars.get(key, "").strip()
+            if not value:
+                fail(f"missing required runtime path derived from .env for nuke: {key}")
+
+        backup_root = ensure_safe_absolute_path("CODEX_BACKUP_DIR", self.env["CODEX_BACKUP_DIR"])
+        mcp_root = ensure_safe_absolute_path("CODEX_MCP_DIR", self.env["CODEX_MCP_DIR"])
+        sqlite_home = ensure_safe_absolute_path("CODEX_SQLITE_HOME", self.runtime_vars["CODEX_SQLITE_HOME"])
+        preserve_roots = sorted({backup_root, mcp_root, sqlite_home}, key=lambda item: str(item))
+
+        self._log("syncing runtime memory/session state back into resources/home/user")
+        self._sync_home_runtime_state_to_repo(
+            ensure_safe_absolute_path("CODEX_HOME", self.runtime_vars["CODEX_HOME"]),
+            self.repo_layout.home_user_dir,
+        )
+
+        self._log("creating nuke backup")
+        self._backup_install_state(flow="uninstall")
+
+        root_dir = ensure_safe_absolute_path("CODEX_ROOT_DIR", self.env["CODEX_ROOT_DIR"])
+        system_dir = ensure_safe_absolute_path("CODEX_SYSTEM_DIR", self.env["CODEX_SYSTEM_DIR"])
+        target_paths = {root_dir, system_dir}
+
+        candidate_paths = {
+            ensure_safe_absolute_path("CODEX_ROOT_DIR", self.env["CODEX_ROOT_DIR"]),
+            ensure_safe_absolute_path("CODEX_SYSTEM_DIR", self.env["CODEX_SYSTEM_DIR"]),
+            ensure_safe_absolute_path("CODEX_USER_DIR", self.env["CODEX_USER_DIR"]),
+            ensure_safe_absolute_path("CODEX_SHARE_DIR", self.env["CODEX_SHARE_DIR"]),
+            ensure_safe_absolute_path("CODEX_MCP_DIR", self.env["CODEX_MCP_DIR"]),
+            ensure_safe_absolute_path("CODEX_BACKUP_DIR", self.env["CODEX_BACKUP_DIR"]),
+            ensure_safe_absolute_path("CODEX_HOME", self.runtime_vars["CODEX_HOME"]),
+            ensure_safe_absolute_path("CODEX_AGENTS", self.runtime_vars["CODEX_AGENTS"]),
+            ensure_safe_absolute_path("CODEX_SKILLS", self.runtime_vars["CODEX_SKILLS"]),
+            ensure_safe_absolute_path("CODEX_LOG_DIR", self.runtime_vars["CODEX_LOG_DIR"]),
+            ensure_safe_absolute_path("CODEX_SQLITE_HOME", self.runtime_vars["CODEX_SQLITE_HOME"]),
+            ensure_safe_absolute_path("CODEX_TMPDIR", self.runtime_vars["CODEX_TMPDIR"]),
+        }
+        candidate_paths.add(self._mcp_ssh_key_path())
+        candidate_paths.add(self._mcp_known_hosts_path())
+
+        for candidate in sorted(candidate_paths, key=lambda item: str(item)):
+            if self._is_preserved_path(candidate, preserve_roots):
+                continue
+            if self._is_same_or_within(candidate, root_dir):
+                continue
+            if self._is_same_or_within(candidate, system_dir):
+                continue
+            target_paths.add(candidate)
+
+        target_paths.add(self._path_profile_target())
+
+        self._log("unmounting CODEX_TMPDIR when mounted")
+        self._unmount_codex_tmpdir_if_mounted()
+
+        self._log("removing runtime paths (preserving backup/mcp/sqlite)")
+        for target in sorted(target_paths, key=lambda item: (len(item.parts), str(item))):
+            self._nuke_path_preserving(target, preserve_roots)
+
+        self.reset_environment()
+
+    def _instruction_file_overrides(self) -> dict[str, str]:
+        overrides: dict[str, str] = {}
+        for entry in self._instruction_manifest_entries():
+            key = entry["config_key"]
+            if key is None:
+                continue
+            target_field = "default_enable_path" if entry["enabled"] else "default_disable_path"
+            target_value = entry.get(target_field)
+            if not target_value:
+                continue
+            overrides[key] = target_value
+        return overrides
+
+    def _local_plugin_bundle_dirs(self, source_root: Path) -> list[str]:
+        return local_plugin_bundle_dirs(source_root)
+
+    def _plugin_manifest_marketplace_name(self) -> str:
+        if not self.plugins_metadata_payload:
+            return ""
+        return plugin_manifest_marketplace_name(self.effective_plugins_metadata_payload, self.plugins_json_path)
+
+    def _plugin_skill_source_path(self, skill_source: str) -> Path:
+        return plugin_skill_source_path(self.repo_root, self.plugins_json_path, skill_source)
+
+    def _plugin_manifest_tools(self, bundle: dict[str, Any], bundle_name: str) -> tuple[dict[str, dict[str, Any]], list[Any]]:
+        raise NotImplementedError("plugin manifest tools parsing moved to src/install/plugins.py")
+
+    def _plugin_manifest_bundles(self, *, enabled_only: bool) -> list[PluginBundleSpec]:
+        return plugin_manifest_bundles(
+            repo_root=self.repo_root,
+            plugins_payload=self.plugins_payload,
+            plugins_path=self.plugins_path,
+            plugins_metadata_payload=self.effective_plugins_metadata_payload,
+            plugins_metadata_path=self.plugins_json_path,
+            shared_mcp_servers=self.mcp_payload.get("mcp_servers", {}),
+            enabled_only=enabled_only,
+        )
+
+    def _validate_plugin_bundle_inventory(self, source_root: Path) -> list[PluginBundleSpec]:
+        return validate_plugin_bundle_inventory(self, source_root)
+
+    def _sync_runtime_plugin_bundle(self, source_root: Path, target_root: Path, bundle: PluginBundleSpec) -> None:
+        sync_runtime_plugin_bundle(self, source_root, target_root, bundle)
+
+    def _sync_local_plugins(self) -> None:
+        sync_local_plugins(self)
+
+    def _replace_toml_assignment(self, text: str, key: str, value: str) -> tuple[str, bool]:
+        lines = text.splitlines()
+        line_pattern = re.compile(
+            rf"^(\s*{re.escape(key)}\s*=\s*)(\"[^\"]*\"|'[^']*')(\s*(?:#.*)?)$"
+        )
+        for idx, line in enumerate(lines):
+            match = line_pattern.match(line)
+            if not match:
+                continue
+            lines[idx] = f"{match.group(1)}{json.dumps(value)}{match.group(3)}"
+            rendered = "\n".join(lines)
+            if text.endswith("\n"):
+                rendered += "\n"
+            return rendered, True
+        return text, False
+
+    def _apply_instruction_file_overrides(self, text: str) -> str:
+        rendered = text
+        overrides = self._instruction_file_overrides()
+        missing_keys: list[str] = []
+        for key in sorted(overrides.keys()):
+            # Config fragments are user-owned. If a key is commented out or removed,
+            # leave it absent instead of treating that as an installer error.
+            rendered, replaced = self._replace_toml_assignment(rendered, key, overrides[key])
+            if not replaced:
+                missing_keys.append(key)
+        if missing_keys:
+            self._warn_once(
+                "instruction metadata references config keys left unset in the rendered user config: "
+                + ", ".join(f"`{key}`" for key in missing_keys)
+                + "; continuing without those overrides"
+            )
+        return rendered
+
+    def _render_home_toml(
+        self,
+        raw: str,
+        config_path: Path,
+        *,
+        apply_instruction_overrides: bool,
+    ) -> str:
+        rendered = _replace_known_placeholders_outside_toml_multiline_strings(raw, self.variables)
+        if apply_instruction_overrides:
+            rendered = self._apply_instruction_file_overrides(rendered)
+        unresolved = _first_unresolved_codex_placeholder_outside_toml_multiline_strings(rendered)
+        if unresolved is not None:
+            fail(f"unresolved CODEX_* placeholder remains in {config_path}: {unresolved}")
+        try:
+            tomllib.loads(rendered)
+        except tomllib.TOMLDecodeError as exc:
+            fail(f"invalid rendered home TOML ({config_path}): {exc}")
+        return rendered
+
+    def _render_user_config_toml(self, raw: str, config_path: Path) -> str:
+        del raw, config_path
+        rendered = ""
+        for path in (
+            self.repo_layout.user_config_path,
+            self.repo_layout.user_pref_path,
+            self.repo_layout.user_features_path,
+            self.repo_layout.user_memory_path,
+        ):
+            rendered = self._append_compiled_fragment(
+                rendered,
+                _replace_known_placeholders_outside_toml_multiline_strings(
+                    path.read_text(encoding="utf-8"),
+                    self.variables,
+                ),
+            )
+        rendered = self._append_compiled_fragment(rendered, self._render_home_apps_fragment())
+        rendered = self._append_compiled_fragment(
+            rendered,
+            _replace_known_placeholders_outside_toml_multiline_strings(
+                self.repo_layout.user_policy_path.read_text(encoding="utf-8"),
+                self.variables,
+            ),
+        )
+        if rendered and not rendered.endswith("\n"):
+            rendered += "\n"
+        return self._apply_instruction_file_overrides(rendered)
+
+    @staticmethod
+    def _append_compiled_fragment(document: str, fragment: str) -> str:
+        if not document:
+            return fragment
+        document = document.rstrip("\n")
+        fragment = fragment.lstrip("\n")
+        return document + "\n\n" + fragment
+
+    @classmethod
+    def _render_toml_table(cls, path: list[str], table: dict[str, Any]) -> str:
+        scalar_items: list[tuple[str, Any]] = []
+        child_items: list[tuple[str, dict[str, Any]]] = []
+        for key, value in table.items():
+            if isinstance(value, dict):
+                child_items.append((key, value))
+            else:
+                scalar_items.append((key, value))
+
+        sections: list[str] = []
+        if path and (scalar_items or len(path) > 1):
+            lines = ["[" + ".".join(toml_key(part) for part in path) + "]"]
+            for key, value in scalar_items:
+                lines.append(f"{toml_key(key)} = {toml_value(value)}")
+            sections.append("\n".join(lines))
+
+        for key, value in child_items:
+            child = cls._render_toml_table([*path, key], value)
+            if child:
+                sections.append(child)
+        return "\n\n".join(sections)
+
+    def _render_home_apps_fragment(self) -> str:
+        raw = self.repo_layout.user_apps_path.read_text(encoding="utf-8")
+        rendered = _replace_known_placeholders_outside_toml_multiline_strings(raw, self.variables)
+        apps_payload = resolve_object_placeholders(
+            copy.deepcopy(self.plugins_payload),
+            self.variables,
+            "config/usr/apps.toml",
+        )
+        home_mcp_servers = apps_payload.get("mcp_servers", {})
+        if home_mcp_servers in (None, {}):
+            home_mcp_servers = {}
+        if not isinstance(home_mcp_servers, dict):
+            fail("config/usr/apps.toml mcp_servers must be an object")
+
+        for server_name, override in home_mcp_servers.items():
+            if not isinstance(server_name, str):
+                fail(f"config/usr/apps.toml mcp_servers contains invalid server name: {server_name}")
+            if not isinstance(override, dict):
+                fail(f"config/usr/apps.toml mcp_servers.{server_name} must be an object")
+            has_url = isinstance(override.get("url"), str) and override["url"].strip()
+            has_command = isinstance(override.get("command"), str) and override["command"].strip()
+            if not has_url and not has_command:
+                self._warn_once(
+                    "config/usr/apps.toml mcp_servers."
+                    f"{server_name} does not define command or url; leaving that entry unchanged"
+                )
+        if rendered and not rendered.endswith("\n"):
+            rendered += "\n"
+        return rendered
+
+    def _materialize_home_config_paths(self, source_path: Path | None = None) -> None:
+        del source_path
+        config_path = Path(self.runtime_vars["CODEX_HOME"]) / "config.toml"
+        current = config_path.read_text(encoding="utf-8") if config_path.is_file() else ""
+        rendered = self._render_user_config_toml("", config_path)
+        if rendered == current:
+            return
+        if self.dry_run:
+            print(f"[dry-run] render compiled home config into {config_path}")
+            return
+        self._write_file(config_path, rendered)
+
+    def _materialize_agent_config_paths(self, source_dir: Path | None = None) -> None:
+        runtime_agents_dir = Path(self.runtime_vars["CODEX_AGENTS"])
+        resolved_source_dir = source_dir or runtime_agents_dir
+        if not resolved_source_dir.is_dir():
+            if source_dir is not None:
+                fail(f"missing agent TOML source directory: {resolved_source_dir}")
+            if not self.dry_run:
+                fail(f"missing runtime agent TOML directory after sync: {runtime_agents_dir}")
+            resolved_source_dir = self.repo_layout.agents_config_dir
+            if not resolved_source_dir.is_dir():
+                fail(f"missing agent TOML source directory: {resolved_source_dir}")
+
+        source_paths = sorted(path for path in resolved_source_dir.glob("*.toml") if path.is_file())
+        if not source_paths and source_dir is not None:
+            fail(f"missing agent TOML source files: {resolved_source_dir}")
+
+        for source_path in source_paths:
+            target_path = runtime_agents_dir / source_path.name
+            raw = source_path.read_text(encoding="utf-8")
+            rendered = self._render_home_toml(raw, target_path, apply_instruction_overrides=False)
+            if rendered == raw:
+                continue
+            if self.dry_run:
+                print(f"[dry-run] render placeholders in {target_path}")
+                continue
+            self._write_file(target_path, rendered)
+
+    def _render_runtime_toml_source(self, source_path: Path, label: str) -> str:
+        raw = source_path.read_text(encoding="utf-8")
+        rendered = replace_known_placeholders_in_text(raw, self.variables)
+        if "$CODEX_" in rendered or "${CODEX_" in rendered:
+            fail(f"unresolved CODEX_* placeholder remains in rendered {label}")
+        try:
+            tomllib.loads(rendered)
+        except tomllib.TOMLDecodeError as exc:
+            fail(f"invalid rendered {label}: {exc}")
+        return rendered
+
+    def _render_requirements_toml(self) -> str:
+        raw = self.requirements_path.read_text(encoding="utf-8")
+        return replace_known_placeholders_in_text(raw, self.variables)
+
+    def _derive_package_version(self, package_name: str) -> str:
+        normalized = package_name
+        for suffix in (".tar.gz", ".tgz", ".tar.xz", ".zip"):
+            if normalized.endswith(suffix):
+                normalized = normalized[: -len(suffix)]
+                break
+        matches = VERSION_PATTERN.findall(normalized)
+        if not matches:
+            fail(f"unable to derive release version from package name: {package_name}")
+        return matches[-1]
+
+    def _resolve_bws_binary(self) -> Path:
+        local = shutil.which("bws")
+        if local:
+            return Path(local)
+        return self._download_bws_fallback_binary()
+
+    def _download_bws_fallback_binary(self) -> Path:
+        url = self.env["BWS_RELEASE_URL"]
+        sha = self.env["BWS_RELEASE_SHA256"].lower()
+        if not url.startswith("https://"):
+            fail("BWS_RELEASE_URL must use https")
+
+        with tempfile.TemporaryDirectory(prefix="codex-bws-") as tmp_dir:
+            tmp_root = Path(tmp_dir)
+            archive = tmp_root / "bws.tar.gz"
+            self._download_file(url, archive, None, None)
+            actual_sha = hashlib.sha256(archive.read_bytes()).hexdigest()
+            if actual_sha != sha:
+                fail("fallback bws archive checksum mismatch")
+
+            try:
+                with tarfile.open(archive, "r:gz") as tf:
+                    safe_extractall(tf, tmp_root / "extract")
+            except (tarfile.TarError, ArchiveSafetyError) as exc:
+                fail(f"unable to extract fallback bws archive: {exc}")
+
+            for candidate in sorted((tmp_root / "extract").rglob("bws")):
+                if candidate.is_file():
+                    target = Path(tempfile.gettempdir()) / f"codex-bws-{int(time.time())}"
+                    shutil.copy2(candidate, target)
+                    target.chmod(0o755)
+                    return target
+        fail("fallback bws binary not found in archive")
+
+    def _prompt_bws_account_value(self, account: str) -> str:
+        if not sys.stdin.isatty() or not sys.stderr.isatty():
+            fail(f"missing keyring secret for {account} and no interactive terminal is available")
+        if account == "BWS_ACCESS_TOKEN":
+            value = getpass.getpass(f"Enter {account}: ")
+        else:
+            value = input(f"Enter {account}: ")
+        normalized = value.strip()
+        if not normalized:
+            fail(f"{account} cannot be empty")
+        if "\n" in normalized or "\r" in normalized:
+            fail(f"{account} must be single-line")
+        return normalized
+
+    def _install_bws_keyring_lookup(self, account: str) -> str:
+        cache_key = f"{INSTALL_BWS_SECRET_SERVICE}:{account}"
+        cached = self._keyring_secret_cache.get(cache_key, "").strip()
+        if cached:
+            return cached
+
+        value = ""
+        try:
+            kwallet_query = shutil.which("kwallet-query")
+            if kwallet_query:
+                proc = subprocess.run(
+                    [
+                        kwallet_query,
+                        "--read-password",
+                        account,
+                        "--folder",
+                        INSTALL_BWS_KWALLET_FOLDER,
+                        INSTALL_BWS_SECRET_SERVICE,
+                    ],
+                    check=False,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True,
+                    timeout=KWALLET_QUERY_TIMEOUT_SECONDS,
+                )
+                if proc.returncode == 0:
+                    value = proc.stdout.strip()
+        except subprocess.TimeoutExpired:
+            fail("kwallet-query timed out while retrieving BWS bootstrap credentials")
+        except FileNotFoundError:
+            value = ""
+
+        if not value:
+            value = os.environ.get(account, "").strip()
+            if value:
+                self._log(f"using {account} from environment fallback")
+
+        if not value:
+            return ""
+
+        if "\n" in value or "\r" in value:
+            fail(f"{account} must be single-line")
+        self._keyring_secret_cache[cache_key] = value
+        return value
+
+    def _install_bws_keyring_credentials(self) -> tuple[str, str]:
+        project_id = self._install_bws_keyring_lookup("BWS_PROJECT_ID")
+        access_token = self._install_bws_keyring_lookup("BWS_ACCESS_TOKEN")
+        if project_id or access_token:
+            if not project_id or not access_token:
+                fail("bws-cli kwallet/env bootstrap must contain both BWS_PROJECT_ID and BWS_ACCESS_TOKEN")
+            return project_id, access_token
+
+        self._log("bws-cli kwallet unavailable; prompting for BWS credentials")
+        project_id = self._prompt_bws_account_value("BWS_PROJECT_ID")
+        access_token = self._prompt_bws_account_value("BWS_ACCESS_TOKEN")
+        if not project_id or not access_token:
+            fail("bws-cli kwallet/env bootstrap must contain both BWS_PROJECT_ID and BWS_ACCESS_TOKEN")
+        return project_id, access_token
+
+    def _bws_release_credentials(
+        self,
+        bws_bin: Path,
+        access_token: str,
+        project_id: str,
+    ) -> tuple[str, str]:
+        proc = subprocess.run(
+            [
+                str(bws_bin),
+                "--access-token",
+                access_token,
+                "run",
+                "--no-inherit-env",
+                "--project-id",
+                project_id,
+                "--",
+                "/usr/bin/env",
+            ],
+            check=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        if proc.returncode != 0:
+            fail("failed to read deploy credentials from bws run")
+
+        username = ""
+        token = ""
+        for raw_line in proc.stdout.splitlines():
+            if raw_line.startswith("GL_DEPLOY_RELEASE_USERNAME="):
+                username = raw_line.split("=", 1)[1].strip()
+            elif raw_line.startswith("GL_DEPLOY_RELEASE_TOKEN="):
+                token = raw_line.split("=", 1)[1].strip()
+
+        if not username:
+            fail("GL_DEPLOY_RELEASE_USERNAME is missing from bws run output")
+        if not token:
+            fail("GL_DEPLOY_RELEASE_TOKEN is missing from bws run output")
+        if "\n" in username or "\r" in username:
+            fail("GL_DEPLOY_RELEASE_USERNAME must be single-line")
+        if "\n" in token or "\r" in token:
+            fail("GL_DEPLOY_RELEASE_TOKEN must be single-line")
+        return username, token
+
+    def _resolve_release_credentials(self) -> tuple[str, str] | None:
+        if self._release_credentials_cache is not None:
+            self._log("using cached release credentials")
+            return self._release_credentials_cache
+
+        self._log("resolving release credentials via bws")
+        project_id, access_token = self._install_bws_keyring_credentials()
+        bws_bin = self._resolve_bws_binary()
+        self._release_credentials_cache = self._bws_release_credentials(
+            bws_bin,
+            access_token,
+            project_id,
+        )
+        return self._release_credentials_cache
+
+    def _download_file(self, url: str, destination: Path, username: str | None, token: str | None) -> None:
+        if self.dry_run:
+            print(f"[dry-run] download {url} -> {destination}")
+            return
+
+        headers = {"User-Agent": "codex-install/2.0"}
+        if username and token:
+            auth = base64.b64encode(f"{username}:{token}".encode("utf-8")).decode("ascii")
+            headers["Authorization"] = f"Basic {auth}"
+
+        with tempfile.NamedTemporaryFile(prefix="codex-download-", suffix=".tmp", delete=False) as handle:
+            temp_path = Path(handle.name)
+
+        try:
+            last_error = ""
+            for attempt in range(1, 4):
+                req = urllib.request.Request(url, headers=headers)
+                try:
+                    with urllib.request.urlopen(req, timeout=90) as response:
+                        with temp_path.open("wb") as download_handle:
+                            shutil.copyfileobj(response, download_handle)
+                    self._copy_file(temp_path, destination)
+                    return
+                except Exception as exc:  # pragma: no cover - network/runtime dependent
+                    last_error = str(exc)
+                    if attempt < 3:
+                        time.sleep(1)
+            fail(f"failed to download {url}: {last_error}")
+        finally:
+            temp_path.unlink(missing_ok=True)
+
+    def _install_release_schema_snapshot(self, extract_root: Path) -> None:
+        if not extract_root.is_dir():
+            fail(f"release extract root is not a directory for schema install: {extract_root}")
+
+        candidates: list[Path] = []
+        for candidate in sorted(extract_root.rglob(RELEASE_SCHEMA_FILENAME)):
+            if not candidate.is_file():
+                continue
+            if candidate.parent.name != "share":
+                continue
+            candidates.append(candidate)
+
+        if not candidates:
+            fail("release package does not include share/config.schema.json")
+        if len(candidates) > 1:
+            rendered = ", ".join(str(path.relative_to(extract_root)) for path in candidates)
+            fail(f"release package contains multiple share/config.schema.json files: {rendered}")
+
+        source = candidates[0]
+        latest_path = self._schema_latest_snapshot_path()
+        self._copy_file(source, latest_path, mode=0o644)
+
+    def _release_package_path(self) -> Path:
+        return Path(self.env["CODEX_SHARE_DIR"]) / "release" / "pkg" / self.env["CODEX_DOWNLOAD_PKG"]
+
+    def _release_package_url(self) -> str:
+        package_name = self.env["CODEX_DOWNLOAD_PKG"]
+        release_version = self._derive_package_version(package_name)
+        return f"{self.env['CODEX_DOWNLOAD_URL'].rstrip('/')}/{release_version}/{package_name}"
+
+    def _prepare_release_package(self) -> Path:
+        expected_sha = self.env["CODEX_DOWNLOAD_SHA"].lower()
+        full_url = self._release_package_url()
+        archive_path = self._release_package_path()
+
+        username: str | None = None
+        token: str | None = None
+
+        if archive_path.is_file():
+            current_sha = hashlib.sha256(archive_path.read_bytes()).hexdigest()
+            if current_sha != expected_sha:
+                if self.dry_run:
+                    print(f"[dry-run] remove invalid cached package {archive_path}")
+                else:
+                    if self._needs_sudo_write(archive_path.parent):
+                        self._run_with_sudo(["rm", "-f", str(archive_path)])
+                    else:
+                        archive_path.unlink(missing_ok=True)
+
+        if not archive_path.is_file():
+            if not self.dry_run:
+                credentials = self._resolve_release_credentials()
+                username, token = credentials if credentials else (None, None)
+            self._download_file(full_url, archive_path, username, token)
+
+        if not self.dry_run:
+            actual_sha = hashlib.sha256(archive_path.read_bytes()).hexdigest()
+            if actual_sha != expected_sha:
+                fail(f"release package checksum mismatch: {archive_path}")
+        return archive_path
+
+    def _install_release_binary(self) -> list[str]:
+        archive_path = self._prepare_release_package()
+        release_bin_dir = Path(self.env["CODEX_SHARE_DIR"]) / "bin"
+
+        if self.dry_run:
+            print(f"[dry-run] install all release binaries from {archive_path} -> {release_bin_dir}")
+            print(
+                "[dry-run] install latest release schema snapshot "
+                f"from {archive_path} -> {self._schema_latest_snapshot_path()}"
+            )
+            return []
+
+        with tempfile.TemporaryDirectory(prefix="codex-release-") as tmp_dir:
+            tmp_root = Path(tmp_dir)
+            try:
+                with tarfile.open(archive_path, "r:gz") as tf:
+                    safe_extractall(tf, tmp_root)
+            except (tarfile.TarError, ArchiveSafetyError) as exc:
+                fail(f"unable to extract release package {archive_path}: {exc}")
+
+            try:
+                discovered = discover_release_binaries(tmp_root)
+            except (RuntimeError, ReleaseAssetError) as exc:
+                fail(str(exc))
+            self._install_release_schema_snapshot(tmp_root)
+            installed: list[str] = []
+            for binary in discovered:
+                target = release_bin_dir / binary.name
+                self._copy_file(binary, target, mode=0o755)
+                installed.append(binary.name)
+
+            if not installed:
+                fail("release package did not produce installed binaries")
+            return installed
+
+    def apply(self, artifacts: CompiledArtifacts) -> None:
+        self._log("creating install backup")
+        self._backup_install_state(flow="install")
+        self._log("ensuring runtime directories")
+        self._ensure_runtime_directories()
+        self._log("ensuring lookup secret service file")
+        self._ensure_lookup_secret_service_file()
+        self._log("hardening executable directories")
+        self._secure_exec_directories()
+        self.apply_home_bundle()
+        self.apply_admin(artifacts)
+        self.setup_environment()
+        self._log("installing tmpfs helper")
+        self._sync_tmpfs_helper()
+        self._log("ensuring runtime tmpfs mount")
+        self.mount_runtime_tmpfs()
+
+        self._log("installing release binaries")
+        installed_binaries = self._install_release_binary()
+        self._log("installing lookup secret service helper")
+        self._sync_lookup_secret_env_helper()
+        self._sync_release_shims(installed_binaries)
+        self._log("installing shell completion files")
+        self._install_user_shell_completions()
+        self._log("installing schema helper wrappers")
+        self._sync_schema_helpers()
+
+    def apply_home(self) -> None:
+        home_src = self.repo_layout.home_user_dir
+        agents_src = self.repo_layout.agents_config_dir
+        home_dst = Path(self.runtime_vars["CODEX_HOME"])
+        agents_dst = Path(self.runtime_vars["CODEX_AGENTS"])
+        self._log("syncing preserved CODEX_HOME runtime state back into resources/home/user")
+        self._sync_home_runtime_state_to_repo(home_dst, home_src)
+        self._log("seeding missing preserved CODEX_HOME runtime state from resources/home/user")
+        self._seed_missing_home_runtime_state_from_repo(home_src, home_dst)
+        self._log("syncing resources/home/user assets to CODEX_HOME (filtered)")
+        self._sync_tree_filtered(
+            home_src,
+            home_dst,
+            skip_root_toml=True,
+            preserve_root_dirs=set(HOME_FILTER_PRESERVE_DIRS),
+            preserve_root_files=set(HOME_FILTER_PRESERVE_FILES),
+            mirror_deletions=True,
+        )
+        self._log("syncing config/agents role TOMLs to CODEX_AGENTS (filtered)")
+        self._sync_tree_filtered(
+            agents_src,
+            agents_dst,
+            skip_root_toml=False,
+            preserve_root_dirs=set(),
+            preserve_root_files=set(),
+            mirror_deletions=True,
+        )
+        self._log("syncing instruction assets")
+        self._sync_instruction_assets()
+        self._log("materializing default instruction assets")
+        self._materialize_instruction_default_assets()
+        self._log("syncing Codex hook assets")
+        self._sync_hooks_assets()
+        self._log("rendering CODEX_HOME/config.toml from config fragments")
+        self._materialize_home_config_paths()
+        self._log("rendering CODEX_AGENTS/*.toml with runtime paths")
+        self._materialize_agent_config_paths(source_dir=agents_src)
+
+    def apply_home_bundle(self) -> None:
+        self.apply_home()
+        self.apply_apps()
+        self.apply_skills()
+
+    def _write_system_config_files(self, artifacts: CompiledArtifacts) -> None:
+        system_dir = Path(self.env["CODEX_SYSTEM_DIR"])
+        self._copy_file(artifacts.config_toml, system_dir / "config.toml")
+        self._write_file(system_dir / "requirements.toml", self._render_requirements_toml())
+        self._remove_path_force(system_dir / "mcp.toml")
+        self._remove_path_force(system_dir / "skills.toml")
+
+    def apply_admin(self, artifacts: CompiledArtifacts) -> None:
+        system_dir = Path(self.env["CODEX_SYSTEM_DIR"])
+        self._log("ensuring system admin target directories")
+        self._mkdir_path(system_dir)
+
+        self._log("writing system configuration files")
+        self._write_system_config_files(artifacts)
+        self._log("syncing system/admin skill groups")
+        self._sync_skill_groups(system_only=True)
+
+    def apply_skills(self) -> None:
+        self._log("ensuring user skills directory")
+        self._mkdir_path(Path(self.runtime_vars["CODEX_SKILLS"]))
+        self._log("syncing user skill groups")
+        self._sync_skill_groups(user_only=True)
+
+    def apply_apps(self) -> None:
+        self._log("validating comprehensive plugin inventory")
+        self._log("syncing runtime plugin bundles and marketplace")
+        self._sync_local_plugins()
+
+    def setup_environment(self) -> None:
+        self._log("writing current-user environment files")
+        self._sync_global_environment()
+
+    def upgrade(self, artifacts: CompiledArtifacts) -> None:
+        self._log("creating upgrade backup")
+        self._backup_install_state(flow="upgrade")
+        self._log("ensuring upgrade directories")
+        self._ensure_upgrade_directories()
+        self._log("ensuring lookup secret service file")
+        self._ensure_lookup_secret_service_file()
+        self._log("hardening executable directories")
+        self._secure_exec_directories()
+        self.apply_home_bundle()
+        self.apply_admin(artifacts)
+        self.setup_environment()
+        self._log("installing tmpfs helper")
+        self._sync_tmpfs_helper()
+        self._log("ensuring runtime tmpfs mount")
+        self.mount_runtime_tmpfs()
+
+        self._log("installing release binaries and latest release schema snapshot")
+        installed_binaries = self._install_release_binary()
+        self._log("installing lookup secret service helper")
+        self._sync_lookup_secret_env_helper()
+        self._sync_release_shims(installed_binaries)
+        self._log("installing shell completion files")
+        self._install_user_shell_completions()
+        self._log("installing schema helper wrappers")
+        self._sync_schema_helpers()
+
+    def verify(self, output_dir: Path | None = None) -> None:
+        self._render_requirements_toml()
+
+        with tempfile.TemporaryDirectory(prefix="c0d3x-verify-") as td:
+            compiled_root = Path(td)
+            if output_dir is not None:
+                artifacts = self.compile(output_dir)
+            else:
+                artifacts = self.compile(compiled_root / "compiled")
+            runtime_payload = parse_toml_file(artifacts.config_toml)
+            mcp_servers = runtime_payload.get("mcp_servers")
+            if not isinstance(mcp_servers, dict):
+                fail("compiled config missing [mcp_servers] section")
+
+            source_servers = self.mcp_payload.get("mcp_servers", {})
+            if not set(source_servers.keys()).issubset(set(mcp_servers.keys())):
+                fail("compiled config is missing shared mcp servers from config/vendor/mcp.toml")
+
+            home_rendered = self._render_user_config_toml(
+                "",
+                Path(self.runtime_vars["CODEX_HOME"]) / "config.toml",
+            )
+            home_payload = tomllib.loads(home_rendered)
+            home_mcp_servers = home_payload.get("mcp_servers")
+            if home_mcp_servers not in (None, {}):
+                if not isinstance(home_mcp_servers, dict):
+                    fail("compiled home config mcp_servers must be an object when present")
+                for server_name, server in home_mcp_servers.items():
+                    if not isinstance(server, dict):
+                        fail(f"compiled home config mcp_servers.{server_name} must be an object")
+                    if not (
+                        isinstance(server.get("url"), str) and server["url"].strip()
+                    ) and not (
+                        isinstance(server.get("command"), str) and server["command"].strip()
+                    ):
+                        fail(
+                            "compiled home config mcp_servers."
+                            f"{server_name} must include a full MCP transport definition"
+                        )
+            plugins = home_payload.get("plugins")
+            if not isinstance(plugins, dict) or not plugins:
+                fail("compiled home config missing [plugins] section")
+            self._verify_rendered_plugin_runtime(compiled_root / "plugin-runtime", home_payload)
+
+            dry_installer = Installer(self.repo_root, dry_run=True)
+            dry_installer.load()
+            dry_installer.validate()
+            dry_artifacts = dry_installer.compile(compiled_root / "dry-run")
+            dry_installer.apply_home_bundle()
+            dry_installer.apply_admin(dry_artifacts)
+            dry_installer.apply_vars_init()
+            dry_installer.apply(dry_artifacts)
+            dry_installer.apply_vars_reset()
+            dry_installer.uninstall()
+
+    def _enabled_plugin_ids_from_home_payload(self, home_payload: dict[str, Any]) -> set[str]:
+        plugins = home_payload.get("plugins")
+        if not isinstance(plugins, dict) or not plugins:
+            fail("compiled home config missing [plugins] section")
+
+        enabled_ids: set[str] = set()
+        for plugin_id, payload in plugins.items():
+            enabled: bool | None = None
+            if isinstance(payload, bool):
+                enabled = payload
+            elif isinstance(payload, dict):
+                enabled_value = payload.get("enabled")
+                if not isinstance(enabled_value, bool):
+                    fail(f"compiled home config plugin entry must declare boolean enabled for {plugin_id}")
+                enabled = enabled_value
+            else:
+                fail(f"compiled home config plugin entry is invalid for {plugin_id}")
+            if enabled:
+                enabled_ids.add(plugin_id)
+        return enabled_ids
+
+    def _verify_rendered_plugin_runtime(self, output_root: Path, home_payload: dict[str, Any]) -> None:
+        active_entries = self._plugin_manifest_bundles(enabled_only=True)
+        if not active_entries:
+            fail("resources/plugins/manifest.json did not render any enabled plugin bundles")
+
+        enabled_plugin_ids = self._enabled_plugin_ids_from_home_payload(home_payload)
+        rendered_plugin_ids = {entry.plugin_id for entry in active_entries}
+        if enabled_plugin_ids != rendered_plugin_ids:
+            missing_rendered = sorted(enabled_plugin_ids - rendered_plugin_ids)
+            missing_config = sorted(rendered_plugin_ids - enabled_plugin_ids)
+            details: list[str] = []
+            if missing_rendered:
+                details.append(f"missing rendered bundles: {', '.join(missing_rendered)}")
+            if missing_config:
+                details.append(f"missing config enablement: {', '.join(missing_config)}")
+            fail(f"plugin config/manifest drift detected: {'; '.join(details)}")
+
+        marketplace_name = self._plugin_manifest_marketplace_name()
+        runtime_plugins_root = output_root / "plugins" / "cache" / marketplace_name
+        marketplace_path = output_root / ".agents" / "plugins" / "marketplace.json"
+        self._mkdir_path(runtime_plugins_root)
+        self._mkdir_path(marketplace_path.parent)
+
+        for bundle in active_entries:
+            sync_runtime_plugin_bundle(
+                self,
+                self.repo_layout.plugins_skills_dir,
+                runtime_plugins_root / bundle.name / "local",
+                bundle,
+            )
+
+        self._write_file(
+            marketplace_path,
+            render_runtime_plugin_marketplace(marketplace_name, active_entries),
+        )
+
+        marketplace_payload = parse_json_file(marketplace_path)
+        if marketplace_payload.get("name") != marketplace_name:
+            fail(f"{marketplace_path} marketplace name does not match manifest marketplace_name")
+        marketplace_plugins = marketplace_payload.get("plugins")
+        if not isinstance(marketplace_plugins, list):
+            fail(f"{marketplace_path} plugins must be a list")
+        if len(marketplace_plugins) != len(active_entries):
+            fail(f"{marketplace_path} plugin count does not match enabled bundle count")
+
+        expected_marketplace_names = {entry.name for entry in active_entries}
+        actual_marketplace_names: set[str] = set()
+        for plugin_entry in marketplace_plugins:
+            if not isinstance(plugin_entry, dict):
+                fail(f"{marketplace_path} plugin entries must be objects")
+            plugin_name = str(plugin_entry.get("name", "")).strip()
+            if plugin_name not in expected_marketplace_names:
+                fail(f"{marketplace_path} contains unknown plugin entry: {plugin_name}")
+            source = plugin_entry.get("source")
+            if not isinstance(source, dict):
+                fail(f"{marketplace_path} plugin source must be an object for {plugin_name}")
+            if source.get("source") != "local":
+                fail(f"{marketplace_path} plugin source must be local for {plugin_name}")
+            expected_path = f"./plugins/cache/{marketplace_name}/{plugin_name}/local"
+            if source.get("path") != expected_path:
+                fail(f"{marketplace_path} plugin source path is invalid for {plugin_name}")
+            actual_marketplace_names.add(plugin_name)
+        if actual_marketplace_names != expected_marketplace_names:
+            fail(f"{marketplace_path} marketplace entries do not match enabled bundles")
+
+        for bundle in active_entries:
+            plugin_root = runtime_plugins_root / bundle.name / "local"
+            manifest_path = plugin_root / ".codex-plugin" / "plugin.json"
+            manifest_payload = parse_json_file(manifest_path)
+            if manifest_payload.get("name") != bundle.name:
+                fail(f"{manifest_path} plugin name does not match bundle name")
+            if manifest_payload.get("skills") != "./skills":
+                fail(f"{manifest_path} skills path must be ./skills")
+            interface = manifest_payload.get("interface")
+            if not isinstance(interface, dict):
+                fail(f"{manifest_path} interface must be an object")
+            if interface.get("displayName") != bundle.display_name:
+                fail(f"{manifest_path} displayName does not match plugin manifest inventory for {bundle.name}")
+            if interface.get("shortDescription") != bundle.short_description:
+                fail(f"{manifest_path} shortDescription does not match plugin manifest inventory for {bundle.name}")
+            if interface.get("defaultPrompt") != bundle.default_prompt:
+                fail(f"{manifest_path} defaultPrompt does not match plugin manifest inventory for {bundle.name}")
+
+            skills_root = plugin_root / "skills"
+            if not skills_root.is_dir():
+                fail(f"rendered plugin skills root is missing: {skills_root}")
+            for skill_source in bundle.skills:
+                skill_name = plugin_skill_source_path(self.repo_root, self.plugins_json_path, skill_source).name
+                skill_yaml = skills_root / skill_name / "agents" / "openai.yaml"
+                if not skill_yaml.is_file():
+                    fail(f"rendered plugin skill metadata is missing: {skill_yaml}")
+                validate_openai_yaml_mcp_dependencies(skill_yaml)
+
+            mcp_path = plugin_root / ".mcp.json"
+            if bundle.mcp_servers:
+                mcp_payload = parse_json_file(mcp_path)
+                mcp_servers = mcp_payload.get("mcpServers")
+                if not isinstance(mcp_servers, dict):
+                    fail(f"{mcp_path} mcpServers must be an object")
+                if set(mcp_servers.keys()) != set(bundle.mcp_servers.keys()):
+                    fail(f"{mcp_path} server names do not match rendered plugin inventory for {bundle.name}")
+            elif mcp_path.exists():
+                fail(f"{mcp_path} should not exist for plugin without MCP servers: {bundle.name}")
+
+            app_path = plugin_root / ".app.json"
+            if bundle.apps:
+                app_payload = parse_json_file(app_path)
+                apps = app_payload.get("apps")
+                if not isinstance(apps, dict):
+                    fail(f"{app_path} apps must be an object")
+                if set(apps.keys()) != {app.name for app in bundle.apps}:
+                    fail(f"{app_path} app ids do not match rendered plugin inventory for {bundle.name}")
+            elif app_path.exists():
+                fail(f"{app_path} should not exist for plugin without apps: {bundle.name}")
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Codex installer")
+    parser.add_argument(
+        "command",
+        choices=(
+            "preflight",
+            "verify",
+            "install",
+            "home",
+            "apps",
+            "plugins",
+            "skills",
+            "admin",
+            "upgrade",
+            "tmpfs-mnt",
+            "tmpfs-umt",
+            "vars-init",
+            "vars-reset",
+            "nuke",
+        ),
+    )
+    parser.add_argument("--dry-run", action="store_true", help="Print actions without mutating files")
+    parser.add_argument(
+        "--compiled-dir",
+        default="src/misc/compiled",
+        help="Directory for compiled artifacts (default: src/misc/compiled)",
+    )
+    return parser.parse_args()
+
+
+def run() -> int:
+    args = parse_args()
+    ensure_non_root_user()
+    repo_root = Path(__file__).resolve().parents[2]
+    installer = Installer(repo_root=repo_root, dry_run=args.dry_run)
+
+    installer.load()
+
+    if args.command == "nuke":
+        # Uninstall must not depend on config rendering or other install-time checks.
+        installer.uninstall()
+        if args.dry_run:
+            print("[ok] dry-run complete")
+            return 0
+        print("[ok] nuke complete")
+        return 0
+
+    if args.command == "vars-reset":
+        installer.apply_vars_reset()
+        if args.dry_run:
+            print("[ok] dry-run complete")
+            return 0
+        print("[ok] vars-reset complete")
+        print('[info] current shell variables remain until session refresh (e.g., run: exec "$SHELL" -l)')
+        return 0
+
+    if args.command == "home":
+        installer.validate()
+        installer.apply_home_bundle()
+        if args.dry_run:
+            print("[ok] dry-run complete")
+            return 0
+        print("[ok] home complete")
+        return 0
+
+    if args.command == "apps":
+        installer.validate()
+        installer.apply_apps()
+        if args.dry_run:
+            print("[ok] dry-run complete")
+            return 0
+        print("[ok] apps complete")
+        return 0
+
+    if args.command == "plugins":
+        installer.validate()
+        installer.apply_apps()
+        if args.dry_run:
+            print("[ok] dry-run complete")
+            return 0
+        print("[ok] plugins complete")
+        return 0
+
+    if args.command == "vars-init":
+        installer.validate()
+        installer.apply_vars_init()
+        if args.dry_run:
+            print("[ok] dry-run complete")
+            return 0
+        print("[ok] vars-init complete")
+        return 0
+
+    if args.command == "tmpfs-mnt":
+        installer.validate()
+        installer._sync_tmpfs_helper()
+        installer.mount_runtime_tmpfs()
+        if args.dry_run:
+            print("[ok] dry-run complete")
+            return 0
+        print("[ok] tmpfs-mnt complete")
+        return 0
+
+    if args.command == "tmpfs-umt":
+        installer.validate()
+        installer.unmount_runtime_tmpfs()
+        if args.dry_run:
+            print("[ok] dry-run complete")
+            return 0
+        print("[ok] tmpfs-umt complete")
+        return 0
+
+    installer.validate()
+
+    if args.command == "preflight":
+        print("[ok] preflight passed")
+        return 0
+
+    if args.command == "verify":
+        compiled_dir = (repo_root / args.compiled_dir).resolve(strict=False)
+        installer.verify(compiled_dir)
+        print("[ok] verification passed")
+        return 0
+
+    if args.command == "skills":
+        installer.apply_skills()
+        if args.dry_run:
+            print("[ok] dry-run complete")
+            return 0
+        print("[ok] skills complete")
+        return 0
+
+    compiled_dir = (repo_root / args.compiled_dir).resolve(strict=False)
+    artifacts = installer.compile(compiled_dir)
+
+    if args.command == "admin":
+        installer.apply_admin(artifacts)
+        if args.dry_run:
+            print("[ok] dry-run complete")
+            return 0
+        print("[ok] admin complete")
+        return 0
+
+    if args.command == "install":
+        installer.apply(artifacts)
+        if args.dry_run:
+            print("[ok] dry-run complete")
+            return 0
+        print("[ok] install complete")
+        return 0
+
+    if args.command == "upgrade":
+        installer.upgrade(artifacts)
+        if args.dry_run:
+            print("[ok] dry-run complete")
+            return 0
+        print("[ok] upgrade complete")
+        return 0
+
+    fail(f"unsupported command: {args.command}")
+
+
+if __name__ == "__main__":
+    try:
+        raise SystemExit(run())
+    except InstallError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        raise SystemExit(1)

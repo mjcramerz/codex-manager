@@ -1,0 +1,11 @@
+interface:
+  display_name: Vercel React Native Skills
+  short_description: React Native and Expo best practices for building performant
+    mobile apps. Use when building React Native components, opt
+  default_prompt: 'Use the Vercel React Native Skills skill when the task matches
+    this scope: React Native and Expo best practices for building performant mobile
+    apps. Use when building React Native components, optimizing list performance,
+    implementing animations, or working with native modules. Triggers on tasks involving
+    React Native, Expo, mobile performance, or native platform APIs.'
+policy:
+  allow_implicit_invocation: true

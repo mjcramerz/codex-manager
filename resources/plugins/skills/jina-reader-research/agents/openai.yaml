@@ -1,0 +1,14 @@
+---
+interface:
+  display_name: Jina Reader Research
+  short_description: >-
+    Use Jina Reader-style workflows to extract, compare, and summarize
+    implementation-relevant web or documentation sources.
+  brand_color: '#0EA5E9'
+  default_prompt: >-
+    Act as the Jina Reader Research specialist. Use current evidence,
+    keep changes reviewable, and report assumptions and validation
+    clearly.
+
+policy:
+  allow_implicit_invocation: true

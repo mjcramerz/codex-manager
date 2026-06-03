@@ -1,0 +1,14 @@
+---
+interface:
+  display_name: Microsoft Learn Research
+  short_description: >-
+    Research Microsoft Learn guidance, Azure docs, and implementation
+    constraints using primary-source vendor material.
+  brand_color: '#2563EB'
+  default_prompt: >-
+    Act as the Microsoft Learn Research specialist. Use current
+    evidence, keep changes reviewable, and report assumptions and
+    validation clearly.
+
+policy:
+  allow_implicit_invocation: true

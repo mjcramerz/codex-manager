@@ -1,0 +1,14 @@
+---
+interface:
+  display_name: Atlassian Cloud Implementation
+  short_description: >-
+    Turn Atlassian cloud documentation into auth, workflow, and
+    implementation checklists for Jira and Confluence integrations.
+  brand_color: '#1D4ED8'
+  default_prompt: >-
+    Act as the Atlassian Cloud Implementation specialist. Use current
+    evidence, keep changes reviewable, and report assumptions and
+    validation clearly.
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,67 @@
+# Plan
+
+Use this plan when adding or revising skills in the pack.
+
+
+## Navigation
+<!-- BEGIN:nav -->
+- Parent: `$CODEX_HOME/plans/OVERVIEW.md`
+- Pack index: `$CODEX_HOME/INDEX.md`
+- Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
+<!-- END:nav -->
+
+
+## Requirements
+- Each skill has complete frontmatter metadata.
+- Skills are discoverable from indexes and overviews.
+- Add bundled scripts/references/assets when they materially improve reliability or reuse.
+
+## Scope
+- In: runtime skill roots under `$CODEX_SKILLS/**` and the managed admin skill root, plus related index links.
+- Out: changes to unrelated pack surfaces.
+
+## Files and entry points
+- `$CODEX_SKILLS`
+- the managed admin skill root
+- `$CODEX_HOME/index/pack/skills.md`
+- `$CODEX_HOME/index/manifest.yml`
+
+## Action items
+[ ] Create or update skill directories and `SKILL.md` files.
+[ ] Ensure `metadata.version`, `metadata.short-description`, and `metadata.tags` are present.
+[ ] Refresh nearby runtime catalog docs or metadata after changing a skill.
+[ ] Validate the affected runtime references under `$CODEX_SKILLS` or the managed admin skill root.
+
+## Testing and validation
+
+## Security checkpoints
+- Confirm trust boundaries, credentials, and least-privilege assumptions before execution.
+- Validate input bounds, timeout/retry limits, and failure behavior for risky operations.
+- Record any approved exception, owner, and expiry before proceeding.
+
+## Testing checkpoints
+- Define fast-path and deep validation commands before making changes.
+- Capture expected outcomes and acceptance criteria for each validation step.
+- Re-run impacted checks after major changes and before final handoff.
+
+## Deployment checkpoints
+- Document rollout order, blast-radius controls, and rollback conditions.
+- Confirm migration/backfill or feature-flag sequencing when applicable.
+- Record post-deploy verification owners and evidence.
+
+## Multi-agent handoff
+- Coordinator hands off scope, constraints, and stop condition with the target entrypoint.
+- Executor reports touched files, commands run, evidence, blockers, and next action.
+- Receiving agent acknowledges handoff completeness before continuing execution.
+
+## Risks and edge cases
+- Missing metadata or inconsistent naming.
+- Skills not referenced in discovery docs.
+
+## Examples
+
+- Example objective: "<short task statement>"
+- Example validation: "<command or check>"
+
+## Open questions
+- None.

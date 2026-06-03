@@ -1,0 +1,133 @@
+# granular approval policy
+[approval_policy.granular]
+mcp_elicitations = false
+request_permissions = false
+rules = false
+sandbox_approval = false
+skill_approval = false
+
+# shell environment policy
+[shell_environment_policy]
+inherit = "all"
+ignore_default_excludes = false
+experimental_use_profile = true
+#exclude = []
+#include_only = []
+set = { LANG = "C.UTF-8", LC_CTYPE = "C.UTF-8" }
+
+# full access filesystem
+[permissions.full.filesystem]
+":root" = "write"
+":tmpdir" = "write"
+
+# full access network
+[permissions.full.network]
+enabled = false
+mode = "full"
+admin_url = "http://127.0.0.1:2019"
+proxy_url = "http://127.0.0.1:8080"
+socks_url = "socks5://127.0.0.1:1080"
+enable_socks5 = true
+enable_socks5_udp = true
+allow_upstream_proxy = true
+dangerously_allow_non_loopback_admin = false
+dangerously_allow_non_loopback_proxy = false
+dangerously_allow_all_unix_sockets = false
+allow_local_binding = true
+allow_unix_sockets = [
+  "/data/codex/mcp/sockets/openai-developer-docs.sock",
+  "/data/codex/mcp/sockets/context7.sock",
+]
+#allowed_domains = []
+#denied_domains = []
+
+# workspace filesystem
+[permissions.workspace.filesystem]
+":minimal" = "read"
+":project_roots" = { "." = "write", ".mcr" = "write", "docs" = "read", "patches" = "read" }
+":tmpdir" = "write"
+"/data/codex/share/bin" = "read"
+"/data/codex/share/helpers" = "read"
+"/data/codex/share/shims" = "read"
+"/data/codex/mcp" = "read"
+"/data/codex/usr/agents" = "read"
+"/data/codex/usr/skills" = "read"
+"/data/codex/usr/instructions" = "read"
+"/data/codex/usr/home/memories" = "write"
+
+# workspace network
+[permissions.workspace.network]
+enabled = false
+mode = "limited"
+admin_url = "http://127.0.0.1:2019"
+proxy_url = "http://127.0.0.1:8080"
+socks_url = "socks5://127.0.0.1:1080"
+enable_socks5 = true 
+enable_socks5_udp = false
+allow_upstream_proxy = true
+dangerously_allow_non_loopback_admin = false
+dangerously_allow_non_loopback_proxy = false
+dangerously_allow_all_unix_sockets = false
+allow_local_binding = true
+allow_unix_sockets = [
+  "/data/codex/mcp/sockets/openai-developer-docs.sock",
+  "/data/codex/mcp/sockets/context7.sock",
+]
+#allowed_domains = []
+#denied_domains = []
+
+# readonly filesystem
+[permissions.readonly.filesystem]
+":minimal" = "read"
+":project_roots" = { "." = "read", ".mcr" = "read", "docs" = "read", "patches" = "read" }
+":tmpdir" = "read"
+"/data/codex/share/bin" = "read"
+"/data/codex/share/helpers" = "read"
+"/data/codex/share/shims" = "read"
+"/data/codex/mcp" = "read"
+"/data/codex/usr/agents" = "read"
+"/data/codex/usr/skills" = "read"
+"/data/codex/usr/instructions" = "read"
+"/data/codex/usr/home/memories" = "read"
+
+# readonly network
+[permissions.readonly.network]
+enabled = false
+mode = "limited"
+admin_url = "http://127.0.0.1:2019"
+proxy_url = "http://127.0.0.1:8080"
+socks_url = "socks5://127.0.0.1:1080"
+enable_socks5 = false 
+enable_socks5_udp = false
+allow_upstream_proxy = false
+dangerously_allow_non_loopback_admin = false
+dangerously_allow_non_loopback_proxy = false
+dangerously_allow_all_unix_sockets = false
+allow_local_binding = false
+allow_unix_sockets = []
+allowed_domains = []
+denied_domains = []
+
+[projects."/data/workspace/cli/c0d3x"]
+trust_level = "trusted"
+
+[projects."/data/workspace/core/scripts"]
+trust_level = "trusted"
+
+[projects."/data/workspace/apps/codex"]
+trust_level = "trusted"
+
+[projects."/data/workspace/cicd/ci-images"]
+trust_level = "trusted"
+
+[projects."/data/workspace/cicd/actions"]
+trust_level = "trusted"
+
+[projects."/data/workspace/cicd/workers/cf-git-cicd-worker"]
+trust_level = "trusted"
+
+[projects."/data/workspace/core/docker"]
+trust_level = "trusted"
+
+[projects."/data/workspace/core/runners"]
+trust_level = "trusted"

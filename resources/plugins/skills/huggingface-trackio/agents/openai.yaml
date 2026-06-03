@@ -1,0 +1,11 @@
+interface:
+  display_name: Hugging Face Trackio
+  short_description: 'Track and visualize ML training experiments with Trackio. Use
+    when logging metrics during training (Python API), firing '
+  default_prompt: 'Use the Hugging Face Trackio skill when the task matches this scope:
+    Track and visualize ML training experiments with Trackio. Use when logging metrics
+    during training (Python API), firing alerts for training diagnostics, or retrieving/analyzing
+    logged metrics (CLI). Supports real-time dashboard visualization, alerts with
+    webhooks, HF Space syncing, and JSON output for automation.'
+policy:
+  allow_implicit_invocation: true

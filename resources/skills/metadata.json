@@ -1,0 +1,1539 @@
+{
+  "version": 2,
+  "schema": "codex-setup.skills.metadata.v2",
+  "roles": {
+    "common": {
+      "name": "common",
+      "tools": [
+        "context7",
+        "fetch",
+        "filesystem",
+        "git",
+        "linear",
+        "sequential_thinking"
+      ],
+      "short_description": "Shared MCP tool contract for the common runtime skill group.",
+      "interface": {
+        "display_name": "common",
+        "short_description": "Runtime role contract for the common skill group."
+      }
+    },
+    "audit": {
+      "name": "audit",
+      "tools": [
+        "context7",
+        "fetch",
+        "filesystem",
+        "git",
+        "github_router",
+        "linear",
+        "openaiDeveloperDocs",
+        "sequential_thinking",
+        "time"
+      ],
+      "short_description": "Shared MCP tool contract for the audit runtime skill group.",
+      "interface": {
+        "display_name": "audit",
+        "short_description": "Runtime role contract for the audit skill group."
+      }
+    }
+  },
+  "groups": [
+    {
+      "name": "user_common",
+      "namespace": "common",
+      "role": "common",
+      "runtime_path": "${CODEX_SKILLS}/common",
+      "enabled": true,
+      "short_description": "Common runtime skills available to the default coding profile.",
+      "default_prompt": "Use the common runtime skill set for general coding tasks.",
+      "interface": {
+        "display_name": "User Common",
+        "short_description": "Common runtime skills."
+      },
+      "scope": "user"
+    },
+    {
+      "name": "user_audit",
+      "namespace": "audit",
+      "role": "audit",
+      "runtime_path": "${CODEX_SKILLS}/audit",
+      "enabled": true,
+      "short_description": "Read-heavy audit skills available to review-focused roles.",
+      "default_prompt": "Use the audit runtime skill set for review and investigation tasks.",
+      "interface": {
+        "display_name": "User Audit",
+        "short_description": "Audit-focused runtime skills."
+      },
+      "scope": "user"
+    }
+  ],
+  "summary": {
+    "total_skills": 31,
+    "namespaces": {
+      "audit": {
+        "count": 7,
+        "role": "audit",
+        "groups": [
+          "user_audit"
+        ]
+      },
+      "common": {
+        "count": 24,
+        "role": "common",
+        "groups": [
+          "user_common"
+        ]
+      }
+    }
+  },
+  "skills": {
+    "audit": [
+      {
+        "name": "config-audit",
+        "namespace": "audit",
+        "role": "audit",
+        "groups": [
+          "user_audit"
+        ],
+        "description": "Audit config fragments, merge order, placeholder materialization, and policy drift with concrete risk calls and validation follow-up. Use when the user asks to review config layout, runtime overlays, or managed configuration contracts.",
+        "skill_path": "audit/config-audit",
+        "skill_file": "audit/config-audit/SKILL.md",
+        "metadata_file": "audit/config-audit/metadata.json",
+        "agent_file": "audit/config-audit/agents/openai.yaml",
+        "references_file": "audit/config-audit/references/latest-sources.md",
+        "short_description": "Audit config merge order, placeholders, and policy drift",
+        "default_prompt": "Act as the \"AUDIT-Config\" specialist for \"Audit config merge order, placeholders, and policy drift\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "audit",
+          "config",
+          "policy",
+          "drift"
+        ],
+        "interface": {
+          "display-name": "AUDIT-Config",
+          "short-description": "Audit config merge order, placeholders, and policy drift",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#0F766E",
+          "default-prompt": "Act as the \"AUDIT-Config\" specialist for \"Audit config merge order, placeholders, and policy drift\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "1.0",
+          "organization": "Codex Setup",
+          "date": "March 12, 2026",
+          "abstract": "Audit config fragments, merge order, placeholder materialization, and policy drift with concrete risk calls and validation follow-up. Use when the user asks to review config layout, runtime overlays, or managed configuration contracts.",
+          "references": [
+            "https://json-schema.org/",
+            "https://toml.io/en/"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      },
+      {
+        "name": "dependency-risk-review",
+        "namespace": "audit",
+        "role": "audit",
+        "groups": [
+          "user_audit"
+        ],
+        "description": "Review dependency surfaces for upgrade risk, auth coupling, supply-chain exposure, and missing pinning or verification steps. Use when the user asks for dependency audits, risk summaries, or release hardening reviews.",
+        "skill_path": "audit/dependency-risk-review",
+        "skill_file": "audit/dependency-risk-review/SKILL.md",
+        "metadata_file": "audit/dependency-risk-review/metadata.json",
+        "agent_file": "audit/dependency-risk-review/agents/openai.yaml",
+        "references_file": "audit/dependency-risk-review/references/latest-sources.md",
+        "short_description": "Audit dependency risk, pinning, and supply-chain exposure",
+        "default_prompt": "Act as the \"AUDIT-Dependency Risk\" specialist for \"Audit dependency risk, pinning, and supply-chain exposure\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "audit",
+          "dependencies",
+          "supply-chain",
+          "risk"
+        ],
+        "interface": {
+          "display-name": "AUDIT-Dependency Risk",
+          "short-description": "Audit dependency risk, pinning, and supply-chain exposure",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#EF4444",
+          "default-prompt": "Act as the \"AUDIT-Dependency Risk\" specialist for \"Audit dependency risk, pinning, and supply-chain exposure\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "1.0",
+          "organization": "Codex Setup",
+          "date": "March 12, 2026",
+          "abstract": "Review dependency surfaces for upgrade risk, auth coupling, supply-chain exposure, and missing pinning or verification steps. Use when the user asks for dependency audits, risk summaries, or release hardening reviews.",
+          "references": [
+            "https://slsa.dev/",
+            "https://owasp.org/www-project-dependency-check/",
+            "https://csrc.nist.gov/pubs/sp/800/218/final"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      },
+      {
+        "name": "hook-behavior-audit",
+        "namespace": "audit",
+        "role": "audit",
+        "groups": [
+          "user_audit"
+        ],
+        "description": "Review startup, resume, and stop hooks for schema compliance, blocking behavior, repo-context quality, and validation-gate correctness. Use when the user asks to audit hook UX, guardrails, or lifecycle automation.",
+        "skill_path": "audit/hook-behavior-audit",
+        "skill_file": "audit/hook-behavior-audit/SKILL.md",
+        "metadata_file": "audit/hook-behavior-audit/metadata.json",
+        "agent_file": "audit/hook-behavior-audit/agents/openai.yaml",
+        "references_file": "audit/hook-behavior-audit/references/latest-sources.md",
+        "short_description": "Audit startup/resume/stop hooks and lifecycle guardrails",
+        "default_prompt": "Act as the \"AUDIT-Hook Behavior\" specialist for \"Audit startup/resume/stop hooks and lifecycle guardrails\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "audit",
+          "hooks",
+          "lifecycle",
+          "ux"
+        ],
+        "interface": {
+          "display-name": "AUDIT-Hook Behavior",
+          "short-description": "Audit startup/resume/stop hooks and lifecycle guardrails",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#8B5CF6",
+          "default-prompt": "Act as the \"AUDIT-Hook Behavior\" specialist for \"Audit startup/resume/stop hooks and lifecycle guardrails\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "1.0",
+          "organization": "Codex Setup",
+          "date": "March 12, 2026",
+          "abstract": "Review startup, resume, and stop hooks for schema compliance, blocking behavior, repo-context quality, and validation-gate correctness. Use when the user asks to audit hook UX, guardrails, or lifecycle automation.",
+          "references": [
+            "https://json-schema.org/",
+            "https://www.shellcheck.net/"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      },
+      {
+        "name": "installer-regression-audit",
+        "namespace": "audit",
+        "role": "audit",
+        "groups": [
+          "user_audit"
+        ],
+        "description": "Review install, home-sync, admin, upgrade, and cleanup flows for regressions, permission boundaries, and preserved-state drift. Use when the user asks for installer audits or rollout safety reviews.",
+        "skill_path": "audit/installer-regression-audit",
+        "skill_file": "audit/installer-regression-audit/SKILL.md",
+        "metadata_file": "audit/installer-regression-audit/metadata.json",
+        "agent_file": "audit/installer-regression-audit/agents/openai.yaml",
+        "references_file": "audit/installer-regression-audit/references/latest-sources.md",
+        "short_description": "Audit installer flows for regressions and permission drift",
+        "default_prompt": "Act as the \"AUDIT-Installer Regression\" specialist for \"Audit installer flows for regressions and permission drift\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "audit",
+          "installer",
+          "regression",
+          "permissions"
+        ],
+        "interface": {
+          "display-name": "AUDIT-Installer Regression",
+          "short-description": "Audit installer flows for regressions and permission drift",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#2563EB",
+          "default-prompt": "Act as the \"AUDIT-Installer Regression\" specialist for \"Audit installer flows for regressions and permission drift\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "1.0",
+          "organization": "Codex Setup",
+          "date": "March 12, 2026",
+          "abstract": "Review install, home-sync, admin, upgrade, and cleanup flows for regressions, permission boundaries, and preserved-state drift. Use when the user asks for installer audits or rollout safety reviews.",
+          "references": [
+            "https://csrc.nist.gov/pubs/sp/800/218/final",
+            "https://12factor.net/"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      },
+      {
+        "name": "mcp-integration-audit",
+        "namespace": "audit",
+        "role": "audit",
+        "groups": [
+          "user_audit"
+        ],
+        "description": "Audit MCP server coverage, auth behavior, timeout settings, dependency wiring, and plugin/skill binding correctness. Use when the user asks to review MCP integrations, remote server definitions, or tool exposure policies.",
+        "skill_path": "audit/mcp-integration-audit",
+        "skill_file": "audit/mcp-integration-audit/SKILL.md",
+        "metadata_file": "audit/mcp-integration-audit/metadata.json",
+        "agent_file": "audit/mcp-integration-audit/agents/openai.yaml",
+        "references_file": "audit/mcp-integration-audit/references/latest-sources.md",
+        "short_description": "Audit MCP auth, timeouts, and dependency wiring",
+        "default_prompt": "Act as the \"AUDIT-MCP Integration\" specialist for \"Audit MCP auth, timeouts, and dependency wiring\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "audit",
+          "mcp",
+          "integration",
+          "auth"
+        ],
+        "interface": {
+          "display-name": "AUDIT-MCP Integration",
+          "short-description": "Audit MCP auth, timeouts, and dependency wiring",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#F97316",
+          "default-prompt": "Act as the \"AUDIT-MCP Integration\" specialist for \"Audit MCP auth, timeouts, and dependency wiring\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "1.0",
+          "organization": "Codex Setup",
+          "date": "March 12, 2026",
+          "abstract": "Audit MCP server coverage, auth behavior, timeout settings, dependency wiring, and plugin/skill binding correctness. Use when the user asks to review MCP integrations, remote server definitions, or tool exposure policies.",
+          "references": [
+            "https://modelcontextprotocol.io/introduction",
+            "https://www.rfc-editor.org/rfc/rfc6749"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      },
+      {
+        "name": "quality-code-review",
+        "namespace": "audit",
+        "role": "audit",
+        "groups": [
+          "user_audit"
+        ],
+        "description": "Perform high-rigor code review focused on correctness, regressions, security, performance, and test coverage. Use when the user asks for a review, audit, risk assessment, or PR quality gate.",
+        "skill_path": "audit/quality-code-review",
+        "skill_file": "audit/quality-code-review/SKILL.md",
+        "metadata_file": "audit/quality-code-review/metadata.json",
+        "agent_file": "audit/quality-code-review/agents/openai.yaml",
+        "references_file": "audit/quality-code-review/references/latest-sources.md",
+        "short_description": "High-rigor code review skill: intent alignment, correctness, security, performance, and reproducibility checks with actionable output",
+        "default_prompt": "Act as the \"QUALITY-Code Review\" specialist for \"High-rigor code review skill: intent alignment, correctness, security, performance, and reproducibility checks with actionable output\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "code-review",
+          "security",
+          "testing",
+          "performance"
+        ],
+        "interface": {
+          "display-name": "QUALITY-Code Review",
+          "short-description": "High-rigor code review skill: intent alignment, correctness, security, performance, and reproducibility checks with actionable output",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#32CC4C",
+          "default-prompt": "Act as the \"QUALITY-Code Review\" specialist for \"High-rigor code review skill: intent alignment, correctness, security, performance, and reproducibility checks with actionable output\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "1.1",
+          "organization": "Codex Setup",
+          "date": "February 12, 2026",
+          "abstract": "Perform high-rigor code review focused on correctness, regressions, security, performance, and test coverage. Use when the user asks for a review, audit, risk assessment, or PR quality gate.",
+          "references": [
+            "https://cheatsheetseries.owasp.org/",
+            "https://owasp.org/www-project-application-security-verification-standard/",
+            "https://csrc.nist.gov/pubs/sp/800/218/final",
+            "https://google.github.io/eng-practices/review/"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      },
+      {
+        "name": "skill-catalog-audit",
+        "namespace": "audit",
+        "role": "audit",
+        "groups": [
+          "user_audit"
+        ],
+        "description": "Audit skill metadata, routing coverage, namespace structure, and plugin bundle assignments for drift or missing capability coverage. Use when the user asks to review skill catalogs, plugin manifests, or routing quality.",
+        "skill_path": "audit/skill-catalog-audit",
+        "skill_file": "audit/skill-catalog-audit/SKILL.md",
+        "metadata_file": "audit/skill-catalog-audit/metadata.json",
+        "agent_file": "audit/skill-catalog-audit/agents/openai.yaml",
+        "references_file": "audit/skill-catalog-audit/references/latest-sources.md",
+        "short_description": "Audit skill metadata, routing coverage, and bundle mapping",
+        "default_prompt": "Act as the \"AUDIT-Skill Catalog\" specialist for \"Audit skill metadata, routing coverage, and bundle mapping\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "audit",
+          "skills",
+          "routing",
+          "metadata"
+        ],
+        "interface": {
+          "display-name": "AUDIT-Skill Catalog",
+          "short-description": "Audit skill metadata, routing coverage, and bundle mapping",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#14B8A6",
+          "default-prompt": "Act as the \"AUDIT-Skill Catalog\" specialist for \"Audit skill metadata, routing coverage, and bundle mapping\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "1.0",
+          "organization": "Codex Setup",
+          "date": "March 12, 2026",
+          "abstract": "Audit skill metadata, routing coverage, namespace structure, and plugin bundle assignments for drift or missing capability coverage. Use when the user asks to review skill catalogs, plugin manifests, or routing quality.",
+          "references": [
+            "https://json-schema.org/",
+            "https://yaml.org/spec/1.2.2/"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      }
+    ],
+    "common": [
+      {
+        "name": "agent-orchestration",
+        "namespace": "common",
+        "role": "common",
+        "groups": [
+          "user_common"
+        ],
+        "description": "Decompose multi-agent coding work into owned slices, reconcile findings, and manage validation handoff without duplicating effort. Use when tasks need parallel explorers, workers, or staged integration.",
+        "skill_path": "common/agent-orchestration",
+        "skill_file": "common/agent-orchestration/SKILL.md",
+        "metadata_file": "common/agent-orchestration/metadata.json",
+        "agent_file": "common/agent-orchestration/agents/openai.yaml",
+        "references_file": "common/agent-orchestration/references/latest-sources.md",
+        "short_description": "Plan and reconcile multi-agent coding work",
+        "default_prompt": "Act as the \"AGENT-Orchestration\" specialist for \"Plan and reconcile multi-agent coding work\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "agents",
+          "delegation",
+          "planning",
+          "coordination"
+        ],
+        "interface": {
+          "display-name": "AGENT-Orchestration",
+          "short-description": "Plan and reconcile multi-agent coding work",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#2563EB",
+          "default-prompt": "Act as the \"AGENT-Orchestration\" specialist for \"Plan and reconcile multi-agent coding work\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "1.0",
+          "organization": "Codex Setup",
+          "date": "March 12, 2026",
+          "abstract": "Decompose multi-agent coding work into owned slices, reconcile findings, and manage validation handoff without duplicating effort. Use when tasks need parallel explorers, workers, or staged integration.",
+          "references": [
+            "https://modelcontextprotocol.io/introduction",
+            "https://platform.openai.com/docs/guides/tools"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      },
+      {
+        "name": "cli-design",
+        "namespace": "common",
+        "role": "common",
+        "groups": [
+          "user_common"
+        ],
+        "description": "Design and refactor CLI commands, flags, subcommands, help text, and exit-code semantics with deterministic contracts. Use when the user asks for command-line UX, parser refactors, or safer automation interfaces.",
+        "skill_path": "common/cli-design",
+        "skill_file": "common/cli-design/SKILL.md",
+        "metadata_file": "common/cli-design/metadata.json",
+        "agent_file": "common/cli-design/agents/openai.yaml",
+        "references_file": "common/cli-design/references/latest-sources.md",
+        "short_description": "Design CLI contracts, flags, and exit semantics cleanly",
+        "default_prompt": "Act as the \"CLI-Design\" specialist for \"Design CLI contracts, flags, and exit semantics cleanly\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "cli",
+          "argparse",
+          "ux",
+          "automation"
+        ],
+        "interface": {
+          "display-name": "CLI-Design",
+          "short-description": "Design CLI contracts, flags, and exit semantics cleanly",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#DC2626",
+          "default-prompt": "Act as the \"CLI-Design\" specialist for \"Design CLI contracts, flags, and exit semantics cleanly\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "1.0",
+          "organization": "Codex Setup",
+          "date": "March 12, 2026",
+          "abstract": "Design and refactor CLI commands, flags, subcommands, help text, and exit-code semantics with deterministic contracts. Use when the user asks for command-line UX, parser refactors, or safer automation interfaces.",
+          "references": [
+            "https://docs.python.org/3/library/argparse.html",
+            "https://click.palletsprojects.com/",
+            "https://docs.rs/clap/latest/clap/"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      },
+      {
+        "name": "data-json",
+        "namespace": "common",
+        "role": "common",
+        "groups": [
+          "user_common"
+        ],
+        "description": "Edit and validate JSON, YAML, and TOML with schema-aware, minimal-diff changes and deterministic formatting decisions. Use when the task centers on structured config, manifests, metadata catalogs, or payload transformation.",
+        "skill_path": "common/data-json",
+        "skill_file": "common/data-json/SKILL.md",
+        "metadata_file": "common/data-json/metadata.json",
+        "agent_file": "common/data-json/agents/openai.yaml",
+        "references_file": "common/data-json/references/latest-sources.md",
+        "short_description": "Edit JSON, YAML, and TOML safely with schema awareness",
+        "default_prompt": "Act as the \"DATA-Config Formats\" specialist for \"Edit JSON, YAML, and TOML safely with schema awareness\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "json",
+          "yaml",
+          "toml",
+          "config",
+          "schema"
+        ],
+        "interface": {
+          "display-name": "DATA-Config Formats",
+          "short-description": "Edit JSON, YAML, and TOML safely with schema awareness",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#F59E0B",
+          "default-prompt": "Act as the \"DATA-Config Formats\" specialist for \"Edit JSON, YAML, and TOML safely with schema awareness\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "1.0",
+          "organization": "Codex Setup",
+          "date": "March 12, 2026",
+          "abstract": "Edit and validate JSON, YAML, and TOML with schema-aware, minimal-diff changes and deterministic formatting decisions. Use when the task centers on structured config, manifests, metadata catalogs, or payload transformation.",
+          "references": [
+            "https://json-schema.org/",
+            "https://yaml.org/spec/1.2.2/",
+            "https://toml.io/en/"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      },
+      {
+        "name": "lang-go",
+        "namespace": "common",
+        "role": "common",
+        "groups": [
+          "user_common"
+        ],
+        "description": "Build and maintain Go modules with idiomatic structure, dependency management, testing, and secure defaults. Use when the user asks for Go implementation, refactoring, or module/tooling fixes.",
+        "skill_path": "common/lang-go",
+        "skill_file": "common/lang-go/SKILL.md",
+        "metadata_file": "common/lang-go/metadata.json",
+        "agent_file": "common/lang-go/agents/openai.yaml",
+        "references_file": "common/lang-go/references/latest-sources.md",
+        "short_description": "Build Go modules with safe defaults and testing guidance",
+        "default_prompt": "Act as the \"LANG-Go\" specialist for \"Build Go modules with safe defaults and testing guidance\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "go",
+          "backend",
+          "cli"
+        ],
+        "interface": {
+          "display-name": "LANG-Go",
+          "short-description": "Build Go modules with safe defaults and testing guidance",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#96CC32",
+          "default-prompt": "Act as the \"LANG-Go\" specialist for \"Build Go modules with safe defaults and testing guidance\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "1.0",
+          "organization": "Codex Setup",
+          "date": "February 12, 2026",
+          "abstract": "Build and maintain Go modules with idiomatic structure, dependency management, testing, and secure defaults. Use when the user asks for Go implementation, refactoring, or module/tooling fixes.",
+          "references": [
+            "https://go.dev/doc/",
+            "https://go.dev/ref/mod"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      },
+      {
+        "name": "lang-python",
+        "namespace": "common",
+        "role": "common",
+        "groups": [
+          "user_common"
+        ],
+        "description": "Build and refactor Python modules, CLIs, automation, and packaging with typing, testing, and safe I/O defaults. Use when the user asks for Python implementation, refactoring, packaging, or runtime-automation changes.",
+        "skill_path": "common/lang-python",
+        "skill_file": "common/lang-python/SKILL.md",
+        "metadata_file": "common/lang-python/metadata.json",
+        "agent_file": "common/lang-python/agents/openai.yaml",
+        "references_file": "common/lang-python/references/latest-sources.md",
+        "short_description": "Build Python code with typing, testing, and packaging defaults",
+        "default_prompt": "Act as the \"LANG-Python\" specialist for \"Build Python code with typing, testing, and packaging defaults\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "python",
+          "backend",
+          "automation",
+          "cli"
+        ],
+        "interface": {
+          "display-name": "LANG-Python",
+          "short-description": "Build Python code with typing, testing, and packaging defaults",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#3776AB",
+          "default-prompt": "Act as the \"LANG-Python\" specialist for \"Build Python code with typing, testing, and packaging defaults\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "1.0",
+          "organization": "Codex Setup",
+          "date": "March 12, 2026",
+          "abstract": "Build and refactor Python modules, CLIs, automation, and packaging with typing, testing, and safe I/O defaults. Use when the user asks for Python implementation, refactoring, packaging, or runtime-automation changes.",
+          "references": [
+            "https://docs.python.org/3/",
+            "https://packaging.python.org/en/latest/tutorials/packaging-projects/",
+            "https://docs.pytest.org/"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      },
+      {
+        "name": "lang-typescript",
+        "namespace": "common",
+        "role": "common",
+        "groups": [
+          "user_common"
+        ],
+        "description": "Implement and refactor TypeScript projects with strict typing, tsconfig hygiene, and safe build defaults. Use when the user asks for TypeScript code, type errors, or project configuration changes.",
+        "skill_path": "common/lang-typescript",
+        "skill_file": "common/lang-typescript/SKILL.md",
+        "metadata_file": "common/lang-typescript/metadata.json",
+        "agent_file": "common/lang-typescript/agents/openai.yaml",
+        "references_file": "common/lang-typescript/references/latest-sources.md",
+        "short_description": "Configure TypeScript projects with strict defaults",
+        "default_prompt": "Act as the \"LANG-TypeScript\" specialist for \"Configure TypeScript projects with strict defaults\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "typescript",
+          "frontend",
+          "tooling"
+        ],
+        "interface": {
+          "display-name": "LANG-TypeScript",
+          "short-description": "Configure TypeScript projects with strict defaults",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#CC3260",
+          "default-prompt": "Act as the \"LANG-TypeScript\" specialist for \"Configure TypeScript projects with strict defaults\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "1.0",
+          "organization": "Codex Setup",
+          "date": "February 12, 2026",
+          "abstract": "Implement and refactor TypeScript projects with strict typing, tsconfig hygiene, and safe build defaults. Use when the user asks for TypeScript code, type errors, or project configuration changes.",
+          "references": [
+            "https://www.typescriptlang.org/docs/",
+            "https://www.typescriptlang.org/tsconfig"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      },
+      {
+        "name": "pack-docs",
+        "namespace": "common",
+        "role": "common",
+        "groups": [
+          "user_common"
+        ],
+        "description": "Create or update pack documentation and workflows under $CODEX_HOME/docs/. Use when adding new guides, updating doc indexes, or aligning docs with prompts, templates, and skills.",
+        "skill_path": "common/pack-docs",
+        "skill_file": "common/pack-docs/SKILL.md",
+        "metadata_file": "common/pack-docs/metadata.json",
+        "agent_file": "common/pack-docs/agents/openai.yaml",
+        "references_file": "common/pack-docs/references/latest-sources.md",
+        "short_description": "Maintain pack documentation and workflows",
+        "default_prompt": "Act as the \"PACK-Docs\" specialist for \"Maintain pack documentation and workflows\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "docs",
+          "documentation",
+          "workflows",
+          "pack"
+        ],
+        "interface": {
+          "display-name": "PACK-Docs",
+          "short-description": "Maintain pack documentation and workflows",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#CC327C",
+          "default-prompt": "Act as the \"PACK-Docs\" specialist for \"Maintain pack documentation and workflows\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "1.0",
+          "organization": "Codex Setup",
+          "date": "February 12, 2026",
+          "abstract": "Create or update pack documentation and workflows under $CODEX_HOME/docs/. Use when adding new guides, updating doc indexes, or aligning docs with prompts, templates, and skills.",
+          "references": [
+            "https://yaml.org/spec/1.2.2/",
+            "https://www.markdownguide.org/basic-syntax/"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      },
+      {
+        "name": "pack-index",
+        "namespace": "common",
+        "role": "common",
+        "groups": [
+          "user_common"
+        ],
+        "description": "Maintain and update the pack routing index, including $CODEX_HOME/index/manifest.yml, $CODEX_HOME/index/ entrypoints, and generated $CODEX_HOME/INDEX.md. Use when adding/removing entrypoints, updating related links, or regenerating index artifacts.",
+        "skill_path": "common/pack-index",
+        "skill_file": "common/pack-index/SKILL.md",
+        "metadata_file": "common/pack-index/metadata.json",
+        "agent_file": "common/pack-index/agents/openai.yaml",
+        "references_file": "common/pack-index/references/latest-sources.md",
+        "short_description": "Maintain pack index and routing",
+        "default_prompt": "Act as the \"PACK-Index\" specialist for \"Maintain pack index and routing\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "index",
+          "routing",
+          "manifest",
+          "pack"
+        ],
+        "interface": {
+          "display-name": "PACK-Index",
+          "short-description": "Maintain pack index and routing",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#7032CC",
+          "default-prompt": "Act as the \"PACK-Index\" specialist for \"Maintain pack index and routing\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "1.0",
+          "organization": "Codex Setup",
+          "date": "February 12, 2026",
+          "abstract": "Maintain and update the pack routing index, including $CODEX_HOME/index/manifest.yml, $CODEX_HOME/index/ entrypoints, and generated $CODEX_HOME/INDEX.md. Use when adding/removing entrypoints, updating related links, or regenerating index artifacts.",
+          "references": [
+            "https://yaml.org/spec/1.2.2/",
+            "https://json-schema.org/draft/2020-12"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      },
+      {
+        "name": "pack-prompts",
+        "namespace": "common",
+        "role": "common",
+        "groups": [
+          "user_common"
+        ],
+        "description": "Create or update slash-command prompts under $CODEX_HOME/prompts/. Use when adding prompt commands, tightening argument contracts, or improving prompt-library maintenance assets.",
+        "skill_path": "common/pack-prompts",
+        "skill_file": "common/pack-prompts/SKILL.md",
+        "metadata_file": "common/pack-prompts/metadata.json",
+        "agent_file": "common/pack-prompts/agents/openai.yaml",
+        "references_file": "common/pack-prompts/references/latest-sources.md",
+        "short_description": "Maintain pack prompts and prompt-maintenance assets",
+        "default_prompt": "Act as the \"PACK-Prompts\" specialist for \"Maintain pack prompts and prompt-maintenance assets\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "pack-prompts",
+          "prompts",
+          "pack"
+        ],
+        "interface": {
+          "display-name": "PACK-Prompts",
+          "short-description": "Maintain pack prompts and prompt-maintenance assets",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#CC6A32",
+          "default-prompt": "Act as the \"PACK-Prompts\" specialist for \"Maintain pack prompts and prompt-maintenance assets\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "1.0",
+          "organization": "Codex Setup",
+          "date": "February 15, 2026",
+          "abstract": "Create or update slash-command prompts under $CODEX_HOME/prompts/. Use when adding prompt commands, tightening argument contracts, or improving prompt-library maintenance assets.",
+          "references": [
+            "https://yaml.org/spec/1.2.2/",
+            "https://developers.openai.com/docs/guides/prompt-engineering"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      },
+      {
+        "name": "pack-rules",
+        "namespace": "common",
+        "role": "common",
+        "groups": [
+          "user_common"
+        ],
+        "description": "Create or update execpolicy rules and guidance under $CODEX_HOME/rules/. Use when adding new rule files, adjusting ordering, or updating execpolicy documentation and index links.",
+        "skill_path": "common/pack-rules",
+        "skill_file": "common/pack-rules/SKILL.md",
+        "metadata_file": "common/pack-rules/metadata.json",
+        "agent_file": "common/pack-rules/agents/openai.yaml",
+        "references_file": "common/pack-rules/references/latest-sources.md",
+        "short_description": "Maintain execpolicy rules and guidance",
+        "default_prompt": "Act as the \"PACK-Rules\" specialist for \"Maintain execpolicy rules and guidance\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "rules",
+          "execpolicy",
+          "security",
+          "pack"
+        ],
+        "interface": {
+          "display-name": "PACK-Rules",
+          "short-description": "Maintain execpolicy rules and guidance",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#7F32CC",
+          "default-prompt": "Act as the \"PACK-Rules\" specialist for \"Maintain execpolicy rules and guidance\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "1.0",
+          "organization": "Codex Setup",
+          "date": "February 12, 2026",
+          "abstract": "Create or update execpolicy rules and guidance under $CODEX_HOME/rules/. Use when adding new rule files, adjusting ordering, or updating execpolicy documentation and index links.",
+          "references": [
+            "https://yaml.org/spec/1.2.2/",
+            "https://www.openpolicyagent.org/docs/latest/policy-language/"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      },
+      {
+        "name": "pack-skills",
+        "namespace": "common",
+        "role": "common",
+        "groups": [
+          "user_common"
+        ],
+        "description": "Create or update Codex skills (SKILL.md, metadata, triggers, and bundled resources) with pack-compliant structure. Use when the user asks to add a new skill, tune skill triggering, or improve skill assets/scripts/references.",
+        "skill_path": "common/pack-skills",
+        "skill_file": "common/pack-skills/SKILL.md",
+        "metadata_file": "common/pack-skills/metadata.json",
+        "agent_file": "common/pack-skills/agents/openai.yaml",
+        "references_file": "common/pack-skills/references/latest-sources.md",
+        "short_description": "Create or update a skill",
+        "default_prompt": "Act as the \"PACK-Skills\" specialist for \"Create or update a skill\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "skills",
+          "capability",
+          "knowledge",
+          "tools"
+        ],
+        "interface": {
+          "display-name": "PACK-Skills",
+          "short-description": "Create or update a skill",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#32CCB7",
+          "default-prompt": "Act as the \"PACK-Skills\" specialist for \"Create or update a skill\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "1.0",
+          "organization": "Codex Setup",
+          "date": "February 12, 2026",
+          "abstract": "Create or update Codex skills (SKILL.md, metadata, triggers, and bundled resources) with pack-compliant structure. Use when the user asks to add a new skill, tune skill triggering, or improve skill assets/scripts/references.",
+          "references": [
+            "https://yaml.org/spec/1.2.2/",
+            "https://developers.openai.com/docs/guides/prompt-engineering"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      },
+      {
+        "name": "pack-snippets",
+        "namespace": "common",
+        "role": "common",
+        "groups": [
+          "user_common"
+        ],
+        "description": "Create or update hardened snippets under $CODEX_HOME/snippets/. Use when adding reusable patterns, updating snippet catalogs, or wiring snippets into docs and indexes.",
+        "skill_path": "common/pack-snippets",
+        "skill_file": "common/pack-snippets/SKILL.md",
+        "metadata_file": "common/pack-snippets/metadata.json",
+        "agent_file": "common/pack-snippets/agents/openai.yaml",
+        "references_file": "common/pack-snippets/references/latest-sources.md",
+        "short_description": "Maintain pack snippets and patterns",
+        "default_prompt": "Act as the \"PACK-Snippets\" specialist for \"Maintain pack snippets and patterns\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "snippets",
+          "patterns",
+          "pack"
+        ],
+        "interface": {
+          "display-name": "PACK-Snippets",
+          "short-description": "Maintain pack snippets and patterns",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#CC3298",
+          "default-prompt": "Act as the \"PACK-Snippets\" specialist for \"Maintain pack snippets and patterns\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "1.0",
+          "organization": "Codex Setup",
+          "date": "February 12, 2026",
+          "abstract": "Create or update hardened snippets under $CODEX_HOME/snippets/. Use when adding reusable patterns, updating snippet catalogs, or wiring snippets into docs and indexes.",
+          "references": [
+            "https://yaml.org/spec/1.2.2/",
+            "https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      },
+      {
+        "name": "pack-templates",
+        "namespace": "common",
+        "role": "common",
+        "groups": [
+          "user_common"
+        ],
+        "description": "Create or update pack templates under $CODEX_HOME/templates/. Use when adding scaffolds, adjusting template READMEs, or wiring template references into docs and indexes.",
+        "skill_path": "common/pack-templates",
+        "skill_file": "common/pack-templates/SKILL.md",
+        "metadata_file": "common/pack-templates/metadata.json",
+        "agent_file": "common/pack-templates/agents/openai.yaml",
+        "references_file": "common/pack-templates/references/latest-sources.md",
+        "short_description": "Maintain pack templates and scaffolds",
+        "default_prompt": "Act as the \"PACK-Templates\" specialist for \"Maintain pack templates and scaffolds\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "templates",
+          "scaffolding",
+          "pack"
+        ],
+        "interface": {
+          "display-name": "PACK-Templates",
+          "short-description": "Maintain pack templates and scaffolds",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#AF32CC",
+          "default-prompt": "Act as the \"PACK-Templates\" specialist for \"Maintain pack templates and scaffolds\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "1.0",
+          "organization": "Codex Setup",
+          "date": "February 12, 2026",
+          "abstract": "Create or update pack templates under $CODEX_HOME/templates/. Use when adding scaffolds, adjusting template READMEs, or wiring template references into docs and indexes.",
+          "references": [
+            "https://yaml.org/spec/1.2.2/",
+            "https://jinja.palletsprojects.com/en/stable/templates/"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      },
+      {
+        "name": "parser-design",
+        "namespace": "common",
+        "role": "common",
+        "groups": [
+          "user_common"
+        ],
+        "description": "Design and refactor parsers, tokenizers, grammars, AST transforms, and syntax-error handling with explicit contracts and bounded input handling. Use when the user asks about parsing, grammar changes, query languages, or text-to-structure conversion.",
+        "skill_path": "common/parser-design",
+        "skill_file": "common/parser-design/SKILL.md",
+        "metadata_file": "common/parser-design/metadata.json",
+        "agent_file": "common/parser-design/agents/openai.yaml",
+        "references_file": "common/parser-design/references/latest-sources.md",
+        "short_description": "Design parsers, grammars, and AST transforms safely",
+        "default_prompt": "Act as the \"PARSER-Design\" specialist for \"Design parsers, grammars, and AST transforms safely\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "parsing",
+          "grammar",
+          "ast",
+          "compiler",
+          "lexer"
+        ],
+        "interface": {
+          "display-name": "PARSER-Design",
+          "short-description": "Design parsers, grammars, and AST transforms safely",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#8B5CF6",
+          "default-prompt": "Act as the \"PARSER-Design\" specialist for \"Design parsers, grammars, and AST transforms safely\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "1.0",
+          "organization": "Codex Setup",
+          "date": "March 12, 2026",
+          "abstract": "Design and refactor parsers, tokenizers, grammars, AST transforms, and syntax-error handling with explicit contracts and bounded input handling. Use when the user asks about parsing, grammar changes, query languages, or text-to-structure conversion.",
+          "references": [
+            "https://lark-parser.readthedocs.io/",
+            "https://tree-sitter.github.io/tree-sitter/",
+            "https://docs.python.org/3/library/re.html"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      },
+      {
+        "name": "psql",
+        "namespace": "common",
+        "role": "common",
+        "groups": [
+          "user_common"
+        ],
+        "description": "Inspect, query, and maintain PostgreSQL databases safely with the `psql` CLI. Use when the task involves schema inspection, bounded reporting, transaction-safe migrations, or planner analysis.",
+        "skill_path": "common/psql",
+        "skill_file": "common/psql/SKILL.md",
+        "metadata_file": "common/psql/metadata.json",
+        "agent_file": "common/psql/agents/openai.yaml",
+        "references_file": "common/psql/references/latest-sources.md",
+        "short_description": "Operate PostgreSQL safely from the psql CLI",
+        "default_prompt": "Act as the \"DB-PSQL\" specialist for \"Operate PostgreSQL safely from the psql CLI\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "postgres",
+          "postgresql",
+          "psql",
+          "database",
+          "cli"
+        ],
+        "interface": {
+          "display-name": "DB-PSQL",
+          "short-description": "Operate PostgreSQL safely from the psql CLI",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#2563EB",
+          "default-prompt": "Act as the \"DB-PSQL\" specialist for \"Operate PostgreSQL safely from the psql CLI\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "1.0",
+          "organization": "Codex Setup",
+          "date": "March 11, 2026",
+          "abstract": "Inspect, query, and maintain PostgreSQL databases safely with the psql CLI.",
+          "references": [
+            "https://www.postgresql.org/docs/current/app-psql.html",
+            "https://www.postgresql.org/docs/current/sql-explain.html",
+            "https://www.postgresql.org/docs/current/runtime-config-client.html"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      },
+      {
+        "name": "redis-cli",
+        "namespace": "common",
+        "role": "common",
+        "groups": [
+          "user_common"
+        ],
+        "description": "Inspect and operate Redis safely with the `redis-cli` shell. Use when the task involves keyspace inspection, TTL analysis, operational checks, or bounded remediation against Redis instances.",
+        "skill_path": "common/redis-cli",
+        "skill_file": "common/redis-cli/SKILL.md",
+        "metadata_file": "common/redis-cli/metadata.json",
+        "agent_file": "common/redis-cli/agents/openai.yaml",
+        "references_file": "common/redis-cli/references/latest-sources.md",
+        "short_description": "Operate Redis safely from the redis-cli shell",
+        "default_prompt": "Act as the \"DB-Redis CLI\" specialist for \"Operate Redis safely from the redis-cli shell\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "redis",
+          "redis-cli",
+          "database",
+          "cli",
+          "cache"
+        ],
+        "interface": {
+          "display-name": "DB-Redis CLI",
+          "short-description": "Operate Redis safely from the redis-cli shell",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#DC2626",
+          "default-prompt": "Act as the \"DB-Redis CLI\" specialist for \"Operate Redis safely from the redis-cli shell\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "1.0",
+          "organization": "Codex Setup",
+          "date": "March 11, 2026",
+          "abstract": "Inspect and operate Redis safely with the redis-cli shell.",
+          "references": [
+            "https://redis.io/docs/latest/develop/tools/cli/",
+            "https://redis.io/docs/latest/commands/scan/",
+            "https://redis.io/docs/latest/commands/ttl/"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      },
+      {
+        "name": "repo-bash-ops",
+        "namespace": "common",
+        "role": "common",
+        "groups": [
+          "user_common"
+        ],
+        "description": "Implement repository automation in Bash for safe git operations, release scripts, and CI helper tooling. Use when the user asks for shell-based repo ops, automation scripts, or release hygiene tasks.",
+        "skill_path": "common/repo-bash-ops",
+        "skill_file": "common/repo-bash-ops/SKILL.md",
+        "metadata_file": "common/repo-bash-ops/metadata.json",
+        "agent_file": "common/repo-bash-ops/agents/openai.yaml",
+        "references_file": "common/repo-bash-ops/references/latest-sources.md",
+        "short_description": "Automate repo operations safely with deterministic Bash workflows",
+        "default_prompt": "Act as the \"REPO-Bash Ops\" specialist for \"Automate repo operations safely with deterministic Bash workflows\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "bash",
+          "git",
+          "repo",
+          "automation",
+          "ci"
+        ],
+        "interface": {
+          "display-name": "REPO-Bash Ops",
+          "short-description": "Automate repo operations safely with deterministic Bash workflows",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#3282CC",
+          "default-prompt": "Act as the \"REPO-Bash Ops\" specialist for \"Automate repo operations safely with deterministic Bash workflows\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "2.1",
+          "organization": "Codex Setup",
+          "date": "February 12, 2026",
+          "abstract": "Implement repository automation in Bash for safe git operations, release scripts, and CI helper tooling. Use when the user asks for shell-based repo ops, automation scripts, or release hygiene tasks.",
+          "references": [
+            "https://git-scm.com/doc",
+            "https://docs.github.com/actions",
+            "https://docs.gitlab.com/ci/",
+            "https://man7.org/linux/man-pages/man1/bash.1.html"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      },
+      {
+        "name": "repo-ops",
+        "namespace": "common",
+        "role": "common",
+        "groups": [
+          "user_common"
+        ],
+        "description": "Plan and implement safe repository operations, git automation, release workflows, and CI helper tooling with deterministic contracts. Use when the user asks for repo automation, release hygiene, branch promotion, or tooling that touches git state.",
+        "skill_path": "common/repo-ops",
+        "skill_file": "common/repo-ops/SKILL.md",
+        "metadata_file": "common/repo-ops/metadata.json",
+        "agent_file": "common/repo-ops/agents/openai.yaml",
+        "references_file": "common/repo-ops/references/latest-sources.md",
+        "short_description": "Drive safe repo automation, branch promotion, release flows, and git hygiene",
+        "default_prompt": "Act as the \"REPO-Ops\" specialist for \"Drive safe repo automation, branch promotion, release flows, and git hygiene\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "git",
+          "repo",
+          "automation",
+          "release",
+          "ci",
+          "workflow"
+        ],
+        "interface": {
+          "display-name": "REPO-Ops",
+          "short-description": "Drive safe repo automation, branch promotion, release flows, and git hygiene",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#327FCC",
+          "default-prompt": "Act as the \"REPO-Ops\" specialist for \"Drive safe repo automation, branch promotion, release flows, and git hygiene\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "1.0",
+          "organization": "Codex Setup",
+          "date": "March 6, 2026",
+          "abstract": "Plan and implement safe repository operations, git automation, release workflows, and CI helper tooling with deterministic contracts. Use when the user asks for repo automation, release hygiene, branch promotion, or tooling that touches git state.",
+          "references": [
+            "https://git-scm.com/doc",
+            "https://docs.github.com/actions",
+            "https://docs.gitlab.com/ci/",
+            "https://git-scm.com/docs/git-push"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      },
+      {
+        "name": "shell-bash",
+        "namespace": "common",
+        "role": "common",
+        "groups": [
+          "user_common"
+        ],
+        "description": "Write production-grade Bash scripts using Bash-specific features (arrays, [[ tests ]], pipefail) with robust error handling. Use when the runtime is Bash and the user needs Bash-focused automation or hardening.",
+        "skill_path": "common/shell-bash",
+        "skill_file": "common/shell-bash/SKILL.md",
+        "metadata_file": "common/shell-bash/metadata.json",
+        "agent_file": "common/shell-bash/agents/openai.yaml",
+        "references_file": "common/shell-bash/references/latest-sources.md",
+        "short_description": "Write production-grade Bash: strict mode, safe subprocess usage, portability, robust error handling, and security hardening",
+        "default_prompt": "Act as the \"SHELL-Bash\" specialist for \"Write production-grade Bash: strict mode, safe subprocess usage, portability, robust error handling, and security hardening\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "bash",
+          "shell",
+          "security",
+          "portability",
+          "automation"
+        ],
+        "interface": {
+          "display-name": "SHELL-Bash",
+          "short-description": "Write production-grade Bash: strict mode, safe subprocess usage, portability, robust error handling, and security hardening",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#CC32AD",
+          "default-prompt": "Act as the \"SHELL-Bash\" specialist for \"Write production-grade Bash: strict mode, safe subprocess usage, portability, robust error handling, and security hardening\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "2.1",
+          "organization": "Codex Setup",
+          "date": "February 12, 2026",
+          "abstract": "Write production-grade Bash scripts using Bash-specific features (arrays, [[ tests ]], pipefail) with robust error handling. Use when the runtime is Bash and the user needs Bash-focused automation or hardening.",
+          "references": [
+            "https://man7.org/linux/man-pages/man1/bash.1.html",
+            "https://www.shellcheck.net/wiki/"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      },
+      {
+        "name": "shell-sh",
+        "namespace": "common",
+        "role": "common",
+        "groups": [
+          "user_common"
+        ],
+        "description": "Write portable POSIX sh scripts that run correctly under `/bin/sh`, `dash`, and BusyBox `ash`. Use when portability and minimal shell assumptions matter.",
+        "skill_path": "common/shell-sh",
+        "skill_file": "common/shell-sh/SKILL.md",
+        "metadata_file": "common/shell-sh/metadata.json",
+        "agent_file": "common/shell-sh/agents/openai.yaml",
+        "references_file": "common/shell-sh/references/latest-sources.md",
+        "short_description": "Write portable POSIX sh scripts with safe defaults",
+        "default_prompt": "Act as the \"SHELL-sh\" specialist for \"Write portable POSIX sh scripts with safe defaults\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "sh",
+          "posix",
+          "busybox",
+          "shell",
+          "scripting"
+        ],
+        "interface": {
+          "display-name": "SHELL-sh",
+          "short-description": "Write portable POSIX sh scripts with safe defaults",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#CC323D",
+          "default-prompt": "Act as the \"SHELL-sh\" specialist for \"Write portable POSIX sh scripts with safe defaults\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "1.0",
+          "organization": "Codex Setup",
+          "date": "March 11, 2026",
+          "abstract": "Write portable POSIX sh scripts that run correctly under /bin/sh, dash, and BusyBox ash.",
+          "references": [
+            "https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html",
+            "https://manpages.debian.org/stable/dash/dash.1.en.html"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      },
+      {
+        "name": "shell-zsh",
+        "namespace": "common",
+        "role": "common",
+        "groups": [
+          "user_common"
+        ],
+        "description": "Write and review zsh-specific shell code, wrappers, and runtime integrations. Use when the confirmed runtime is zsh or when wrapper semantics, completion behavior, globbing, or zsh startup files matter.",
+        "skill_path": "common/shell-zsh",
+        "skill_file": "common/shell-zsh/SKILL.md",
+        "metadata_file": "common/shell-zsh/metadata.json",
+        "agent_file": "common/shell-zsh/agents/openai.yaml",
+        "references_file": null,
+        "short_description": "Write robust zsh scripts, wrappers, and shell integrations",
+        "default_prompt": "Act as the \"SHELL-Zsh\" specialist. Inspect zsh runtime behavior, wrapper semantics, and shell integration with deterministic shell-aware reasoning.",
+        "tags": [
+          "zsh",
+          "shell",
+          "scripting",
+          "wrappers",
+          "terminal"
+        ],
+        "interface": {
+          "display-name": "SHELL-Zsh",
+          "short-description": "Focus on zsh shell behavior, wrappers, and execution flow",
+          "default-prompt": "Act as the \"SHELL-Zsh\" specialist. Inspect zsh runtime behavior, wrapper semantics, and shell integration with deterministic shell-aware reasoning."
+        },
+        "metadata": {
+          "version": "1.0",
+          "organization": "Codex Setup",
+          "date": "March 11, 2026",
+          "abstract": "Write and review zsh-specific shell code, wrappers, and runtime integrations.",
+          "references": [
+            "https://zsh.sourceforge.io/Doc/",
+            "https://zsh.sourceforge.io/Guide/"
+          ]
+        },
+        "support": {
+          "has_assets": false,
+          "has_rules": false,
+          "has_scripts": false,
+          "has_references": false
+        }
+      },
+      {
+        "name": "sqlite3",
+        "namespace": "common",
+        "role": "common",
+        "groups": [
+          "user_common"
+        ],
+        "description": "Inspect, query, and maintain SQLite databases safely with the `sqlite3` CLI. Use when the task involves local database files, schema analysis, ad hoc reporting, or transaction-safe maintenance.",
+        "skill_path": "common/sqlite3",
+        "skill_file": "common/sqlite3/SKILL.md",
+        "metadata_file": "common/sqlite3/metadata.json",
+        "agent_file": "common/sqlite3/agents/openai.yaml",
+        "references_file": "common/sqlite3/references/latest-sources.md",
+        "short_description": "Operate SQLite databases safely from the sqlite3 CLI",
+        "default_prompt": "Act as the \"DB-SQLite3\" specialist for \"Operate SQLite databases safely from the sqlite3 CLI\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "sqlite",
+          "sqlite3",
+          "database",
+          "cli",
+          "query"
+        ],
+        "interface": {
+          "display-name": "DB-SQLite3",
+          "short-description": "Operate SQLite databases safely from the sqlite3 CLI",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#0F766E",
+          "default-prompt": "Act as the \"DB-SQLite3\" specialist for \"Operate SQLite databases safely from the sqlite3 CLI\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "1.0",
+          "organization": "Codex Setup",
+          "date": "March 11, 2026",
+          "abstract": "Inspect, query, and maintain SQLite databases safely with the sqlite3 CLI.",
+          "references": [
+            "https://sqlite.org/cli.html",
+            "https://sqlite.org/pragma.html",
+            "https://sqlite.org/eqp.html"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      },
+      {
+        "name": "test-strategy",
+        "namespace": "common",
+        "role": "common",
+        "groups": [
+          "user_common"
+        ],
+        "description": "Choose narrow, risk-based verification plans and turn code changes into targeted tests, sanity checks, and regression coverage. Use when the task is ambiguous, high-impact, or needs a concrete validation plan before editing.",
+        "skill_path": "common/test-strategy",
+        "skill_file": "common/test-strategy/SKILL.md",
+        "metadata_file": "common/test-strategy/metadata.json",
+        "agent_file": "common/test-strategy/agents/openai.yaml",
+        "references_file": "common/test-strategy/references/latest-sources.md",
+        "short_description": "Map code changes to focused tests and regression checks",
+        "default_prompt": "Act as the \"TEST-Strategy\" specialist for \"Map code changes to focused tests and regression checks\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "testing",
+          "qa",
+          "verification",
+          "regression"
+        ],
+        "interface": {
+          "display-name": "TEST-Strategy",
+          "short-description": "Map code changes to focused tests and regression checks",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#10B981",
+          "default-prompt": "Act as the \"TEST-Strategy\" specialist for \"Map code changes to focused tests and regression checks\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "1.0",
+          "organization": "Codex Setup",
+          "date": "March 12, 2026",
+          "abstract": "Choose narrow, risk-based verification plans and turn code changes into targeted tests, sanity checks, and regression coverage. Use when the task is ambiguous, high-impact, or needs a concrete validation plan before editing.",
+          "references": [
+            "https://docs.pytest.org/",
+            "https://docs.python.org/3/library/unittest.html",
+            "https://doc.rust-lang.org/cargo/commands/cargo-test.html"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      },
+      {
+        "name": "workflow-plans",
+        "namespace": "common",
+        "role": "common",
+        "groups": [
+          "user_common"
+        ],
+        "description": "Generate concise execution plans for multi-step or ambiguous engineering tasks with milestones, risks, and validation checkpoints. Use when the user asks for a plan, roadmap, or phased implementation strategy.",
+        "skill_path": "common/workflow-plans",
+        "skill_file": "common/workflow-plans/SKILL.md",
+        "metadata_file": "common/workflow-plans/metadata.json",
+        "agent_file": "common/workflow-plans/agents/openai.yaml",
+        "references_file": "common/workflow-plans/references/latest-sources.md",
+        "short_description": "Generate a plan for a complex task",
+        "default_prompt": "Act as the \"WORKFLOW-Plans\" specialist for \"Generate a plan for a complex task\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "plan",
+          "guide",
+          "onboarding"
+        ],
+        "interface": {
+          "display-name": "WORKFLOW-Plans",
+          "short-description": "Generate a plan for a complex task",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#CCC132",
+          "default-prompt": "Act as the \"WORKFLOW-Plans\" specialist for \"Generate a plan for a complex task\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "1.0",
+          "organization": "Codex Setup",
+          "date": "February 12, 2026",
+          "abstract": "Generate concise execution plans for multi-step or ambiguous engineering tasks with milestones, risks, and validation checkpoints. Use when the user asks for a plan, roadmap, or phased implementation strategy.",
+          "references": [
+            "https://www.atlassian.com/work-management/project-management/project-life-cycle",
+            "https://cloud.google.com/architecture/devops/devops-tech-foundations"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      }
+    ]
+  }
+}
