@@ -38,6 +38,9 @@ inline `[hooks]` and `hooks.json` exist in one layer, both sets run.
   Event dispatcher and generic runtime behavior.
 - `lib/Codex/Hook/Policy.pm`
   Pre-tool, approval, compaction, and destructive-action guardrails.
+- `lib/Codex/Hook/MultiAgent.pm`
+  Shared multi-agent prompt detection plus role-family guidance for subagent
+  lifecycle hooks.
 - `lib/Codex/Hook/SubagentStop.pm`
   Subagent stop handoff guidance.
 
@@ -59,6 +62,20 @@ commands, timeouts, and status messages:
   - shell matcher: `^(Bash|exec_command|shell)$`
   - edit matcher: `^(apply_patch|Edit|Write)$`
   - MCP matcher: `^mcp__`
+- `SubagentStart`
+  - coordination matcher: `^(default|manager)$`
+  - delivery matcher: `^(worker|coder)$`
+  - integrator matcher: `^integrator$`
+  - research matcher: `^(explorer|hunter)$`
+  - validation matcher: `^(reviewer|tester)$`
+  - generic fallback matcher: `^(?!(?:default|manager|worker|coder|integrator|explorer|hunter|reviewer|tester)$).+`
+- `SubagentStop`
+  - coordination matcher: `^(default|manager)$`
+  - delivery matcher: `^(worker|coder)$`
+  - integrator matcher: `^integrator$`
+  - research matcher: `^(explorer|hunter)$`
+  - validation matcher: `^(reviewer|tester)$`
+  - generic fallback matcher: `^(?!(?:default|manager|worker|coder|integrator|explorer|hunter|reviewer|tester)$).+`
 
 Because Codex runs multiple matching command hooks for the same event
 concurrently, keep matcher groups mutually exclusive.
@@ -72,6 +89,10 @@ concurrently, keep matcher groups mutually exclusive.
 
 `UserPromptSubmit` and `Stop` do not use matchers in current Codex behavior and
 must self-filter inside the command logic when event-specific gating is needed.
+The multi-agent prompt guidance in this repo therefore self-filters for
+delegation keywords such as `spawn_agent`, `send_input`, `resume_agent`,
+`wait_agent`, `close_agent`, `delegate`, and orchestration terms inside the
+Perl runtime instead of relying on TOML matchers.
 
 ## Event output expectations
 

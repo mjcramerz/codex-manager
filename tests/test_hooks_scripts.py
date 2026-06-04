@@ -151,7 +151,31 @@ class HookScriptTests(unittest.TestCase):
         self.assertIn("post_tool_use_shell.pl", hooks["PostToolUse"][0]["hooks"][0]["command"])
         self.assertIn("post_tool_use_edit.pl", hooks["PostToolUse"][1]["hooks"][0]["command"])
         self.assertIn("post_tool_use_mcp.pl", hooks["PostToolUse"][2]["hooks"][0]["command"])
-        self.assertIn("subagent_stop.pl", hooks["SubagentStop"][0]["hooks"][0]["command"])
+        self.assertEqual(
+            [group["matcher"] for group in hooks["SubagentStart"]],
+            [
+                "^(default|manager)$",
+                "^(worker|coder)$",
+                "^integrator$",
+                "^(explorer|hunter)$",
+                "^(reviewer|tester)$",
+                "^(?!(?:default|manager|worker|coder|integrator|explorer|hunter|reviewer|tester)$).+",
+            ],
+        )
+        self.assertEqual(
+            [group["matcher"] for group in hooks["SubagentStop"]],
+            [
+                "^(default|manager)$",
+                "^(worker|coder)$",
+                "^integrator$",
+                "^(explorer|hunter)$",
+                "^(reviewer|tester)$",
+                "^(?!(?:default|manager|worker|coder|integrator|explorer|hunter|reviewer|tester)$).+",
+            ],
+        )
+        self.assertIn("subagent_start_coordination.pl", hooks["SubagentStart"][0]["hooks"][0]["command"])
+        self.assertIn("subagent_start_delivery.pl", hooks["SubagentStart"][1]["hooks"][0]["command"])
+        self.assertIn("subagent_stop_coordination.pl", hooks["SubagentStop"][0]["hooks"][0]["command"])
         self.assertIn("stop.pl", hooks["Stop"][0]["hooks"][0]["command"])
 
     def test_runtime_hook_driver_is_repo_sourced_without_manifest_template(self) -> None:
@@ -314,16 +338,64 @@ class HookScriptTests(unittest.TestCase):
                 "user-prompt-submit",
                 {
                     "cwd": str(repo),
-                    "prompt": "Decide when to delegate and which agent to spawn for this task.",
+                    "prompt": "Decide when to delegate, which agent to spawn, and when to wait_agent or close_agent for this task.",
                 },
             )
 
             payload = json.loads(result.stdout)
             context = payload["hookSpecificOutput"]["additionalContext"]
+            self.assertIn("Multi-agent orchestration guidance:", context)
             self.assertIn("Multi-agent roles are shared across repos", context)
+            self.assertIn("`spawn_agent`", context)
+            self.assertIn("`send_input`", context)
+            self.assertIn("`wait_agent`", context)
+            self.assertIn("`close_agent`", context)
             self.assertIn("`manager`:", context)
             self.assertIn("`explorer`:", context)
             self.assertIn("`tester`:", context)
+
+    def test_subagent_start_coordination_wrapper_includes_role_profile_context(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_c0d3x_repo(tmpdir)
+
+            result = run_hook_wrapper(
+                "subagent_start_coordination.pl",
+                {
+                    "cwd": str(repo),
+                    "agent_type": "manager",
+                },
+            )
+
+            payload = json.loads(result.stdout)
+            context = payload["hookSpecificOutput"]["additionalContext"]
+            self.assertIn("Subagent start for `manager`", context)
+            self.assertIn("Role profile: `coordination`.", context)
+            self.assertIn("Own decomposition, acceptance criteria, and sequencing", context)
+
+    def test_subagent_stop_validation_wrapper_includes_role_profile_context(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_c0d3x_repo(tmpdir)
+            write_file(repo / "resources" / "hooks" / "scripts" / "hook_driver.pl", "print('x')\n")
+
+            result = run_hook_wrapper(
+                "subagent_stop_validation.pl",
+                {
+                    "cwd": str(repo),
+                    "agent_id": "agent-verify",
+                    "agent_type": "tester",
+                    "last_assistant_message": "",
+                    "stop_hook_active": False,
+                },
+            )
+
+            outputs = [json.loads(line) for line in result.stdout.splitlines() if line.strip()]
+            self.assertGreaterEqual(len(outputs), 2)
+            context = outputs[0]["systemMessage"]
+            self.assertIn("Subagent stop guidance for `tester`", context)
+            self.assertIn("Role profile: `validation`.", context)
+            self.assertIn("State pass, fail, or untested per check", context)
+            self.assertEqual(outputs[-1]["decision"], "block")
+            self.assertIn("validation follow-up", outputs[-1]["reason"])
 
     def test_user_prompt_submit_includes_environment_warnings_for_operational_prompts(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

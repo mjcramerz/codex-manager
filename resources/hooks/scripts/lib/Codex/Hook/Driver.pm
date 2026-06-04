@@ -15,6 +15,10 @@ use Codex::Hook::Learning qw(
   tool_response_summary_lines
   transcript_summary_lines
 );
+use Codex::Hook::MultiAgent qw(
+  multi_agent_prompt_context
+  subagent_role_context
+);
 use Codex::Hook::Model qw(normalize_input);
 use Codex::Hook::Output qw(
   emit_block
@@ -263,33 +267,10 @@ sub _environment_has_warnings {
 
 sub _multi_agent_context {
     my ($manifest, $prompt) = @_;
-    my $block = $manifest->{multi_agent};
-    return undef if ref($block) ne 'HASH' || !defined $prompt || !length($prompt);
-    my $patterns = $block->{trigger_patterns};
-    return undef if ref($patterns) ne 'ARRAY' || !@{$patterns};
-    my $matched = 0;
-    for my $pattern (@{$patterns}) {
-        next if !defined $pattern || !length($pattern);
-        if ($prompt =~ /$pattern/i) {
-            $matched = 1;
-            last;
-        }
-    }
-    return undef if !$matched;
-
-    my @lines;
-    if (ref($block->{shared_lines}) eq 'ARRAY') {
-        push @lines, @{$block->{shared_lines}};
-    }
-    if (ref($block->{roles}) eq 'ARRAY') {
-        push @lines, map {
-            my $name = $_->{name} // '';
-            my $desc = $_->{description} // '';
-            my $use_when = $_->{use_when} // '';
-            length($name) ? "`$name`: $desc Use when: $use_when" : ()
-        } grep { ref($_) eq 'HASH' } @{$block->{roles}};
-    }
-    return @lines ? join("\n", @lines) : undef;
+    return multi_agent_prompt_context(
+        manifest => $manifest,
+        prompt   => $prompt,
+    );
 }
 
 sub _session_start_context {
@@ -696,16 +677,30 @@ sub _compact_context {
 sub _subagent_start_context {
     my ($manifest, $payload) = @_;
     my $agent_type = $payload->{agent_type} // 'subagent';
-    my $multi_agent = _multi_agent_context($manifest, "agent");
+    my $role_context = subagent_role_context(
+        manifest   => $manifest,
+        agent_type => $agent_type,
+        phase      => 'start',
+        profile_id => ($ENV{CODEX_HOOK_SUBAGENT_PROFILE} // ''),
+    );
     return start_context(
         agent_type  => $agent_type,
-        multi_agent => $multi_agent,
+        role_context => $role_context,
     );
 }
 
 sub _subagent_stop_context {
-    my ($payload) = @_;
-    return stop_system_message(payload => $payload);
+    my ($manifest, $payload) = @_;
+    my $role_context = subagent_role_context(
+        manifest   => $manifest,
+        agent_type => $payload->{agent_type},
+        phase      => 'stop',
+        profile_id => ($ENV{CODEX_HOOK_SUBAGENT_PROFILE} // ''),
+    );
+    return stop_system_message(
+        payload      => $payload,
+        role_context => $role_context,
+    );
 }
 
 sub run_event {
@@ -754,7 +749,7 @@ sub run_event {
         return 0;
     }
     if ($event_arg eq 'subagent-stop') {
-        emit_system_message(_subagent_stop_context($payload));
+        emit_system_message(_subagent_stop_context($manifest, $payload));
         _stop_common($manifest, $payload, 'SubagentStop');
         return 0;
     }

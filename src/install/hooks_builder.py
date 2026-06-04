@@ -22,6 +22,8 @@ SUPPORTED_HOOK_EVENTS = frozenset(
     }
 )
 TOOL_MATCHER_EVENTS = frozenset({"PreToolUse", "PermissionRequest", "PostToolUse"})
+SUBAGENT_MATCHER_EVENTS = frozenset({"SubagentStart", "SubagentStop"})
+MATCHER_UNSUPPORTED_EVENTS = frozenset({"UserPromptSubmit", "Stop"})
 HOOK_SCRIPT_COMMAND_PATTERN = re.compile(r"\$\{CODEX_HOME\}/hooks/scripts/([A-Za-z0-9_.-]+\.pl)\b")
 
 
@@ -75,9 +77,12 @@ def validate_inline_hooks_config(
             if not isinstance(group, dict):
                 fail(f"{group_label} must be a table")
             matcher = group.get("matcher")
-            if event_name in TOOL_MATCHER_EVENTS:
+            if event_name in TOOL_MATCHER_EVENTS | SUBAGENT_MATCHER_EVENTS:
                 if not isinstance(matcher, str) or not matcher.strip():
                     fail(f"{group_label}.matcher must be a non-empty string")
+            elif event_name in MATCHER_UNSUPPORTED_EVENTS:
+                if matcher is not None:
+                    fail(f"{group_label}.matcher is not supported for {event_name}")
             elif matcher is not None and (not isinstance(matcher, str) or not matcher.strip()):
                 fail(f"{group_label}.matcher must be a non-empty string when provided")
 

@@ -51,12 +51,14 @@ sub _handoff_signal_lines {
 sub stop_system_message {
     my (%args) = @_;
     my $payload = ref($args{payload}) eq 'HASH' ? $args{payload} : {};
+    my $role_context = _trim($args{role_context});
     my $agent_type = _trim($payload->{agent_type}) || 'subagent';
     my $agent_id = _trim($payload->{agent_id});
     my $transcript_path = _trim($payload->{agent_transcript_path}) || _trim($payload->{transcript_path});
 
     my @lines = ("Subagent stop guidance for `$agent_type`:");
     push @lines, "- Agent id: `$agent_id`." if length $agent_id;
+    push @lines, $role_context if length $role_context;
     push @lines, '- The handoff must identify owned files, checks run, unresolved risks, and whether parent-side validation remains.';
     push @lines, _handoff_signal_lines($payload->{last_assistant_message});
 

@@ -269,20 +269,112 @@ timeout = 20
 statusMessage = "Re-establishing context after compaction"
 
 [[hooks.SubagentStart]]
+matcher = '^(default|manager)$'
+
+[[hooks.SubagentStart.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/subagent_start_coordination.pl"
+timeout = 20
+statusMessage = "Injecting coordination subagent guidance"
+
+[[hooks.SubagentStart]]
+matcher = '^(worker|coder)$'
+
+[[hooks.SubagentStart.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/subagent_start_delivery.pl"
+timeout = 20
+statusMessage = "Injecting delivery subagent guidance"
+
+[[hooks.SubagentStart]]
+matcher = '^integrator$'
+
+[[hooks.SubagentStart.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/subagent_start_integrator.pl"
+timeout = 20
+statusMessage = "Injecting integrator subagent guidance"
+
+[[hooks.SubagentStart]]
+matcher = '^(explorer|hunter)$'
+
+[[hooks.SubagentStart.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/subagent_start_research.pl"
+timeout = 20
+statusMessage = "Injecting research subagent guidance"
+
+[[hooks.SubagentStart]]
+matcher = '^(reviewer|tester)$'
+
+[[hooks.SubagentStart.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/subagent_start_validation.pl"
+timeout = 20
+statusMessage = "Injecting validation subagent guidance"
+
+[[hooks.SubagentStart]]
+matcher = '^(?!(?:default|manager|worker|coder|integrator|explorer|hunter|reviewer|tester)$).+'
 
 [[hooks.SubagentStart.hooks]]
 type = "command"
 command = "perl ${CODEX_HOME}/hooks/scripts/subagent_start.pl"
 timeout = 20
-statusMessage = "Injecting subagent role guidance"
+statusMessage = "Injecting generic subagent guidance"
 
 [[hooks.SubagentStop]]
+matcher = '^(default|manager)$'
+
+[[hooks.SubagentStop.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/subagent_stop_coordination.pl"
+timeout = 25
+statusMessage = "Checking coordination subagent completion gates"
+
+[[hooks.SubagentStop]]
+matcher = '^(worker|coder)$'
+
+[[hooks.SubagentStop.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/subagent_stop_delivery.pl"
+timeout = 25
+statusMessage = "Checking delivery subagent completion gates"
+
+[[hooks.SubagentStop]]
+matcher = '^integrator$'
+
+[[hooks.SubagentStop.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/subagent_stop_integrator.pl"
+timeout = 25
+statusMessage = "Checking integrator subagent completion gates"
+
+[[hooks.SubagentStop]]
+matcher = '^(explorer|hunter)$'
+
+[[hooks.SubagentStop.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/subagent_stop_research.pl"
+timeout = 25
+statusMessage = "Checking research subagent completion gates"
+
+[[hooks.SubagentStop]]
+matcher = '^(reviewer|tester)$'
+
+[[hooks.SubagentStop.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/subagent_stop_validation.pl"
+timeout = 25
+statusMessage = "Checking validation subagent completion gates"
+
+[[hooks.SubagentStop]]
+matcher = '^(?!(?:default|manager|worker|coder|integrator|explorer|hunter|reviewer|tester)$).+'
 
 [[hooks.SubagentStop.hooks]]
 type = "command"
 command = "perl ${CODEX_HOME}/hooks/scripts/subagent_stop.pl"
 timeout = 25
-statusMessage = "Checking subagent completion gates"
+statusMessage = "Checking generic subagent completion gates"
 
 [[hooks.Stop]]
 

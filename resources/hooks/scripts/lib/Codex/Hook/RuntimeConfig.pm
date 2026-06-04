@@ -23,15 +23,31 @@ sub runtime_config {
             trigger_patterns => [
                 '\bagent\b',
                 '\bagents\b',
+                '\bsubagent\b',
+                '\bsub-agent\b',
                 '\bspawn_agent\b',
+                '\bspawn_agents_on_csv\b',
+                '\bsend_input\b',
+                '\bresume_agent\b',
+                '\bwait_agent\b',
+                '\bclose_agent\b',
                 '\bdelegate\b',
                 '\bdelegation\b',
                 '\bmulti-agent\b',
+                '\bmulti_agents\b',
+                '\bparallel agents?\b',
+                '\bfanout\b',
                 '\borchestrat\b',
+                '\bhandoff\b',
             ],
             shared_lines => [
                 'Multi-agent roles are shared across repos and come from the shared configured role catalog.',
                 'Prefer the smallest role that fits the task, keep ownership boundaries explicit, and hand off commands, files, evidence, and residual risks.',
+            ],
+            prompt_submit_lines => [
+                'Only use `spawn_agent` when the user explicitly asks for sub-agents, delegation, or parallel agent work.',
+                'Keep the next critical-path step local, then delegate only bounded sidecar work with explicit file ownership, commands, and acceptance criteria.',
+                'Prefer `send_input` or `resume_agent` when follow-up depends on an existing child context, use `wait_agent` only when the critical path is blocked, and use `close_agent` only after you reconcile the child handoff.',
             ],
             roles => [
                 _role(
@@ -79,6 +95,68 @@ sub runtime_config {
                     'Verification agent that reproduces issues, runs targeted tests, and validates completed work.',
                     'Use for focused verification, reproduction, failure-path checks, and evidence-backed validation.',
                 ),
+            ],
+            subagent_profiles => [
+                {
+                    id         => 'coordination',
+                    role_names => ['default', 'manager'],
+                    start_lines => [
+                        'Own decomposition, acceptance criteria, and sequencing before you ask any child agent to do work.',
+                        'Delegate discovery to `explorer` or `hunter`, implementation to `worker` or `coder`, and sign-off to `reviewer` or `tester`.',
+                    ],
+                    stop_lines => [
+                        'Do not accept the handoff until it lists owned files, exact commands, evidence, and residual blockers.',
+                        'Reconcile each child result against the parent plan before you re-delegate or end the turn.',
+                    ],
+                },
+                {
+                    id         => 'delivery',
+                    role_names => ['worker', 'coder'],
+                    start_lines => [
+                        'Stay inside the assigned file boundary and return exact edits, commands, or blockers instead of broad redesign guidance.',
+                        'Do not spawn another child unless the remaining task is clearly orthogonal and the parent explicitly needs that split.',
+                    ],
+                    stop_lines => [
+                        'Report the owned files, commands run, and any unverified assumptions in the handoff.',
+                        'If validation was skipped, say exactly what blocked it and whether the parent must rerun it.',
+                    ],
+                },
+                {
+                    id         => 'integrator',
+                    role_names => ['integrator'],
+                    start_lines => [
+                        'Keep the scope read-first and repository-safe unless the parent explicitly broadened the task beyond integration checks.',
+                        'Focus on merge points, config layering, release or mirror contracts, and drift between child slices.',
+                    ],
+                    stop_lines => [
+                        'Call out conflicts between child outputs, config layers, or promotion contracts before the parent integrates anything.',
+                        'Flag unresolved compatibility or sequencing risks explicitly.',
+                    ],
+                },
+                {
+                    id         => 'research',
+                    role_names => ['explorer', 'hunter'],
+                    start_lines => [
+                        'Gather source-backed repository or documentation evidence and avoid speculative implementation advice.',
+                        'Return precise references, affected surfaces, and confidence notes instead of patches unless the parent explicitly asked for edits.',
+                    ],
+                    stop_lines => [
+                        'Separate confirmed facts from hypotheses and list any gaps that still need local validation.',
+                        'If sources conflict, say that clearly instead of blending them.',
+                    ],
+                },
+                {
+                    id         => 'validation',
+                    role_names => ['reviewer', 'tester'],
+                    start_lines => [
+                        'Reproduce or verify the claimed behavior with the narrowest deterministic checks that prove or falsify the concern.',
+                        'Return raw outcomes, exact commands, and failing boundaries instead of redesign suggestions.',
+                    ],
+                    stop_lines => [
+                        'State pass, fail, or untested per check, plus the exact blocker whenever a check could not run.',
+                        'Surface regression risk and missing coverage explicitly before the parent closes the task.',
+                    ],
+                },
             ],
         },
         repos => [
