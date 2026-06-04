@@ -33,6 +33,19 @@ def init_git_repo(path: Path) -> None:
 
 
 class HookRuntimeModulesTests(unittest.TestCase):
+    def test_driver_glob_matching_keeps_single_star_within_one_path_segment(self) -> None:
+        code = r'''
+use Codex::Hook::Driver ();
+print JSON::PP::encode_json({
+  single => Codex::Hook::Driver::_matches_any_glob('resources/hooks/file.pl', ['resources/*']) ? JSON::PP::true() : JSON::PP::false(),
+  double => Codex::Hook::Driver::_matches_any_glob('resources/hooks/file.pl', ['resources/**']) ? JSON::PP::true() : JSON::PP::false(),
+});
+'''
+        proc = run_perl(code)
+        payload = json.loads(proc.stdout)
+        self.assertFalse(payload["single"])
+        self.assertTrue(payload["double"])
+
     def test_runner_captures_stdout_stderr_and_exit_code(self) -> None:
         code = r'''
 use Codex::Hook::Runner qw(run_command);
@@ -132,6 +145,21 @@ print JSON::PP::encode_json({
 
             logged = log_path.read_text(encoding="utf-8").splitlines()
             self.assertEqual(len(logged), 3, logged)
+
+    def test_output_rejects_empty_block_reason(self) -> None:
+        proc = subprocess.run(
+            [
+                "perl",
+                f"-I{HOOK_LIB}",
+                "-MCodex::Hook::Output=emit_block",
+                "-e",
+                'eval { emit_block(q{}) }; if ($@) { print $@; exit 0 } exit 1;',
+            ],
+            text=True,
+            capture_output=True,
+            check=True,
+        )
+        self.assertIn("block reason must not be empty", proc.stdout)
 
 
 if __name__ == "__main__":

@@ -6,6 +6,10 @@ use warnings;
 use Exporter qw(import);
 use JSON::PP qw(decode_json);
 
+use Codex::Hook::Environment qw(
+  environment_report
+  stringify_payload_text
+);
 use Codex::Hook::Learning qw(
   prompt_keyword_context_lines
   tool_response_summary_lines
@@ -73,10 +77,17 @@ sub _join_sections {
 
 sub _glob_regex {
     my ($glob) = @_;
-    my $regex = quotemeta($glob // '');
-    $regex =~ s/\\\*\\\*/.*/g;
-    $regex =~ s/\\\*/[^\\n]*/g;
-    $regex =~ s/\\\?/./g;
+    my $token_any_dirs = '__CODEX_HOOK_ANY_DIRS__';
+    my $token_any = '__CODEX_HOOK_ANY__';
+    my $token_one = '__CODEX_HOOK_ONE__';
+    my $regex = $glob // '';
+    $regex =~ s/\*\*/$token_any_dirs/g;
+    $regex =~ s/\*/$token_any/g;
+    $regex =~ s/\?/$token_one/g;
+    $regex = quotemeta($regex);
+    $regex =~ s/\Q$token_any_dirs\E/.*/g;
+    $regex =~ s/\Q$token_any\E/[^\/\\\n]*/g;
+    $regex =~ s/\Q$token_one\E/[^\/\\\n]/g;
     return qr/\A$regex\z/;
 }
 
@@ -129,9 +140,11 @@ sub _repo_matches {
 
     my $repo_name = $repo_root;
     $repo_name =~ s{.*/}{};
+    my $matched = 0;
     my $repo_names = $match->{repo_names};
     if (ref($repo_names) eq 'ARRAY' && @{$repo_names}) {
-        return 1 if grep { defined($_) && $_ eq $repo_name } @{$repo_names};
+        return 0 if !grep { defined($_) && $_ eq $repo_name } @{$repo_names};
+        $matched = 1;
     }
 
     my $all_of = $match->{all_of_paths};
@@ -139,17 +152,22 @@ sub _repo_matches {
         for my $path (@{$all_of}) {
             return 0 if !-e "$repo_root/$path";
         }
-        return 1;
+        $matched = 1;
     }
 
     my $any_of = $match->{any_of_paths};
     if (ref($any_of) eq 'ARRAY' && @{$any_of}) {
         for my $path (@{$any_of}) {
-            return 1 if -e "$repo_root/$path";
+            if (-e "$repo_root/$path") {
+                $matched = 1;
+                return 1 if !(ref($repo_names) eq 'ARRAY' && @{$repo_names}) && !(ref($all_of) eq 'ARRAY' && @{$all_of});
+                last;
+            }
         }
+        return 0 if !$matched;
     }
 
-    return 0;
+    return $matched ? 1 : 0;
 }
 
 sub _find_repo_profiles {
@@ -191,6 +209,56 @@ sub _manifest_block_entries {
     return @blocks;
 }
 
+sub _environment_blocks {
+    my ($manifest, $profiles) = @_;
+    my @blocks;
+    if (ref($manifest->{environment}) eq 'HASH') {
+        push @blocks, $manifest->{environment};
+    }
+    for my $profile (@{$profiles || []}) {
+        next if ref($profile) ne 'HASH';
+        next if ref($profile->{environment}) ne 'HASH';
+        push @blocks, $profile->{environment};
+    }
+    return @blocks;
+}
+
+sub _environment_lines {
+    my ($report) = @_;
+    return () if ref($report) ne 'HASH';
+    my @lines = ('Local environment signals:');
+    push @lines, '- Required commands available: `' . join('`, `', @{ $report->{required_available} }) . '`.'
+      if ref($report->{required_available}) eq 'ARRAY' && @{ $report->{required_available} };
+    push @lines, '- Required commands missing: `' . join('`, `', @{ $report->{required_missing} }) . '`.'
+      if ref($report->{required_missing}) eq 'ARRAY' && @{ $report->{required_missing} };
+    push @lines, '- Optional commands available: `' . join('`, `', @{ $report->{optional_available} }) . '`.'
+      if ref($report->{optional_available}) eq 'ARRAY' && @{ $report->{optional_available} };
+    push @lines, '- Optional commands missing: `' . join('`, `', @{ $report->{optional_missing} }) . '`.'
+      if ref($report->{optional_missing}) eq 'ARRAY' && @{ $report->{optional_missing} };
+    if (ref($report->{probes}) eq 'ARRAY') {
+        for my $probe (@{ $report->{probes} }) {
+            next if ref($probe) ne 'HASH';
+            my $label = $probe->{label} // 'probe';
+            my $status = $probe->{status} // 'unknown';
+            my $detail = $probe->{detail} // '';
+            my $line = "- Probe `$label`: $status";
+            $line .= " ($detail)" if length $detail;
+            push @lines, $line . '.';
+        }
+    }
+    return @lines > 1 ? @lines : ();
+}
+
+sub _environment_has_warnings {
+    my ($report) = @_;
+    return 0 if ref($report) ne 'HASH';
+    return 1 if ref($report->{required_missing}) eq 'ARRAY' && @{ $report->{required_missing} };
+    return 1 if ref($report->{probes}) eq 'ARRAY' && grep {
+        ref($_) eq 'HASH' && ($_->{status} // '') ne 'ok'
+    } @{ $report->{probes} };
+    return 0;
+}
+
 sub _multi_agent_context {
     my ($manifest, $prompt) = @_;
     my $block = $manifest->{multi_agent};
@@ -228,6 +296,10 @@ sub _session_start_context {
     return undef if !defined $repo_root;
 
     my @profiles = _find_repo_profiles($manifest, $repo_root);
+    my $environment = environment_report(
+        blocks => [ _environment_blocks($manifest, \@profiles) ],
+        cwd    => $repo_root,
+    );
     my @changed_files = list_changed_files($repo_root);
     my @changed_areas = _detect_changed_areas(\@changed_files, $manifest, \@profiles);
     my $current = current_branch($repo_root);
@@ -267,6 +339,8 @@ sub _session_start_context {
         push @summary, "- Current changed areas:";
         push @summary, map { "- `$_`" } @changed_areas;
     }
+    my @environment_lines = _environment_lines($environment);
+    push @summary, @environment_lines if @environment_lines;
     if (($payload->{source} // '') eq 'resume' && @changed_files) {
         my @bits;
         for my $label (qw(staged unstaged untracked deleted renamed conflicts)) {
@@ -305,6 +379,10 @@ sub _user_prompt_context {
     return undef if !length($prompt) || !defined $repo_root;
 
     my @profiles = _find_repo_profiles($manifest, $repo_root);
+    my $environment = environment_report(
+        blocks => [ _environment_blocks($manifest, \@profiles) ],
+        cwd    => $repo_root,
+    );
     my @changed_files = list_changed_files($repo_root);
     my @changed_areas = _detect_changed_areas(\@changed_files, $manifest, \@profiles);
     my @profile_ids = map { $_->{id} } grep { ref($_) eq 'HASH' && defined($_->{id}) && length($_->{id}) } @profiles;
@@ -322,6 +400,15 @@ sub _user_prompt_context {
     );
 
     my @sections;
+    if (@changed_files) {
+        push @sections, join(
+            "\n",
+            'Current repository signals:',
+            "- Current branch: `$values{current_branch}`",
+            "- Changed files preview: `$values{changed_files_preview}`",
+            (@changed_areas ? ('- Changed areas: `' . join('`, `', @changed_areas) . '`.') : ()),
+        );
+    }
     my $multi_agent = _multi_agent_context($manifest, $prompt);
     push @sections, $multi_agent if defined $multi_agent;
     push @sections, 'Review requests should lead with concrete findings ordered by severity, supported by file and line evidence plus explicit residual risks.'
@@ -345,6 +432,13 @@ sub _user_prompt_context {
         push @lines, '`patches/release/` exists. Keep local patch work check-only with commands such as `git apply --check`, `scripts/release/check_release_patches.sh HEAD`, `git mcr-fork-check`, or `git mcr-fork-test`.'
           if has_patch_release_dir($repo_root);
         push @sections, join("\n", @lines) if @lines;
+    }
+    my @environment_lines = _environment_lines($environment);
+    if (@environment_lines && (
+            _environment_has_warnings($environment)
+            || $prompt =~ /\b(build|install|runtime|verify|validation|test|tests|docker|container|shellcheck|wrangler|node|npx|uv|make|bash)\b/i
+        )) {
+        push @sections, join("\n", @environment_lines);
     }
     my @keyword_lines = prompt_keyword_context_lines(prompt => $prompt);
     push @sections, join("\n", @keyword_lines) if @keyword_lines;
@@ -370,7 +464,7 @@ sub _user_prompt_context {
 
 sub _validation_evidence {
     my ($payload) = @_;
-    my $last = $payload->{last_assistant_message} // '';
+    my $last = stringify_payload_text(value => $payload->{last_assistant_message}, limit => 2000);
     my $tail = read_file_tail(path => $payload->{transcript_path}, max_bytes => $TRANSCRIPT_TAIL_BYTES);
     return join("\n", grep { defined($_) && length($_) } ($last, $tail));
 }
@@ -548,8 +642,9 @@ sub _pre_tool_use_context {
         repo_has_patch_release => defined $repo_root && has_patch_release_dir($repo_root),
         tool_name              => $tool_name,
     );
-    if (defined $tool_input && !ref($tool_input) && length $tool_input) {
-        my @learned = tool_response_summary_lines(text => $tool_input);
+    my $rendered_input = stringify_payload_text(value => $tool_input, limit => 2000);
+    if (length $rendered_input) {
+        my @learned = tool_response_summary_lines(text => $rendered_input);
         if (@learned) {
             push @lines, 'Input cues:';
             push @lines, map { "- $_" } @learned;
@@ -566,8 +661,7 @@ sub _permission_request_context {
 sub _post_tool_use_context {
     my ($payload) = @_;
     my $tool_name = $payload->{tool_name} // 'tool';
-    my $response = $payload->{tool_response};
-    my $rendered = defined($response) && !ref($response) ? $response : '';
+    my $rendered = stringify_payload_text(value => $payload->{tool_response}, limit => 4000);
     return undef if $rendered !~ /\b(error|failed|exception|permission denied|not found|timed out|warning)\b/i;
 
     my @lines = (

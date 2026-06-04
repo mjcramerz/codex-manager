@@ -61,6 +61,7 @@ sub emit_system_message {
 
 sub emit_stop {
     my ($reason, $system_message) = @_;
+    die "stop reason must not be empty\n" if !defined $reason || $reason !~ /\S/;
     my %payload = (
         continue   => JSON::PP::false(),
         stopReason => $reason,
@@ -73,6 +74,7 @@ sub emit_stop {
 
 sub emit_block {
     my ($reason, $system_message) = @_;
+    die "block reason must not be empty\n" if !defined $reason || $reason !~ /\S/;
     my %payload = (
         continue => JSON::PP::true(),
         decision => 'block',

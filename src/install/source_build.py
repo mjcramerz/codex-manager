@@ -188,10 +188,16 @@ def _expected_checkout_paths(checkout_dir: Path) -> tuple[Path, ...]:
     )
 
 
-def _checkout_is_usable(checkout_dir: Path) -> bool:
+def _missing_checkout_paths(checkout_dir: Path) -> tuple[Path, ...]:
+    missing = []
     if not (checkout_dir / ".git").exists():
-        return False
-    return all(path.exists() for path in _expected_checkout_paths(checkout_dir))
+        missing.append(checkout_dir / ".git")
+    missing.extend(path for path in _expected_checkout_paths(checkout_dir) if not path.exists())
+    return tuple(missing)
+
+
+def _checkout_is_usable(checkout_dir: Path) -> bool:
+    return not _missing_checkout_paths(checkout_dir)
 
 
 def ensure_source_checkout(settings: SourceBuildSettings) -> Path:
@@ -207,8 +213,10 @@ def ensure_source_checkout(settings: SourceBuildSettings) -> Path:
         return checkout_dir
 
     if checkout_dir.exists():
+        missing = ", ".join(str(path) for path in _missing_checkout_paths(checkout_dir))
         raise SourceBuildError(
             f"configured source checkout path exists but is unusable: {checkout_dir}"
+            f" (missing: {missing})"
         )
 
     _run_checked(
@@ -216,16 +224,32 @@ def ensure_source_checkout(settings: SourceBuildSettings) -> Path:
         timeout=BUILD_TIMEOUT_SECONDS,
         label="clone source repository",
     )
+    if not _checkout_is_usable(checkout_dir):
+        missing = ", ".join(str(path) for path in _missing_checkout_paths(checkout_dir))
+        raise SourceBuildError(f"cloned source checkout is missing expected files: {missing}")
     return checkout_dir
 
 
-def _read_patch_series(series_path: Path) -> list[str]:
-    patches: list[str] = []
+def _resolve_patch_series_entry(series_path: Path, line: str) -> Path:
+    if "\x00" in line:
+        raise SourceBuildError(f"release patch series entry contains NUL: {series_path}")
+    candidate = Path(line)
+    if candidate.is_absolute() or ".." in candidate.parts:
+        raise SourceBuildError(f"unsafe release patch series entry in {series_path}: {line}")
+    release_dir = _normalize_lexical(series_path.parent)
+    patch_path = _normalize_lexical(release_dir / candidate)
+    if not _same_or_within(patch_path, release_dir):
+        raise SourceBuildError(f"unsafe release patch series entry in {series_path}: {line}")
+    return patch_path
+
+
+def _read_patch_series(series_path: Path) -> list[Path]:
+    patches: list[Path] = []
     for raw_line in series_path.read_text(encoding="utf-8").splitlines():
         line = raw_line.strip()
         if not line or line.startswith("#"):
             continue
-        patches.append(line)
+        patches.append(_resolve_patch_series_entry(series_path, line))
     if not patches:
         raise SourceBuildError(f"no release patches listed in {series_path}")
     return patches
@@ -247,8 +271,8 @@ def _generate_patched_schema(
         )
         try:
             release_dir = checkout_dir / "patches" / "release"
-            for patch_name in _read_patch_series(release_dir / "series"):
-                patch_path = release_dir / patch_name
+            for patch_path in _read_patch_series(release_dir / "series"):
+                patch_name = str(patch_path.relative_to(release_dir))
                 if not patch_path.is_file():
                     raise SourceBuildError(f"release patch not found: {patch_path}")
                 _run_checked(
@@ -266,7 +290,7 @@ def _generate_patched_schema(
                 )
             _run_checked(
                 ["just", "write-config-schema"],
-                cwd=worktree_dir / "codex-rs",
+                cwd=worktree_dir,
                 timeout=SCHEMA_TIMEOUT_SECONDS,
                 label="generate patched config.schema.json",
             )
@@ -374,6 +398,7 @@ def build_from_settings(settings: SourceBuildSettings) -> SourceBuildResult:
             "--cache-root",
             str(cache_root),
         ],
+        cwd=checkout_dir,
         timeout=BUILD_TIMEOUT_SECONDS,
         label="build codex from source",
     )

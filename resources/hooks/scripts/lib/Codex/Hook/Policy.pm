@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use Exporter qw(import);
+use Codex::Hook::Environment qw(stringify_payload_text);
 
 our @EXPORT_OK = qw(
   compact_system_message
@@ -18,15 +19,19 @@ sub destructive_command_reason {
     my $tool_name = $args{tool_name} // '';
     my $tool_input = $args{tool_input};
     return undef if $tool_name !~ /(?:\Aexec_command\z|\Aapply_patch\z|\b(?:shell|bash|write)\b)/i;
-    return undef if ref($tool_input);
-    return undef if !defined $tool_input || !length $tool_input;
+    my $text = stringify_payload_text(value => $tool_input, limit => 2000);
+    return undef if !defined $text || !length $text;
 
     return 'PreToolUse rejected a destructive `git reset --hard` path. Use a non-destructive alternative unless the user explicitly requested that exact operation.'
-      if $tool_input =~ /\bgit\s+reset\s+--hard\b/i;
+      if $text =~ /\bgit\s+reset\s+--hard\b/i;
     return 'PreToolUse rejected a destructive `git checkout --` path. Preserve user changes unless they explicitly asked to discard them.'
-      if $tool_input =~ /\bgit\s+checkout\s+--\b/i;
+      if $text =~ /\bgit\s+checkout\s+--\b/i;
+    return 'PreToolUse rejected a destructive `git clean -fd` path. Preserve untracked files unless the user explicitly requested their removal.'
+      if $text =~ /\bgit\s+clean\b[^\n]*\s-(?:[^\n]*f[^\n]*d|[^\n]*d[^\n]*f)/i;
     return 'PreToolUse rejected an unsafe root-targeted remove path.'
-      if $tool_input =~ /\brm\s+-rf\s+--?\s*\/(?:\s|\z)/i;
+      if $text =~ /\brm\s+-rf\s+--?\s*\/(?:\s|\z)/i;
+    return 'PreToolUse rejected an unsafe workspace-targeted remove path.'
+      if $text =~ /\brm\s+-rf\b[^\n]*(?:\s--)?\s+\.(?:\s|\z|\/)/i;
     return undef;
 }
 

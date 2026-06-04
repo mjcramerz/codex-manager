@@ -110,6 +110,50 @@ class SourceBuildSettingsTests(unittest.TestCase):
             self.assertTrue(output.is_symlink())
             self.assertEqual(output.resolve(strict=True), new_published)
 
+    def test_read_patch_series_rejects_path_traversal(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            series_path = Path(tmpdir) / "patches" / "release" / "series"
+            series_path.parent.mkdir(parents=True)
+            series_path.write_text("../escape.patch\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(source_build.SourceBuildError, "unsafe release patch series entry"):
+                source_build._read_patch_series(series_path)
+
+    def test_build_from_settings_runs_source_script_from_checkout_root(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            checkout_dir = root / "checkout"
+            script_path = checkout_dir / "scripts" / "release" / "build-codex.sh"
+            script_path.parent.mkdir(parents=True)
+            script_path.write_text("#!/usr/bin/env bash\n", encoding="utf-8")
+            output_dir = root / "output"
+            published_dir = root / "published"
+            settings = source_build.SourceBuildSettings(
+                repo_url="https://github.com/imjcramer/codex.git",
+                build_root=root / "build",
+                cache_root=root / "cache",
+                output_dir=output_dir,
+                checkout_dir=checkout_dir,
+                base_ref="mcr/main",
+            )
+
+            with (
+                patch.object(source_build, "ensure_source_checkout", return_value=checkout_dir),
+                patch.object(source_build, "_run_checked") as run_checked,
+                patch.object(source_build, "_resolve_latest_build_dir", return_value=published_dir),
+                patch.object(source_build, "_generate_patched_schema"),
+                patch.object(source_build, "_publish_output_alias", return_value=output_dir),
+                patch.object(source_build, "discover_release_binaries", return_value=[output_dir / "bin" / "codex"]),
+            ):
+                source_build.build_from_settings(settings)
+
+        build_call = next(
+            call
+            for call in run_checked.call_args_list
+            if call.kwargs.get("label") == "build codex from source"
+        )
+        self.assertEqual(build_call.kwargs["cwd"], checkout_dir)
+
 
 if __name__ == "__main__":
     unittest.main()

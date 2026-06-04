@@ -1,4 +1,5 @@
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -40,9 +41,12 @@ def _prepare_runtime_hook_dir(tmpdir: str) -> tuple[Path, Path]:
     return runtime_root, rendered_driver_path
 
 
-def run_hook(event_name: str, payload: dict) -> subprocess.CompletedProcess[str]:
+def run_hook(event_name: str, payload: dict, *, env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
     with tempfile.TemporaryDirectory() as tmpdir:
         runtime_root, rendered_driver_path = _prepare_runtime_hook_dir(tmpdir)
+        merged_env = dict(os.environ)
+        if env:
+            merged_env.update(env)
         return subprocess.run(
             ["perl", str(rendered_driver_path), event_name],
             input=json.dumps(payload),
@@ -50,12 +54,16 @@ def run_hook(event_name: str, payload: dict) -> subprocess.CompletedProcess[str]
             capture_output=True,
             check=True,
             cwd=runtime_root,
+            env=merged_env,
         )
 
 
-def run_hook_wrapper(wrapper_name: str, payload: dict) -> subprocess.CompletedProcess[str]:
+def run_hook_wrapper(wrapper_name: str, payload: dict, *, env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
     with tempfile.TemporaryDirectory() as tmpdir:
         runtime_root, _rendered_driver_path = _prepare_runtime_hook_dir(tmpdir)
+        merged_env = dict(os.environ)
+        if env:
+            merged_env.update(env)
         return subprocess.run(
             ["perl", str(runtime_root / wrapper_name)],
             input=json.dumps(payload),
@@ -63,6 +71,7 @@ def run_hook_wrapper(wrapper_name: str, payload: dict) -> subprocess.CompletedPr
             capture_output=True,
             check=True,
             cwd=runtime_root,
+            env=merged_env,
         )
 
 
@@ -98,6 +107,16 @@ def make_codex_repo(tmpdir: str) -> Path:
     write_file(repo / "codex-rs" / "Cargo.toml", "[package]\nname = 'codex-workspace'\nversion = '0.0.0'\n")
     write_file(repo / "codex-rs" / "core" / "src" / "codex.rs", "// core\n")
     write_file(repo / "codex-rs" / "tui" / "src" / "main.rs", "// tui\n")
+    subprocess.run(["git", "add", "."], cwd=repo, check=True)
+    subprocess.run(["git", "commit", "-qm", "init"], cwd=repo, check=True)
+    return repo
+
+
+def make_incomplete_c0d3x_repo(tmpdir: str) -> Path:
+    repo = Path(tmpdir) / "c0d3x"
+    repo.mkdir()
+    init_git_repo(repo)
+    write_file(repo / "Makefile", "all:\n\t@true\n")
     subprocess.run(["git", "add", "."], cwd=repo, check=True)
     subprocess.run(["git", "commit", "-qm", "init"], cwd=repo, check=True)
     return repo
@@ -164,6 +183,24 @@ class HookScriptTests(unittest.TestCase):
             self.assertIn("Active generated hook profiles: `codex-manager`", context)
             self.assertIn("Repo role: Codex installer and runtime-configuration source tree.", context)
 
+    def test_session_start_requires_full_match_contract_for_repo_profile(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_incomplete_c0d3x_repo(tmpdir)
+
+            result = run_hook(
+                "session-start",
+                {
+                    "cwd": str(repo),
+                    "source": "startup",
+                },
+            )
+
+            payload = json.loads(result.stdout)
+            context = payload["hookSpecificOutput"]["additionalContext"]
+            self.assertIn("Repository context for `c0d3x`", context)
+            self.assertNotIn("Active generated hook profiles:", context)
+            self.assertNotIn("Repo role: Codex installer and runtime-configuration source tree.", context)
+
     def test_session_start_injects_mirror_and_patch_context(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             repo = make_c0d3x_repo(tmpdir)
@@ -184,6 +221,32 @@ class HookScriptTests(unittest.TestCase):
             self.assertIn("true-sync `mcr/main` from `github/mcr/main`", context)
             self.assertIn("Current branch `github/mcr/main` is a read-only mirror branch.", context)
             self.assertIn("`patches/release/` exists.", context)
+
+    def test_session_start_includes_environment_summary(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_c0d3x_repo(tmpdir)
+            wrapper_dir = Path(tmpdir) / "bin"
+            wrapper_dir.mkdir()
+            (wrapper_dir / "docker").write_text(
+                "#!/bin/sh\nprintf '%s\\n' 'CONTAINER ID   IMAGE'\n",
+                encoding="utf-8",
+            )
+            (wrapper_dir / "docker").chmod(0o755)
+
+            result = run_hook(
+                "session-start",
+                {
+                    "cwd": str(repo),
+                    "source": "startup",
+                },
+                env={"PATH": f"{wrapper_dir}:{os.environ['PATH']}"},
+            )
+
+            payload = json.loads(result.stdout)
+            context = payload["hookSpecificOutput"]["additionalContext"]
+            self.assertIn("Local environment signals:", context)
+            self.assertIn("Required commands available: `bash`, `make`.", context)
+            self.assertIn("Probe `docker ps`: ok (CONTAINER ID   IMAGE).", context)
 
     def test_resume_injects_generic_worktree_summary(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -267,6 +330,31 @@ class HookScriptTests(unittest.TestCase):
             self.assertIn("`explorer`:", context)
             self.assertIn("`tester`:", context)
 
+    def test_user_prompt_submit_includes_environment_warnings_for_operational_prompts(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_c0d3x_repo(tmpdir)
+            wrapper_dir = Path(tmpdir) / "bin"
+            wrapper_dir.mkdir()
+            (wrapper_dir / "docker").write_text(
+                "#!/bin/sh\nprintf '%s\\n' 'Cannot connect to the Docker daemon' >&2\nexit 1\n",
+                encoding="utf-8",
+            )
+            (wrapper_dir / "docker").chmod(0o755)
+
+            result = run_hook(
+                "user-prompt-submit",
+                {
+                    "cwd": str(repo),
+                    "prompt": "Check the docker container build flow and validate the runtime setup.",
+                },
+                env={"PATH": f"{wrapper_dir}:{os.environ['PATH']}"},
+            )
+
+            payload = json.loads(result.stdout)
+            context = payload["hookSpecificOutput"]["additionalContext"]
+            self.assertIn("Local environment signals:", context)
+            self.assertIn("Probe `docker ps`: failed (Cannot connect to the Docker daemon).", context)
+
     def test_pre_tool_use_blocks_destructive_git_reset(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             repo = make_c0d3x_repo(tmpdir)
@@ -283,6 +371,23 @@ class HookScriptTests(unittest.TestCase):
             payload = json.loads(result.stdout)
             self.assertEqual(payload["decision"], "block")
             self.assertIn("destructive `git reset --hard` path", payload["reason"])
+
+    def test_pre_tool_use_blocks_structured_git_clean_payload(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_c0d3x_repo(tmpdir)
+
+            result = run_hook(
+                "pre-tool-use",
+                {
+                    "cwd": str(repo),
+                    "tool_name": "exec_command",
+                    "tool_input": {"cmd": "git clean -fd"},
+                },
+            )
+
+            payload = json.loads(result.stdout)
+            self.assertEqual(payload["decision"], "block")
+            self.assertIn("destructive `git clean -fd` path", payload["reason"])
 
     def test_wrapper_script_executes_driver_with_vendored_schema_tree(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -335,6 +440,24 @@ class HookScriptTests(unittest.TestCase):
             context = payload["hookSpecificOutput"]["additionalContext"]
             self.assertIn("Post-tool follow-up for `exec_command`", context)
             self.assertIn("failure or warning signal", context)
+
+    def test_post_tool_use_handles_structured_failure_payload(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_c0d3x_repo(tmpdir)
+
+            result = run_hook(
+                "post-tool-use",
+                {
+                    "cwd": str(repo),
+                    "tool_name": "exec_command",
+                    "tool_response": {"stderr": "permission denied while writing file", "rc": 1},
+                },
+            )
+
+            payload = json.loads(result.stdout)
+            context = payload["hookSpecificOutput"]["additionalContext"]
+            self.assertIn("Post-tool follow-up for `exec_command`", context)
+            self.assertIn("permission denied while writing file", context)
 
     def test_pre_compact_uses_system_message_only(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
