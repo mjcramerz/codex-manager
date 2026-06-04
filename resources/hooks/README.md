@@ -1,145 +1,94 @@
-# Hooks Manifest
+# Hooks Runtime
 
-`resources/hooks/manifest.json` is the only source of truth for the hook pack.
+Perl scripts and Perl modules under `resources/hooks/scripts/` are the hook
+behavior source of truth in this repository.
+
+The install-facing split is:
+
+1. `config/usr/apps.toml` defines the inline Codex `[hooks]` matcher groups that
+   are merged into `$CODEX_HOME/config.toml`.
+2. `resources/hooks/scripts/*.pl` provides the installed command entrypoints for
+   those matcher groups.
+3. `resources/hooks/scripts/lib/Codex/Hook/*.pm` contains the shared hook
+   behavior, repo profiles, tool classification, and output shaping.
+4. `resources/hooks/schema/generated/` vendors the current hook input/output
+   schemas that the Perl runtime validates against.
 
 The `home` / `install` / `upgrade` flow materializes the hook runtime by:
 
-1. Syncs runtime hook assets from `resources/hooks/scripts/` into `$CODEX_HOME/hooks/`
-2. Syncs vendored hook schemas from `resources/hooks/schema/generated/` into `$CODEX_HOME/.hooks/schema/generated/`
-3. Generates `$CODEX_HOME/hooks/scripts/hook_driver.pl` and the compatibility `$CODEX_HOME/hooks.json` bridge from `resources/hooks/manifest.json`
-4. Merges the inline `[hooks]` table from `config/usr/apps.toml` into `$CODEX_HOME/config.toml`
+1. Syncing runtime hook assets from `resources/hooks/scripts/` into
+   `$CODEX_HOME/hooks/`
+2. Syncing vendored hook schemas from `resources/hooks/schema/generated/` into
+   `$CODEX_HOME/.hooks/schema/generated/`
+3. Merging the inline `[hooks]` table from `config/usr/apps.toml` into
+   `$CODEX_HOME/config.toml`
 
-Nothing generated belongs in this repository. If you need to change hook behavior,
-edit `resources/hooks/manifest.json` or the runtime driver under
-`resources/hooks/scripts/hook_driver.pl`, then run `make home`. `make install`
-and `make upgrade` also materialize the same generated hook runtime.
+No `hooks.json` bridge is generated or installed. Do not reintroduce a second
+same-layer hook source. OpenAI Codex merges matching hook sources, and if both
+inline `[hooks]` and `hooks.json` exist in one layer, both sets run.
 
-`resources/hooks/manifest.json` supports real `#` comments. Use those for
-template markers or local notes instead of fake `_comment` keys.
+## Behavioral sources
 
-The baseline hook behavior does not depend on repo-specific manifest entries.
-The generated driver performs generic detection for:
+- `lib/Codex/Hook/RuntimeConfig.pm`
+  Shared repo-profile metadata, environment probes, focus areas, prompt rules,
+  and stop rules.
+- `lib/Codex/Hook/ToolProfile.pm`
+  Tool-family classification for shell, edit, and MCP flows.
+- `lib/Codex/Hook/Driver.pm`
+  Event dispatcher and generic runtime behavior.
+- `lib/Codex/Hook/Policy.pm`
+  Pre-tool, approval, compaction, and destructive-action guardrails.
+- `lib/Codex/Hook/SubagentStop.pm`
+  Subagent stop handoff guidance.
 
-- git repo root and current branch
-- mirror refs (`github/*`, `gitlab/*`, including `origin/...`)
-- `patches/release/`
-- root instruction files such as `AGENTS.md`
-- local hook-source layout (`resources/hooks/manifest.json`)
-- local Codex hook source layout (`codex-rs/hooks/schema/generated`)
+## Inline hook wiring
 
-The manifest is for runtime settings plus optional overlays.
+`config/usr/apps.toml` carries the full runtime `[hooks]` table. The current
+tool-scoped matcher groups are intentionally split so they can have different
+commands, timeouts, and status messages:
 
-## Vendored schemas
+- `PreToolUse`
+  - shell matcher: `^(Bash|exec_command|shell)$`
+  - edit matcher: `^(apply_patch|Edit|Write)$`
+  - MCP matcher: `^mcp__`
+- `PermissionRequest`
+  - shell matcher: `^(Bash|exec_command|shell)$`
+  - edit matcher: `^(apply_patch|Edit|Write)$`
+  - MCP matcher: `^mcp__`
+- `PostToolUse`
+  - shell matcher: `^(Bash|exec_command|shell)$`
+  - edit matcher: `^(apply_patch|Edit|Write)$`
+  - MCP matcher: `^mcp__`
 
-The JSON schemas under `resources/hooks/schema/generated/` are vendored into this
-repository and installed under `$CODEX_HOME/.hooks/schema/generated/`.
+Because Codex runs multiple matching command hooks for the same event
+concurrently, keep matcher groups mutually exclusive.
+
+`SessionStart` uses a source matcher and currently covers:
+
+- `startup`
+- `resume`
+- `clear`
+- `compact`
+
+`UserPromptSubmit` and `Stop` do not use matchers in current Codex behavior and
+must self-filter inside the command logic when event-specific gating is needed.
+
+## Event output expectations
+
+Event output payloads are not all equivalent:
+
+- `SessionStart`, `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, and
+  `SubagentStart` can return `hookSpecificOutput.additionalContext`.
+- `PermissionRequest`, `PreCompact`, `PostCompact`, and the informational part
+  of `SubagentStop` should use `systemMessage`.
+- `Stop` and the blocking portion of `SubagentStop` should use top-level
+  `decision`, `reason`, and `stopReason`.
 
 The runtime wrappers seed `CODEX_HOOK_SCHEMA_DIR` automatically from either:
 
 - a repo-local `resources/hooks/schema/generated/` tree during development, or
-- the installed `$CODEX_HOME/.hooks/schema/generated/` tree at runtime.
+- the installed `$CODEX_HOME/.hooks/schema/generated/` tree at runtime
 
-## Compatibility note
-
-The generated `$CODEX_HOME/hooks.json` compatibility bridge still only exposes
-`SessionStart`, `UserPromptSubmit`, and `Stop`.
-
-The richer inline `[hooks]` config under `config/usr/apps.toml` carries the
-broader event set used by current Codex runtimes:
-
-- `PreToolUse`
-- `PermissionRequest`
-- `PostToolUse`
-- `PreCompact`
-- `PostCompact`
-- `SessionStart`
-- `UserPromptSubmit`
-- `SubagentStart`
-- `SubagentStop`
-- `Stop`
-
-Event output payloads are not all equivalent:
-
-- `SessionStart`, `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, and `SubagentStart` can return `hookSpecificOutput.additionalContext`.
-- `PermissionRequest`, `PreCompact`, `PostCompact`, and the informational part of `SubagentStop` should use `systemMessage` instead.
-- `Stop` and the blocking portion of `SubagentStop` should use top-level `decision`, `reason`, and `stopReason` fields only.
-
-## Shared multi-agent section
-
-The optional top-level `multi_agent` section is shared across repos. It is used
-for prompt-time guidance when the user asks about delegation, agents, or
-multi-agent coordination.
-
-Fields:
-
-- `trigger_patterns`
-  Regexes checked against the user prompt.
-- `shared_lines`
-  Shared generic guidance rendered before the role list.
-- `roles`
-  The full shared role catalog.
-
-Each `roles[]` entry contains:
-
-- `name`
-- `description`
-- `use_when`
-
-Role names must match the configured shared agent names from `config/usr/apps.toml`
-and `config/agents/*.toml`.
-
-## Repository blocks
-
-Each repo block contains:
-
-- `id`
-- `display_name`
-- `match`
-  - `repo_names`
-  - `all_of_paths`
-  - `any_of_paths`
-
-Additional keys such as `environment`, `focus_areas`, `session_start`,
-`user_prompt_submit`, and `stop` are optional overlays. If they are omitted, the
-generic detection layer still generates usable hooks.
-
-`focus_areas` are repo-relative changed-file buckets. They do not trigger hook
-execution by themselves. They are used to turn changed paths into higher-level
-focus labels such as `installer`, `runtime`, `engine`, or `core`, which then
-show up in session/resume context via `{changed_areas_csv}`.
-
-## Stop rules
-
-If you add manifest stop overlays, supported fields are:
-
-- `id`
-- `changed_path_globs`
-- `branch_matches_any`
-- `when_has_mirror_refs`
-- `require_all_patterns`
-- `require_any_patterns`
-- `forbid_any_patterns`
-- `message`
-
-`id` is a stable rule label for humans and tooling. It is currently validated for
-shape and uniqueness intent, but it does not drive runtime matching behavior by
-itself. Runtime behavior comes from `changed_path_globs`, `branch_matches_any`,
-`when_has_mirror_refs`, `require_*`, `forbid_any_patterns`, and `message`.
-
-`message` supports these placeholders:
-
-- `{changed_areas_csv}`
-- `{changed_files_preview}`
-- `{current_branch}`
-- `{repo_id}`
-- `{repo_name}`
-- `{repo_root}`
-- `{runtime_hooks_dir}`
-- `{runtime_hooks_driver_path}`
-
-If you add manifest prompt overlays, prompt rules are regex-driven:
-
-- `patterns`
-- `lines`
-
-If a rule matches, its `lines` are rendered into hook-specific additional context.
+Hook work in this repo should stay schema-first: emit only fields allowed by
+the event output schema, and prefer transcript-driven context over generic
+boilerplate.

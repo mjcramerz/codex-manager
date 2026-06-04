@@ -9,8 +9,6 @@ use Codex::Hook::Driver qw(run_event);
 use Codex::Hook::Output qw(emit_payload json_true);
 use Codex::Hook::Script qw(seed_runtime_schema_env);
 
-my $runtime_config_json = "__HOOK_RUNTIME_CONFIG_TEMPLATE__";
-$Codex::Hook::Driver::RUNTIME_CONFIG_JSON = $runtime_config_json;
 seed_runtime_schema_env(script_dir => $Bin);
 
 my %allowed = map { $_ => 1 } qw(

@@ -4,28 +4,23 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import tomllib
 import unittest
 from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 HOOK_DRIVER = REPO_ROOT / "resources" / "hooks" / "scripts" / "hook_driver.pl"
-MANIFEST_PATH = REPO_ROOT / "resources" / "hooks" / "manifest.json"
+APPS_TOML_PATH = REPO_ROOT / "config" / "usr" / "apps.toml"
 INSTALL_SRC = REPO_ROOT / "src" / "install"
 if str(INSTALL_SRC) not in sys.path:
     sys.path.insert(0, str(INSTALL_SRC))
-
-from hooks_builder import render_hook_driver_from_manifest_path  # noqa: E402
-from hooks_builder import render_hooks_json_from_manifest_path  # noqa: E402
 
 
 def _prepare_runtime_hook_dir(tmpdir: str) -> tuple[Path, Path]:
     runtime_root = Path(tmpdir)
     rendered_driver_path = runtime_root / "hook_driver.pl"
-    rendered_driver_path.write_text(
-        render_hook_driver_from_manifest_path(MANIFEST_PATH, HOOK_DRIVER),
-        encoding="utf-8",
-    )
+    rendered_driver_path.write_text(HOOK_DRIVER.read_text(encoding="utf-8"), encoding="utf-8")
     rendered_driver_path.chmod(0o755)
 
     runtime_lib = runtime_root / "lib"
@@ -94,7 +89,6 @@ def make_c0d3x_repo(tmpdir: str) -> Path:
     write_file(repo / "Makefile", "preflight:\n\t@true\nverify:\n\t@true\n")
     write_file(repo / "src" / "install" / "codex_install.py", "print('ok')\n")
     write_file(repo / "config" / "usr" / "apps.toml", "")
-    write_file(repo / "resources" / "hooks" / "manifest.json", "{}\n")
     subprocess.run(["git", "add", "."], cwd=repo, check=True)
     subprocess.run(["git", "commit", "-qm", "init"], cwd=repo, check=True)
     return repo
@@ -125,47 +119,47 @@ def make_incomplete_c0d3x_repo(tmpdir: str) -> Path:
 class HookScriptTests(unittest.TestCase):
     maxDiff = None
 
-    def test_manifest_supports_hash_comments(self) -> None:
-        with tempfile.TemporaryDirectory() as tmpdir:
-            manifest_path = Path(tmpdir) / "manifest.json"
-            manifest_path.write_text(
-                """{
-  "version": 1,
-  "runtime": {
-    "session_start": { "timeout": 20, "status_message": "x" },
-    "user_prompt_submit": { "timeout": 20, "status_message": "y" },
-    "stop": { "timeout": 25, "status_message": "z" }
-  },
-  "repos": [
-    # real comment
-    {
-      "id": "demo",
-      "display_name": "demo",
-      "match": {
-        "repo_names": ["demo"],
-        "all_of_paths": ["a"],
-        "any_of_paths": []
-      }
-    }
-  ]
-}
-""",
-                encoding="utf-8",
-            )
-            payload = json.loads(render_hooks_json_from_manifest_path(manifest_path))
-            self.assertEqual(set(payload["hooks"]), {"SessionStart", "UserPromptSubmit", "Stop"})
-
-    def test_manifest_renders_runtime_hooks_json(self) -> None:
-        payload = json.loads(render_hooks_json_from_manifest_path(MANIFEST_PATH))
-        self.assertEqual(set(payload["hooks"]), {"SessionStart", "UserPromptSubmit", "Stop"})
-        session_start = payload["hooks"]["SessionStart"][0]["hooks"][0]
+    def test_apps_toml_carries_full_runtime_hook_table(self) -> None:
+        payload = tomllib.loads(APPS_TOML_PATH.read_text(encoding="utf-8"))
+        hooks = payload.get("hooks")
+        self.assertIsInstance(hooks, dict)
         self.assertEqual(
-            session_start["command"],
-            'perl "$CODEX_HOME/hooks/scripts/session_start.pl"',
+            set(hooks),
+            {
+                "PreToolUse",
+                "PermissionRequest",
+                "PostToolUse",
+                "PreCompact",
+                "PostCompact",
+                "SessionStart",
+                "UserPromptSubmit",
+                "SubagentStart",
+                "SubagentStop",
+                "Stop",
+            },
         )
-        self.assertEqual(session_start["timeout"], 20)
+        self.assertEqual(hooks["SessionStart"][0]["matcher"], "^(startup|resume|clear|compact)$")
+        self.assertEqual([group["matcher"] for group in hooks["PreToolUse"]], ["^(Bash|exec_command|shell)$", "^(apply_patch|Edit|Write)$", "^mcp__"])
+        self.assertIn("pre_tool_use_shell.pl", hooks["PreToolUse"][0]["hooks"][0]["command"])
+        self.assertIn("pre_tool_use_edit.pl", hooks["PreToolUse"][1]["hooks"][0]["command"])
+        self.assertIn("pre_tool_use_mcp.pl", hooks["PreToolUse"][2]["hooks"][0]["command"])
+        self.assertEqual([group["matcher"] for group in hooks["PermissionRequest"]], ["^(Bash|exec_command|shell)$", "^(apply_patch|Edit|Write)$", "^mcp__"])
+        self.assertIn("permission_request_shell.pl", hooks["PermissionRequest"][0]["hooks"][0]["command"])
+        self.assertIn("permission_request_edit.pl", hooks["PermissionRequest"][1]["hooks"][0]["command"])
+        self.assertIn("permission_request_mcp.pl", hooks["PermissionRequest"][2]["hooks"][0]["command"])
+        self.assertEqual([group["matcher"] for group in hooks["PostToolUse"]], ["^(Bash|exec_command|shell)$", "^(apply_patch|Edit|Write)$", "^mcp__"])
+        self.assertIn("post_tool_use_shell.pl", hooks["PostToolUse"][0]["hooks"][0]["command"])
+        self.assertIn("post_tool_use_edit.pl", hooks["PostToolUse"][1]["hooks"][0]["command"])
+        self.assertIn("post_tool_use_mcp.pl", hooks["PostToolUse"][2]["hooks"][0]["command"])
+        self.assertIn("subagent_stop.pl", hooks["SubagentStop"][0]["hooks"][0]["command"])
+        self.assertIn("stop.pl", hooks["Stop"][0]["hooks"][0]["command"])
 
-    def test_session_start_lists_matching_manifest_profile(self) -> None:
+    def test_runtime_hook_driver_is_repo_sourced_without_manifest_template(self) -> None:
+        self.assertFalse((REPO_ROOT / "resources" / "hooks" / "manifest.json").exists())
+        driver_text = HOOK_DRIVER.read_text(encoding="utf-8")
+        self.assertNotIn("__HOOK_RUNTIME_CONFIG_TEMPLATE__", driver_text)
+
+    def test_session_start_lists_matching_runtime_profile(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             repo = make_c0d3x_repo(tmpdir)
             write_file(repo / "resources" / "hooks" / "scripts" / "new_driver.py", "print('x')\n")
@@ -180,7 +174,7 @@ class HookScriptTests(unittest.TestCase):
 
             payload = json.loads(result.stdout)
             context = payload["hookSpecificOutput"]["additionalContext"]
-            self.assertIn("Active generated hook profiles: `codex-manager`", context)
+            self.assertIn("Active hook runtime profiles: `codex-manager`", context)
             self.assertIn("Repo role: Codex installer and runtime-configuration source tree.", context)
 
     def test_session_start_requires_full_match_contract_for_repo_profile(self) -> None:
@@ -198,7 +192,7 @@ class HookScriptTests(unittest.TestCase):
             payload = json.loads(result.stdout)
             context = payload["hookSpecificOutput"]["additionalContext"]
             self.assertIn("Repository context for `c0d3x`", context)
-            self.assertNotIn("Active generated hook profiles:", context)
+            self.assertNotIn("Active hook runtime profiles:", context)
             self.assertNotIn("Repo role: Codex installer and runtime-configuration source tree.", context)
 
     def test_session_start_injects_mirror_and_patch_context(self) -> None:
@@ -307,7 +301,8 @@ class HookScriptTests(unittest.TestCase):
             payload = json.loads(result.stdout)
             context = payload["hookSpecificOutput"]["additionalContext"]
             self.assertIn("Review requests should lead with concrete findings", context)
-            self.assertIn("Codex hooks expose exactly `SessionStart`, `UserPromptSubmit`, and `Stop`", context)
+            self.assertIn("Repo hook wiring lives inline in `config/usr/apps.toml`", context)
+            self.assertIn("behavioral source of truth", context)
             self.assertIn("python3 -m compileall -q src tests", context)
             self.assertIn("python3 -m unittest discover -s tests", context)
 
@@ -420,7 +415,7 @@ class HookScriptTests(unittest.TestCase):
 
             payload = json.loads(result.stdout)
             context = payload["systemMessage"]
-            self.assertIn("Permission request for `exec_command`", context)
+            self.assertIn("Permission request for `shell command` (`exec_command`)", context)
             self.assertIn("Keep the scope minimal", context)
 
     def test_post_tool_use_emits_failure_follow_up_context(self) -> None:
@@ -438,8 +433,8 @@ class HookScriptTests(unittest.TestCase):
 
             payload = json.loads(result.stdout)
             context = payload["hookSpecificOutput"]["additionalContext"]
-            self.assertIn("Post-tool follow-up for `exec_command`", context)
-            self.assertIn("failure or warning signal", context)
+            self.assertIn("Post-tool follow-up for `shell command` (`exec_command`)", context)
+            self.assertIn("failing command, flag, or path", context)
 
     def test_post_tool_use_handles_structured_failure_payload(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -456,7 +451,7 @@ class HookScriptTests(unittest.TestCase):
 
             payload = json.loads(result.stdout)
             context = payload["hookSpecificOutput"]["additionalContext"]
-            self.assertIn("Post-tool follow-up for `exec_command`", context)
+            self.assertIn("Post-tool follow-up for `shell command` (`exec_command`)", context)
             self.assertIn("permission denied while writing file", context)
 
     def test_pre_compact_uses_system_message_only(self) -> None:
@@ -489,7 +484,7 @@ class HookScriptTests(unittest.TestCase):
 
             payload = json.loads(result.stdout)
             context = payload["hookSpecificOutput"]["additionalContext"]
-            self.assertIn("Active generated hook profiles: `codex`", context)
+            self.assertIn("Active hook runtime profiles: `codex`", context)
             self.assertIn("Repo role: upstream Codex source tree and runtime-contract implementation.", context)
 
     def test_stop_hook_reentry_stops_instead_of_reblocking(self) -> None:
@@ -546,6 +541,55 @@ class HookScriptTests(unittest.TestCase):
             self.assertIn("Subagent stop guidance", context)
             self.assertEqual(outputs[-1]["decision"], "block")
             self.assertIn("validation follow-up", outputs[-1]["reason"])
+
+    def test_subagent_stop_reports_identity_and_missing_handoff(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_c0d3x_repo(tmpdir)
+
+            result = run_hook(
+                "subagent-stop",
+                {
+                    "cwd": str(repo),
+                    "agent_id": "agent-1",
+                    "agent_type": "tester",
+                    "last_assistant_message": "",
+                    "stop_hook_active": False,
+                },
+            )
+
+            payload = json.loads(result.stdout)
+            context = payload["systemMessage"]
+            self.assertIn("Subagent stop guidance for `tester`", context)
+            self.assertIn("Agent id: `agent-1`", context)
+            self.assertIn("Last assistant message is empty", context)
+
+    def test_subagent_stop_includes_transcript_signals(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_c0d3x_repo(tmpdir)
+            transcript_path = Path(tmpdir) / "agent.jsonl"
+            transcript_path.write_text(
+                "permission denied while running validation\n"
+                "Traceback: test failed\n",
+                encoding="utf-8",
+            )
+
+            result = run_hook(
+                "subagent-stop",
+                {
+                    "cwd": str(repo),
+                    "agent_id": "agent-2",
+                    "agent_type": "worker",
+                    "agent_transcript_path": str(transcript_path),
+                    "last_assistant_message": "Could not run tests because permission denied.",
+                    "stop_hook_active": False,
+                },
+            )
+
+            payload = json.loads(result.stdout)
+            context = payload["systemMessage"]
+            self.assertIn("Subagent transcript signals:", context)
+            self.assertIn("permission or sandbox denials", context)
+            self.assertIn("test failures", context)
 
     def test_stop_hook_allows_explicit_skip_rationale(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

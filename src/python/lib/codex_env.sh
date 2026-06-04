@@ -82,6 +82,16 @@ ${MANAGED_BLOCK_END}
 BLOCK
 }
 
+render_profile_source_block() {
+  local profile_path=${1:?profile path is required}
+  cat <<BLOCK
+# managed by codex installer
+if [ -r "${profile_path}" ]; then
+  . "${profile_path}"
+fi
+BLOCK
+}
+
 strip_managed_block() {
   local path=${1:?path is required}
   awk -v start="${MANAGED_BLOCK_START}" -v end="${MANAGED_BLOCK_END}" '
@@ -106,6 +116,74 @@ trim_trailing_blank_lines() {
       }
     }
   ' "${src}" > "${dst}"
+}
+
+strip_profile_source_block() {
+  local path=${1:?path is required}
+  local profile_path=${2:?profile path is required}
+  local header="# managed by codex installer"
+  local guard="if [ -r \"${profile_path}\" ]; then"
+  local source="  . \"${profile_path}\""
+  local done_line="fi"
+
+  awk -v header="${header}" -v guard="${guard}" -v source="${source}" -v done_line="${done_line}" '
+    function flush_pending() {
+      if (state == 1) {
+        print header
+      } else if (state == 2) {
+        print header
+        print guard
+      } else if (state == 3) {
+        print header
+        print guard
+        print source
+      }
+      state = 0
+    }
+
+    state == 0 {
+      if ($0 == header) {
+        state = 1
+        next
+      }
+      print
+      next
+    }
+
+    state == 1 {
+      if ($0 == guard) {
+        state = 2
+        next
+      }
+      flush_pending()
+      print
+      next
+    }
+
+    state == 2 {
+      if ($0 == source) {
+        state = 3
+        next
+      }
+      flush_pending()
+      print
+      next
+    }
+
+    state == 3 {
+      if ($0 == done_line) {
+        state = 0
+        next
+      }
+      flush_pending()
+      print
+      next
+    }
+
+    END {
+      flush_pending()
+    }
+  ' "${path}"
 }
 
 ensure_target_file() {
@@ -227,6 +305,48 @@ install_hook_file() {
   rm -f -- "${clean_tmp}" "${trimmed_tmp}" "${merged_tmp}"
 }
 
+install_profile_source_file() {
+  local path=${1:?path is required}
+  local profile_path=${2:?profile path is required}
+  local dry_run=${3:?dry-run flag is required}
+
+  ensure_target_file "${path}" "${dry_run}"
+  repair_dangling_unexpected_fi "${path}" "${dry_run}"
+
+  local clean_tmp trimmed_tmp merged_tmp
+  clean_tmp="$(mktemp_file "codex-profile-clean.XXXXXX")"
+  trimmed_tmp="$(mktemp_file "codex-profile-trimmed.XXXXXX")"
+  merged_tmp="$(mktemp_file "codex-profile-merged.XXXXXX")"
+
+  if [[ -f "${path}" ]]; then
+    strip_profile_source_block "${path}" "${profile_path}" > "${clean_tmp}"
+  else
+    : > "${clean_tmp}"
+  fi
+  trim_trailing_blank_lines "${clean_tmp}" "${trimmed_tmp}"
+
+  if [[ -s "${trimmed_tmp}" ]]; then
+    cat -- "${trimmed_tmp}" > "${merged_tmp}"
+    printf '\n' >> "${merged_tmp}"
+  fi
+  render_profile_source_block "${profile_path}" >> "${merged_tmp}"
+  printf '\n' >> "${merged_tmp}"
+
+  if [[ -f "${path}" ]] && cmp -s -- "${path}" "${merged_tmp}"; then
+    rm -f -- "${clean_tmp}" "${trimmed_tmp}" "${merged_tmp}"
+    return 0
+  fi
+
+  if [[ "${dry_run}" == "1" ]]; then
+    log_info "[dry-run] install codex profile source block in ${path}"
+    rm -f -- "${clean_tmp}" "${trimmed_tmp}" "${merged_tmp}"
+    return 0
+  fi
+
+  cat -- "${merged_tmp}" > "${path}"
+  rm -f -- "${clean_tmp}" "${trimmed_tmp}" "${merged_tmp}"
+}
+
 verify_hook_file() {
   local path=${1:?path is required}
   local profile_path=${2:?profile path is required}
@@ -257,6 +377,22 @@ verify_hook_file() {
   fi
 }
 
+verify_profile_source_file() {
+  local path=${1:?path is required}
+  local profile_path=${2:?profile path is required}
+
+  [[ -e "${path}" ]] || die "missing shell rc file: ${path}"
+  [[ -f "${path}" ]] || die "shell hook target must be a regular file: ${path}"
+
+  local header_count
+  header_count="$(grep -Fxc -- "# managed by codex installer" "${path}" || true)"
+  [[ "${header_count}" -ge 1 ]] || die "missing managed profile source block in ${path}"
+  grep -Fq -- "if [ -r \"${profile_path}\" ]; then" "${path}" \
+    || die "missing managed profile guard in ${path}"
+  grep -Fq -- ". \"${profile_path}\"" "${path}" \
+    || die "missing codex profile source line in ${path}"
+}
+
 remove_hook_file() {
   local path=${1:?path is required}
   local dry_run=${2:?dry-run flag is required}
@@ -275,6 +411,33 @@ remove_hook_file() {
 
   if [[ "${dry_run}" == "1" ]]; then
     log_info "[dry-run] remove codex shell hook from ${path}"
+    rm -f -- "${clean_tmp}" "${trimmed_tmp}"
+    return 0
+  fi
+
+  cat -- "${trimmed_tmp}" > "${path}"
+  rm -f -- "${clean_tmp}" "${trimmed_tmp}"
+}
+
+remove_profile_source_file() {
+  local path=${1:?path is required}
+  local profile_path=${2:?profile path is required}
+  local dry_run=${3:?dry-run flag is required}
+  [[ -f "${path}" ]] || return 0
+
+  local clean_tmp trimmed_tmp
+  clean_tmp="$(mktemp_file "codex-profile-clean.XXXXXX")"
+  trimmed_tmp="$(mktemp_file "codex-profile-trimmed.XXXXXX")"
+  strip_profile_source_block "${path}" "${profile_path}" > "${clean_tmp}"
+  trim_trailing_blank_lines "${clean_tmp}" "${trimmed_tmp}"
+
+  if cmp -s -- "${path}" "${trimmed_tmp}"; then
+    rm -f -- "${clean_tmp}" "${trimmed_tmp}"
+    return 0
+  fi
+
+  if [[ "${dry_run}" == "1" ]]; then
+    log_info "[dry-run] remove codex profile source block from ${path}"
     rm -f -- "${clean_tmp}" "${trimmed_tmp}"
     return 0
   fi
@@ -346,7 +509,6 @@ cmd_hook() {
   local -a required_targets=(
     "${user_home}/.bashrc"
     "${user_home}/.zshrc"
-    "${user_home}/.profile"
   )
   local -a optional_targets=(
     "${user_home}/.bash_profile"
@@ -354,6 +516,7 @@ cmd_hook() {
   )
 
   if [[ "${verify_mode}" == "1" ]]; then
+    verify_profile_source_file "${user_home}/.profile" "${profile_path}"
     local path=""
     for path in "${required_targets[@]}"; do
       verify_hook_file "${path}" "${profile_path}" "0"
@@ -365,6 +528,7 @@ cmd_hook() {
     return 0
   fi
 
+  install_profile_source_file "${user_home}/.profile" "${profile_path}" "${dry_run}"
   local path=""
   for path in "${required_targets[@]}"; do
     install_hook_file "${path}" "${profile_path}" "${dry_run}"
@@ -423,13 +587,13 @@ cmd_unhook() {
   contains_control_chars "${profile_path}" || die "--profile-path contains unsupported control characters"
 
   local -a hook_targets=(
-    "${user_home}/.profile"
     "${user_home}/.bashrc"
     "${user_home}/.zshrc"
     "${user_home}/.bash_profile"
     "${user_home}/.bash_login"
   )
 
+  remove_profile_source_file "${user_home}/.profile" "${profile_path}" "${dry_run}"
   local path=""
   for path in "${hook_targets[@]}"; do
     remove_hook_file "${path}" "${dry_run}"

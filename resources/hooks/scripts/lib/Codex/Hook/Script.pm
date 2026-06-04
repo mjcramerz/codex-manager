@@ -35,10 +35,16 @@ sub exec_driver {
     my (%args) = @_;
     my $script_dir = $args{script_dir};
     my $event_arg = $args{event_arg};
+    my $profile_name = $args{profile_name};
     die "script_dir is required\n" if !defined $script_dir || !length $script_dir;
     die "event_arg is required\n" if !defined $event_arg || !length $event_arg;
 
     seed_runtime_schema_env(script_dir => $script_dir);
+    if (defined $profile_name && length $profile_name) {
+        $ENV{CODEX_HOOK_TOOL_PROFILE} = $profile_name;
+    } else {
+        delete $ENV{CODEX_HOOK_TOOL_PROFILE};
+    }
     my $driver_path = File::Spec->catfile($script_dir, 'hook_driver.pl');
     exec { $^X } $^X, $driver_path, $event_arg;
     die "failed to exec hook driver $driver_path: $!\n";

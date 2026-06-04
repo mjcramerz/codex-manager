@@ -18,7 +18,6 @@ class RepoLayout:
     home_user_dir: Path
     hooks_dir: Path
     hooks_scripts_dir: Path
-    hooks_manifest_path: Path
     instructions_dir: Path
     instructions_metadata_path: Path
     skills_dir: Path
@@ -63,7 +62,6 @@ class RepoLayout:
             home_user_dir=home_dir / "user",
             hooks_dir=hooks_dir,
             hooks_scripts_dir=hooks_dir / "scripts",
-            hooks_manifest_path=hooks_dir / "manifest.json",
             instructions_dir=instructions_dir,
             instructions_metadata_path=instructions_dir / "metadata.json",
             skills_dir=skills_dir,
@@ -92,7 +90,6 @@ class RuntimeLayout:
     home_dir: Path
     home_config_path: Path
     hooks_dir: Path
-    hooks_config_path: Path
     agents_dir: Path
     skills_dir: Path
     system_dir: Path
@@ -114,7 +111,6 @@ class RuntimeLayout:
             home_dir=home_dir,
             home_config_path=home_dir / "config.toml",
             hooks_dir=home_dir / "hooks",
-            hooks_config_path=home_dir / "hooks.json",
             agents_dir=agents_dir,
             skills_dir=skills_dir,
             system_dir=system_dir,

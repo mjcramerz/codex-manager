@@ -155,7 +155,7 @@ nickname_candidates = [
 #managed_dir = "${CODEX_HOME}/hooks"
 
 [[hooks.SessionStart]]
-matcher = "^(startup|resume)$"
+matcher = "^(startup|resume|clear|compact)$"
 
 [[hooks.SessionStart.hooks]]
 type = "command"
@@ -172,28 +172,85 @@ timeout = 20
 statusMessage = "Injecting detected prompt context"
 
 [[hooks.PreToolUse]]
+matcher = "^(Bash|exec_command|shell)$"
 
 [[hooks.PreToolUse.hooks]]
 type = "command"
-command = "perl ${CODEX_HOME}/hooks/scripts/pre_tool_use.pl"
+command = "perl ${CODEX_HOME}/hooks/scripts/pre_tool_use_shell.pl"
+timeout = 25
+statusMessage = "Checking shell command guardrails"
+
+[[hooks.PreToolUse]]
+matcher = "^(apply_patch|Edit|Write)$"
+
+[[hooks.PreToolUse.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/pre_tool_use_edit.pl"
 timeout = 20
-statusMessage = "Evaluating pre-tool guardrails"
+statusMessage = "Checking edit guardrails"
+
+[[hooks.PreToolUse]]
+matcher = "^mcp__"
+
+[[hooks.PreToolUse.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/pre_tool_use_mcp.pl"
+timeout = 20
+statusMessage = "Checking MCP tool guardrails"
 
 [[hooks.PermissionRequest]]
+matcher = "^(Bash|exec_command|shell)$"
 
 [[hooks.PermissionRequest.hooks]]
 type = "command"
-command = "perl ${CODEX_HOME}/hooks/scripts/permission_request.pl"
+command = "perl ${CODEX_HOME}/hooks/scripts/permission_request_shell.pl"
 timeout = 20
-statusMessage = "Checking permission request scope"
+statusMessage = "Checking shell approval scope"
+
+[[hooks.PermissionRequest]]
+matcher = "^(apply_patch|Edit|Write)$"
+
+[[hooks.PermissionRequest.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/permission_request_edit.pl"
+timeout = 15
+statusMessage = "Checking edit approval scope"
+
+[[hooks.PermissionRequest]]
+matcher = "^mcp__"
+
+[[hooks.PermissionRequest.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/permission_request_mcp.pl"
+timeout = 20
+statusMessage = "Checking MCP approval scope"
 
 [[hooks.PostToolUse]]
+matcher = "^(Bash|exec_command|shell)$"
 
 [[hooks.PostToolUse.hooks]]
 type = "command"
-command = "perl ${CODEX_HOME}/hooks/scripts/post_tool_use.pl"
+command = "perl ${CODEX_HOME}/hooks/scripts/post_tool_use_shell.pl"
 timeout = 20
-statusMessage = "Reviewing post-tool follow-up"
+statusMessage = "Reviewing shell output follow-up"
+
+[[hooks.PostToolUse]]
+matcher = "^(apply_patch|Edit|Write)$"
+
+[[hooks.PostToolUse.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/post_tool_use_edit.pl"
+timeout = 15
+statusMessage = "Reviewing edit follow-up"
+
+[[hooks.PostToolUse]]
+matcher = "^mcp__"
+
+[[hooks.PostToolUse.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/post_tool_use_mcp.pl"
+timeout = 20
+statusMessage = "Reviewing MCP follow-up"
 
 [[hooks.PreCompact]]
 

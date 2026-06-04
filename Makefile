@@ -1,8 +1,19 @@
 PYTHON ?= python3
 INSTALLER := src/install/codex_install.py
 COMPILED_DIR ?= src/misc/compiled
+INSTALLER_ARGS ?=
+# Use `make install -- --dry-run` or `make build-install -- --dry-run` to pass
+# the installer flag through without triggering GNU Make's own dry-run mode.
 # Keep Python bytecode out of the repo for all Makefile-driven Python commands.
 PYTHON_PYCACHE_PREFIX ?= /tmp/c0d3x-pycache
+
+ifneq ($(filter --dry-run,$(MAKECMDGOALS)),)
+INSTALLER_ARGS += --dry-run
+endif
+
+ifeq ($(DRY_RUN),1)
+INSTALLER_ARGS += --dry-run
+endif
 
 export LC_ALL := C
 export TZ := UTC
@@ -13,7 +24,7 @@ export PYTHONPATH := $(CURDIR)/src/python
 
 PYTHON_ENV := LC_ALL=C TZ=UTC PYTHONPATH=$(CURDIR)/src/python PYTHONDONTWRITEBYTECODE=1 PYTHONHASHSEED=0 PYTHONPYCACHEPREFIX=$(PYTHON_PYCACHE_PREFIX)
 
-.PHONY: preflight verify build-src build-install install home admin upgrade export tmpfs-mnt tmpfs-umt vars-init vars-reset nuke
+.PHONY: preflight verify build-src build-install install update home admin upgrade export tmpfs-mnt tmpfs-umt vars-init vars-reset uninstall nuke --dry-run
 
 preflight:
 	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) preflight
@@ -25,13 +36,19 @@ build-src:
 	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) build-src
 
 build-install:
-	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) build-install --compiled-dir $(COMPILED_DIR)
+	@printf "Confirm 'make build-install' will build and apply runtime changes. Continue? [y/N] "; \
+	read -r confirm; \
+	case "$$confirm" in [yY]|[yY][eE][sS]) ;; *) printf "Aborted.\n"; exit 1 ;; esac
+	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) build-install --compiled-dir $(COMPILED_DIR) $(INSTALLER_ARGS)
 
 install:
 	@printf "Confirm 'make install' will apply runtime changes. Continue? [y/N] "; \
 	read -r confirm; \
 	case "$$confirm" in [yY]|[yY][eE][sS]) ;; *) printf "Aborted.\n"; exit 1 ;; esac
-	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) install --compiled-dir $(COMPILED_DIR)
+	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) install --compiled-dir $(COMPILED_DIR) $(INSTALLER_ARGS)
+
+update:
+	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) update --compiled-dir $(COMPILED_DIR)
 
 home:
 	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) home --compiled-dir $(COMPILED_DIR)
@@ -64,3 +81,12 @@ nuke:
 	read -r confirm; \
 	case "$$confirm" in [yY]|[yY][eE][sS]) ;; *) printf "Aborted.\n"; exit 1 ;; esac
 	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) nuke --compiled-dir $(COMPILED_DIR)
+
+uninstall:
+	@printf "Confirm 'make uninstall' will remove runtime state. Continue? [y/N] "; \
+	read -r confirm; \
+	case "$$confirm" in [yY]|[yY][eE][sS]) ;; *) printf "Aborted.\n"; exit 1 ;; esac
+	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) uninstall --compiled-dir $(COMPILED_DIR)
+
+--dry-run:
+	@:

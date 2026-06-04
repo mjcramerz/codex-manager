@@ -42,11 +42,13 @@ use Codex::Hook::Repo qw(
 );
 use Codex::Hook::Runner qw(read_file_tail);
 use Codex::Hook::Schema qw(validate_event_input);
-use Codex::Hook::Subagent qw(start_context stop_system_message);
+use Codex::Hook::Subagent qw(start_context);
+use Codex::Hook::SubagentStop qw(stop_system_message);
+use Codex::Hook::RuntimeConfig qw(runtime_config);
+use Codex::Hook::ToolProfile qw(tool_group_label tool_group_name);
 
 our @EXPORT_OK = qw(run_event);
 
-our $RUNTIME_CONFIG_JSON = '__HOOK_RUNTIME_CONFIG_TEMPLATE__';
 our $TRANSCRIPT_TAIL_BYTES = 120000;
 
 sub _load_input {
@@ -59,11 +61,11 @@ sub _load_input {
 }
 
 sub _load_runtime_config {
-    die "hook driver template was not rendered by the home/install/upgrade flow\n"
-      if $RUNTIME_CONFIG_JSON eq '__HOOK_RUNTIME_CONFIG_TEMPLATE__';
-    my $payload = decode_json($RUNTIME_CONFIG_JSON);
-    die "embedded hook runtime config must decode to an object\n" if ref($payload) ne 'HASH';
-    die "embedded hook runtime config must contain a repos list\n"
+    my $payload = runtime_config();
+    die "hook runtime config must decode to an object\n" if ref($payload) ne 'HASH';
+    die "hook runtime config must declare version = 1\n"
+      if ($payload->{version} // 0) != 1;
+    die "hook runtime config must contain a repos list\n"
       if ref($payload->{repos}) ne 'ARRAY';
     return $payload;
 }
@@ -327,7 +329,7 @@ sub _session_start_context {
     );
     push @summary, "- Root instructions: follow the repo-root `AGENTS.md`, plus any deeper `AGENTS.md` files under touched paths."
       if -f "$repo_root/AGENTS.md";
-    push @summary, '- Active generated hook profiles: `' . join(', ', @profile_ids) . '` from `$CODEX_HOME/hooks/scripts/hook_driver.pl`.'
+    push @summary, '- Active hook runtime profiles: `' . join(', ', @profile_ids) . '` from the installed Perl hook runtime.'
       if @profile_ids;
     push @summary, "- Mirror refs detected (`github/*` or `gitlab/*`). Treat those branches as read-only mirrors and true-sync `mcr/main` from `" . ($mirror_main || 'github/mcr/main or gitlab/mcr/main') . "`, then `mcr/staging` from `mcr/main`, then `mcr/release` from `mcr/staging`, preserving only protected paths."
       if @mirror_refs;
@@ -416,9 +418,9 @@ sub _user_prompt_context {
     if ($prompt =~ /\b(hook|hooks|manifest|sessionstart|userpromptsubmit|stop hook)\b/i) {
         push @sections, join(
             "\n",
-            'Codex hooks expose exactly `SessionStart`, `UserPromptSubmit`, and `Stop` through `$CODEX_HOME/hooks.json`.',
-            'Only `SessionStart` uses the matcher regex from `hooks.json`; `UserPromptSubmit` and `Stop` must self-filter inside the hook command.',
-            'Stop input includes `stop_hook_active` and `last_assistant_message`. `decision: block` requires a non-empty `reason`.',
+            'Repo hook wiring lives inline in `config/usr/apps.toml` and installs into `$CODEX_HOME/config.toml`.',
+            'Perl modules under `resources/hooks/scripts/lib/Codex/Hook/` are the behavioral source of truth; do not reintroduce manifest-driven `hooks.json` generation.',
+            'Keep hook matcher groups mutually exclusive because Codex runs multiple matching command hooks for the same event concurrently. `UserPromptSubmit` and `Stop` still self-filter inside the command.',
         );
     }
     if ($prompt =~ /\b(github|gitlab|mirror|patch|patches|release|mcr\/)\b/i) {
@@ -629,6 +631,7 @@ sub _pre_tool_use_context {
     my $tool_name = $payload->{tool_name} // '';
     my $tool_input = $payload->{tool_input};
     my $repo_root = git_root($payload->{cwd} // '');
+    my $label = tool_group_label($tool_name);
     my $reason = destructive_command_reason(
         tool_name  => $tool_name,
         tool_input => $tool_input,
@@ -646,7 +649,7 @@ sub _pre_tool_use_context {
     if (length $rendered_input) {
         my @learned = tool_response_summary_lines(text => $rendered_input);
         if (@learned) {
-            push @lines, 'Input cues:';
+            push @lines, "Input cues for `$label`:";
             push @lines, map { "- $_" } @learned;
         }
     }
@@ -661,14 +664,22 @@ sub _permission_request_context {
 sub _post_tool_use_context {
     my ($payload) = @_;
     my $tool_name = $payload->{tool_name} // 'tool';
+    my $label = tool_group_label($tool_name);
+    my $group = tool_group_name($tool_name);
     my $rendered = stringify_payload_text(value => $payload->{tool_response}, limit => 4000);
     return undef if $rendered !~ /\b(error|failed|exception|permission denied|not found|timed out|warning)\b/i;
 
-    my @lines = (
-        "Post-tool follow-up for `$tool_name`:",
-        '- The tool output shows a failure or warning signal; tighten the next step to the failing boundary instead of widening scope.',
-        '- If execution stayed blocked, explain the boundary concretely before asking for more permissions or ending the turn.',
-    );
+    my @lines = ("Post-tool follow-up for `$label` (`$tool_name`):");
+    if ($group eq 'shell') {
+        push @lines, '- The shell output shows a failure or warning; tighten the next step to the failing command, flag, or path instead of widening scope.';
+    } elsif ($group eq 'edit') {
+        push @lines, '- The edit result shows a failure or warning; inspect the exact patch boundary before attempting another mutation.';
+    } elsif ($group eq 'mcp') {
+        push @lines, '- The MCP response shows a failure or warning; keep the next connector call scoped to the failing server, tool, or argument.';
+    } else {
+        push @lines, '- The tool output shows a failure or warning signal; tighten the next step to the failing boundary instead of widening scope.';
+    }
+    push @lines, '- If execution stayed blocked, explain the boundary concretely before asking for more permissions or ending the turn.';
     my @learned = tool_response_summary_lines(text => $rendered);
     if (@learned) {
         push @lines, 'Learned from tool output:';
@@ -693,7 +704,8 @@ sub _subagent_start_context {
 }
 
 sub _subagent_stop_context {
-    return stop_system_message();
+    my ($payload) = @_;
+    return stop_system_message(payload => $payload);
 }
 
 sub run_event {
@@ -742,7 +754,7 @@ sub run_event {
         return 0;
     }
     if ($event_arg eq 'subagent-stop') {
-        emit_system_message(_subagent_stop_context());
+        emit_system_message(_subagent_stop_context($payload));
         _stop_common($manifest, $payload, 'SubagentStop');
         return 0;
     }

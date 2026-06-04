@@ -51,7 +51,6 @@ from common import _first_unresolved_codex_placeholder_outside_toml_multiline_st
 from common import _replace_known_placeholders_outside_toml_multiline_strings
 from common import _toml_multiline_string_spans
 from common import ensure_gitlab_url
-from common import ensure_https_url
 from common import ensure_safe_absolute_path
 from common import ensure_safe_shell_export_value
 from common import ensure_sha256
@@ -68,14 +67,21 @@ from common import resolve_placeholders
 from common import toml_key
 from common import toml_value
 from config_merge import compile_vendor_config
-from hooks_builder import render_hook_driver_from_manifest_path
-from hooks_builder import render_hooks_json_from_manifest_path
+from hooks_builder import validate_inline_hooks_config
 from layout import RepoLayout
 from layout import RuntimeLayout
 from plugin_bundles import PluginBundleSpec
 from plugin_bundles import render_runtime_plugin_marketplace
 from apps_config import effective_plugins_inventory_payload
 from lib.fs_ops import needs_sudo_remove, needs_sudo_write
+from lib.managed_secrets import ManagedSecretsConfig
+from lib.managed_secrets import ManagedSecretsError
+from lib.managed_secrets import SECRETS_FILENAME
+from lib.managed_secrets import clear_managed_secret
+from lib.managed_secrets import lookup_managed_secret
+from lib.managed_secrets import parse_managed_secrets_file
+from lib.managed_secrets import secret_tool_available
+from lib.managed_secrets import store_managed_secret
 from lib.release_assets import ReleaseAssetError, discover_release_binaries
 from lib.runtime import (
     RuntimeRenderError,
@@ -115,14 +121,12 @@ ENV_REQUIRED = (
     "CODEX_SYSTEM_DIR",
     "CODEX_USER_DIR",
     "CODEX_SHARE_DIR",
+    "CODEX_WRAPPER_DIR",
     "CODEX_MCP_DIR",
     "CODEX_BACKUP_DIR",
     "CODEX_DOWNLOAD_URL",
     "CODEX_DOWNLOAD_SHA",
     "CODEX_DOWNLOAD_PKG",
-    "BWS_RELEASE_COMMIT_SHA",
-    "BWS_RELEASE_URL",
-    "BWS_RELEASE_SHA256",
 )
 
 ENV_ROOT_KEYS = (
@@ -190,17 +194,19 @@ HOME_BACKUP_EXCLUDE_ROOT_CHILDREN = frozenset({"tmp"})
 INSTRUCTIONS_MANIFEST_FILENAME = "metadata.json"
 USER_APPS_FILENAME = "apps.toml"
 PLUGINS_METADATA_FILENAME = "manifest.json"
-LOOKUP_SECRET_SERVICE_FILENAME = "lookup-secret-service.env"
 INSTRUCTIONS_GROUP_PATTERN = re.compile(r"^[a-z0-9][a-z0-9_-]*$")
 INSTRUCTIONS_ENTRY_KEY_PATTERN = re.compile(r"^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)*$")
 INSTRUCTIONS_ENTRY_FILENAME_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*$")
 INSTRUCTIONS_ALLOWED_SUFFIXES = {".json", ".lark", ".md"}
 VERSION_PATTERN = re.compile(r"([0-9]+\.[0-9]+\.[0-9]+(?:\.[0-9]+)*(?:-[A-Za-z0-9._]+)*)")
-SHA1_PATTERN = re.compile(r"^[A-Fa-f0-9]{40}$")
 ENV_KEY_PATTERN = re.compile(r"^[A-Z][A-Z0-9_]*$")
-INSTALL_BWS_SECRET_SERVICE = "bws-cli"
-INSTALL_BWS_KWALLET_FOLDER = "Passwords"
-KWALLET_QUERY_TIMEOUT_SECONDS = 15
+RELEASE_CREDENTIAL_KEYS = ("GL_DEPLOY_RELEASE_USERNAME", "GL_DEPLOY_RELEASE_TOKEN")
+DRY_RUN_STAGE_ROOT = Path("/data/dryrun/codex")
+DRY_RUN_STAGE_ACTIVATE_FILENAME = "activate-codex-env.sh"
+STAGE_SOURCE_BUILD_ROOT_KEY = "CODEX_SOURCE_BUILD_ROOT"
+STAGE_SOURCE_CACHE_ROOT_KEY = "CODEX_SOURCE_CACHE_ROOT"
+STAGE_SOURCE_OUTPUT_DIR_KEY = "CODEX_SOURCE_OUTPUT_DIR"
+STAGE_SOURCE_CHECKOUT_DIR_KEY = "CODEX_SOURCE_CHECKOUT_DIR"
 
 
 def parse_launch_env_table(
@@ -236,11 +242,12 @@ class CompiledArtifacts:
 
 
 class Installer:
-    def __init__(self, repo_root: Path, dry_run: bool) -> None:
+    def __init__(self, repo_root: Path, dry_run: bool, *, stage_root: Path | None = None) -> None:
         self.repo_root = repo_root
         self.repo_layout = RepoLayout.from_repo_root(repo_root)
         self.runtime_layout: RuntimeLayout | None = None
         self.dry_run = dry_run
+        self.stage_root = stage_root.resolve(strict=False) if stage_root is not None else None
         self.user_home = Path.home()
 
         self.env_path = repo_root / ".env"
@@ -264,13 +271,77 @@ class Installer:
         self.plugins_payload: dict[str, Any] = {}
         self.plugins_metadata_payload: dict[str, Any] = {}
         self.effective_plugins_metadata_payload: dict[str, Any] = {}
+        self.secrets_config: ManagedSecretsConfig | None = None
         self.allowed_roots: list[Path] = []
         self._keyring_secret_cache: dict[str, str] = {}
         self._release_credentials_cache: tuple[str, str] | None = None
         self._warnings_emitted: set[str] = set()
 
+    def _stage_mode(self) -> bool:
+        return getattr(self, "stage_root", None) is not None
+
+    def _resolved_stage_root(self) -> Path:
+        stage_root = getattr(self, "stage_root", None)
+        if stage_root is None:
+            fail("staged dry-run root is not configured")
+        return stage_root
+
+    def _stage_env_overrides(self) -> dict[str, str]:
+        root = self._resolved_stage_root()
+        return {
+            "CODEX_ROOT_DIR": str(root),
+            "CODEX_SYSTEM_DIR": str(root / "etc" / "codex"),
+            "CODEX_USER_DIR": str(root / "usr"),
+            "CODEX_SHARE_DIR": str(root / "share"),
+            "CODEX_WRAPPER_DIR": str(root / "bin"),
+            "CODEX_MCP_DIR": str(root / "mcp"),
+            "CODEX_BACKUP_DIR": str(root / "backup"),
+        }
+
+    def _stage_sqlite_home(self) -> Path:
+        return self._resolved_stage_root() / "sqlite"
+
+    def _stage_activation_path(self) -> Path:
+        return self._resolved_stage_root() / DRY_RUN_STAGE_ACTIVATE_FILENAME
+
+    def _stage_source_build_overrides(self) -> dict[str, str]:
+        root = self._resolved_stage_root() / "source-build"
+        return {
+            STAGE_SOURCE_BUILD_ROOT_KEY: str(root / "build"),
+            STAGE_SOURCE_CACHE_ROOT_KEY: str(root / "cache"),
+            STAGE_SOURCE_OUTPUT_DIR_KEY: str(root / "output"),
+            STAGE_SOURCE_CHECKOUT_DIR_KEY: str(root / "checkout"),
+        }
+
+    def _configure_stage_process_tmpdir(self) -> None:
+        stage_root = self._resolved_stage_root()
+        tmpdir = Path(self.runtime_vars["CODEX_TMPDIR"])
+        process_home = stage_root / "process-home"
+        for path in (
+            tmpdir,
+            process_home,
+            process_home / ".cargo",
+            process_home / ".rustup",
+            process_home / ".cache",
+            process_home / ".config",
+            process_home / ".local" / "state",
+        ):
+            self._mkdir_path(path)
+        rendered = str(tmpdir)
+        for key in PROCESS_TEMP_ENV_KEYS:
+            os.environ[key] = rendered
+        os.environ["HOME"] = str(process_home)
+        os.environ["CARGO_HOME"] = str(process_home / ".cargo")
+        os.environ["RUSTUP_HOME"] = str(process_home / ".rustup")
+        os.environ["XDG_CACHE_HOME"] = str(process_home / ".cache")
+        os.environ["XDG_CONFIG_HOME"] = str(process_home / ".config")
+        os.environ["XDG_STATE_HOME"] = str(process_home / ".local" / "state")
+        tempfile.tempdir = rendered
+
     def load(self) -> None:
         self.env = parse_env_file(self.env_path)
+        if self._stage_mode():
+            self.env.update(self._stage_env_overrides())
         vars_payload = parse_toml_file(self.vars_path)
         mcp_payload_raw = parse_toml_file(self.mcp_path)
         self.skills_payload = parse_json_file(self.skills_path)
@@ -296,12 +367,20 @@ class Installer:
             self.runtime_vars = derive_runtime_globals_from_env(self.env)
         except RuntimeRenderError as exc:
             fail(str(exc))
-        self.global_vars = dict(parsed_globals)
-        sqlite_home = self.global_vars.get("CODEX_SQLITE_HOME", "").strip()
-        if sqlite_home:
-            self.runtime_vars["CODEX_SQLITE_HOME"] = sqlite_home
+        if self._stage_mode():
+            self.runtime_vars["CODEX_SQLITE_HOME"] = str(self._stage_sqlite_home())
+            self.global_vars = dict(parsed_globals)
+            for key in GLOBAL_EXPORT_PATH_KEYS:
+                self.global_vars[key] = self.runtime_vars[key]
+        else:
+            self.global_vars = dict(parsed_globals)
+            sqlite_home = self.global_vars.get("CODEX_SQLITE_HOME", "").strip()
+            if sqlite_home:
+                self.runtime_vars["CODEX_SQLITE_HOME"] = sqlite_home
 
         self.runtime_layout = RuntimeLayout.from_env(self.env, self.runtime_vars)
+        if self._stage_mode():
+            self._configure_stage_process_tmpdir()
         self._sanitize_process_tmpdir()
         self.variables = dict(self.env)
         self.variables.update(self.runtime_vars)
@@ -310,6 +389,10 @@ class Installer:
             self.plugins_json_path,
             variables=self.variables,
         )
+        try:
+            self.secrets_config = parse_managed_secrets_file(self._managed_secrets_source_path())
+        except ManagedSecretsError as exc:
+            fail(str(exc))
         user_env_payload = parse_toml_file(self.user_env_path)
         if "launch_env" not in user_env_payload:
             self._warn_once(f"{self.user_env_path} does not define [launch_env]; continuing with no launch_env exports")
@@ -340,15 +423,15 @@ class Installer:
             self.repo_layout.home_user_dir,
             self.repo_layout.hooks_dir,
             self.repo_layout.hooks_scripts_dir,
-            self.repo_layout.hooks_manifest_path,
             self.repo_layout.hooks_dir / "schema" / "generated",
+            self._hooks_runtime_config_source_path(),
             self.repo_layout.instructions_dir,
             self.repo_layout.instructions_metadata_path,
             self.repo_layout.skills_dir,
             self.repo_layout.skills_metadata_path,
             self.repo_layout.plugins_inventory_path,
             self.repo_layout.plugins_skills_dir,
-            self._lookup_secret_service_source_path(),
+            self._managed_secrets_source_path(),
         )
         for path in required_paths:
             if not path.exists():
@@ -366,14 +449,12 @@ class Installer:
 
         for key in ENV_ROOT_KEYS:
             ensure_safe_absolute_path(key, self.env[key])
+        wrapper_dir = ensure_safe_absolute_path("CODEX_WRAPPER_DIR", self.env["CODEX_WRAPPER_DIR"])
+        if wrapper_dir == Path("/"):
+            fail("CODEX_WRAPPER_DIR must not be /")
 
         ensure_sha256("CODEX_DOWNLOAD_SHA", self.env["CODEX_DOWNLOAD_SHA"])
-        ensure_sha256("BWS_RELEASE_SHA256", self.env["BWS_RELEASE_SHA256"])
-        if not SHA1_PATTERN.fullmatch(self.env["BWS_RELEASE_COMMIT_SHA"]):
-            fail("BWS_RELEASE_COMMIT_SHA must be 40 hex characters")
-
         ensure_gitlab_url("CODEX_DOWNLOAD_URL", self.env["CODEX_DOWNLOAD_URL"])
-        ensure_https_url("BWS_RELEASE_URL", self.env["BWS_RELEASE_URL"])
 
         self.allowed_roots = [ensure_safe_absolute_path(key, self.env[key]) for key in ENV_ROOT_KEYS]
 
@@ -429,11 +510,65 @@ class Installer:
         validate_plugin_bundle_inventory(self, self.repo_layout.plugins_skills_dir)
         if self.sandbox_path.is_file():
             parse_toml_file(self.sandbox_path)
+        validate_inline_hooks_config(self.repo_layout.user_apps_path, self._hooks_source_dir())
+        self._validate_managed_secrets_config()
         self._validate_repo_layout()
-        self._render_runtime_hooks_config()
         self._render_user_config_toml("", Path(self.runtime_vars["CODEX_HOME"]) / "config.toml")
 
+    def _expected_managed_secret_mcp_map(self) -> dict[str, list[str]]:
+        mcp_servers = self.mcp_payload.get("mcp_servers")
+        if not isinstance(mcp_servers, dict):
+            fail("config/vendor/mcp.toml must declare [mcp_servers]")
+
+        expected: dict[str, list[str]] = {}
+        for server_name, server in mcp_servers.items():
+            if not isinstance(server_name, str) or not isinstance(server, dict):
+                fail(f"config/vendor/mcp.toml mcp_servers entry is invalid: {server_name}")
+            token_key = server.get("bearer_token_env_var")
+            if isinstance(token_key, str) and token_key.strip():
+                expected[server_name] = [token_key.strip()]
+        return expected
+
+    def _validate_managed_secrets_config(self) -> None:
+        config = self.secrets_config
+        if config is None:
+            fail("managed secrets config is not loaded")
+
+        expected = self._expected_managed_secret_mcp_map()
+        actual = config.mcp_servers
+        expected_servers = set(expected)
+        actual_servers = set(actual)
+        if expected_servers != actual_servers:
+            missing = sorted(expected_servers - actual_servers)
+            unexpected = sorted(actual_servers - expected_servers)
+            details: list[str] = []
+            if missing:
+                details.append(f"missing servers: {', '.join(missing)}")
+            if unexpected:
+                details.append(f"unexpected servers: {', '.join(unexpected)}")
+            fail(f"{self._managed_secrets_source_path()} is out of sync with config/vendor/mcp.toml ({'; '.join(details)})")
+
+        seen_keys: dict[str, str] = {}
+        for server_name in sorted(expected):
+            expected_keys = sorted(expected[server_name])
+            actual_keys = sorted(actual[server_name])
+            if actual_keys != expected_keys:
+                fail(
+                    f"{self._managed_secrets_source_path()} mcp_servers.{server_name} must declare "
+                    f"{', '.join(expected_keys)}"
+                )
+            for key in actual_keys:
+                existing_server = seen_keys.get(key)
+                if existing_server is not None:
+                    fail(
+                        f"{self._managed_secrets_source_path()} reuses env key {key} "
+                        f"across mcp_servers.{existing_server} and mcp_servers.{server_name}"
+                    )
+                seen_keys[key] = server_name
+
     def _sanitize_process_tmpdir(self) -> None:
+        if self._stage_mode():
+            return
         tmpdir_value = self.runtime_vars.get("CODEX_TMPDIR", "").strip()
         if not tmpdir_value:
             return
@@ -454,10 +589,16 @@ class Installer:
             tempfile.tempdir = None
 
     def compile(self, output_dir: Path) -> CompiledArtifacts:
-        output_dir.mkdir(parents=True, exist_ok=True)
+        target_output_dir = output_dir
+        if self.dry_run:
+            target_output_dir = Path(tempfile.mkdtemp(prefix="codex-compile-", dir=tempfile.gettempdir()))
+        self._mkdir_path(target_output_dir)
         merged_config = compile_vendor_config(self.repo_layout, self.variables)
-        config_out = output_dir / "config.toml"
-        config_out.write_text(merged_config, encoding="utf-8")
+        config_out = target_output_dir / "config.toml"
+        if self.dry_run:
+            config_out.write_text(merged_config, encoding="utf-8")
+        else:
+            self._write_file(config_out, merged_config)
         return CompiledArtifacts(config_toml=config_out)
 
     def _log(self, message: str) -> None:
@@ -472,6 +613,9 @@ class Installer:
     def _share_dir(self) -> Path:
         return ensure_safe_absolute_path("CODEX_SHARE_DIR", self.env["CODEX_SHARE_DIR"])
 
+    def _wrapper_dir(self) -> Path:
+        return ensure_safe_absolute_path("CODEX_WRAPPER_DIR", self.env["CODEX_WRAPPER_DIR"])
+
     def _schema_root_dir(self) -> Path:
         return ensure_safe_absolute_path("CODEX_ROOT_DIR", self.env["CODEX_ROOT_DIR"]) / "schema"
 
@@ -484,20 +628,20 @@ class Installer:
     def _tmpfs_helper_target(self) -> Path:
         return self._helpers_dir() / TMPFS_HELPER_FILENAME
 
-    def _lookup_secret_service_dir(self) -> Path:
+    def _managed_secrets_dir(self) -> Path:
         return ensure_safe_absolute_path("CODEX_ROOT_DIR", self.env["CODEX_ROOT_DIR"]) / "lookup"
 
-    def _lookup_secret_service_path(self) -> Path:
-        return self._lookup_secret_service_dir() / LOOKUP_SECRET_SERVICE_FILENAME
+    def _managed_secrets_path(self) -> Path:
+        return self._managed_secrets_dir() / SECRETS_FILENAME
 
-    def _lookup_secret_service_source_path(self) -> Path:
-        return self.repo_root / LOOKUP_SECRET_SERVICE_FILENAME
+    def _managed_secrets_source_path(self) -> Path:
+        return self.repo_root / SECRETS_FILENAME
 
-    def _lookup_secret_env_helper_source_path(self) -> Path:
+    def _managed_secret_env_helper_source_path(self) -> Path:
         return self.repo_root / "src" / "python" / "lib" / "keyring_env.py"
 
-    def _lookup_secret_env_helper_target(self) -> Path:
-        return self._helpers_dir() / "codex-bws-env.py"
+    def _managed_secret_env_helper_target(self) -> Path:
+        return self._helpers_dir() / "codex-secret-tool-env.py"
 
     def _mcp_dir(self) -> Path:
         return ensure_safe_absolute_path("CODEX_MCP_DIR", self.env["CODEX_MCP_DIR"])
@@ -546,12 +690,6 @@ class Installer:
             return self.runtime_layout.hooks_dir
         home_dir = ensure_safe_absolute_path("CODEX_HOME", self.runtime_vars["CODEX_HOME"])
         return home_dir / "hooks"
-
-    def _runtime_hooks_config_path(self) -> Path:
-        if self.runtime_layout is not None:
-            return self.runtime_layout.hooks_config_path
-        home_dir = ensure_safe_absolute_path("CODEX_HOME", self.runtime_vars["CODEX_HOME"])
-        return home_dir / "hooks.json"
 
     def _runtime_hooks_scripts_dir(self) -> Path:
         return self._runtime_hooks_dir() / "scripts"
@@ -662,18 +800,11 @@ class Installer:
     def _hooks_source_dir(self) -> Path:
         return self.repo_layout.hooks_scripts_dir
 
-    def _hooks_manifest_source_path(self) -> Path:
-        return self.repo_layout.hooks_manifest_path
-
     def _hooks_schema_source_dir(self) -> Path:
         return self.repo_layout.hooks_dir / "schema" / "generated"
 
-    def _render_runtime_hooks_config(self) -> str:
-        return render_hooks_json_from_manifest_path(self._hooks_manifest_source_path())
-
-    def _render_runtime_hook_driver(self) -> str:
-        template_path = self.repo_layout.hooks_scripts_dir / "hook_driver.pl"
-        return render_hook_driver_from_manifest_path(self._hooks_manifest_source_path(), template_path)
+    def _hooks_runtime_config_source_path(self) -> Path:
+        return self.repo_layout.hooks_scripts_dir / "lib" / "Codex" / "Hook" / "RuntimeConfig.pm"
 
     def _plugins_source_dir(self) -> Path:
         return self.repo_layout.plugins_skills_dir
@@ -909,10 +1040,10 @@ class Installer:
         path_values.add(str(self._default_sqlite_home()))
         path_values.add(str(Path(self.env["CODEX_SYSTEM_DIR"]) / "skills"))
         path_values.add(str(Path(self.env["CODEX_SHARE_DIR"]) / "bin"))
-        path_values.add(str(Path(self.env["CODEX_SHARE_DIR"]) / "shims"))
         path_values.add(str(Path(self.env["CODEX_SHARE_DIR"]) / "helpers"))
         path_values.add(str(Path(self.env["CODEX_SHARE_DIR"]) / "release" / "pkg"))
-        path_values.add(str(self._lookup_secret_service_dir()))
+        path_values.add(str(self._wrapper_dir()))
+        path_values.add(str(self._managed_secrets_dir()))
         path_values.add(str(self._runtime_instructions_dir()))
         path_values.add(str(self._runtime_plugins_dir()))
         path_values.add(str(self._runtime_plugin_marketplace_dir()))
@@ -927,36 +1058,117 @@ class Installer:
             Path(self.env["CODEX_SYSTEM_DIR"]) / "skills",
             Path(self.env["CODEX_SHARE_DIR"]),
             Path(self.env["CODEX_SHARE_DIR"]) / "bin",
-            Path(self.env["CODEX_SHARE_DIR"]) / "shims",
             Path(self.env["CODEX_SHARE_DIR"]) / "helpers",
             Path(self.env["CODEX_SHARE_DIR"]) / "release" / "pkg",
+            self._wrapper_dir(),
             self._schema_root_dir(),
             Path(self.runtime_vars["CODEX_SKILLS"]),
             self._default_sqlite_home(),
-            self._lookup_secret_service_dir(),
+            self._managed_secrets_dir(),
         }
         for path in sorted(path_values):
             self._mkdir_path(path)
 
-    def _ensure_lookup_secret_service_file(self) -> None:
-        path = self._lookup_secret_service_path()
-        source = self._lookup_secret_service_source_path()
-        if not source.is_file():
-            fail(f"missing lookup secret service source file: {source}")
-        self._mkdir_path(path.parent)
-        if path.exists():
-            if not path.is_file():
-                fail(f"lookup secret service file must be a regular file: {path}")
+    def _enabled_managed_secret_entries(self) -> list[tuple[str, str]]:
+        config = self.secrets_config
+        if config is None:
+            fail("managed secrets config is not loaded")
+
+        entries: list[tuple[str, str]] = []
+        for server_name in sorted(config.mcp_servers):
+            for key in sorted(config.mcp_servers[server_name]):
+                if config.mcp_servers[server_name][key]:
+                    entries.append((server_name, key))
+        return entries
+
+    def _prompt_managed_secret_value(self, *, server_name: str, key: str) -> str | None:
+        if not sys.stdin.isatty() or not sys.stderr.isatty():
+            self._warn_once(
+                f"managed secret {key} is enabled for mcp_servers.{server_name} but no interactive terminal is "
+                "available; continuing without storing it"
+            )
+            return None
+
+        prompt = f"Enter {key} for mcp_servers.{server_name} (or 's' to skip): "
+        while True:
+            value = getpass.getpass(prompt)
+            normalized = value.strip()
+            if normalized.lower() == "s":
+                return None
+            if not normalized:
+                print(f"[warn] {key} cannot be empty; enter a value or 's' to skip")
+                continue
+            if "\n" in normalized or "\r" in normalized:
+                fail(f"{key} must be single-line")
+            return normalized
+
+    def _ensure_enabled_managed_secrets(self) -> None:
+        entries = self._enabled_managed_secret_entries()
+        if not entries:
             return
+        if not secret_tool_available():
+            fail("secret-tool is required when secrets.toml enables managed MCP credentials")
+
+        for server_name, key in entries:
+            try:
+                if lookup_managed_secret(key).strip():
+                    continue
+            except ManagedSecretsError as exc:
+                fail(str(exc))
+
+            value = self._prompt_managed_secret_value(server_name=server_name, key=key)
+            if value is None:
+                self._warn_once(f"skipping optional managed secret {key} for mcp_servers.{server_name}")
+                continue
+            try:
+                store_managed_secret(key, value)
+            except ManagedSecretsError as exc:
+                fail(str(exc))
+
+    def _clear_all_managed_secrets(self) -> None:
+        config = self.secrets_config
+        if config is None:
+            fail("managed secrets config is not loaded")
+        keys = config.all_env_keys()
+        if not keys:
+            return
+        if not secret_tool_available():
+            fail("secret-tool is required to clear managed MCP credentials during uninstall")
+        for key in keys:
+            try:
+                clear_managed_secret(key)
+            except ManagedSecretsError as exc:
+                fail(str(exc))
+
+    def _sync_managed_secrets_file(self) -> None:
+        path = self._managed_secrets_path()
+        source = self._managed_secrets_source_path()
+        if not source.is_file():
+            fail(f"missing managed secrets source file: {source}")
+        self._mkdir_path(path.parent)
+        if path.exists() and not path.is_file():
+            fail(f"managed secrets file must be a regular file: {path}")
         self._copy_file(source, path, mode=0o644)
 
     def _secure_exec_directories(self) -> None:
         desired_mode = 0o755
         secure_paths = {
             Path(self.env["CODEX_SHARE_DIR"]) / "bin",
-            Path(self.env["CODEX_SHARE_DIR"]) / "shims",
             Path(self.env["CODEX_SHARE_DIR"]) / "helpers",
+            self._wrapper_dir(),
         }
+        if self._stage_mode():
+            for path in sorted(secure_paths):
+                self._mkdir_path(path)
+                if self.dry_run:
+                    print(f"[dry-run] chmod {desired_mode:o} -- {path}")
+                    continue
+                try:
+                    os.chmod(path, desired_mode)
+                except PermissionError:
+                    self._run_with_sudo(["chmod", f"{desired_mode:o}", str(path)])
+            return
+
         for path in sorted(secure_paths):
             if self.dry_run:
                 print(f"[dry-run] secure root-owned exec dir {path} mode {desired_mode:o}")
@@ -1129,12 +1341,6 @@ class Installer:
             skip_root_toml=False,
             mirror_deletions=True,
         )
-        self._write_file(
-            self._runtime_hooks_scripts_dir() / "hook_driver.pl",
-            self._render_runtime_hook_driver(),
-            mode=0o755,
-        )
-        self._write_file(self._runtime_hooks_config_path(), self._render_runtime_hooks_config())
 
     def _sync_tree_filtered(
         self,
@@ -1376,15 +1582,18 @@ class Installer:
     def _sync_tmpfs_helper(self, launch_env: dict[str, str] | None = None) -> None:
         try:
             effective_launch_env = self.launch_env if launch_env is None else launch_env
-            content = render_codex_tmpfs_helper(launch_env=effective_launch_env)
+            content = render_codex_tmpfs_helper(
+                launch_env=effective_launch_env,
+                mount_enabled=not self._stage_mode(),
+            )
         except RuntimeRenderError as exc:
             fail(str(exc))
         self._write_file(self._tmpfs_helper_target(), content, mode=0o755)
 
-    def _sync_lookup_secret_env_helper(self) -> None:
+    def _sync_managed_secret_env_helper(self) -> None:
         self._copy_file(
-            self._lookup_secret_env_helper_source_path(),
-            self._lookup_secret_env_helper_target(),
+            self._managed_secret_env_helper_source_path(),
+            self._managed_secret_env_helper_target(),
             mode=0o755,
         )
 
@@ -1419,6 +1628,7 @@ class Installer:
         try:
             content = render_shell_path_profile(
                 self._share_dir(),
+                self._wrapper_dir(),
                 self.global_vars,
                 guard_user=self._current_username(),
             )
@@ -1500,15 +1710,18 @@ class Installer:
         if not target.is_file():
             fail(f"missing shell PATH profile: {target}")
         text = target.read_text(encoding="utf-8")
-        shims = str(self._share_dir() / "shims")
+        wrappers = str(self._wrapper_dir())
         helpers = str(self._share_dir() / "helpers")
         bin_dir = str(self._share_dir() / "bin")
-        if shims not in text:
-            fail(f"shell PATH profile missing shims directory: {target}")
+        legacy_shims = str(self._share_dir() / "shims")
+        if wrappers not in text:
+            fail(f"shell PATH profile missing wrapper directory: {target}")
         if helpers not in text:
             fail(f"shell PATH profile missing helpers directory: {target}")
         if bin_dir in text:
             fail(f"shell PATH profile must not add share/bin to PATH: {target}")
+        if legacy_shims in text:
+            fail(f"shell PATH profile must not add legacy share/shims to PATH: {target}")
         guard_marker = f'codex_target_user="{self._current_username()}"'
         if guard_marker not in text:
             fail(f"shell PATH profile missing current-user guard: {target}")
@@ -1544,33 +1757,35 @@ class Installer:
         launch_env: dict[str, str] | None = None,
     ) -> None:
         if self.dry_run and not binary_names:
-            print("[dry-run] write shims for all release binaries discovered at install time")
+            print("[dry-run] write wrappers for all release binaries discovered at install time")
             return
         if not binary_names:
-            fail("release install did not produce any binaries for shim generation")
+            fail("release install did not produce any binaries for wrapper generation")
 
         share_dir = self._share_dir()
+        wrapper_dir = self._wrapper_dir()
         effective_launch_env = self.launch_env if launch_env is None else launch_env
-        lookup_secret_service_path = self._lookup_secret_service_path()
-        lookup_helper_path = self._lookup_secret_env_helper_target()
+        managed_secrets_path = self._managed_secrets_path()
+        managed_secret_helper_path = self._managed_secret_env_helper_target()
         for name in sorted(set(binary_names)):
-            shim_path = share_dir / "shims" / name
+            shim_path = wrapper_dir / name
             binary_path = share_dir / "bin" / name
             try:
                 shim_content = render_codex_shim(
                     binary_path,
                     launch_env=effective_launch_env,
                     share_dir=share_dir,
-                    lookup_secret_service_path=lookup_secret_service_path,
-                    lookup_helper_path=lookup_helper_path,
+                    wrapper_dir=wrapper_dir,
+                    managed_secrets_path=managed_secrets_path,
+                    managed_secret_helper_path=managed_secret_helper_path,
                 )
             except RuntimeRenderError as exc:
                 fail(str(exc))
             self._write_file(shim_path, shim_content, mode=0o755)
 
     def _install_runtime_binary_wrappers(self, binary_names: list[str]) -> None:
-        self._log("installing lookup secret service helper")
-        self._sync_lookup_secret_env_helper()
+        self._log("installing managed secret helper")
+        self._sync_managed_secret_env_helper()
         self._sync_release_shims(binary_names)
         self._log("installing shell completion files")
         self._install_user_shell_completions()
@@ -1578,7 +1793,7 @@ class Installer:
         self._sync_schema_helpers()
 
     def _existing_release_shim_names(self) -> list[str]:
-        shims_dir = self._share_dir() / "shims"
+        shims_dir = self._wrapper_dir()
         if not shims_dir.is_dir():
             return []
         shim_names = sorted(path.name for path in shims_dir.iterdir() if path.is_file())
@@ -1590,7 +1805,7 @@ class Installer:
         return sorted(path.name for path in bin_dir.iterdir() if path.is_file())
 
     def _refresh_runtime_launch_wrappers(self, launch_env: dict[str, str]) -> None:
-        self._sync_lookup_secret_env_helper()
+        self._sync_managed_secret_env_helper()
         shim_names = self._existing_release_shim_names()
         if shim_names:
             self._sync_release_shims(shim_names, launch_env=launch_env)
@@ -1608,18 +1823,18 @@ class Installer:
 
     def apply_vars_init(self) -> None:
         self.setup_environment()
-        self._log("refreshing launch environment in runtime shims/helpers")
+        self._log("refreshing launch environment in runtime wrappers/helpers")
         self._refresh_runtime_launch_wrappers(self.launch_env)
 
     def apply_vars_reset(self) -> None:
-        self._log("removing launch environment from runtime shims/helpers")
+        self._log("removing launch environment from runtime wrappers/helpers")
         self._refresh_runtime_launch_wrappers({})
         self.reset_environment()
 
     def _verify_release_shims(self) -> None:
         share_dir = self._share_dir()
         bin_dir = share_dir / "bin"
-        shims_dir = share_dir / "shims"
+        shims_dir = self._wrapper_dir()
         if not bin_dir.is_dir():
             fail(f"missing release bin directory: {bin_dir}")
         if not shims_dir.is_dir():
@@ -1637,6 +1852,32 @@ class Installer:
                 fail(f"missing shim for release binary {binary.name}: {shim_path}")
             if not os.access(shim_path, os.X_OK):
                 fail(f"shim is not executable for release binary {binary.name}: {shim_path}")
+
+    def _is_managed_wrapper_file(self, path: Path) -> bool:
+        if path.is_symlink() or not path.is_file():
+            return False
+        try:
+            text = path.read_text(encoding="utf-8", errors="ignore")[:4096]
+        except OSError:
+            return False
+        return "# managed by codex installer" in text
+
+    def _managed_wrapper_targets_for_uninstall(self) -> list[Path]:
+        wrapper_dir = self._wrapper_dir()
+        targets: set[Path] = set()
+        bin_dir = self._share_dir() / "bin"
+
+        if bin_dir.is_dir():
+            for binary in sorted(bin_dir.iterdir(), key=lambda item: item.name):
+                if binary.is_file() and not binary.is_symlink():
+                    targets.add(wrapper_dir / binary.name)
+
+        if wrapper_dir.is_dir():
+            for candidate in sorted(wrapper_dir.iterdir(), key=lambda item: item.name):
+                if self._is_managed_wrapper_file(candidate):
+                    targets.add(candidate)
+
+        return sorted(targets, key=lambda item: str(item))
 
     def _copy_backup_source(
         self,
@@ -1708,7 +1949,7 @@ class Installer:
 
     def _backup_install_state(self, *, flow: str) -> None:
         backup_root = ensure_safe_absolute_path("CODEX_BACKUP_DIR", self.env["CODEX_BACKUP_DIR"])
-        if flow not in {"install", "upgrade", "uninstall"}:
+        if flow not in {"install", "update", "upgrade", "uninstall"}:
             fail(f"unsupported backup flow: {flow}")
         sources = self._backup_source_paths()
         account_key = self._backup_account_key(sources)
@@ -1770,6 +2011,49 @@ class Installer:
         self._log("installing current-user environment exports and hooks")
         self._install_shell_path_profile()
         self._install_user_shell_hooks()
+
+    def _stage_environment_exports(self) -> dict[str, str]:
+        exports = dict(self.global_vars)
+        exports.update(self.launch_env)
+        return exports
+
+    def _install_stage_environment_exports(self) -> None:
+        activation_path = self._stage_activation_path()
+        try:
+            content = render_shell_path_profile(
+                self._share_dir(),
+                self._wrapper_dir(),
+                self._stage_environment_exports(),
+            )
+        except RuntimeRenderError as exc:
+            fail(str(exc))
+        self._write_file(activation_path, content, mode=0o755)
+        print(f'[info] source "{activation_path}" to test the staged dry-run wrappers')
+
+    def _prepare_runtime_install_state(self, artifacts: CompiledArtifacts, *, flow: str) -> None:
+        self._log(f"creating {flow} backup")
+        self._backup_install_state(flow=flow)
+        self._log("ensuring runtime directories")
+        self._ensure_runtime_directories()
+        self._log("syncing managed secrets file")
+        self._sync_managed_secrets_file()
+        if self._stage_mode():
+            self._log("skipping managed secret-tool mutation for staged dry-run install")
+        else:
+            self._log("checking managed secret-tool entries")
+            self._ensure_enabled_managed_secrets()
+        self._log("hardening executable directories")
+        self._secure_exec_directories()
+        self.apply_home_bundle()
+        self.apply_admin(artifacts)
+        self.setup_environment()
+        self._log("installing tmpfs helper")
+        self._sync_tmpfs_helper()
+        if self._stage_mode():
+            self._log("skipping tmpfs mount for staged dry-run install")
+        else:
+            self._log("ensuring runtime tmpfs mount")
+            self.mount_runtime_tmpfs()
 
     def _managed_tmpfs_targets(self) -> list[Path]:
         raw_targets: list[tuple[str, str]] = []
@@ -1913,6 +2197,8 @@ class Installer:
         self._run_command(args)
 
     def reset_environment(self) -> None:
+        if self._stage_mode():
+            return
         self._log("removing current-user CODEX shell hooks and profile exports")
         self._purge_codex_environment()
 
@@ -1922,6 +2208,7 @@ class Installer:
             "CODEX_SYSTEM_DIR",
             "CODEX_USER_DIR",
             "CODEX_SHARE_DIR",
+            "CODEX_WRAPPER_DIR",
             "CODEX_MCP_DIR",
             "CODEX_BACKUP_DIR",
         )
@@ -1987,10 +2274,17 @@ class Installer:
                 continue
             target_paths.add(candidate)
 
+        target_paths.update(self._managed_wrapper_targets_for_uninstall())
         target_paths.add(self._path_profile_target())
 
         self._log("unmounting CODEX_TMPDIR when mounted")
         self._unmount_codex_tmpdir_if_mounted()
+
+        if self._stage_mode():
+            self._log("skipping managed secret-tool cleanup for staged dry-run uninstall")
+        else:
+            self._log("clearing managed secret-tool entries")
+            self._clear_all_managed_secrets()
 
         self._log("removing runtime paths (preserving backup/mcp/sqlite)")
         for target in sorted(target_paths, key=lambda item: (len(item.parts), str(item))):
@@ -2273,172 +2567,45 @@ class Installer:
             fail(f"unable to derive release version from package name: {package_name}")
         return matches[-1]
 
-    def _resolve_bws_binary(self) -> Path:
-        local = shutil.which("bws")
-        if local:
-            return Path(local)
-        return self._download_bws_fallback_binary()
-
-    def _download_bws_fallback_binary(self) -> Path:
-        url = self.env["BWS_RELEASE_URL"]
-        sha = self.env["BWS_RELEASE_SHA256"].lower()
-        if not url.startswith("https://"):
-            fail("BWS_RELEASE_URL must use https")
-
-        with tempfile.TemporaryDirectory(prefix="codex-bws-") as tmp_dir:
-            tmp_root = Path(tmp_dir)
-            archive = tmp_root / "bws.tar.gz"
-            self._download_file(url, archive, None, None)
-            actual_sha = hashlib.sha256(archive.read_bytes()).hexdigest()
-            if actual_sha != sha:
-                fail("fallback bws archive checksum mismatch")
-
-            try:
-                with tarfile.open(archive, "r:gz") as tf:
-                    safe_extractall(tf, tmp_root / "extract")
-            except (tarfile.TarError, ArchiveSafetyError) as exc:
-                fail(f"unable to extract fallback bws archive: {exc}")
-
-            for candidate in sorted((tmp_root / "extract").rglob("bws")):
-                if candidate.is_file():
-                    target = Path(tempfile.gettempdir()) / f"codex-bws-{int(time.time())}"
-                    shutil.copy2(candidate, target)
-                    target.chmod(0o755)
-                    return target
-        fail("fallback bws binary not found in archive")
-
-    def _prompt_bws_account_value(self, account: str) -> str:
-        if not sys.stdin.isatty() or not sys.stderr.isatty():
-            fail(f"missing keyring secret for {account} and no interactive terminal is available")
-        if account == "BWS_ACCESS_TOKEN":
-            value = getpass.getpass(f"Enter {account}: ")
-        else:
-            value = input(f"Enter {account}: ")
-        normalized = value.strip()
-        if not normalized:
-            fail(f"{account} cannot be empty")
-        if "\n" in normalized or "\r" in normalized:
-            fail(f"{account} must be single-line")
-        return normalized
-
-    def _install_bws_keyring_lookup(self, account: str) -> str:
-        cache_key = f"{INSTALL_BWS_SECRET_SERVICE}:{account}"
-        cached = self._keyring_secret_cache.get(cache_key, "").strip()
-        if cached:
-            return cached
-
-        value = ""
-        try:
-            kwallet_query = shutil.which("kwallet-query")
-            if kwallet_query:
-                proc = subprocess.run(
-                    [
-                        kwallet_query,
-                        "--read-password",
-                        account,
-                        "--folder",
-                        INSTALL_BWS_KWALLET_FOLDER,
-                        INSTALL_BWS_SECRET_SERVICE,
-                    ],
-                    check=False,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    text=True,
-                    timeout=KWALLET_QUERY_TIMEOUT_SECONDS,
-                )
-                if proc.returncode == 0:
-                    value = proc.stdout.strip()
-        except subprocess.TimeoutExpired:
-            fail("kwallet-query timed out while retrieving BWS bootstrap credentials")
-        except FileNotFoundError:
-            value = ""
-
-        if not value:
-            value = os.environ.get(account, "").strip()
-            if value:
-                self._log(f"using {account} from environment fallback")
-
-        if not value:
-            return ""
-
-        if "\n" in value or "\r" in value:
-            fail(f"{account} must be single-line")
-        self._keyring_secret_cache[cache_key] = value
-        return value
-
-    def _install_bws_keyring_credentials(self) -> tuple[str, str]:
-        project_id = self._install_bws_keyring_lookup("BWS_PROJECT_ID")
-        access_token = self._install_bws_keyring_lookup("BWS_ACCESS_TOKEN")
-        if project_id or access_token:
-            if not project_id or not access_token:
-                fail("bws-cli kwallet/env bootstrap must contain both BWS_PROJECT_ID and BWS_ACCESS_TOKEN")
-            return project_id, access_token
-
-        self._log("bws-cli kwallet unavailable; prompting for BWS credentials")
-        project_id = self._prompt_bws_account_value("BWS_PROJECT_ID")
-        access_token = self._prompt_bws_account_value("BWS_ACCESS_TOKEN")
-        if not project_id or not access_token:
-            fail("bws-cli kwallet/env bootstrap must contain both BWS_PROJECT_ID and BWS_ACCESS_TOKEN")
-        return project_id, access_token
-
-    def _bws_release_credentials(
+    def _read_release_credentials_from_mapping(
         self,
-        bws_bin: Path,
-        access_token: str,
-        project_id: str,
-    ) -> tuple[str, str]:
-        proc = subprocess.run(
-            [
-                str(bws_bin),
-                "--access-token",
-                access_token,
-                "run",
-                "--no-inherit-env",
-                "--project-id",
-                project_id,
-                "--",
-                "/usr/bin/env",
-            ],
-            check=False,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-        )
-        if proc.returncode != 0:
-            fail("failed to read deploy credentials from bws run")
+        mapping: dict[str, str],
+        *,
+        source_label: str,
+    ) -> tuple[str, str] | None:
+        values: dict[str, str] = {}
+        for key in RELEASE_CREDENTIAL_KEYS:
+            raw_value = mapping.get(key, "")
+            if not isinstance(raw_value, str):
+                fail(f"{source_label} value for {key} must be string")
+            normalized = raw_value.strip()
+            if normalized and ("\n" in normalized or "\r" in normalized):
+                fail(f"{source_label} value for {key} must be single-line")
+            values[key] = normalized
 
-        username = ""
-        token = ""
-        for raw_line in proc.stdout.splitlines():
-            if raw_line.startswith("GL_DEPLOY_RELEASE_USERNAME="):
-                username = raw_line.split("=", 1)[1].strip()
-            elif raw_line.startswith("GL_DEPLOY_RELEASE_TOKEN="):
-                token = raw_line.split("=", 1)[1].strip()
-
-        if not username:
-            fail("GL_DEPLOY_RELEASE_USERNAME is missing from bws run output")
-        if not token:
-            fail("GL_DEPLOY_RELEASE_TOKEN is missing from bws run output")
-        if "\n" in username or "\r" in username:
-            fail("GL_DEPLOY_RELEASE_USERNAME must be single-line")
-        if "\n" in token or "\r" in token:
-            fail("GL_DEPLOY_RELEASE_TOKEN must be single-line")
-        return username, token
+        if any(values.values()):
+            if not all(values.values()):
+                fail(f"{source_label} must define both GL_DEPLOY_RELEASE_USERNAME and GL_DEPLOY_RELEASE_TOKEN")
+            return values["GL_DEPLOY_RELEASE_USERNAME"], values["GL_DEPLOY_RELEASE_TOKEN"]
+        return None
 
     def _resolve_release_credentials(self) -> tuple[str, str] | None:
         if self._release_credentials_cache is not None:
             self._log("using cached release credentials")
             return self._release_credentials_cache
 
-        self._log("resolving release credentials via bws")
-        project_id, access_token = self._install_bws_keyring_credentials()
-        bws_bin = self._resolve_bws_binary()
-        self._release_credentials_cache = self._bws_release_credentials(
-            bws_bin,
-            access_token,
-            project_id,
-        )
-        return self._release_credentials_cache
+        env_credentials = self._read_release_credentials_from_mapping(self.env, source_label=str(self.env_path))
+        if env_credentials is not None:
+            self._release_credentials_cache = env_credentials
+            return env_credentials
+
+        process_credentials = self._read_release_credentials_from_mapping(os.environ, source_label="environment")
+        if process_credentials is not None:
+            self._log("using release credentials from environment")
+            self._release_credentials_cache = process_credentials
+            return process_credentials
+
+        return None
 
     def _download_file(self, url: str, destination: Path, username: str | None, token: str | None) -> None:
         if self.dry_run:
@@ -2605,6 +2772,8 @@ class Installer:
         try:
             source_build_env = dict(self.env)
             source_build_env.update(load_source_build_environment(self.repo_root))
+            if self._stage_mode():
+                source_build_env.update(self._stage_source_build_overrides())
             source_build_settings = load_source_build_settings(source_build_env)
         except SourceBuildError as exc:
             fail(str(exc))
@@ -2630,45 +2799,23 @@ class Installer:
         except SourceBuildError as exc:
             fail(str(exc))
 
-        self._log("creating install backup")
-        self._backup_install_state(flow="install")
-        self._log("ensuring runtime directories")
-        self._ensure_runtime_directories()
-        self._log("ensuring lookup secret service file")
-        self._ensure_lookup_secret_service_file()
-        self._log("hardening executable directories")
-        self._secure_exec_directories()
-        self.apply_home_bundle()
-        self.apply_admin(artifacts)
-        self.setup_environment()
-        self._log("installing tmpfs helper")
-        self._sync_tmpfs_helper()
-        self._log("ensuring runtime tmpfs mount")
-        self.mount_runtime_tmpfs()
+        self._prepare_runtime_install_state(artifacts, flow="install")
         self._log("installing source-built binaries and patched schema snapshot")
         installed_binaries = self._install_source_build_binary(build_result.output_dir)
         self._install_runtime_binary_wrappers(installed_binaries)
 
     def apply(self, artifacts: CompiledArtifacts) -> None:
-        self._log("creating install backup")
-        self._backup_install_state(flow="install")
-        self._log("ensuring runtime directories")
-        self._ensure_runtime_directories()
-        self._log("ensuring lookup secret service file")
-        self._ensure_lookup_secret_service_file()
-        self._log("hardening executable directories")
-        self._secure_exec_directories()
-        self.apply_home_bundle()
-        self.apply_admin(artifacts)
-        self.setup_environment()
-        self._log("installing tmpfs helper")
-        self._sync_tmpfs_helper()
-        self._log("ensuring runtime tmpfs mount")
-        self.mount_runtime_tmpfs()
-
+        self._prepare_runtime_install_state(artifacts, flow="install")
         self._log("installing release binaries")
         installed_binaries = self._install_release_binary()
         self._install_runtime_binary_wrappers(installed_binaries)
+
+    def apply_update(self, artifacts: CompiledArtifacts) -> None:
+        self._prepare_runtime_install_state(artifacts, flow="update")
+        self._log("refreshing runtime wrappers/helpers for installed binaries")
+        self._refresh_runtime_launch_wrappers(self.launch_env)
+        self._log("installing shell completion files")
+        self._install_user_shell_completions()
 
     def apply_home(self) -> None:
         home_src = self.repo_layout.home_user_dir
@@ -2742,26 +2889,15 @@ class Installer:
         self._sync_local_plugins()
 
     def setup_environment(self) -> None:
+        if self._stage_mode():
+            self._log("writing staged dry-run activation exports")
+            self._install_stage_environment_exports()
+            return
         self._log("writing current-user environment files")
         self._sync_global_environment()
 
     def upgrade(self, artifacts: CompiledArtifacts) -> None:
-        self._log("creating upgrade backup")
-        self._backup_install_state(flow="upgrade")
-        self._log("ensuring upgrade directories")
-        self._ensure_upgrade_directories()
-        self._log("ensuring lookup secret service file")
-        self._ensure_lookup_secret_service_file()
-        self._log("hardening executable directories")
-        self._secure_exec_directories()
-        self.apply_home_bundle()
-        self.apply_admin(artifacts)
-        self.setup_environment()
-        self._log("installing tmpfs helper")
-        self._sync_tmpfs_helper()
-        self._log("ensuring runtime tmpfs mount")
-        self.mount_runtime_tmpfs()
-
+        self._prepare_runtime_install_state(artifacts, flow="upgrade")
         self._log("installing release binaries and latest release schema snapshot")
         installed_binaries = self._install_release_binary()
         self._install_runtime_binary_wrappers(installed_binaries)
@@ -2813,7 +2949,7 @@ class Installer:
             dry_installer = Installer(self.repo_root, dry_run=True)
             dry_installer.load()
             dry_installer.validate()
-            dry_artifacts = dry_installer.compile(compiled_root / "dry-run")
+            dry_artifacts = CompiledArtifacts(config_toml=artifacts.config_toml)
             dry_installer.apply_home_bundle()
             dry_installer.apply_admin(dry_artifacts)
             dry_installer.apply_vars_init()
@@ -2968,6 +3104,7 @@ def parse_args() -> argparse.Namespace:
             "build-src",
             "build-install",
             "install",
+            "update",
             "home",
             "apps",
             "plugins",
@@ -2978,10 +3115,18 @@ def parse_args() -> argparse.Namespace:
             "tmpfs-umt",
             "vars-init",
             "vars-reset",
+            "uninstall",
             "nuke",
         ),
     )
-    parser.add_argument("--dry-run", action="store_true", help="Print actions without mutating files")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help=(
+            "For install/build-install, perform an isolated staged install under /data/dryrun/codex; "
+            "for other commands, print actions without mutating files"
+        ),
+    )
     parser.add_argument(
         "--compiled-dir",
         default="src/misc/compiled",
@@ -2993,6 +3138,7 @@ def parse_args() -> argparse.Namespace:
 def run() -> int:
     args = parse_args()
     ensure_non_root_user()
+    stage_dry_run = args.dry_run and args.command in {"install", "build-install"}
 
     if args.command == "build-src":
         repo_root = Path(__file__).resolve().parents[2]
@@ -3015,17 +3161,21 @@ def run() -> int:
         return 0
 
     repo_root = Path(__file__).resolve().parents[2]
-    installer = Installer(repo_root=repo_root, dry_run=args.dry_run)
+    installer = Installer(
+        repo_root=repo_root,
+        dry_run=args.dry_run and not stage_dry_run,
+        stage_root=DRY_RUN_STAGE_ROOT if stage_dry_run else None,
+    )
 
     installer.load()
 
-    if args.command == "nuke":
+    if args.command in {"nuke", "uninstall"}:
         # Uninstall must not depend on config rendering or other install-time checks.
         installer.uninstall()
         if args.dry_run:
             print("[ok] dry-run complete")
             return 0
-        print("[ok] nuke complete")
+        print(f"[ok] {args.command} complete")
         return 0
 
     if args.command == "vars-reset":
@@ -3094,13 +3244,31 @@ def run() -> int:
 
     if args.command == "build-install":
         installer.validate()
-        compiled_dir = (repo_root / args.compiled_dir).resolve(strict=False)
+        compiled_dir = (
+            installer._resolved_stage_root() / "compiled"
+            if stage_dry_run
+            else (repo_root / args.compiled_dir).resolve(strict=False)
+        )
         artifacts = installer.compile(compiled_dir)
         installer.build_install(artifacts)
+        if stage_dry_run:
+            print(f"[ok] staged dry-run build-install complete ({installer._resolved_stage_root()})")
+            return 0
         if args.dry_run:
             print("[ok] dry-run complete")
             return 0
         print("[ok] build-install complete")
+        return 0
+
+    if args.command == "update":
+        installer.validate()
+        compiled_dir = (repo_root / args.compiled_dir).resolve(strict=False)
+        artifacts = installer.compile(compiled_dir)
+        installer.apply_update(artifacts)
+        if args.dry_run:
+            print("[ok] dry-run complete")
+            return 0
+        print("[ok] update complete")
         return 0
 
     installer.validate()
@@ -3123,7 +3291,11 @@ def run() -> int:
         print("[ok] skills complete")
         return 0
 
-    compiled_dir = (repo_root / args.compiled_dir).resolve(strict=False)
+    compiled_dir = (
+        installer._resolved_stage_root() / "compiled"
+        if stage_dry_run
+        else (repo_root / args.compiled_dir).resolve(strict=False)
+    )
     artifacts = installer.compile(compiled_dir)
 
     if args.command == "admin":
@@ -3136,6 +3308,9 @@ def run() -> int:
 
     if args.command == "install":
         installer.apply(artifacts)
+        if stage_dry_run:
+            print(f"[ok] staged dry-run install complete ({installer._resolved_stage_root()})")
+            return 0
         if args.dry_run:
             print("[ok] dry-run complete")
             return 0

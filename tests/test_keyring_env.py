@@ -1,9 +1,9 @@
 import os
-import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import Mock
 from unittest.mock import patch
 
 
@@ -16,115 +16,71 @@ if str(INSTALL_SRC) not in sys.path:
     sys.path.insert(0, str(INSTALL_SRC))
 
 from lib import keyring_env  # noqa: E402
+from lib.managed_secrets import ManagedSecretsConfig  # noqa: E402
 from lib.runtime import render_codex_shim  # noqa: E402
 import codex_install  # noqa: E402
 
 
-class LookupSecretServiceTests(unittest.TestCase):
-    def test_parse_lookup_file_skips_comments_and_deduplicates(self) -> None:
+class ManagedSecretsHelperTests(unittest.TestCase):
+    def test_collect_lookup_environment_uses_secret_tool_for_enabled_keys_only(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            path = Path(tmpdir) / "lookup-secret-service.env"
-            path.write_text(
-                "\n# comment\nLINEAR_API_KEY\n\nLINEAR_API_KEY\nCLOUDFLARE_API_TOKEN\n",
+            secrets_path = Path(tmpdir) / "secrets.toml"
+            secrets_path.write_text(
+                "\n".join(
+                    [
+                        "version = 1",
+                        "",
+                        "[mcp_servers.linear]",
+                        "LINEAR_API_KEY = true",
+                        "",
+                        "[mcp_servers.vercel]",
+                        "VERCEL_API_TOKEN = false",
+                        "",
+                    ]
+                ),
                 encoding="utf-8",
             )
 
-            parsed = keyring_env.parse_lookup_file(path)
-
-        self.assertEqual(parsed, ["LINEAR_API_KEY", "CLOUDFLARE_API_TOKEN"])
-
-    def test_parse_lookup_file_rejects_invalid_names(self) -> None:
-        with tempfile.TemporaryDirectory() as tmpdir:
-            path = Path(tmpdir) / "lookup-secret-service.env"
-            path.write_text("not-valid\n", encoding="utf-8")
-
-            with self.assertRaisesRegex(keyring_env.KeyringEnvError, "invalid key name"):
-                keyring_env.parse_lookup_file(path)
-
-    def test_collect_lookup_environment_uses_bws_and_filters_allowlist(self) -> None:
-        with tempfile.TemporaryDirectory() as tmpdir:
-            lookup_path = Path(tmpdir) / "lookup-secret-service.env"
-            lookup_path.write_text("LINEAR_API_KEY\nFIGMA_OAUTH_TOKEN\n", encoding="utf-8")
-
-            calls: list[list[str]] = []
-
-            def fake_run(
-                args: list[str],
-                check: bool,
-                stdout: int,
-                stderr: int,
-                text: bool,
-                timeout: int | None = None,
-            ) -> subprocess.CompletedProcess[str]:
-                calls.append(args)
-                if args[:5] == ["/usr/bin/kwallet-query", "--read-password", "BWS_PROJECT_ID", "--folder", "Passwords"]:
-                    account = args[2]
-                    if account == "BWS_PROJECT_ID":
-                        return subprocess.CompletedProcess(args, 0, stdout="project-id\n", stderr="")
-                if args[:5] == ["/usr/bin/kwallet-query", "--read-password", "BWS_ACCESS_TOKEN", "--folder", "Passwords"]:
-                    account = args[2]
-                    if account == "BWS_ACCESS_TOKEN":
-                        return subprocess.CompletedProcess(args, 0, stdout="access-token\n", stderr="")
-                if args[:5] == ["/usr/bin/bws", "--access-token", "access-token", "run", "--no-inherit-env"]:
-                    stdout_payload = (
-                        "LINEAR_API_KEY=linear-secret\n"
-                        "UNRELATED=ignore-me\n"
-                    )
-                    return subprocess.CompletedProcess(args, 0, stdout=stdout_payload, stderr="")
-                return subprocess.CompletedProcess(args, 1, stdout="", stderr="error")
-
-            with (
-                patch(
-                    "lib.keyring_env.shutil.which",
-                    side_effect=lambda name: "/usr/bin/kwallet-query" if name == "kwallet-query" else "/usr/bin/bws",
-                ),
-                patch("lib.keyring_env.subprocess.run", side_effect=fake_run),
+            with patch(
+                "lib.keyring_env.lookup_managed_secret",
+                side_effect=lambda key: "linear-secret" if key == "LINEAR_API_KEY" else "",
             ):
-                exported = keyring_env.collect_lookup_environment(lookup_path)
-
-        self.assertEqual(exported, {"LINEAR_API_KEY": "linear-secret"})
-        self.assertTrue(any(call[:3] == ["/usr/bin/bws", "--access-token", "access-token"] for call in calls))
-
-    def test_collect_lookup_environment_falls_back_to_environment_when_kwallet_missing(self) -> None:
-        with tempfile.TemporaryDirectory() as tmpdir:
-            lookup_path = Path(tmpdir) / "lookup-secret-service.env"
-            lookup_path.write_text("LINEAR_API_KEY\n", encoding="utf-8")
-
-            def fake_run(
-                args: list[str],
-                check: bool,
-                stdout: int,
-                stderr: int,
-                text: bool,
-                timeout: int | None = None,
-            ) -> subprocess.CompletedProcess[str]:
-                if args[:5] == ["/usr/bin/bws", "--access-token", "env-token", "run", "--no-inherit-env"]:
-                    return subprocess.CompletedProcess(args, 0, stdout="LINEAR_API_KEY=linear-secret\n", stderr="")
-                return subprocess.CompletedProcess(args, 1, stdout="", stderr="unexpected")
-
-            with (
-                patch(
-                    "lib.keyring_env.shutil.which",
-                    side_effect=lambda name: None if name == "kwallet-query" else "/usr/bin/bws",
-                ),
-                patch("lib.keyring_env.subprocess.run", side_effect=fake_run),
-                patch.dict(os.environ, {"BWS_PROJECT_ID": "env-project", "BWS_ACCESS_TOKEN": "env-token"}, clear=False),
-            ):
-                exported = keyring_env.collect_lookup_environment(lookup_path)
+                exported = keyring_env.collect_lookup_environment(secrets_path)
 
         self.assertEqual(exported, {"LINEAR_API_KEY": "linear-secret"})
 
-    def test_lookup_config_from_env_file_uses_codex_root(self) -> None:
+    def test_collect_lookup_environment_prefers_existing_environment_value(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            secrets_path = Path(tmpdir) / "secrets.toml"
+            secrets_path.write_text(
+                "\n".join(
+                    [
+                        "version = 1",
+                        "",
+                        "[mcp_servers.linear]",
+                        "LINEAR_API_KEY = true",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            with (
+                patch("lib.keyring_env.lookup_managed_secret", return_value="keyring-secret"),
+                patch.dict(os.environ, {"LINEAR_API_KEY": "env-secret"}, clear=False),
+            ):
+                exported = keyring_env.collect_lookup_environment(secrets_path)
+
+        self.assertEqual(exported, {"LINEAR_API_KEY": "env-secret"})
+
+    def test_secrets_config_from_env_file_uses_codex_root(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             env_path = Path(tmpdir) / ".env"
-            env_path.write_text(
-                "CODEX_ROOT_DIR=/data/codex\n",
-                encoding="utf-8",
-            )
+            env_path.write_text("CODEX_ROOT_DIR=/data/codex\n", encoding="utf-8")
 
-            lookup_path = keyring_env.lookup_config_from_env_file(env_path)
+            secrets_path = keyring_env.secrets_config_from_env_file(env_path)
 
-        self.assertEqual(lookup_path, Path("/data/codex/lookup/lookup-secret-service.env"))
+        self.assertEqual(secrets_path, Path("/data/codex/lookup/secrets.toml"))
 
     def test_lookup_shell_execs_interactive_shell(self) -> None:
         with (
@@ -134,7 +90,7 @@ class LookupSecretServiceTests(unittest.TestCase):
             patch.object(sys.stdout, "isatty", return_value=True),
         ):
             rc = keyring_env.lookup_shell(
-                Path("/data/codex/lookup/lookup-secret-service.env"),
+                Path("/data/codex/lookup/secrets.toml"),
                 "/bin/bash",
             )
 
@@ -145,208 +101,186 @@ class LookupSecretServiceTests(unittest.TestCase):
         self.assertEqual(argv, ["/bin/bash", "-i"])
         self.assertEqual(env["LINEAR_API_KEY"], "linear-secret")
 
-    def test_render_codex_shim_supports_k_flag(self) -> None:
+    def test_render_codex_shim_uses_managed_secret_helper(self) -> None:
         rendered = render_codex_shim(
             Path("/data/codex/share/bin/codex"),
             share_dir=Path("/data/codex/share"),
-            lookup_secret_service_path=Path("/data/codex/lookup/lookup-secret-service.env"),
-            lookup_helper_path=Path("/data/codex/share/helpers/codex-bws-env.py"),
+            wrapper_dir=Path("/data/bin"),
+            managed_secrets_path=Path("/data/codex/lookup/secrets.toml"),
+            managed_secret_helper_path=Path("/data/codex/share/helpers/codex-secret-tool-env.py"),
         )
 
-        self.assertIn('--lookup-file "/data/codex/lookup/lookup-secret-service.env"', rendered)
+        self.assertIn("/data/codex/share/bin/codex", rendered)
+        self.assertIn('"/data/bin"', rendered)
+        self.assertNotIn('"/data/codex/share/shims"', rendered)
+        self.assertIn('--secrets-file "/data/codex/lookup/secrets.toml"', rendered)
+        self.assertIn("codex-secret-tool-env.py", rendered)
+        self.assertNotIn("--lookup-file", rendered)
         self.assertNotIn("--secret-service", rendered)
-        self.assertIn("codex-bws-env.py", rendered)
-        self.assertIn('if [ "${codex_arg}" = "--k" ]; then', rendered)
+        self.assertNotIn('if [ "${codex_arg}" = "--k" ]; then', rendered)
 
     def test_render_codex_shim_skips_lookup_block_when_unconfigured(self) -> None:
         rendered = render_codex_shim(
             Path("/data/codex/share/bin/codex"),
             share_dir=Path("/data/codex/share"),
+            wrapper_dir=Path("/data/bin"),
         )
+        self.assertNotIn("--secrets-file", rendered)
         self.assertNotIn("--lookup-file", rendered)
-        self.assertNotIn("--secret-service", rendered)
 
 
-class InstallerLookupSecretServiceTests(unittest.TestCase):
-    def _make_installer(self, env: dict[str, str] | None = None) -> codex_install.Installer:
+class InstallerManagedSecretsTests(unittest.TestCase):
+    def _make_installer(
+        self,
+        *,
+        env: dict[str, str] | None = None,
+        secrets_config: ManagedSecretsConfig | None = None,
+        repo_root: Path | None = None,
+    ) -> codex_install.Installer:
         installer = codex_install.Installer.__new__(codex_install.Installer)
         installer.env = env or {}
+        installer.secrets_config = secrets_config
+        installer.repo_root = repo_root or Path("/tmp/repo")
+        installer.env_path = installer.repo_root / ".env"
+        installer.dry_run = False
         installer._release_credentials_cache = None
-        installer._keyring_secret_cache = {}
         installer._log = lambda _message: None
+        installer._warn_once = Mock()
         return installer
 
-    def test_ensure_lookup_secret_service_file_creates_missing_file_without_overwriting(self) -> None:
+    def test_repo_secrets_file_tracks_vendor_mcp_token_servers(self) -> None:
+        installer = codex_install.Installer(repo_root=REPO_ROOT, dry_run=True)
+        installer.load()
+        installer._validate_managed_secrets_config()
+
+    def test_sync_managed_secrets_file_overwrites_existing_file(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             repo_root = Path(tmpdir) / "repo"
             repo_root.mkdir(parents=True, exist_ok=True)
-            source_file = repo_root / "lookup-secret-service.env"
-            source_file.write_text("LINEAR_API_KEY\n", encoding="utf-8")
+            source_file = repo_root / "secrets.toml"
+            source_file.write_text(
+                "version = 1\n\n[mcp_servers.linear]\nLINEAR_API_KEY = true\n",
+                encoding="utf-8",
+            )
 
-            installer = codex_install.Installer.__new__(codex_install.Installer)
-            installer.env = {"CODEX_ROOT_DIR": str(Path(tmpdir) / "runtime")}
-            installer.repo_root = repo_root
-            installer.dry_run = False
+            installer = self._make_installer(
+                env={"CODEX_ROOT_DIR": str(Path(tmpdir) / "runtime")},
+                repo_root=repo_root,
+            )
+            installer._needs_sudo_write = lambda _path: False
 
-            codex_install.Installer._ensure_lookup_secret_service_file(installer)
-            installed_file = Path(tmpdir) / "runtime" / "lookup" / "lookup-secret-service.env"
-            self.assertTrue(installed_file.is_file())
-            self.assertEqual(installed_file.read_text(encoding="utf-8"), "LINEAR_API_KEY\n")
+            installed_file = Path(tmpdir) / "runtime" / "lookup" / "secrets.toml"
+            installed_file.parent.mkdir(parents=True, exist_ok=True)
+            installed_file.write_text(
+                "version = 1\n\n[mcp_servers.linear]\nLINEAR_API_KEY = false\n",
+                encoding="utf-8",
+            )
 
-            installed_file.write_text("CUSTOM_TOKEN\n", encoding="utf-8")
-            codex_install.Installer._ensure_lookup_secret_service_file(installer)
-            self.assertEqual(installed_file.read_text(encoding="utf-8"), "CUSTOM_TOKEN\n")
+            codex_install.Installer._sync_managed_secrets_file(installer)
 
-    def test_resolve_release_credentials_prefers_bws_cli_kwallet(self) -> None:
+            self.assertEqual(installed_file.read_text(encoding="utf-8"), source_file.read_text(encoding="utf-8"))
+
+    def test_ensure_enabled_managed_secrets_prompts_and_stores_missing_values(self) -> None:
         installer = self._make_installer(
-            {
+            secrets_config=ManagedSecretsConfig(
+                mcp_servers={
+                    "vercel": {"VERCEL_API_TOKEN": True},
+                    "linear": {"LINEAR_API_KEY": False},
+                }
+            )
+        )
+
+        with (
+            patch("codex_install.secret_tool_available", return_value=True),
+            patch("codex_install.lookup_managed_secret", return_value=""),
+            patch.object(installer, "_prompt_managed_secret_value", return_value="vercel-secret") as prompt_mock,
+            patch("codex_install.store_managed_secret") as store_mock,
+        ):
+            codex_install.Installer._ensure_enabled_managed_secrets(installer)
+
+        prompt_mock.assert_called_once_with(server_name="vercel", key="VERCEL_API_TOKEN")
+        store_mock.assert_called_once_with("VERCEL_API_TOKEN", "vercel-secret")
+
+    def test_ensure_enabled_managed_secrets_skips_missing_noninteractive_values(self) -> None:
+        installer = self._make_installer(
+            secrets_config=ManagedSecretsConfig(mcp_servers={"vercel": {"VERCEL_API_TOKEN": True}})
+        )
+
+        with (
+            patch("codex_install.secret_tool_available", return_value=True),
+            patch("codex_install.lookup_managed_secret", return_value=""),
+            patch.object(installer, "_prompt_managed_secret_value", return_value=None) as prompt_mock,
+            patch("codex_install.store_managed_secret") as store_mock,
+        ):
+            codex_install.Installer._ensure_enabled_managed_secrets(installer)
+
+        prompt_mock.assert_called_once_with(server_name="vercel", key="VERCEL_API_TOKEN")
+        store_mock.assert_not_called()
+
+    def test_clear_all_managed_secrets_clears_defined_keys_even_when_disabled(self) -> None:
+        installer = self._make_installer(
+            secrets_config=ManagedSecretsConfig(
+                mcp_servers={
+                    "cloudflare-api": {"CLOUDFLARE_API_TOKEN": False},
+                    "vercel": {"VERCEL_API_TOKEN": True},
+                }
+            )
+        )
+
+        with (
+            patch("codex_install.secret_tool_available", return_value=True),
+            patch("codex_install.clear_managed_secret") as clear_mock,
+        ):
+            codex_install.Installer._clear_all_managed_secrets(installer)
+
+        self.assertEqual(clear_mock.call_args_list[0].args, ("CLOUDFLARE_API_TOKEN",))
+        self.assertEqual(clear_mock.call_args_list[1].args, ("VERCEL_API_TOKEN",))
+
+    def test_resolve_release_credentials_prefers_env_file_values(self) -> None:
+        installer = self._make_installer(
+            env={
                 "GL_DEPLOY_RELEASE_USERNAME": "env-user",
                 "GL_DEPLOY_RELEASE_TOKEN": "env-token",
             }
         )
-        calls: list[list[str]] = []
 
-        def fake_run(
-            args: list[str],
-            check: bool,
-            stdout: int,
-            stderr: int,
-            text: bool,
-            timeout: int | None = None,
-        ) -> subprocess.CompletedProcess[str]:
-            calls.append(args)
-            if args[:5] == ["/usr/bin/kwallet-query", "--read-password", "BWS_PROJECT_ID", "--folder", "Passwords"]:
-                account = args[2]
-                if account == "BWS_PROJECT_ID":
-                    return subprocess.CompletedProcess(args, 0, stdout="project-id\n", stderr="")
-            if args[:5] == ["/usr/bin/kwallet-query", "--read-password", "BWS_ACCESS_TOKEN", "--folder", "Passwords"]:
-                account = args[2]
-                if account == "BWS_ACCESS_TOKEN":
-                    return subprocess.CompletedProcess(args, 0, stdout="access-token\n", stderr="")
-            if args[:5] == ["/usr/bin/bws", "--access-token", "access-token", "run", "--no-inherit-env"]:
-                stdout_payload = (
-                    "GL_DEPLOY_RELEASE_USERNAME=bws-user\n"
-                    "GL_DEPLOY_RELEASE_TOKEN=bws-token\n"
-                )
-                return subprocess.CompletedProcess(args, 0, stdout=stdout_payload, stderr="")
-            return subprocess.CompletedProcess(args, 1, stdout="", stderr="error")
+        credentials = codex_install.Installer._resolve_release_credentials(installer)
 
-        with (
-            patch.object(installer, "_resolve_bws_binary", return_value=Path("/usr/bin/bws")),
-            patch(
-                "codex_install.shutil.which",
-                side_effect=lambda name: "/usr/bin/kwallet-query" if name == "kwallet-query" else None,
-            ),
-            patch("codex_install.subprocess.run", side_effect=fake_run),
-        ):
-            credentials = codex_install.Installer._resolve_release_credentials(installer)
+        self.assertEqual(credentials, ("env-user", "env-token"))
 
-        self.assertEqual(credentials, ("bws-user", "bws-token"))
-        self.assertTrue(any(call[:2] == ["/usr/bin/kwallet-query", "--read-password"] for call in calls))
-        self.assertTrue(any(call[:5] == ["/usr/bin/bws", "--access-token", "access-token", "run", "--no-inherit-env"] for call in calls))
-
-    def test_resolve_release_credentials_falls_back_to_environment_when_kwallet_missing(self) -> None:
+    def test_resolve_release_credentials_falls_back_to_process_environment(self) -> None:
         installer = self._make_installer(
-            {
-                "GL_DEPLOY_RELEASE_USERNAME": "env-user",
-                "GL_DEPLOY_RELEASE_TOKEN": "env-token",
+            env={
+                "GL_DEPLOY_RELEASE_USERNAME": "",
+                "GL_DEPLOY_RELEASE_TOKEN": "",
             }
         )
-        calls: list[list[str]] = []
 
-        def fake_run(
-            args: list[str],
-            check: bool,
-            stdout: int,
-            stderr: int,
-            text: bool,
-            timeout: int | None = None,
-        ) -> subprocess.CompletedProcess[str]:
-            calls.append(args)
-            if args[:5] == ["/usr/bin/bws", "--access-token", "env-token", "run", "--no-inherit-env"]:
-                stdout_payload = (
-                    "GL_DEPLOY_RELEASE_USERNAME=bws-user\n"
-                    "GL_DEPLOY_RELEASE_TOKEN=bws-token\n"
-                )
-                return subprocess.CompletedProcess(args, 0, stdout=stdout_payload, stderr="")
-            return subprocess.CompletedProcess(args, 1, stdout="", stderr="error")
-
-        with (
-            patch.object(installer, "_resolve_bws_binary", return_value=Path("/usr/bin/bws")),
-            patch("codex_install.shutil.which", side_effect=lambda name: None if name == "kwallet-query" else None),
-            patch("codex_install.subprocess.run", side_effect=fake_run),
-            patch.dict(os.environ, {"BWS_PROJECT_ID": "env-project", "BWS_ACCESS_TOKEN": "env-token"}, clear=False),
+        with patch.dict(
+            os.environ,
+            {
+                "GL_DEPLOY_RELEASE_USERNAME": "process-user",
+                "GL_DEPLOY_RELEASE_TOKEN": "process-token",
+            },
+            clear=False,
         ):
             credentials = codex_install.Installer._resolve_release_credentials(installer)
 
-        self.assertEqual(credentials, ("bws-user", "bws-token"))
-        self.assertTrue(any(call[:5] == ["/usr/bin/bws", "--access-token", "env-token", "run", "--no-inherit-env"] for call in calls))
+        self.assertEqual(credentials, ("process-user", "process-token"))
 
-    def test_resolve_release_credentials_prompts_when_kwallet_and_environment_missing(self) -> None:
-        installer = self._make_installer()
-        calls: list[list[str]] = []
+    def test_resolve_release_credentials_rejects_partial_values(self) -> None:
+        installer = self._make_installer(
+            env={
+                "GL_DEPLOY_RELEASE_USERNAME": "env-user",
+                "GL_DEPLOY_RELEASE_TOKEN": "",
+            }
+        )
 
-        def fake_run(
-            args: list[str],
-            check: bool,
-            stdout: int,
-            stderr: int,
-            text: bool,
-            timeout: int | None = None,
-        ) -> subprocess.CompletedProcess[str]:
-            calls.append(args)
-            if args[:5] == ["/usr/bin/bws", "--access-token", "prompt-token", "run", "--no-inherit-env"]:
-                stdout_payload = (
-                    "GL_DEPLOY_RELEASE_USERNAME=bws-user\n"
-                    "GL_DEPLOY_RELEASE_TOKEN=bws-token\n"
-                )
-                return subprocess.CompletedProcess(args, 0, stdout=stdout_payload, stderr="")
-            return subprocess.CompletedProcess(args, 1, stdout="", stderr="error")
-
-        with (
-            patch.object(installer, "_resolve_bws_binary", return_value=Path("/usr/bin/bws")),
-            patch.object(
-                installer,
-                "_prompt_bws_account_value",
-                side_effect=["prompt-project", "prompt-token"],
-            ) as prompt_mock,
-            patch("codex_install.shutil.which", side_effect=lambda name: None if name == "kwallet-query" else None),
-            patch("codex_install.subprocess.run", side_effect=fake_run),
-            patch.dict(os.environ, {}, clear=True),
+        with self.assertRaisesRegex(
+            codex_install.InstallError,
+            "must define both GL_DEPLOY_RELEASE_USERNAME and GL_DEPLOY_RELEASE_TOKEN",
         ):
-            credentials = codex_install.Installer._resolve_release_credentials(installer)
-
-        self.assertEqual(credentials, ("bws-user", "bws-token"))
-        self.assertEqual(prompt_mock.call_args_list[0].args, ("BWS_PROJECT_ID",))
-        self.assertEqual(prompt_mock.call_args_list[1].args, ("BWS_ACCESS_TOKEN",))
-
-    def test_resolve_release_credentials_rejects_partial_bws_cli_kwallet_or_env(self) -> None:
-        installer = self._make_installer()
-
-        def fake_run(
-            args: list[str],
-            check: bool,
-            stdout: int,
-            stderr: int,
-            text: bool,
-            timeout: int | None = None,
-        ) -> subprocess.CompletedProcess[str]:
-            if args[:5] == ["/usr/bin/kwallet-query", "--read-password", "BWS_PROJECT_ID", "--folder", "Passwords"]:
-                account = args[2]
-                if account == "BWS_PROJECT_ID":
-                    return subprocess.CompletedProcess(args, 0, stdout="project-id\n", stderr="")
-                return subprocess.CompletedProcess(args, 1, stdout="", stderr="missing")
-            return subprocess.CompletedProcess(args, 1, stdout="", stderr="unexpected")
-
-        with (
-            patch("codex_install.shutil.which", side_effect=lambda name: "/usr/bin/kwallet-query" if name == "kwallet-query" else None),
-            patch("codex_install.subprocess.run", side_effect=fake_run),
-        ):
-            with self.assertRaisesRegex(
-                codex_install.InstallError,
-                "bws-cli kwallet/env bootstrap must contain both BWS_PROJECT_ID and BWS_ACCESS_TOKEN",
-            ):
-                codex_install.Installer._resolve_release_credentials(installer)
+            codex_install.Installer._resolve_release_credentials(installer)
 
 
 if __name__ == "__main__":

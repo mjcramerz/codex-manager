@@ -275,7 +275,7 @@ startup_timeout_sec = 20
 tool_timeout_sec = 120
 # OAuth login is supported in compatible clients.
 # Optional bearer-token fallback:
-# bearer_token_env_var = "STRIPE_API_KEY"
+bearer_token_env_var = "STRIPE_API_KEY"
 
 [mcp_servers.cloudflare-api]
 url = "https://mcp.cloudflare.com/mcp"
@@ -289,6 +289,8 @@ enabled_tools = [
 #]
 startup_timeout_sec = 20
 tool_timeout_sec = 120
+# Optional bearer token for CI/CD or headless API access:
+bearer_token_env_var = "CLOUDFLARE_API_TOKEN"
 
 [mcp_servers.cloudflare-docs]
 url = "https://docs.mcp.cloudflare.com/mcp"

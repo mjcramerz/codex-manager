@@ -1,0 +1,177 @@
+from __future__ import annotations
+
+import re
+import shutil
+import subprocess
+import tomllib
+from dataclasses import dataclass
+from pathlib import Path
+
+
+SECRETS_FILENAME = "secrets.toml"
+KEY_PATTERN = re.compile(r"^[A-Z][A-Z0-9_]*$")
+SERVER_NAME_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]*$")
+SECRET_TOOL_TIMEOUT_SECONDS = 20
+SECRET_TOOL_SERVICE = "codex-manager"
+SECRET_TOOL_KIND = "env"
+SECRET_TOOL_LABEL_PREFIX = "Codex managed secret"
+
+
+class ManagedSecretsError(RuntimeError):
+    """Raised when managed secret parsing or secret-tool operations fail."""
+
+
+@dataclass(frozen=True)
+class ManagedSecretsConfig:
+    mcp_servers: dict[str, dict[str, bool]]
+
+    def enabled_runtime_env_keys(self) -> list[str]:
+        enabled: list[str] = []
+        for server_name in sorted(self.mcp_servers):
+            for key in sorted(self.mcp_servers[server_name]):
+                if self.mcp_servers[server_name][key]:
+                    enabled.append(key)
+        return enabled
+
+    def all_env_keys(self) -> list[str]:
+        keys: list[str] = []
+        for server_name in sorted(self.mcp_servers):
+            keys.extend(sorted(self.mcp_servers[server_name]))
+        return keys
+
+
+def fail(message: str) -> None:
+    raise ManagedSecretsError(message)
+
+
+def _normalize_secret_value(key: str, value: str, *, source: str) -> str:
+    normalized = value.strip()
+    if "\n" in normalized or "\r" in normalized:
+        fail(f"{source} for {key} must be single-line")
+    return normalized
+
+
+def parse_managed_secrets_file(path: Path) -> ManagedSecretsConfig:
+    if not path.is_file():
+        fail(f"missing managed secrets file: {path}")
+
+    try:
+        payload = tomllib.loads(path.read_text(encoding="utf-8"))
+    except tomllib.TOMLDecodeError as exc:
+        fail(f"invalid managed secrets file {path}: {exc}")
+
+    if not isinstance(payload, dict):
+        fail(f"{path} must be a TOML object")
+
+    version = payload.get("version", 1)
+    if version != 1:
+        fail(f"{path} must declare version = 1")
+
+    raw_mcp_servers = payload.get("mcp_servers")
+    if not isinstance(raw_mcp_servers, dict) or not raw_mcp_servers:
+        fail(f"{path} must declare a non-empty [mcp_servers] table")
+
+    parsed_servers: dict[str, dict[str, bool]] = {}
+    for server_name, raw_table in raw_mcp_servers.items():
+        if not isinstance(server_name, str) or not SERVER_NAME_PATTERN.fullmatch(server_name):
+            fail(f"{path} contains invalid mcp server name: {server_name}")
+        if not isinstance(raw_table, dict) or not raw_table:
+            fail(f"{path} mcp_servers.{server_name} must be a non-empty table")
+        parsed_table: dict[str, bool] = {}
+        for key, value in raw_table.items():
+            if not isinstance(key, str) or not KEY_PATTERN.fullmatch(key):
+                fail(f"{path} mcp_servers.{server_name} contains invalid env key: {key}")
+            if not isinstance(value, bool):
+                fail(f"{path} mcp_servers.{server_name}.{key} must be boolean")
+            parsed_table[key] = value
+        parsed_servers[server_name] = parsed_table
+
+    return ManagedSecretsConfig(mcp_servers=parsed_servers)
+
+
+def secret_tool_available() -> bool:
+    return bool(shutil.which("secret-tool"))
+
+
+def _secret_tool_binary() -> str:
+    binary = shutil.which("secret-tool")
+    if not binary:
+        fail("secret-tool is required for managed secrets but is unavailable")
+    return binary
+
+
+def _secret_tool_attributes(key: str) -> list[str]:
+    if not KEY_PATTERN.fullmatch(key):
+        fail(f"invalid env key for managed secret lookup: {key}")
+    return [
+        "service",
+        SECRET_TOOL_SERVICE,
+        "kind",
+        SECRET_TOOL_KIND,
+        "name",
+        key,
+    ]
+
+
+def lookup_managed_secret(key: str) -> str:
+    binary = shutil.which("secret-tool")
+    if not binary:
+        return ""
+    try:
+        proc = subprocess.run(
+            [binary, "lookup", *_secret_tool_attributes(key)],
+            check=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=SECRET_TOOL_TIMEOUT_SECONDS,
+        )
+    except subprocess.TimeoutExpired:
+        fail(f"secret-tool lookup timed out for {key}")
+    except FileNotFoundError as exc:
+        fail(f"secret-tool lookup failed for {key}: {exc}")
+    if proc.returncode != 0:
+        return ""
+    return _normalize_secret_value(key, proc.stdout, source="secret-tool lookup")
+
+
+def store_managed_secret(key: str, value: str) -> None:
+    normalized = _normalize_secret_value(key, value, source="managed secret value")
+    label = f"{SECRET_TOOL_LABEL_PREFIX}: {key}"
+    try:
+        proc = subprocess.run(
+            [
+                _secret_tool_binary(),
+                "store",
+                f"--label={label}",
+                *_secret_tool_attributes(key),
+            ],
+            check=False,
+            input=normalized + "\n",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=SECRET_TOOL_TIMEOUT_SECONDS,
+        )
+    except subprocess.TimeoutExpired:
+        fail(f"secret-tool store timed out for {key}")
+    if proc.returncode != 0:
+        details = proc.stderr.strip() or proc.stdout.strip() or f"exit code {proc.returncode}"
+        fail(f"secret-tool store failed for {key}: {details}")
+
+
+def clear_managed_secret(key: str) -> None:
+    try:
+        proc = subprocess.run(
+            [_secret_tool_binary(), "clear", *_secret_tool_attributes(key)],
+            check=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=SECRET_TOOL_TIMEOUT_SECONDS,
+        )
+    except subprocess.TimeoutExpired:
+        fail(f"secret-tool clear timed out for {key}")
+    if proc.returncode != 0:
+        details = proc.stderr.strip() or proc.stdout.strip() or f"exit code {proc.returncode}"
+        fail(f"secret-tool clear failed for {key}: {details}")

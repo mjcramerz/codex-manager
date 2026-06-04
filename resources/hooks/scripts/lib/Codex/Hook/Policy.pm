@@ -5,6 +5,7 @@ use warnings;
 
 use Exporter qw(import);
 use Codex::Hook::Environment qw(stringify_payload_text);
+use Codex::Hook::ToolProfile qw(tool_group_label tool_group_name);
 
 our @EXPORT_OK = qw(
   compact_system_message
@@ -39,11 +40,22 @@ sub pre_tool_policy_lines {
     my (%args) = @_;
     my $repo_has_patch_release = $args{repo_has_patch_release};
     my $tool_name = $args{tool_name} // 'tool';
+    my $group = tool_group_name($tool_name);
+    my $label = tool_group_label($tool_name);
 
-    my @lines = ("Pre-tool guardrails for `$tool_name`:");
-    push @lines, '- Prefer deterministic commands, bounded I/O, and the smallest reviewable mutation.';
-    push @lines, '- Avoid destructive git history rewrites or broad filesystem deletes unless the user explicitly requested them.'
-      if $tool_name =~ /(?:\Aexec_command\z|\Aapply_patch\z|\b(?:exec|shell|bash|write)\b)/i;
+    my @lines = ("Pre-tool guardrails for `$label` (`$tool_name`):");
+    if ($group eq 'shell') {
+        push @lines, '- Keep shell execution deterministic, bounded, and scoped to the smallest command that proves the next claim.';
+        push @lines, '- Avoid destructive git history rewrites or broad filesystem deletes unless the user explicitly requested them.';
+    } elsif ($group eq 'edit') {
+        push @lines, '- Keep edits reviewable and minimal; prefer focused patches over large rewrites.';
+        push @lines, '- Preserve user-authored changes and avoid deleting files or compatibility branches unless the request explicitly requires it.';
+    } elsif ($group eq 'mcp') {
+        push @lines, '- Keep MCP calls narrow, with the smallest connector/tool scope that answers the current question.';
+        push @lines, '- Avoid follow-up connector work that spends money, mutates external state, or widens access without an explicit user need.';
+    } else {
+        push @lines, '- Prefer deterministic inputs, bounded I/O, and the smallest reviewable mutation.';
+    }
     push @lines, '- Patch-release repo detected; keep local patch operations check-only with `git apply --check` until the patch contract is satisfied.'
       if $repo_has_patch_release;
     return @lines;
@@ -52,9 +64,10 @@ sub pre_tool_policy_lines {
 sub permission_request_message {
     my (%args) = @_;
     my $tool_name = $args{tool_name} // 'tool';
+    my $label = tool_group_label($tool_name);
     return join(
         "\n",
-        "Permission request for `$tool_name`:",
+        "Permission request for `$label` (`$tool_name`):",
         '- Keep the scope minimal and name the exact files, paths, or network boundary being requested.',
         '- The justification should connect directly to the current task and avoid broad future-looking access asks.',
     );

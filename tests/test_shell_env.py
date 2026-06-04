@@ -20,6 +20,7 @@ class ShellPathProfileRenderTests(unittest.TestCase):
     def test_render_shell_path_profile_exports_globals_and_path_entries(self) -> None:
         rendered = render_shell_path_profile(
             Path("/data/codex/share"),
+            Path("/data/bin"),
             {
                 "CODEX_AGENTS": "/data/codex/usr/agents",
                 "CODEX_HOME": "/data/codex/usr/home",
@@ -32,8 +33,9 @@ class ShellPathProfileRenderTests(unittest.TestCase):
         self.assertIn('export CODEX_HOME="/data/codex/usr/home"', rendered)
         self.assertIn('export CODEX_AGENTS="/data/codex/usr/agents"', rendered)
         self.assertIn('export CODEX_SKILLS="/data/codex/usr/skills"', rendered)
-        self.assertIn('"/data/codex/share/shims"', rendered)
+        self.assertIn('"/data/bin"', rendered)
         self.assertIn('"/data/codex/share/helpers"', rendered)
+        self.assertNotIn('"/data/codex/share/shims"', rendered)
 
 
 class CodexEnvHookTests(unittest.TestCase):
@@ -69,8 +71,31 @@ class CodexEnvHookTests(unittest.TestCase):
             self.assertIn(source_line, bashrc)
             self.assertIn(source_line, zshrc)
             self.assertIn(source_line, profile)
+            self.assertIn("# managed by codex installer", profile)
+            self.assertNotIn("# >>> codex-shell-hook >>>", profile)
             self.assertIn('bash-completion/completions/codex', bashrc)
             self.assertNotIn('bash-completion/completions/codex', zshrc)
+
+    def test_hook_installs_clean_profile_source_block(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            user_home = Path(tmpdir) / "home"
+            user_home.mkdir(parents=True, exist_ok=True)
+            profile_path = Path(tmpdir) / "profile.d" / "50-codex-user-env.sh"
+            profile = user_home / ".profile"
+            profile.write_text("export PATH=/usr/bin\n", encoding="utf-8")
+
+            result = self._run_env_script(
+                "hook",
+                "--user-home",
+                str(user_home),
+                "--profile-path",
+                str(profile_path),
+            )
+
+            self.assertEqual(result.returncode, 0, msg=result.stderr)
+            rendered = profile.read_text(encoding="utf-8")
+            self.assertIn('export PATH=/usr/bin\n\n# managed by codex installer\n', rendered)
+            self.assertNotIn("# >>> codex-shell-hook >>>", rendered)
 
     def test_verify_requires_managed_zshrc_hook(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -132,6 +157,8 @@ class CodexEnvHookTests(unittest.TestCase):
             self.assertFalse(profile_path.exists())
             zshrc = (user_home / ".zshrc").read_text(encoding="utf-8")
             self.assertNotIn("# >>> codex-shell-hook >>>", zshrc)
+            profile = (user_home / ".profile").read_text(encoding="utf-8")
+            self.assertNotIn("# managed by codex installer", profile)
 
 
 if __name__ == "__main__":

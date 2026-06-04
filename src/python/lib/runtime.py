@@ -90,6 +90,8 @@ def render_shell_exec_block(label: str, script_path: Path | None) -> str:
 def render_codex_tmpfs_helper(
     size: str = TMPFS_DEFAULT_SIZE,
     launch_env: dict[str, str] | None = None,
+    *,
+    mount_enabled: bool = True,
 ) -> str:
     tmpfs_size = _validate_tmpfs_size("tmpfs size", size)
     mount_opts = _validate_shell_export_value(
@@ -97,6 +99,55 @@ def render_codex_tmpfs_helper(
         f"size={tmpfs_size},mode=1777,nodev,nosuid",
     )
     export_block = render_shell_export_block(launch_env)
+
+    if not mount_enabled:
+        return (
+            "#!/usr/bin/env bash\n"
+            "set -euo pipefail\n"
+            "IFS=$'\\n\\t'\n"
+            "\n"
+            f"{export_block}"
+            'codex_tmpdir=""\n'
+            "\n"
+            "log_error() {\n"
+            "  printf 'ERROR: %s\\n' \"$*\" >&2\n"
+            "}\n"
+            "\n"
+            "resolve_tmpdir() {\n"
+            "  local candidate=\"${TMPDIR:-}\"\n"
+            "  if [[ -z \"${candidate}\" ]]; then\n"
+            "    candidate=\"${CODEX_TMPDIR:-}\"\n"
+            "  fi\n"
+            "  if [[ -z \"${candidate}\" ]]; then\n"
+            "    log_error \"TMPDIR or CODEX_TMPDIR must be set before starting codex\"\n"
+            "    return 1\n"
+            "  fi\n"
+            "  if [[ \"${candidate}\" != /* ]]; then\n"
+            "    log_error \"tmpdir target must be an absolute path: ${candidate}\"\n"
+            "    return 1\n"
+            "  fi\n"
+            "  if [[ \"${candidate}\" == \"/\" ]]; then\n"
+            "    log_error \"tmpdir target cannot be /\"\n"
+            "    return 1\n"
+            "  fi\n"
+            "  if [[ \"${candidate}\" =~ [[:space:]] ]]; then\n"
+            "    log_error \"tmpdir target cannot contain whitespace: ${candidate}\"\n"
+            "    return 1\n"
+            "  fi\n"
+            "  codex_tmpdir=\"${candidate}\"\n"
+            "}\n"
+            "\n"
+            "main() {\n"
+            "  if (($# != 0)); then\n"
+            "    echo \"usage: codex-ensure-tmpfs\" >&2\n"
+            "    return 2\n"
+            "  fi\n"
+            "  resolve_tmpdir\n"
+            "  mkdir -p -- \"${codex_tmpdir}\"\n"
+            "}\n"
+            "\n"
+            "main \"$@\"\n"
+        )
 
     return (
         "#!/usr/bin/env bash\n"
@@ -241,10 +292,11 @@ def derive_runtime_globals_from_env(env: dict[str, str]) -> dict[str, str]:
 
 def render_shell_path_profile(
     share_dir: Path,
+    wrapper_dir: Path,
     global_vars: dict[str, str] | None = None,
     guard_user: str | None = None,
 ) -> str:
-    shims_dir = _validate_shell_path("share shims path", share_dir / "shims")
+    wrappers_dir = _validate_shell_path("wrapper path", wrapper_dir)
     helpers_dir = _validate_shell_path("share helpers path", share_dir / "helpers")
     export_block = render_shell_export_block(global_vars)
 
@@ -267,7 +319,7 @@ def render_shell_path_profile(
         "# managed by codex installer\n"
         f"{guard_block}"
         f"{export_block}"
-        f'for codex_path in "{shims_dir}" "{helpers_dir}"; do\n'
+        f'for codex_path in "{wrappers_dir}" "{helpers_dir}"; do\n'
         '  if [ -d "${codex_path}" ]; then\n'
         '    case ":${PATH:-}:" in\n'
         '      *:"${codex_path}":*) ;;\n'
@@ -283,8 +335,9 @@ def render_codex_shim(
     binary_path: Path,
     launch_env: dict[str, str] | None = None,
     share_dir: Path | None = None,
-    lookup_secret_service_path: Path | None = None,
-    lookup_helper_path: Path | None = None,
+    wrapper_dir: Path | None = None,
+    managed_secrets_path: Path | None = None,
+    managed_secret_helper_path: Path | None = None,
 ) -> str:
     binary = _validate_shell_path("shim binary path", binary_path)
     export_block = render_shell_export_block(launch_env)
@@ -297,10 +350,12 @@ def render_codex_shim(
 
     path_block = ""
     if share_dir is not None:
-        shims_dir = _validate_shell_path("share shims path", share_dir / "shims")
+        if wrapper_dir is None:
+            raise RuntimeRenderError("wrapper path is required when share dir is configured")
+        wrappers_dir = _validate_shell_path("wrapper path", wrapper_dir)
         helpers_dir = _validate_shell_path("share helpers path", share_dir / "helpers")
         path_block = (
-            f'for codex_path in "{shims_dir}" "{helpers_dir}"; do\n'
+            f'for codex_path in "{wrappers_dir}" "{helpers_dir}"; do\n'
             '  if [ -d "${codex_path}" ]; then\n'
             '    case ":${PATH:-}:" in\n'
             '      *:"${codex_path}":*) ;;\n'
@@ -312,35 +367,25 @@ def render_codex_shim(
         )
 
     keyring_block = ""
-    if lookup_secret_service_path is not None:
-        rendered_lookup_secret_service_path = _validate_shell_path(
-            "lookup secret service path",
-            lookup_secret_service_path,
+    if managed_secrets_path is not None:
+        rendered_managed_secrets_path = _validate_shell_path(
+            "managed secrets path",
+            managed_secrets_path,
         )
-        if lookup_helper_path is None:
-            raise RuntimeRenderError("lookup helper path is required when lookup secret service path is configured")
-        rendered_lookup_helper_path = _validate_shell_path(
-            "lookup helper path",
-            lookup_helper_path,
+        if managed_secret_helper_path is None:
+            raise RuntimeRenderError("managed secret helper path is required when managed secrets are configured")
+        rendered_managed_secret_helper_path = _validate_shell_path(
+            "managed secret helper path",
+            managed_secret_helper_path,
         )
         keyring_block = (
-            'codex_use_keyring=0\n'
-            'for codex_arg in "$@"; do\n'
-            '  if [ "${codex_arg}" = "--k" ]; then\n'
-            '    codex_use_keyring=1\n'
-            '    break\n'
-            '  fi\n'
-            'done\n'
-            'if [ "${codex_use_keyring}" -eq 1 ]; then\n'
-            f'  if [ ! -x "{rendered_lookup_helper_path}" ]; then\n'
-            f'    echo "missing codex lookup helper: {rendered_lookup_helper_path}" >&2\n'
-            "    exit 1\n"
-            "  fi\n"
-            f'  exec /usr/bin/env python3 "{rendered_lookup_helper_path}" exec '
-            f'--lookup-file "{rendered_lookup_secret_service_path}" '
-            f'--binary "{binary}" -- "$@"\n'
+            f'if [ ! -x "{rendered_managed_secret_helper_path}" ]; then\n'
+            f'  echo "missing codex managed secret helper: {rendered_managed_secret_helper_path}" >&2\n'
+            "  exit 1\n"
             "fi\n"
-            "unset codex_arg codex_use_keyring\n"
+            f'exec /usr/bin/env python3 "{rendered_managed_secret_helper_path}" exec '
+            f'--secrets-file "{rendered_managed_secrets_path}" '
+            f'--binary "{binary}" -- "$@"\n'
         )
 
     return (
