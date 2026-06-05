@@ -17,17 +17,21 @@ Purpose: coordinate multi-agent execution with explicit ownership, deterministic
 
 ## Role model
 - Use `$CODEX_HOME/MULTI_AGENT.md` to choose the role mix.
-- `manager` decomposes and gates.
+- `manager` and `planner` decompose and gate.
+- `orchestrator` and `delegator` control active child-thread lifecycle and handoff packaging.
 - `explorer` and `hunter` gather evidence.
 - `worker` and `coder` implement bounded slices.
+- `analyst` compares child outputs and resolves conflicts.
+- `synthesizer` merges converged child outputs into one parent-owned artifact.
 - `reviewer` and `tester` close the loop with findings and verification.
 
 ## Workflow
-1. Decompose the task into independent slices with clear acceptance criteria.
-2. Assign each slice one owner, one entrypoint, and one stop condition.
+1. Decompose the task into independent slices with clear acceptance criteria, validation commands, and stop conditions.
+2. Assign each slice one owner, one entrypoint, and one explicit thread-lifecycle plan: spawn, resume, wait, or close.
 3. Require each owner to report commands run, files touched, evidence gathered, and remaining risks.
-4. Reconcile findings before any final patch or validation pass.
-5. Run final verification under one coordinating owner.
+4. Use `analyst` when child outputs conflict or leave evidence gaps; use `synthesizer` only after the evidence converges.
+5. Reconcile findings before any final patch or validation pass.
+6. Run final verification under one coordinating owner.
 
 ## Handoff contract
 - Objective

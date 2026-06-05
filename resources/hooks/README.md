@@ -64,18 +64,28 @@ commands, timeouts, and status messages:
   - MCP matcher: `^mcp__`
 - `SubagentStart`
   - coordination matcher: `^(default|manager)$`
+  - orchestration matcher: `^orchestrator$`
+  - planning matcher: `^planner$`
+  - delegation matcher: `^delegator$`
   - delivery matcher: `^(worker|coder)$`
+  - analysis matcher: `^analyst$`
+  - synthesis matcher: `^synthesizer$`
   - integrator matcher: `^integrator$`
   - research matcher: `^(explorer|hunter)$`
   - validation matcher: `^(reviewer|tester)$`
-  - generic fallback matcher: `^(?!(?:default|manager|worker|coder|integrator|explorer|hunter|reviewer|tester)$).+`
+  - generic fallback matcher: `^(?!(?:default|manager|orchestrator|planner|delegator|worker|coder|analyst|synthesizer|integrator|explorer|hunter|reviewer|tester)$).+`
 - `SubagentStop`
   - coordination matcher: `^(default|manager)$`
+  - orchestration matcher: `^orchestrator$`
+  - planning matcher: `^planner$`
+  - delegation matcher: `^delegator$`
   - delivery matcher: `^(worker|coder)$`
+  - analysis matcher: `^analyst$`
+  - synthesis matcher: `^synthesizer$`
   - integrator matcher: `^integrator$`
   - research matcher: `^(explorer|hunter)$`
   - validation matcher: `^(reviewer|tester)$`
-  - generic fallback matcher: `^(?!(?:default|manager|worker|coder|integrator|explorer|hunter|reviewer|tester)$).+`
+  - generic fallback matcher: `^(?!(?:default|manager|orchestrator|planner|delegator|worker|coder|analyst|synthesizer|integrator|explorer|hunter|reviewer|tester)$).+`
 
 Because Codex runs multiple matching command hooks for the same event
 concurrently, keep matcher groups mutually exclusive.

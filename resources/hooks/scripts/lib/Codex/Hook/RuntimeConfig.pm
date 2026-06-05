@@ -48,6 +48,7 @@ sub runtime_config {
                 'Only use `spawn_agent` when the user explicitly asks for sub-agents, delegation, or parallel agent work.',
                 'Keep the next critical-path step local, then delegate only bounded sidecar work with explicit file ownership, commands, and acceptance criteria.',
                 'Prefer `send_input` or `resume_agent` when follow-up depends on an existing child context, use `wait_agent` only when the critical path is blocked, and use `close_agent` only after you reconcile the child handoff.',
+                'Use `planner` to turn ambiguous asks into explicit slices before fan-out, `delegator` or `orchestrator` when the main challenge is thread control, `analyst` to compare child findings, and `synthesizer` to merge converged outputs.',
             ],
             roles => [
                 _role(
@@ -61,6 +62,21 @@ sub runtime_config {
                     'Use to decompose work, define acceptance criteria, assign owned slices, and gate handoffs between other agents.',
                 ),
                 _role(
+                    'orchestrator',
+                    'Multi-agent runtime orchestrator that manages fan-out, sequencing, wait or close decisions, and reconciliation across child threads.',
+                    'Use when several child threads stay live at once and the hard part is coordinating their sequencing, waits, resumes, and close conditions.',
+                ),
+                _role(
+                    'planner',
+                    'Front-load planning agent that decomposes ambiguous goals into owned slices, acceptance criteria, and validation gates before delegation.',
+                    'Use before fan-out when the parent still needs crisp scope cuts, stop conditions, or a validation plan.',
+                ),
+                _role(
+                    'delegator',
+                    'Delegation controller that selects roles, packages handoffs, and manages spawn or resume or wait or close flow for subagents.',
+                    'Use when the main task is choosing the right child role, preparing a clean handoff, or managing follow-up inputs to existing children.',
+                ),
+                _role(
                     'worker',
                     'Scoped delivery agent for bounded tasks with explicit file ownership and tight handoffs.',
                     'Use for fast, narrow execution on a clearly owned slice with low ambiguity.',
@@ -69,6 +85,16 @@ sub runtime_config {
                     'coder',
                     'Implementation-heavy coding agent for complex root-cause fixes and cross-cutting changes.',
                     'Use for substantial implementation work, root-cause fixes, and changes that cut across modules.',
+                ),
+                _role(
+                    'analyst',
+                    'Cross-agent analysis agent that compares child findings, resolves conflicts, and identifies evidence gaps before synthesis.',
+                    'Use after discovery or implementation fan-out when the parent needs contradiction checks, evidence ranking, or next-step arbitration.',
+                ),
+                _role(
+                    'synthesizer',
+                    'Synthesis agent that merges completed child outputs into one coherent answer, patch plan, or handoff with provenance.',
+                    'Use when the child work is complete but the parent still needs one integrated artifact that keeps provenance and residual risks explicit.',
                 ),
                 _role(
                     'integrator',
@@ -110,6 +136,42 @@ sub runtime_config {
                     ],
                 },
                 {
+                    id         => 'orchestration',
+                    role_names => ['orchestrator'],
+                    start_lines => [
+                        'Keep one parent-owned critical path and use child threads only for genuinely parallel or independent slices.',
+                        'Track spawn or resume or wait or close decisions explicitly so every live child has a clear owner, dependency, and next state.',
+                    ],
+                    stop_lines => [
+                        'Do not close or supersede a child until you reconcile its files, commands, evidence, and residual risks against the parent ledger.',
+                        'Call out blocked waits, stale child context, and any thread that still needs a parent-side follow-up prompt.',
+                    ],
+                },
+                {
+                    id         => 'planning',
+                    role_names => ['planner'],
+                    start_lines => [
+                        'Turn the request into owned slices with objective, files or surfaces, acceptance criteria, validation commands, and stop conditions before fan-out.',
+                        'When ambiguity remains, say what discovery role should resolve it before any implementation child is spawned.',
+                    ],
+                    stop_lines => [
+                        'Hand back a delegation-ready plan that names the next role, the exact prompt or evidence it needs, and the validation gate that closes the slice.',
+                        'Highlight unresolved ambiguity instead of letting the parent guess at the next spawn sequence.',
+                    ],
+                },
+                {
+                    id         => 'delegation',
+                    role_names => ['delegator'],
+                    start_lines => [
+                        'Select the smallest role that fits each child slice and package the handoff with exact commands, paths, evidence, and acceptance criteria.',
+                        'Prefer `send_input` or `resume_agent` for existing children, reserve `spawn_agent` for net-new owned slices, and use `wait_agent` only when the parent critical path is blocked.',
+                    ],
+                    stop_lines => [
+                        'Return the active thread map: which child was spawned or resumed, what it owns, and what parent-side action should happen next.',
+                        'If a child should be closed, explain why its context is fully reconciled and what evidence the parent already captured.',
+                    ],
+                },
+                {
                     id         => 'delivery',
                     role_names => ['worker', 'coder'],
                     start_lines => [
@@ -119,6 +181,30 @@ sub runtime_config {
                     stop_lines => [
                         'Report the owned files, commands run, and any unverified assumptions in the handoff.',
                         'If validation was skipped, say exactly what blocked it and whether the parent must rerun it.',
+                    ],
+                },
+                {
+                    id         => 'analysis',
+                    role_names => ['analyst'],
+                    start_lines => [
+                        'Compare child outputs, separate confirmed facts from hypotheses, and call out contradictions or evidence gaps without drifting into speculative redesign.',
+                        'Use the child artifacts already produced; ask for more discovery or validation only when the current evidence cannot resolve a decision.',
+                    ],
+                    stop_lines => [
+                        'Return agreements, disagreements, and the exact next check or prompt needed to settle each unresolved point.',
+                        'Make confidence and evidence quality explicit so the parent knows what can be merged safely.',
+                    ],
+                },
+                {
+                    id         => 'synthesis',
+                    role_names => ['synthesizer'],
+                    start_lines => [
+                        'Merge converged child outputs into one coherent artifact without erasing ownership boundaries, provenance, or skipped validation notes.',
+                        'Prefer concise integration of existing evidence over opening new discovery branches.',
+                    ],
+                    stop_lines => [
+                        'Identify which statements come from which child evidence and which residual risks still need parent-side confirmation.',
+                        'If the merge surfaced conflicts, route them back to `analyst`, `reviewer`, or `tester` instead of papering them over.',
                     ],
                 },
                 {

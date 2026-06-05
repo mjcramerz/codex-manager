@@ -155,27 +155,39 @@ class HookScriptTests(unittest.TestCase):
             [group["matcher"] for group in hooks["SubagentStart"]],
             [
                 "^(default|manager)$",
+                "^orchestrator$",
+                "^planner$",
+                "^delegator$",
                 "^(worker|coder)$",
+                "^analyst$",
+                "^synthesizer$",
                 "^integrator$",
                 "^(explorer|hunter)$",
                 "^(reviewer|tester)$",
-                "^(?!(?:default|manager|worker|coder|integrator|explorer|hunter|reviewer|tester)$).+",
+                "^(?!(?:default|manager|orchestrator|planner|delegator|worker|coder|analyst|synthesizer|integrator|explorer|hunter|reviewer|tester)$).+",
             ],
         )
         self.assertEqual(
             [group["matcher"] for group in hooks["SubagentStop"]],
             [
                 "^(default|manager)$",
+                "^orchestrator$",
+                "^planner$",
+                "^delegator$",
                 "^(worker|coder)$",
+                "^analyst$",
+                "^synthesizer$",
                 "^integrator$",
                 "^(explorer|hunter)$",
                 "^(reviewer|tester)$",
-                "^(?!(?:default|manager|worker|coder|integrator|explorer|hunter|reviewer|tester)$).+",
+                "^(?!(?:default|manager|orchestrator|planner|delegator|worker|coder|analyst|synthesizer|integrator|explorer|hunter|reviewer|tester)$).+",
             ],
         )
         self.assertIn("subagent_start_coordination.pl", hooks["SubagentStart"][0]["hooks"][0]["command"])
-        self.assertIn("subagent_start_delivery.pl", hooks["SubagentStart"][1]["hooks"][0]["command"])
+        self.assertIn("subagent_start_orchestration.pl", hooks["SubagentStart"][1]["hooks"][0]["command"])
+        self.assertIn("subagent_start_delivery.pl", hooks["SubagentStart"][4]["hooks"][0]["command"])
         self.assertIn("subagent_stop_coordination.pl", hooks["SubagentStop"][0]["hooks"][0]["command"])
+        self.assertIn("subagent_stop_orchestration.pl", hooks["SubagentStop"][1]["hooks"][0]["command"])
         self.assertIn("stop.pl", hooks["Stop"][0]["hooks"][0]["command"])
 
     def test_runtime_hook_driver_is_repo_sourced_without_manifest_template(self) -> None:
@@ -351,6 +363,11 @@ class HookScriptTests(unittest.TestCase):
             self.assertIn("`wait_agent`", context)
             self.assertIn("`close_agent`", context)
             self.assertIn("`manager`:", context)
+            self.assertIn("`orchestrator`:", context)
+            self.assertIn("`planner`:", context)
+            self.assertIn("`delegator`:", context)
+            self.assertIn("`analyst`:", context)
+            self.assertIn("`synthesizer`:", context)
             self.assertIn("`explorer`:", context)
             self.assertIn("`tester`:", context)
 
@@ -371,6 +388,24 @@ class HookScriptTests(unittest.TestCase):
             self.assertIn("Subagent start for `manager`", context)
             self.assertIn("Role profile: `coordination`.", context)
             self.assertIn("Own decomposition, acceptance criteria, and sequencing", context)
+
+    def test_subagent_start_delegation_wrapper_includes_role_profile_context(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_c0d3x_repo(tmpdir)
+
+            result = run_hook_wrapper(
+                "subagent_start_delegation.pl",
+                {
+                    "cwd": str(repo),
+                    "agent_type": "delegator",
+                },
+            )
+
+            payload = json.loads(result.stdout)
+            context = payload["hookSpecificOutput"]["additionalContext"]
+            self.assertIn("Subagent start for `delegator`", context)
+            self.assertIn("Role profile: `delegation`.", context)
+            self.assertIn("Select the smallest role that fits each child slice", context)
 
     def test_subagent_stop_validation_wrapper_includes_role_profile_context(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -394,6 +429,31 @@ class HookScriptTests(unittest.TestCase):
             self.assertIn("Subagent stop guidance for `tester`", context)
             self.assertIn("Role profile: `validation`.", context)
             self.assertIn("State pass, fail, or untested per check", context)
+            self.assertEqual(outputs[-1]["decision"], "block")
+            self.assertIn("validation follow-up", outputs[-1]["reason"])
+
+    def test_subagent_stop_synthesis_wrapper_includes_role_profile_context(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_c0d3x_repo(tmpdir)
+            write_file(repo / "resources" / "hooks" / "scripts" / "hook_driver.pl", "print('x')\n")
+
+            result = run_hook_wrapper(
+                "subagent_stop_synthesis.pl",
+                {
+                    "cwd": str(repo),
+                    "agent_id": "agent-merge",
+                    "agent_type": "synthesizer",
+                    "last_assistant_message": "",
+                    "stop_hook_active": False,
+                },
+            )
+
+            outputs = [json.loads(line) for line in result.stdout.splitlines() if line.strip()]
+            self.assertGreaterEqual(len(outputs), 2)
+            context = outputs[0]["systemMessage"]
+            self.assertIn("Subagent stop guidance for `synthesizer`", context)
+            self.assertIn("Role profile: `synthesis`.", context)
+            self.assertIn("Identify which statements come from which child evidence", context)
             self.assertEqual(outputs[-1]["decision"], "block")
             self.assertIn("validation follow-up", outputs[-1]["reason"])
 

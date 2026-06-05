@@ -87,6 +87,33 @@ nickname_candidates = [
   "Ledger",
 ]
 
+# orchestrator agents
+[agents.orchestrator]
+description = "Multi-agent runtime orchestrator that manages fan-out, sequencing, wait or close decisions, and reconciliation across child threads."
+config_file = "${CODEX_AGENTS}/orchestrator.toml"
+nickname_candidates = [
+  "Conductor",
+  "Vector",
+]
+
+# planner agents
+[agents.planner]
+description = "Front-load planning agent that decomposes ambiguous goals into owned slices, acceptance criteria, and validation gates before delegation."
+config_file = "${CODEX_AGENTS}/planner.toml"
+nickname_candidates = [
+  "Draft",
+  "Grid",
+]
+
+# delegator agents
+[agents.delegator]
+description = "Delegation controller that selects roles, packages handoffs, and manages spawn or resume or wait or close flow for subagents."
+config_file = "${CODEX_AGENTS}/delegator.toml"
+nickname_candidates = [
+  "Relay",
+  "Broker",
+]
+
 # worker agents
 [agents.worker]
 description = "Scoped delivery agent for bounded tasks with explicit file ownership and tight handoffs."
@@ -103,6 +130,24 @@ config_file = "${CODEX_AGENTS}/coder.toml"
 nickname_candidates = [
   "Anchor",
   "Helm",
+]
+
+# analyst agents
+[agents.analyst]
+description = "Cross-agent analysis agent that compares child findings, resolves conflicts, and identifies evidence gaps before synthesis."
+config_file = "${CODEX_AGENTS}/analyst.toml"
+nickname_candidates = [
+  "Prism",
+  "Delta",
+]
+
+# synthesizer agents
+[agents.synthesizer]
+description = "Synthesis agent that merges completed child outputs into one coherent answer, patch plan, or handoff with provenance."
+config_file = "${CODEX_AGENTS}/synthesizer.toml"
+nickname_candidates = [
+  "Weave",
+  "Mosaic",
 ]
 
 # integrator agents
@@ -278,6 +323,33 @@ timeout = 20
 statusMessage = "Injecting coordination subagent guidance"
 
 [[hooks.SubagentStart]]
+matcher = '^orchestrator$'
+
+[[hooks.SubagentStart.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/subagent_start_orchestration.pl"
+timeout = 20
+statusMessage = "Injecting orchestration subagent guidance"
+
+[[hooks.SubagentStart]]
+matcher = '^planner$'
+
+[[hooks.SubagentStart.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/subagent_start_planning.pl"
+timeout = 20
+statusMessage = "Injecting planning subagent guidance"
+
+[[hooks.SubagentStart]]
+matcher = '^delegator$'
+
+[[hooks.SubagentStart.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/subagent_start_delegation.pl"
+timeout = 20
+statusMessage = "Injecting delegation subagent guidance"
+
+[[hooks.SubagentStart]]
 matcher = '^(worker|coder)$'
 
 [[hooks.SubagentStart.hooks]]
@@ -285,6 +357,24 @@ type = "command"
 command = "perl ${CODEX_HOME}/hooks/scripts/subagent_start_delivery.pl"
 timeout = 20
 statusMessage = "Injecting delivery subagent guidance"
+
+[[hooks.SubagentStart]]
+matcher = '^analyst$'
+
+[[hooks.SubagentStart.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/subagent_start_analysis.pl"
+timeout = 20
+statusMessage = "Injecting analysis subagent guidance"
+
+[[hooks.SubagentStart]]
+matcher = '^synthesizer$'
+
+[[hooks.SubagentStart.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/subagent_start_synthesis.pl"
+timeout = 20
+statusMessage = "Injecting synthesis subagent guidance"
 
 [[hooks.SubagentStart]]
 matcher = '^integrator$'
@@ -314,7 +404,7 @@ timeout = 20
 statusMessage = "Injecting validation subagent guidance"
 
 [[hooks.SubagentStart]]
-matcher = '^(?!(?:default|manager|worker|coder|integrator|explorer|hunter|reviewer|tester)$).+'
+matcher = '^(?!(?:default|manager|orchestrator|planner|delegator|worker|coder|analyst|synthesizer|integrator|explorer|hunter|reviewer|tester)$).+'
 
 [[hooks.SubagentStart.hooks]]
 type = "command"
@@ -332,6 +422,33 @@ timeout = 25
 statusMessage = "Checking coordination subagent completion gates"
 
 [[hooks.SubagentStop]]
+matcher = '^orchestrator$'
+
+[[hooks.SubagentStop.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/subagent_stop_orchestration.pl"
+timeout = 25
+statusMessage = "Checking orchestration subagent completion gates"
+
+[[hooks.SubagentStop]]
+matcher = '^planner$'
+
+[[hooks.SubagentStop.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/subagent_stop_planning.pl"
+timeout = 25
+statusMessage = "Checking planning subagent completion gates"
+
+[[hooks.SubagentStop]]
+matcher = '^delegator$'
+
+[[hooks.SubagentStop.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/subagent_stop_delegation.pl"
+timeout = 25
+statusMessage = "Checking delegation subagent completion gates"
+
+[[hooks.SubagentStop]]
 matcher = '^(worker|coder)$'
 
 [[hooks.SubagentStop.hooks]]
@@ -339,6 +456,24 @@ type = "command"
 command = "perl ${CODEX_HOME}/hooks/scripts/subagent_stop_delivery.pl"
 timeout = 25
 statusMessage = "Checking delivery subagent completion gates"
+
+[[hooks.SubagentStop]]
+matcher = '^analyst$'
+
+[[hooks.SubagentStop.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/subagent_stop_analysis.pl"
+timeout = 25
+statusMessage = "Checking analysis subagent completion gates"
+
+[[hooks.SubagentStop]]
+matcher = '^synthesizer$'
+
+[[hooks.SubagentStop.hooks]]
+type = "command"
+command = "perl ${CODEX_HOME}/hooks/scripts/subagent_stop_synthesis.pl"
+timeout = 25
+statusMessage = "Checking synthesis subagent completion gates"
 
 [[hooks.SubagentStop]]
 matcher = '^integrator$'
@@ -368,7 +503,7 @@ timeout = 25
 statusMessage = "Checking validation subagent completion gates"
 
 [[hooks.SubagentStop]]
-matcher = '^(?!(?:default|manager|worker|coder|integrator|explorer|hunter|reviewer|tester)$).+'
+matcher = '^(?!(?:default|manager|orchestrator|planner|delegator|worker|coder|analyst|synthesizer|integrator|explorer|hunter|reviewer|tester)$).+'
 
 [[hooks.SubagentStop.hooks]]
 type = "command"

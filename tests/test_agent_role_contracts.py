@@ -6,13 +6,18 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 AGENTS_DIR = REPO_ROOT / "config" / "agents"
 EXPECTED_MULTI_AGENT_CONCURRENCY = {
+    "analyst.toml": 2,
     "coder.toml": 2,
+    "delegator.toml": 3,
     "default.toml": 2,
     "explorer.toml": 2,
     "hunter.toml": 2,
     "integrator.toml": 1,
     "manager.toml": 4,
+    "orchestrator.toml": 4,
+    "planner.toml": 2,
     "reviewer.toml": 1,
+    "synthesizer.toml": 1,
     "tester.toml": 1,
     "worker.toml": 1,
 }
