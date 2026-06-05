@@ -10,6 +10,8 @@ from common import parse_toml_file
 
 SUBAGENT_ROLE_NAME_PATTERN = r"^[a-z][a-z0-9_-]*$"
 HOOK_SCRIPT_NAME_PATTERN = r"^[A-Za-z0-9_.-]+\.pl$"
+SUPPORTED_SINGLETON_HOOK_EVENTS = ("SessionStart", "UserPromptSubmit", "PreCompact", "PostCompact", "Stop")
+SINGLETON_MATCHER_SUPPORTED_EVENTS = frozenset({"SessionStart"})
 SUPPORTED_TOOL_HOOK_EVENTS = ("PreToolUse", "PermissionRequest", "PostToolUse")
 
 
@@ -42,6 +44,9 @@ def load_hook_catalog(catalog_path_value: Path | None = None) -> dict[str, Any]:
     if payload.get("version") != 1:
         fail(f"{path} must declare version = 1")
 
+    singleton_events = payload.get("singleton_events")
+    if not isinstance(singleton_events, dict) or not singleton_events:
+        fail(f"{path} must declare a non-empty singleton_events table")
     tool_profiles = payload.get("tool_profiles")
     if not isinstance(tool_profiles, list) or not tool_profiles:
         fail(f"{path} must declare a non-empty tool_profiles array")
@@ -51,6 +56,47 @@ def load_hook_catalog(catalog_path_value: Path | None = None) -> dict[str, Any]:
     subagent_profiles = payload.get("subagent_profiles")
     if not isinstance(subagent_profiles, list) or not subagent_profiles:
         fail(f"{path} must declare a non-empty subagent_profiles array")
+
+    missing_singleton_events = sorted(set(SUPPORTED_SINGLETON_HOOK_EVENTS) - set(singleton_events))
+    if missing_singleton_events:
+        fail(f"{path} singleton_events is missing required event definitions: {', '.join(missing_singleton_events)}")
+    unknown_singleton_events = sorted(set(singleton_events) - set(SUPPORTED_SINGLETON_HOOK_EVENTS))
+    if unknown_singleton_events:
+        fail(f"{path} singleton_events contains unsupported event definitions: {', '.join(unknown_singleton_events)}")
+
+    normalized_singleton_events: dict[str, dict[str, Any]] = {}
+    for event_name in SUPPORTED_SINGLETON_HOOK_EVENTS:
+        event_payload = singleton_events.get(event_name)
+        if not isinstance(event_payload, dict):
+            fail(f"{path} singleton_events.{event_name} must be an object")
+        matcher = event_payload.get("matcher")
+        if event_name in SINGLETON_MATCHER_SUPPORTED_EVENTS:
+            matcher = _require_string(matcher, label=f"{path} singleton_events.{event_name}.matcher")
+        elif matcher is not None:
+            fail(f"{path} singleton_events.{event_name}.matcher is not supported")
+        script_name = _require_string(
+            event_payload.get("script"),
+            label=f"{path} singleton_events.{event_name}.script",
+        )
+        timeout = event_payload.get("timeout")
+        if not isinstance(timeout, int) or isinstance(timeout, bool) or timeout < 1 or timeout > 600:
+            fail(f"{path} singleton_events.{event_name}.timeout must be an integer between 1 and 600")
+        status_message = _require_string(
+            event_payload.get("statusMessage"),
+            label=f"{path} singleton_events.{event_name}.statusMessage",
+        )
+        if "/" in script_name or "\\" in script_name:
+            fail(f"{path} singleton_events.{event_name}.script must be a basename: {script_name}")
+        if re.fullmatch(HOOK_SCRIPT_NAME_PATTERN, script_name) is None:
+            fail(f"{path} singleton_events.{event_name}.script must end with .pl: {script_name}")
+        normalized_singleton_events[event_name] = {
+            "matcher": matcher,
+            "script": script_name,
+            "timeout": timeout,
+            "statusMessage": status_message,
+        }
+
+    payload["singleton_events"] = normalized_singleton_events
 
     tool_profile_ids: set[str] = set()
     for profile_index, profile in enumerate(tool_profiles):
@@ -186,6 +232,30 @@ def load_hook_catalog(catalog_path_value: Path | None = None) -> dict[str, Any]:
         profile["stop_lines"] = stop_lines
 
     return payload
+
+
+def build_singleton_hook_groups(
+    *,
+    event_name: str,
+    catalog_path_value: Path | None = None,
+) -> list[dict[str, Any]]:
+    if event_name not in SUPPORTED_SINGLETON_HOOK_EVENTS:
+        fail(f"unsupported singleton hook event: {event_name}")
+    catalog = load_hook_catalog(catalog_path_value)
+    event_payload = catalog["singleton_events"][event_name]
+    group: dict[str, Any] = {
+        "hooks": [
+            {
+                "type": "command",
+                "command": f"perl ${{CODEX_HOME}}/hooks/scripts/{event_payload['script']}",
+                "timeout": event_payload["timeout"],
+                "statusMessage": event_payload["statusMessage"],
+            }
+        ]
+    }
+    if event_payload["matcher"] is not None:
+        group["matcher"] = event_payload["matcher"]
+    return [group]
 
 
 def build_tool_hook_groups(

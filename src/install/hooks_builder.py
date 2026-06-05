@@ -7,57 +7,138 @@ from pathlib import Path
 from typing import Any
 
 from common import fail
+from hook_runtime_catalog import build_singleton_hook_groups
+from hook_runtime_catalog import build_subagent_hook_groups
 from hook_runtime_catalog import build_tool_hook_groups
+from hook_runtime_catalog import SUPPORTED_SINGLETON_HOOK_EVENTS
 from hook_runtime_catalog import SUPPORTED_TOOL_HOOK_EVENTS
-from hook_runtime_catalog import load_hook_catalog
+
+
+@dataclass(frozen=True)
+class HookCommandSpec:
+    command: str
+    timeout: int
+    status_message: str
 
 
 @dataclass(frozen=True)
 class HookGroupSpec:
     matcher: str | None
-    script_name: str
+    handler: HookCommandSpec
+
+
+def _group_specs(groups: list[dict[str, Any]]) -> tuple[HookGroupSpec, ...]:
+    specs: list[HookGroupSpec] = []
+    for group in groups:
+        handlers = group.get("hooks")
+        if not isinstance(handlers, list) or len(handlers) != 1 or not isinstance(handlers[0], dict):
+            raise ValueError(f"invalid generated hook group: {group!r}")
+        handler = handlers[0]
+        timeout = handler.get("timeout")
+        status_message = handler.get("statusMessage")
+        if not isinstance(timeout, int) or isinstance(timeout, bool):
+            raise ValueError(f"invalid generated hook timeout: {group!r}")
+        if not isinstance(status_message, str) or not status_message:
+            raise ValueError(f"invalid generated hook status message: {group!r}")
+        command = handler.get("command")
+        if not isinstance(command, str) or not command:
+            raise ValueError(f"invalid generated hook command: {group!r}")
+        specs.append(
+            HookGroupSpec(
+                matcher=group.get("matcher"),
+                handler=HookCommandSpec(
+                    command=command,
+                    timeout=timeout,
+                    status_message=status_message,
+                ),
+            )
+        )
+    return tuple(specs)
+
+
+def _singleton_group_specs(event_name: str) -> tuple[HookGroupSpec, ...]:
+    return _group_specs(build_singleton_hook_groups(event_name=event_name))
 
 
 def _subagent_group_specs(phase: str) -> tuple[HookGroupSpec, ...]:
-    catalog = load_hook_catalog()
-    script_key = "start_script" if phase == "start" else "stop_script"
-    return tuple(
-        HookGroupSpec(
-            matcher=str(profile["matcher"]),
-            script_name=str(profile[script_key]),
-        )
-        for profile in catalog["subagent_profiles"]
-    )
+    return _group_specs(build_subagent_hook_groups(phase=phase))
 
 
 def _tool_group_specs(event_name: str) -> tuple[HookGroupSpec, ...]:
-    return tuple(
-        HookGroupSpec(
-            matcher=str(group["matcher"]),
-            script_name=str(group["hooks"][0]["command"]).rsplit("/", 1)[-1],
-        )
-        for group in build_tool_hook_groups(event_name=event_name)
-    )
+    return _group_specs(build_tool_hook_groups(event_name=event_name))
 
 
 EXPECTED_HOOK_LAYOUT: dict[str, tuple[HookGroupSpec, ...]] = {
-    "SessionStart": (HookGroupSpec(matcher="^(startup|resume|clear|compact)$", script_name="session_start.pl"),),
-    "UserPromptSubmit": (HookGroupSpec(matcher=None, script_name="user_prompt_submit.pl"),),
+    **{
+        event_name: _singleton_group_specs(event_name)
+        for event_name in SUPPORTED_SINGLETON_HOOK_EVENTS
+    },
     "PreToolUse": _tool_group_specs("PreToolUse"),
     "PermissionRequest": _tool_group_specs("PermissionRequest"),
     "PostToolUse": _tool_group_specs("PostToolUse"),
-    "PreCompact": (HookGroupSpec(matcher=None, script_name="pre_compact.pl"),),
-    "PostCompact": (HookGroupSpec(matcher=None, script_name="post_compact.pl"),),
     "SubagentStart": _subagent_group_specs("start"),
     "SubagentStop": _subagent_group_specs("stop"),
-    "Stop": (HookGroupSpec(matcher=None, script_name="stop.pl"),),
 }
 
 SUPPORTED_HOOK_EVENTS = frozenset(EXPECTED_HOOK_LAYOUT)
 TOOL_MATCHER_EVENTS = frozenset(SUPPORTED_TOOL_HOOK_EVENTS)
 SUBAGENT_MATCHER_EVENTS = frozenset({"SubagentStart", "SubagentStop"})
-MATCHER_UNSUPPORTED_EVENTS = frozenset({"UserPromptSubmit", "Stop"})
-HOOK_SCRIPT_COMMAND_PATTERN = re.compile(r"\$\{CODEX_HOME\}/hooks/scripts/([A-Za-z0-9_.-]+\.pl)\b")
+MATCHER_UNSUPPORTED_EVENTS = frozenset({"UserPromptSubmit", "Stop", "PreCompact", "PostCompact"})
+GROUP_ALLOWED_KEYS = frozenset({"matcher", "hooks"})
+HANDLER_ALLOWED_KEYS = frozenset({"type", "command", "timeout", "statusMessage"})
+HOOK_SCRIPT_COMMAND_PATTERN = r"\$\{CODEX_HOME\}/hooks/scripts/([A-Za-z0-9_.-]+\.pl)\b"
+
+
+def _validate_expected_group_layout(
+    *,
+    path_label: str,
+    event_name: str,
+    group_index: int,
+    group: dict[str, Any],
+    expected_group: HookGroupSpec,
+) -> None:
+    group_label = f"{path_label} hooks.{event_name}[{group_index}]"
+    unknown_group_keys = sorted(set(group) - set(GROUP_ALLOWED_KEYS))
+    if unknown_group_keys:
+        fail(f"{group_label} contains unsupported keys: {', '.join(unknown_group_keys)}")
+
+    matcher = group.get("matcher")
+    if expected_group.matcher is None:
+        if matcher is not None:
+            fail(f"{group_label}.matcher is not supported for {event_name}")
+    elif matcher != expected_group.matcher:
+        fail(
+            f"{group_label}.matcher must be `{expected_group.matcher}` "
+            f"to keep the inline hook layout aligned with the runtime contract"
+        )
+
+    handlers = group.get("hooks")
+    if not isinstance(handlers, list):
+        return
+    if len(handlers) != 1:
+        fail(f"{group_label}.hooks must define exactly one command handler")
+    handler = handlers[0]
+    if not isinstance(handler, dict):
+        return
+
+    unknown_handler_keys = sorted(set(handler) - set(HANDLER_ALLOWED_KEYS))
+    if unknown_handler_keys:
+        fail(f"{group_label}.hooks[0] contains unsupported keys: {', '.join(unknown_handler_keys)}")
+    if handler.get("command") != expected_group.handler.command:
+        fail(
+            f"{group_label}.hooks[0].command must be `{expected_group.handler.command}` "
+            f"to keep the inline hook layout aligned with the runtime contract"
+        )
+    if handler.get("timeout") != expected_group.handler.timeout:
+        fail(
+            f"{group_label}.hooks[0].timeout must be `{expected_group.handler.timeout}` "
+            f"to keep the inline hook layout aligned with the runtime contract"
+        )
+    if handler.get("statusMessage") != expected_group.handler.status_message:
+        fail(
+            f"{group_label}.hooks[0].statusMessage must be `{expected_group.handler.status_message}` "
+            f"to keep the inline hook layout aligned with the runtime contract"
+        )
 
 
 def _load_apps_payload(apps_path: Path) -> dict[str, Any]:
@@ -88,49 +169,6 @@ def _hooks_table(payload: dict[str, Any], *, path_label: str) -> dict[str, Any]:
 def load_inline_hooks_config(apps_path: Path) -> dict[str, Any]:
     payload = _load_apps_payload(apps_path)
     return _hooks_table(payload, path_label=str(apps_path))
-
-
-def _script_name_from_command(command: str) -> str | None:
-    script_match = HOOK_SCRIPT_COMMAND_PATTERN.search(command)
-    if script_match is None:
-        return None
-    return script_match.group(1)
-
-
-def _validate_expected_group_layout(
-    *,
-    path_label: str,
-    event_name: str,
-    group_index: int,
-    group: dict[str, Any],
-    expected_group: HookGroupSpec,
-) -> None:
-    group_label = f"{path_label} hooks.{event_name}[{group_index}]"
-    matcher = group.get("matcher")
-    if expected_group.matcher is None:
-        if matcher is not None:
-            fail(f"{group_label}.matcher is not supported for {event_name}")
-    elif matcher != expected_group.matcher:
-        fail(
-            f"{group_label}.matcher must be `{expected_group.matcher}` "
-            f"to keep the inline hook layout aligned with the runtime contract"
-        )
-
-    handlers = group.get("hooks")
-    if not isinstance(handlers, list):
-        return
-    script_names = {
-        script_name
-        for handler in handlers
-        if isinstance(handler, dict)
-        for script_name in [_script_name_from_command(str(handler.get('command', '')))]
-        if script_name is not None
-    }
-    if expected_group.script_name not in script_names:
-        fail(
-            f"{group_label}.hooks must include `{expected_group.script_name}` "
-            f"to keep the inline hook layout aligned with the runtime contract"
-        )
 
 
 def validate_inline_hooks_config(
@@ -184,7 +222,7 @@ def validate_inline_hooks_config(
                     fail(f"{handler_label}.command must be a non-empty string")
                 if "hooks.json" in command:
                     fail(f"{handler_label}.command must not reference hooks.json")
-                script_match = HOOK_SCRIPT_COMMAND_PATTERN.search(command)
+                script_match = re.search(HOOK_SCRIPT_COMMAND_PATTERN, command)
                 if script_match is not None:
                     script_path = scripts_dir / script_match.group(1)
                     if not script_path.is_file():

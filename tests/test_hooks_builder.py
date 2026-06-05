@@ -47,5 +47,12 @@ class HookBuilderTests(unittest.TestCase):
         hooks = copy.deepcopy(_hooks_payload())
         hooks["SubagentStop"][0]["hooks"][0]["command"] = "perl ${CODEX_HOME}/hooks/scripts/subagent_stop.pl"
 
-        with self.assertRaisesRegex(InstallError, r"hooks\.SubagentStop\[0\]\.hooks must include `subagent_stop_coordination\.pl`"):
+        with self.assertRaisesRegex(InstallError, r"hooks\.SubagentStop\[0\]\.hooks\[0\]\.command must be"):
+            validate_inline_hooks_config(APPS_TOML_PATH, HOOK_SCRIPTS_DIR, hooks_payload=hooks)
+
+    def test_validate_inline_hooks_config_rejects_timeout_drift(self) -> None:
+        hooks = copy.deepcopy(_hooks_payload())
+        hooks["PostToolUse"][1]["hooks"][0]["timeout"] = 99
+
+        with self.assertRaisesRegex(InstallError, r"hooks\.PostToolUse\[1\]\.hooks\[0\]\.timeout must be"):
             validate_inline_hooks_config(APPS_TOML_PATH, HOOK_SCRIPTS_DIR, hooks_payload=hooks)

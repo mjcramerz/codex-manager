@@ -33,8 +33,8 @@ inline `[hooks]` and `hooks.json` exist in one layer, both sets run.
   Shared repo-profile metadata, environment probes, focus areas, prompt rules,
   and stop rules.
 - `lib/Codex/Hook/HookManifest.toml`
-  Generation/validation metadata for shared hook families and role/profile
-  metadata. It is not read by the installed Perl runtime.
+  Generation/validation metadata for the exact inline hook routing contract plus
+  shared role/profile metadata. It is not read by the installed Perl runtime.
 - `lib/Codex/Hook/ToolProfile.pm`
   Tool-family classification for shell, edit, and MCP flows.
 - `lib/Codex/Hook/Driver.pm`
@@ -51,8 +51,12 @@ inline `[hooks]` and `hooks.json` exist in one layer, both sets run.
 
 `config/usr/apps.toml` carries the full runtime `[hooks]` table. Keep every hook
 group explicit there. `lib/Codex/Hook/HookManifest.toml` is generation/validation-only
-metadata for the repeated tool and subagent families plus shared role/profile
-metadata; it must not replace the explicit TOML hook routing contract.
+metadata for every hook family plus shared role/profile metadata; it must not
+replace the explicit TOML hook routing contract.
+
+The repo validator treats that manifest as the canonical expected inline
+contract: matcher groups, script command, timeout, and status message must stay
+aligned with the manifest and the checked-in Perl catalog.
 
 - `SessionStart`
   - explicit in `config/usr/apps.toml`

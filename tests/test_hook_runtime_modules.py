@@ -10,6 +10,11 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 HOOK_LIB = REPO_ROOT / "resources" / "hooks" / "scripts" / "lib"
+INSTALL_SRC = REPO_ROOT / "src" / "install"
+if str(INSTALL_SRC) not in sys.path:
+    sys.path.insert(0, str(INSTALL_SRC))
+
+from hook_runtime_catalog import load_hook_catalog  # noqa: E402
 
 
 def run_perl(code: str, *args: str, env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
@@ -33,6 +38,22 @@ def init_git_repo(path: Path) -> None:
 
 
 class HookRuntimeModulesTests(unittest.TestCase):
+    def test_perl_catalog_matches_manifest_metadata(self) -> None:
+        code = r'''
+use Codex::Hook::Catalog qw(hook_catalog);
+print JSON::PP::encode_json(hook_catalog());
+'''
+        proc = run_perl(code)
+        perl_catalog = json.loads(proc.stdout)
+        manifest_catalog = load_hook_catalog()
+        expected_catalog = {
+            "version": manifest_catalog["version"],
+            "tool_profiles": manifest_catalog["tool_profiles"],
+            "roles": manifest_catalog["roles"],
+            "subagent_profiles": manifest_catalog["subagent_profiles"],
+        }
+        self.assertEqual(perl_catalog, expected_catalog)
+
     def test_tool_profile_uses_shared_catalog_for_matchers_and_labels(self) -> None:
         code = r'''
 use Codex::Hook::ToolProfile qw(tool_group_label tool_group_name);

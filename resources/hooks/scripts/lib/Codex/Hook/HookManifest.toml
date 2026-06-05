@@ -1,5 +1,31 @@
 version = 1
 
+[singleton_events.SessionStart]
+matcher = "^(startup|resume|clear|compact)$"
+script = "session_start.pl"
+timeout = 20
+statusMessage = "Injecting detected repository context"
+
+[singleton_events.UserPromptSubmit]
+script = "user_prompt_submit.pl"
+timeout = 20
+statusMessage = "Injecting detected prompt context"
+
+[singleton_events.PreCompact]
+script = "pre_compact.pl"
+timeout = 20
+statusMessage = "Preserving context before compaction"
+
+[singleton_events.PostCompact]
+script = "post_compact.pl"
+timeout = 20
+statusMessage = "Re-establishing context after compaction"
+
+[singleton_events.Stop]
+script = "stop.pl"
+timeout = 25
+statusMessage = "Checking detected repository constraints"
+
 [[tool_profiles]]
 id = "shell"
 matcher = "^(Bash|exec_command|shell)$"
