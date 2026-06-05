@@ -668,17 +668,20 @@ class Installer:
     def _runtime_instructions_dir(self) -> Path:
         return self._codex_user_dir() / "instructions"
 
+    def _runtime_home_dir(self) -> Path:
+        if self.runtime_layout is not None:
+            return self.runtime_layout.home_dir
+        return ensure_safe_absolute_path("CODEX_HOME", self.runtime_vars["CODEX_HOME"])
+
     def _runtime_plugins_dir(self) -> Path:
         if self.runtime_layout is not None:
             return self.runtime_layout.plugin_cache_dir
-        home_dir = ensure_safe_absolute_path("CODEX_HOME", self.runtime_vars["CODEX_HOME"])
-        return home_dir / "plugins" / "cache"
+        return self._runtime_home_dir() / "plugins" / "cache"
 
     def _runtime_plugin_marketplace_dir(self) -> Path:
         if self.runtime_layout is not None:
             return self.runtime_layout.plugin_marketplace_dir
-        home_dir = ensure_safe_absolute_path("CODEX_HOME", self.runtime_vars["CODEX_HOME"])
-        return home_dir / ".agents" / "plugins"
+        return self._runtime_home_dir() / ".agents" / "plugins"
 
     def _runtime_plugin_marketplace_path(self) -> Path:
         if self.runtime_layout is not None:
@@ -688,15 +691,13 @@ class Installer:
     def _runtime_hooks_dir(self) -> Path:
         if self.runtime_layout is not None:
             return self.runtime_layout.hooks_dir
-        home_dir = ensure_safe_absolute_path("CODEX_HOME", self.runtime_vars["CODEX_HOME"])
-        return home_dir / "hooks"
+        return self._runtime_home_dir() / "hooks"
 
     def _runtime_hooks_scripts_dir(self) -> Path:
         return self._runtime_hooks_dir() / "scripts"
 
     def _runtime_hidden_hooks_dir(self) -> Path:
-        home_dir = ensure_safe_absolute_path("CODEX_HOME", self.runtime_vars["CODEX_HOME"])
-        return home_dir / ".hooks"
+        return self._runtime_home_dir() / ".hooks"
 
     def _runtime_hooks_schema_dir(self) -> Path:
         return self._runtime_hidden_hooks_dir() / "schema" / "generated"
@@ -805,6 +806,12 @@ class Installer:
 
     def _hooks_runtime_config_source_path(self) -> Path:
         return self.repo_layout.hooks_scripts_dir / "lib" / "Codex" / "Hook" / "RuntimeConfig.pm"
+
+    def _render_user_fragment(self, path: Path) -> str:
+        return _replace_known_placeholders_outside_toml_multiline_strings(
+            path.read_text(encoding="utf-8"),
+            self.variables,
+        )
 
     def _plugins_source_dir(self) -> Path:
         return self.repo_layout.plugins_skills_dir
@@ -2422,20 +2429,11 @@ class Installer:
             self.repo_layout.user_features_path,
             self.repo_layout.user_memory_path,
         ):
-            rendered = self._append_compiled_fragment(
-                rendered,
-                _replace_known_placeholders_outside_toml_multiline_strings(
-                    path.read_text(encoding="utf-8"),
-                    self.variables,
-                ),
-            )
+            rendered = self._append_compiled_fragment(rendered, self._render_user_fragment(path))
         rendered = self._append_compiled_fragment(rendered, self._render_home_apps_fragment())
         rendered = self._append_compiled_fragment(
             rendered,
-            _replace_known_placeholders_outside_toml_multiline_strings(
-                self.repo_layout.user_policy_path.read_text(encoding="utf-8"),
-                self.variables,
-            ),
+            self._render_user_fragment(self.repo_layout.user_policy_path),
         )
         if rendered and not rendered.endswith("\n"):
             rendered += "\n"
@@ -2472,14 +2470,33 @@ class Installer:
                 sections.append(child)
         return "\n\n".join(sections)
 
-    def _render_home_apps_fragment(self) -> str:
-        raw = self.repo_layout.user_apps_path.read_text(encoding="utf-8")
-        rendered = _replace_known_placeholders_outside_toml_multiline_strings(raw, self.variables)
-        apps_payload = resolve_object_placeholders(
+    @classmethod
+    def _render_toml_document(cls, payload: dict[str, Any]) -> str:
+        scalar_lines: list[str] = []
+        sections: list[str] = []
+        for key, value in payload.items():
+            if isinstance(value, dict):
+                child = cls._render_toml_table([key], value)
+                if child:
+                    sections.append(child)
+                continue
+            scalar_lines.append(f"{toml_key(key)} = {toml_value(value)}")
+        if scalar_lines:
+            sections.insert(0, "\n".join(scalar_lines))
+        rendered = "\n\n".join(section for section in sections if section)
+        if rendered and not rendered.endswith("\n"):
+            rendered += "\n"
+        return rendered
+
+    def _resolved_user_apps_payload(self) -> dict[str, Any]:
+        return resolve_object_placeholders(
             copy.deepcopy(self.plugins_payload),
             self.variables,
             "config/usr/apps.toml",
         )
+
+    def _render_home_apps_fragment(self) -> str:
+        apps_payload = self._resolved_user_apps_payload()
         home_mcp_servers = apps_payload.get("mcp_servers", {})
         if home_mcp_servers in (None, {}):
             home_mcp_servers = {}
@@ -2498,21 +2515,44 @@ class Installer:
                     "config/usr/apps.toml mcp_servers."
                     f"{server_name} does not define command or url; leaving that entry unchanged"
                 )
-        if rendered and not rendered.endswith("\n"):
-            rendered += "\n"
-        return rendered
+        return self._render_toml_document(apps_payload)
+
+    def _rendered_text_is_current(self, path: Path, rendered: str, *, mode: int) -> bool:
+        if path.exists() and not path.is_file():
+            fail(f"render target must be a regular file: {path}")
+        if not path.is_file():
+            return False
+        try:
+            current = path.read_text(encoding="utf-8")
+            current_mode = stat.S_IMODE(path.stat().st_mode)
+        except OSError:
+            return False
+        return current == rendered and current_mode == mode
+
+    def _materialize_rendered_text(
+        self,
+        path: Path,
+        rendered: str,
+        *,
+        mode: int = 0o644,
+        dry_run_message: str,
+    ) -> None:
+        if self._rendered_text_is_current(path, rendered, mode=mode):
+            return
+        if self.dry_run:
+            print(f"[dry-run] {dry_run_message} {path}")
+            return
+        self._write_file(path, rendered, mode=mode)
 
     def _materialize_home_config_paths(self, source_path: Path | None = None) -> None:
         del source_path
         config_path = Path(self.runtime_vars["CODEX_HOME"]) / "config.toml"
-        current = config_path.read_text(encoding="utf-8") if config_path.is_file() else ""
         rendered = self._render_user_config_toml("", config_path)
-        if rendered == current:
-            return
-        if self.dry_run:
-            print(f"[dry-run] render compiled home config into {config_path}")
-            return
-        self._write_file(config_path, rendered)
+        self._materialize_rendered_text(
+            config_path,
+            rendered,
+            dry_run_message="render compiled home config into",
+        )
 
     def _materialize_agent_config_paths(self, source_dir: Path | None = None) -> None:
         runtime_agents_dir = Path(self.runtime_vars["CODEX_AGENTS"])
@@ -2534,12 +2574,11 @@ class Installer:
             target_path = runtime_agents_dir / source_path.name
             raw = source_path.read_text(encoding="utf-8")
             rendered = self._render_home_toml(raw, target_path, apply_instruction_overrides=False)
-            if rendered == raw:
-                continue
-            if self.dry_run:
-                print(f"[dry-run] render placeholders in {target_path}")
-                continue
-            self._write_file(target_path, rendered)
+            self._materialize_rendered_text(
+                target_path,
+                rendered,
+                dry_run_message="render placeholders in",
+            )
 
     def _render_runtime_toml_source(self, source_path: Path, label: str) -> str:
         raw = source_path.read_text(encoding="utf-8")
@@ -2862,8 +2901,18 @@ class Installer:
 
     def _write_system_config_files(self, artifacts: CompiledArtifacts) -> None:
         system_dir = Path(self.env["CODEX_SYSTEM_DIR"])
-        self._copy_file(artifacts.config_toml, system_dir / "config.toml")
-        self._write_file(system_dir / "requirements.toml", self._render_requirements_toml())
+        system_config_path = system_dir / "config.toml"
+        rendered_system_config = artifacts.config_toml.read_text(encoding="utf-8")
+        self._materialize_rendered_text(
+            system_config_path,
+            rendered_system_config,
+            dry_run_message="materialize system config into",
+        )
+        self._materialize_rendered_text(
+            system_dir / "requirements.toml",
+            self._render_requirements_toml(),
+            dry_run_message="materialize system requirements into",
+        )
         self._remove_path_force(system_dir / "mcp.toml")
         self._remove_path_force(system_dir / "skills.toml")
 

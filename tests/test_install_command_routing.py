@@ -14,6 +14,7 @@ if str(INSTALL_SRC) not in sys.path:
 
 import codex_install  # noqa: E402
 from common import resolve_placeholders  # noqa: E402
+from tests.hook_table_assertions import assert_expected_inline_hooks  # noqa: E402
 
 
 class InstallCommandRoutingTests(unittest.TestCase):
@@ -228,65 +229,7 @@ class InstallConfigToleranceTests(unittest.TestCase):
 
         payload = tomllib.loads(rendered)
         hooks = payload.get("hooks")
-        self.assertIsInstance(hooks, dict)
-        self.assertEqual(
-            set(hooks),
-            {
-                "PreToolUse",
-                "PermissionRequest",
-                "PostToolUse",
-                "PreCompact",
-                "PostCompact",
-                "SessionStart",
-                "UserPromptSubmit",
-                "SubagentStart",
-                "SubagentStop",
-                "Stop",
-            },
-        )
-        self.assertEqual(hooks["SessionStart"][0]["matcher"], "^(startup|resume|clear|compact)$")
-        self.assertEqual([group["matcher"] for group in hooks["PreToolUse"]], ["^(Bash|exec_command|shell)$", "^(apply_patch|Edit|Write)$", "^mcp__"])
-        self.assertEqual([group["matcher"] for group in hooks["PermissionRequest"]], ["^(Bash|exec_command|shell)$", "^(apply_patch|Edit|Write)$", "^mcp__"])
-        self.assertEqual([group["matcher"] for group in hooks["PostToolUse"]], ["^(Bash|exec_command|shell)$", "^(apply_patch|Edit|Write)$", "^mcp__"])
-        self.assertEqual(
-            [group["matcher"] for group in hooks["SubagentStart"]],
-            [
-                "^(default|manager)$",
-                "^orchestrator$",
-                "^planner$",
-                "^delegator$",
-                "^(worker|coder)$",
-                "^analyst$",
-                "^synthesizer$",
-                "^integrator$",
-                "^(explorer|hunter)$",
-                "^(reviewer|tester)$",
-                "^(?!(?:default|manager|orchestrator|planner|delegator|worker|coder|analyst|synthesizer|integrator|explorer|hunter|reviewer|tester)$).+",
-            ],
-        )
-        self.assertEqual(
-            [group["matcher"] for group in hooks["SubagentStop"]],
-            [
-                "^(default|manager)$",
-                "^orchestrator$",
-                "^planner$",
-                "^delegator$",
-                "^(worker|coder)$",
-                "^analyst$",
-                "^synthesizer$",
-                "^integrator$",
-                "^(explorer|hunter)$",
-                "^(reviewer|tester)$",
-                "^(?!(?:default|manager|orchestrator|planner|delegator|worker|coder|analyst|synthesizer|integrator|explorer|hunter|reviewer|tester)$).+",
-            ],
-        )
-        self.assertIn("pre_tool_use_shell.pl", hooks["PreToolUse"][0]["hooks"][0]["command"])
-        self.assertIn("permission_request_mcp.pl", hooks["PermissionRequest"][2]["hooks"][0]["command"])
-        self.assertIn("post_tool_use_edit.pl", hooks["PostToolUse"][1]["hooks"][0]["command"])
-        self.assertIn("subagent_start_coordination.pl", hooks["SubagentStart"][0]["hooks"][0]["command"])
-        self.assertIn("subagent_start_orchestration.pl", hooks["SubagentStart"][1]["hooks"][0]["command"])
-        self.assertIn("subagent_stop_coordination.pl", hooks["SubagentStop"][0]["hooks"][0]["command"])
-        self.assertIn("subagent_stop_orchestration.pl", hooks["SubagentStop"][1]["hooks"][0]["command"])
+        assert_expected_inline_hooks(self, hooks)
 
     def test_instruction_override_missing_key_warns_without_blocking(self) -> None:
         installer = codex_install.Installer.__new__(codex_install.Installer)

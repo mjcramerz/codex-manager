@@ -1,0 +1,301 @@
+version = 1
+
+[[tool_profiles]]
+id = "shell"
+matcher = "^(Bash|exec_command|shell)$"
+label = "shell command"
+
+[tool_profiles.events.PreToolUse]
+script = "pre_tool_use_shell.pl"
+timeout = 25
+statusMessage = "Checking shell command guardrails"
+
+[tool_profiles.events.PermissionRequest]
+script = "permission_request_shell.pl"
+timeout = 20
+statusMessage = "Checking shell approval scope"
+
+[tool_profiles.events.PostToolUse]
+script = "post_tool_use_shell.pl"
+timeout = 20
+statusMessage = "Reviewing shell output follow-up"
+
+[[tool_profiles]]
+id = "edit"
+matcher = "^(apply_patch|Edit|Write)$"
+label = "edit operation"
+
+[tool_profiles.events.PreToolUse]
+script = "pre_tool_use_edit.pl"
+timeout = 20
+statusMessage = "Checking edit guardrails"
+
+[tool_profiles.events.PermissionRequest]
+script = "permission_request_edit.pl"
+timeout = 15
+statusMessage = "Checking edit approval scope"
+
+[tool_profiles.events.PostToolUse]
+script = "post_tool_use_edit.pl"
+timeout = 15
+statusMessage = "Reviewing edit follow-up"
+
+[[tool_profiles]]
+id = "mcp"
+matcher = "^mcp__"
+label = "MCP tool call"
+
+[tool_profiles.events.PreToolUse]
+script = "pre_tool_use_mcp.pl"
+timeout = 20
+statusMessage = "Checking MCP tool guardrails"
+
+[tool_profiles.events.PermissionRequest]
+script = "permission_request_mcp.pl"
+timeout = 20
+statusMessage = "Checking MCP approval scope"
+
+[tool_profiles.events.PostToolUse]
+script = "post_tool_use_mcp.pl"
+timeout = 20
+statusMessage = "Reviewing MCP follow-up"
+
+[[roles]]
+name = "default"
+description = "Baseline generalist agent for most coding, configuration, and integration tasks with live web-search access."
+use_when = "Use for small or mixed tasks that do not need a specialized handoff role."
+
+[[roles]]
+name = "manager"
+description = "Project manager that owns planning, gating, artifact checks, and multi-agent handoffs."
+use_when = "Use to decompose work, define acceptance criteria, assign owned slices, and gate handoffs between other agents."
+
+[[roles]]
+name = "orchestrator"
+description = "Multi-agent runtime orchestrator that manages fan-out, sequencing, wait or close decisions, and reconciliation across child threads."
+use_when = "Use when several child threads stay live at once and the hard part is coordinating their sequencing, waits, resumes, and close conditions."
+
+[[roles]]
+name = "planner"
+description = "Front-load planning agent that decomposes ambiguous goals into owned slices, acceptance criteria, and validation gates before delegation."
+use_when = "Use before fan-out when the parent still needs crisp scope cuts, stop conditions, or a validation plan."
+
+[[roles]]
+name = "delegator"
+description = "Delegation controller that selects roles, packages handoffs, and manages spawn or resume or wait or close flow for subagents."
+use_when = "Use when the main task is choosing the right child role, preparing a clean handoff, or managing follow-up inputs to existing children."
+
+[[roles]]
+name = "worker"
+description = "Scoped delivery agent for bounded tasks with explicit file ownership and tight handoffs."
+use_when = "Use for fast, narrow execution on a clearly owned slice with low ambiguity."
+
+[[roles]]
+name = "coder"
+description = "Implementation-heavy coding agent for complex root-cause fixes and cross-cutting changes."
+use_when = "Use for substantial implementation work, root-cause fixes, and changes that cut across modules."
+
+[[roles]]
+name = "analyst"
+description = "Cross-agent analysis agent that compares child findings, resolves conflicts, and identifies evidence gaps before synthesis."
+use_when = "Use after discovery or implementation fan-out when the parent needs contradiction checks, evidence ranking, or next-step arbitration."
+
+[[roles]]
+name = "synthesizer"
+description = "Synthesis agent that merges completed child outputs into one coherent answer, patch plan, or handoff with provenance."
+use_when = "Use when the child work is complete but the parent still needs one integrated artifact that keeps provenance and residual risks explicit."
+
+[[roles]]
+name = "integrator"
+description = "Read-first integration agent that checks mirror sync and release patch readiness without applying patches."
+use_when = "Use for mirror-awareness, release-patch validation, and repository-safety checks where mutation should stay minimal or read-only."
+
+[[roles]]
+name = "hunter"
+description = "Search-forward research agent for current docs, APIs, runtime behavior, and external evidence."
+use_when = "Use when the answer depends on live external references, current docs, or source-backed research."
+
+[[roles]]
+name = "explorer"
+description = "Read-heavy explorer for repository mapping, dependency tracing, and codebase discovery."
+use_when = "Use for deep read-only repo exploration, dependency tracing, and handoff-ready architecture mapping."
+
+[[roles]]
+name = "reviewer"
+description = "Review agent for syntax, hardening, functionality, regressions, and best-practice checks."
+use_when = "Use for review passes that need severity-ranked findings, correctness checks, and regression analysis."
+
+[[roles]]
+name = "tester"
+description = "Verification agent that reproduces issues, runs targeted tests, and validates completed work."
+use_when = "Use for focused verification, reproduction, failure-path checks, and evidence-backed validation."
+
+[[subagent_profiles]]
+id = "coordination"
+status_label = "coordination"
+matcher = '^(default|manager)$'
+role_names = ["default", "manager"]
+start_script = "subagent_start_coordination.pl"
+stop_script = "subagent_stop_coordination.pl"
+start_lines = [
+  "Own decomposition, acceptance criteria, and sequencing before you ask any child agent to do work.",
+  "Delegate discovery to `explorer` or `hunter`, implementation to `worker` or `coder`, and sign-off to `reviewer` or `tester`.",
+]
+stop_lines = [
+  "Do not accept the handoff until it lists owned files, exact commands, evidence, and residual blockers.",
+  "Reconcile each child result against the parent plan before you re-delegate or end the turn.",
+]
+
+[[subagent_profiles]]
+id = "orchestration"
+status_label = "orchestration"
+matcher = '^orchestrator$'
+role_names = ["orchestrator"]
+start_script = "subagent_start_orchestration.pl"
+stop_script = "subagent_stop_orchestration.pl"
+start_lines = [
+  "Keep one parent-owned critical path and use child threads only for genuinely parallel or independent slices.",
+  "Track spawn or resume or wait or close decisions explicitly so every live child has a clear owner, dependency, and next state.",
+]
+stop_lines = [
+  "Do not close or supersede a child until you reconcile its files, commands, evidence, and residual risks against the parent ledger.",
+  "Call out blocked waits, stale child context, and any thread that still needs a parent-side follow-up prompt.",
+]
+
+[[subagent_profiles]]
+id = "planning"
+status_label = "planning"
+matcher = '^planner$'
+role_names = ["planner"]
+start_script = "subagent_start_planning.pl"
+stop_script = "subagent_stop_planning.pl"
+start_lines = [
+  "Turn the request into owned slices with objective, files or surfaces, acceptance criteria, validation commands, and stop conditions before fan-out.",
+  "When ambiguity remains, say what discovery role should resolve it before any implementation child is spawned.",
+]
+stop_lines = [
+  "Hand back a delegation-ready plan that names the next role, the exact prompt or evidence it needs, and the validation gate that closes the slice.",
+  "Highlight unresolved ambiguity instead of letting the parent guess at the next spawn sequence.",
+]
+
+[[subagent_profiles]]
+id = "delegation"
+status_label = "delegation"
+matcher = '^delegator$'
+role_names = ["delegator"]
+start_script = "subagent_start_delegation.pl"
+stop_script = "subagent_stop_delegation.pl"
+start_lines = [
+  "Select the smallest role that fits each child slice and package the handoff with exact commands, paths, evidence, and acceptance criteria.",
+  "Prefer `send_input` or `resume_agent` for existing children, reserve `spawn_agent` for net-new owned slices, and use `wait_agent` only when the parent critical path is blocked.",
+]
+stop_lines = [
+  "Return the active thread map: which child was spawned or resumed, what it owns, and what parent-side action should happen next.",
+  "If a child should be closed, explain why its context is fully reconciled and what evidence the parent already captured.",
+]
+
+[[subagent_profiles]]
+id = "delivery"
+status_label = "delivery"
+matcher = '^(worker|coder)$'
+role_names = ["worker", "coder"]
+start_script = "subagent_start_delivery.pl"
+stop_script = "subagent_stop_delivery.pl"
+start_lines = [
+  "Stay inside the assigned file boundary and return exact edits, commands, or blockers instead of broad redesign guidance.",
+  "Do not spawn another child unless the remaining task is clearly orthogonal and the parent explicitly needs that split.",
+]
+stop_lines = [
+  "Report the owned files, commands run, and any unverified assumptions in the handoff.",
+  "If validation was skipped, say exactly what blocked it and whether the parent must rerun it.",
+]
+
+[[subagent_profiles]]
+id = "analysis"
+status_label = "analysis"
+matcher = '^analyst$'
+role_names = ["analyst"]
+start_script = "subagent_start_analysis.pl"
+stop_script = "subagent_stop_analysis.pl"
+start_lines = [
+  "Compare child outputs, separate confirmed facts from hypotheses, and call out contradictions or evidence gaps without drifting into speculative redesign.",
+  "Use the child artifacts already produced; ask for more discovery or validation only when the current evidence cannot resolve a decision.",
+]
+stop_lines = [
+  "Return agreements, disagreements, and the exact next check or prompt needed to settle each unresolved point.",
+  "Make confidence and evidence quality explicit so the parent knows what can be merged safely.",
+]
+
+[[subagent_profiles]]
+id = "synthesis"
+status_label = "synthesis"
+matcher = '^synthesizer$'
+role_names = ["synthesizer"]
+start_script = "subagent_start_synthesis.pl"
+stop_script = "subagent_stop_synthesis.pl"
+start_lines = [
+  "Merge converged child outputs into one coherent artifact without erasing ownership boundaries, provenance, or skipped validation notes.",
+  "Prefer concise integration of existing evidence over opening new discovery branches.",
+]
+stop_lines = [
+  "Identify which statements come from which child evidence and which residual risks still need parent-side confirmation.",
+  "If the merge surfaced conflicts, route them back to `analyst`, `reviewer`, or `tester` instead of papering them over.",
+]
+
+[[subagent_profiles]]
+id = "integrator"
+status_label = "integrator"
+matcher = '^integrator$'
+role_names = ["integrator"]
+start_script = "subagent_start_integrator.pl"
+stop_script = "subagent_stop_integrator.pl"
+start_lines = [
+  "Keep the scope read-first and repository-safe unless the parent explicitly broadened the task beyond integration checks.",
+  "Focus on merge points, config layering, release or mirror contracts, and drift between child slices.",
+]
+stop_lines = [
+  "Call out conflicts between child outputs, config layers, or promotion contracts before the parent integrates anything.",
+  "Flag unresolved compatibility or sequencing risks explicitly.",
+]
+
+[[subagent_profiles]]
+id = "research"
+status_label = "research"
+matcher = '^(explorer|hunter)$'
+role_names = ["explorer", "hunter"]
+start_script = "subagent_start_research.pl"
+stop_script = "subagent_stop_research.pl"
+start_lines = [
+  "Gather source-backed repository or documentation evidence and avoid speculative implementation advice.",
+  "Return precise references, affected surfaces, and confidence notes instead of patches unless the parent explicitly asked for edits.",
+]
+stop_lines = [
+  "Separate confirmed facts from hypotheses and list any gaps that still need local validation.",
+  "If sources conflict, say that clearly instead of blending them.",
+]
+
+[[subagent_profiles]]
+id = "validation"
+status_label = "validation"
+matcher = '^(reviewer|tester)$'
+role_names = ["reviewer", "tester"]
+start_script = "subagent_start_validation.pl"
+stop_script = "subagent_stop_validation.pl"
+start_lines = [
+  "Reproduce or verify the claimed behavior with the narrowest deterministic checks that prove or falsify the concern.",
+  "Return raw outcomes, exact commands, and failing boundaries instead of redesign suggestions.",
+]
+stop_lines = [
+  "State pass, fail, or untested per check, plus the exact blocker whenever a check could not run.",
+  "Surface regression risk and missing coverage explicitly before the parent closes the task.",
+]
+
+[[subagent_profiles]]
+id = "generic"
+status_label = "generic"
+matcher = '^(?!(?:default|manager|orchestrator|planner|delegator|worker|coder|analyst|synthesizer|integrator|explorer|hunter|reviewer|tester)$).+'
+role_names = []
+start_script = "subagent_start.pl"
+stop_script = "subagent_stop.pl"
+start_lines = []
+stop_lines = []

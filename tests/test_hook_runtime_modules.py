@@ -33,6 +33,23 @@ def init_git_repo(path: Path) -> None:
 
 
 class HookRuntimeModulesTests(unittest.TestCase):
+    def test_tool_profile_uses_shared_catalog_for_matchers_and_labels(self) -> None:
+        code = r'''
+use Codex::Hook::ToolProfile qw(tool_group_label tool_group_name);
+print JSON::PP::encode_json({
+  shell_group => tool_group_name('exec_command'),
+  shell_label => tool_group_label('exec_command'),
+  mcp_group => tool_group_name('mcp__openaiDeveloperDocs__search_openai_docs'),
+  mcp_label => tool_group_label('mcp__openaiDeveloperDocs__search_openai_docs'),
+});
+'''
+        proc = run_perl(code)
+        payload = json.loads(proc.stdout)
+        self.assertEqual(payload["shell_group"], "shell")
+        self.assertEqual(payload["shell_label"], "shell command")
+        self.assertEqual(payload["mcp_group"], "mcp")
+        self.assertEqual(payload["mcp_label"], "MCP tool call")
+
     def test_driver_glob_matching_keeps_single_star_within_one_path_segment(self) -> None:
         code = r'''
 use Codex::Hook::Driver ();

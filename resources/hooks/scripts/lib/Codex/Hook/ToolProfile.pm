@@ -3,6 +3,7 @@ package Codex::Hook::ToolProfile;
 use strict;
 use warnings;
 
+use Codex::Hook::Catalog qw(hook_catalog);
 use Exporter qw(import);
 
 our @EXPORT_OK = qw(
@@ -17,24 +18,37 @@ sub _trim {
     return $value;
 }
 
+sub _tool_profiles {
+    my $catalog = hook_catalog();
+    return () if ref($catalog) ne 'HASH';
+    return grep { ref($_) eq 'HASH' } @{ $catalog->{tool_profiles} || [] };
+}
+
 sub tool_group_name {
     my ($tool_name) = @_;
     my $profile = _trim($ENV{CODEX_HOOK_TOOL_PROFILE});
-    return $profile if $profile =~ /\A(?:shell|edit|mcp)\z/;
+    my @profiles = _tool_profiles();
+    return $profile if grep { _trim($_->{id}) eq $profile } @profiles;
 
     my $name = _trim($tool_name);
-    return 'shell' if $name =~ /\A(?:Bash|exec_command|shell)\z/i;
-    return 'edit'  if $name =~ /\A(?:apply_patch|Edit|Write)\z/i;
-    return 'mcp'   if $name =~ /\Amcp__/;
+    for my $entry (@profiles) {
+        my $matcher = _trim($entry->{matcher});
+        next if !length $matcher;
+        my $id = _trim($entry->{id});
+        next if !length $id;
+        return $id if $name =~ /$matcher/i;
+    }
     return 'generic';
 }
 
 sub tool_group_label {
     my ($tool_name) = @_;
     my $group = tool_group_name($tool_name);
-    return 'shell command' if $group eq 'shell';
-    return 'edit operation' if $group eq 'edit';
-    return 'MCP tool call' if $group eq 'mcp';
+    for my $entry (_tool_profiles()) {
+        next if _trim($entry->{id}) ne $group;
+        my $label = _trim($entry->{label});
+        return $label if length $label;
+    }
     return 'tool call';
 }
 

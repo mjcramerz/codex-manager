@@ -32,6 +32,9 @@ inline `[hooks]` and `hooks.json` exist in one layer, both sets run.
 - `lib/Codex/Hook/RuntimeConfig.pm`
   Shared repo-profile metadata, environment probes, focus areas, prompt rules,
   and stop rules.
+- `lib/Codex/Hook/HookManifest.toml`
+  Generation/validation metadata for shared hook families and role/profile
+  metadata. It is not read by the installed Perl runtime.
 - `lib/Codex/Hook/ToolProfile.pm`
   Tool-family classification for shell, edit, and MCP flows.
 - `lib/Codex/Hook/Driver.pm`
@@ -46,46 +49,31 @@ inline `[hooks]` and `hooks.json` exist in one layer, both sets run.
 
 ## Inline hook wiring
 
-`config/usr/apps.toml` carries the full runtime `[hooks]` table. The current
-tool-scoped matcher groups are intentionally split so they can have different
-commands, timeouts, and status messages:
+`config/usr/apps.toml` carries the full runtime `[hooks]` table. Keep every hook
+group explicit there. `lib/Codex/Hook/HookManifest.toml` is generation/validation-only
+metadata for the repeated tool and subagent families plus shared role/profile
+metadata; it must not replace the explicit TOML hook routing contract.
 
+- `SessionStart`
+  - explicit in `config/usr/apps.toml`
+- `UserPromptSubmit`
+  - explicit in `config/usr/apps.toml`
 - `PreToolUse`
-  - shell matcher: `^(Bash|exec_command|shell)$`
-  - edit matcher: `^(apply_patch|Edit|Write)$`
-  - MCP matcher: `^mcp__`
+  - explicit in `config/usr/apps.toml`
 - `PermissionRequest`
-  - shell matcher: `^(Bash|exec_command|shell)$`
-  - edit matcher: `^(apply_patch|Edit|Write)$`
-  - MCP matcher: `^mcp__`
+  - explicit in `config/usr/apps.toml`
 - `PostToolUse`
-  - shell matcher: `^(Bash|exec_command|shell)$`
-  - edit matcher: `^(apply_patch|Edit|Write)$`
-  - MCP matcher: `^mcp__`
+  - explicit in `config/usr/apps.toml`
+- `PreCompact`
+  - explicit in `config/usr/apps.toml`
+- `PostCompact`
+  - explicit in `config/usr/apps.toml`
 - `SubagentStart`
-  - coordination matcher: `^(default|manager)$`
-  - orchestration matcher: `^orchestrator$`
-  - planning matcher: `^planner$`
-  - delegation matcher: `^delegator$`
-  - delivery matcher: `^(worker|coder)$`
-  - analysis matcher: `^analyst$`
-  - synthesis matcher: `^synthesizer$`
-  - integrator matcher: `^integrator$`
-  - research matcher: `^(explorer|hunter)$`
-  - validation matcher: `^(reviewer|tester)$`
-  - generic fallback matcher: `^(?!(?:default|manager|orchestrator|planner|delegator|worker|coder|analyst|synthesizer|integrator|explorer|hunter|reviewer|tester)$).+`
+  - explicit in `config/usr/apps.toml`
 - `SubagentStop`
-  - coordination matcher: `^(default|manager)$`
-  - orchestration matcher: `^orchestrator$`
-  - planning matcher: `^planner$`
-  - delegation matcher: `^delegator$`
-  - delivery matcher: `^(worker|coder)$`
-  - analysis matcher: `^analyst$`
-  - synthesis matcher: `^synthesizer$`
-  - integrator matcher: `^integrator$`
-  - research matcher: `^(explorer|hunter)$`
-  - validation matcher: `^(reviewer|tester)$`
-  - generic fallback matcher: `^(?!(?:default|manager|orchestrator|planner|delegator|worker|coder|analyst|synthesizer|integrator|explorer|hunter|reviewer|tester)$).+`
+  - explicit in `config/usr/apps.toml`
+- `Stop`
+  - explicit in `config/usr/apps.toml`
 
 Because Codex runs multiple matching command hooks for the same event
 concurrently, keep matcher groups mutually exclusive.

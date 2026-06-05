@@ -4,7 +4,6 @@ import shutil
 import subprocess
 import sys
 import tempfile
-import tomllib
 import unittest
 from pathlib import Path
 
@@ -15,6 +14,9 @@ APPS_TOML_PATH = REPO_ROOT / "config" / "usr" / "apps.toml"
 INSTALL_SRC = REPO_ROOT / "src" / "install"
 if str(INSTALL_SRC) not in sys.path:
     sys.path.insert(0, str(INSTALL_SRC))
+
+from common import parse_toml_file
+from tests.hook_table_assertions import assert_expected_inline_hooks
 
 
 def _prepare_runtime_hook_dir(tmpdir: str) -> tuple[Path, Path]:
@@ -120,75 +122,9 @@ class HookScriptTests(unittest.TestCase):
     maxDiff = None
 
     def test_apps_toml_carries_full_runtime_hook_table(self) -> None:
-        payload = tomllib.loads(APPS_TOML_PATH.read_text(encoding="utf-8"))
+        payload = parse_toml_file(APPS_TOML_PATH)
         hooks = payload.get("hooks")
-        self.assertIsInstance(hooks, dict)
-        self.assertEqual(
-            set(hooks),
-            {
-                "PreToolUse",
-                "PermissionRequest",
-                "PostToolUse",
-                "PreCompact",
-                "PostCompact",
-                "SessionStart",
-                "UserPromptSubmit",
-                "SubagentStart",
-                "SubagentStop",
-                "Stop",
-            },
-        )
-        self.assertEqual(hooks["SessionStart"][0]["matcher"], "^(startup|resume|clear|compact)$")
-        self.assertEqual([group["matcher"] for group in hooks["PreToolUse"]], ["^(Bash|exec_command|shell)$", "^(apply_patch|Edit|Write)$", "^mcp__"])
-        self.assertIn("pre_tool_use_shell.pl", hooks["PreToolUse"][0]["hooks"][0]["command"])
-        self.assertIn("pre_tool_use_edit.pl", hooks["PreToolUse"][1]["hooks"][0]["command"])
-        self.assertIn("pre_tool_use_mcp.pl", hooks["PreToolUse"][2]["hooks"][0]["command"])
-        self.assertEqual([group["matcher"] for group in hooks["PermissionRequest"]], ["^(Bash|exec_command|shell)$", "^(apply_patch|Edit|Write)$", "^mcp__"])
-        self.assertIn("permission_request_shell.pl", hooks["PermissionRequest"][0]["hooks"][0]["command"])
-        self.assertIn("permission_request_edit.pl", hooks["PermissionRequest"][1]["hooks"][0]["command"])
-        self.assertIn("permission_request_mcp.pl", hooks["PermissionRequest"][2]["hooks"][0]["command"])
-        self.assertEqual([group["matcher"] for group in hooks["PostToolUse"]], ["^(Bash|exec_command|shell)$", "^(apply_patch|Edit|Write)$", "^mcp__"])
-        self.assertIn("post_tool_use_shell.pl", hooks["PostToolUse"][0]["hooks"][0]["command"])
-        self.assertIn("post_tool_use_edit.pl", hooks["PostToolUse"][1]["hooks"][0]["command"])
-        self.assertIn("post_tool_use_mcp.pl", hooks["PostToolUse"][2]["hooks"][0]["command"])
-        self.assertEqual(
-            [group["matcher"] for group in hooks["SubagentStart"]],
-            [
-                "^(default|manager)$",
-                "^orchestrator$",
-                "^planner$",
-                "^delegator$",
-                "^(worker|coder)$",
-                "^analyst$",
-                "^synthesizer$",
-                "^integrator$",
-                "^(explorer|hunter)$",
-                "^(reviewer|tester)$",
-                "^(?!(?:default|manager|orchestrator|planner|delegator|worker|coder|analyst|synthesizer|integrator|explorer|hunter|reviewer|tester)$).+",
-            ],
-        )
-        self.assertEqual(
-            [group["matcher"] for group in hooks["SubagentStop"]],
-            [
-                "^(default|manager)$",
-                "^orchestrator$",
-                "^planner$",
-                "^delegator$",
-                "^(worker|coder)$",
-                "^analyst$",
-                "^synthesizer$",
-                "^integrator$",
-                "^(explorer|hunter)$",
-                "^(reviewer|tester)$",
-                "^(?!(?:default|manager|orchestrator|planner|delegator|worker|coder|analyst|synthesizer|integrator|explorer|hunter|reviewer|tester)$).+",
-            ],
-        )
-        self.assertIn("subagent_start_coordination.pl", hooks["SubagentStart"][0]["hooks"][0]["command"])
-        self.assertIn("subagent_start_orchestration.pl", hooks["SubagentStart"][1]["hooks"][0]["command"])
-        self.assertIn("subagent_start_delivery.pl", hooks["SubagentStart"][4]["hooks"][0]["command"])
-        self.assertIn("subagent_stop_coordination.pl", hooks["SubagentStop"][0]["hooks"][0]["command"])
-        self.assertIn("subagent_stop_orchestration.pl", hooks["SubagentStop"][1]["hooks"][0]["command"])
-        self.assertIn("stop.pl", hooks["Stop"][0]["hooks"][0]["command"])
+        assert_expected_inline_hooks(self, hooks)
 
     def test_runtime_hook_driver_is_repo_sourced_without_manifest_template(self) -> None:
         self.assertFalse((REPO_ROOT / "resources" / "hooks" / "manifest.json").exists())
