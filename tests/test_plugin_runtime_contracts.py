@@ -30,6 +30,7 @@ from skills import role_tools_from_skills  # noqa: E402
 PLUGINS_MANIFEST_PATH = REPO_ROOT / "resources" / "plugins" / "manifest.json"
 APPS_TOML_PATH = REPO_ROOT / "config" / "usr" / "apps.toml"
 SKILLS_METADATA_PATH = REPO_ROOT / "resources" / "skills" / "metadata.json"
+SECRETS_TOML_PATH = REPO_ROOT / "secrets.toml"
 REQUIRED_GLOBAL_MCP = set(REQUIRED_SHARED_MCP_REFS)
 
 
@@ -68,6 +69,30 @@ def dependency_values(path: Path) -> set[str]:
 
 
 class PluginRuntimeContractsTests(unittest.TestCase):
+    def test_apps_payload_carries_bearer_env_vars_for_managed_secret_servers(self) -> None:
+        apps_payload = load_apps_payload()
+        vendor_payload = parse_toml_file(REPO_ROOT / "config" / "vendor" / "mcp.toml")
+        secrets_payload = parse_toml_file(SECRETS_TOML_PATH)
+
+        apps_mcp = apps_payload.get("mcp_servers", {})
+        vendor_mcp = vendor_payload.get("mcp_servers", {})
+        managed_servers = secrets_payload.get("mcp_servers", {})
+
+        for server_name, secret_table in managed_servers.items():
+            self.assertIsInstance(secret_table, dict)
+            self.assertEqual(len(secret_table), 1, f"{server_name} must declare exactly one managed bearer token")
+            expected_key = next(iter(secret_table))
+            self.assertEqual(
+                vendor_mcp[server_name].get("bearer_token_env_var"),
+                expected_key,
+                f"vendor mcp bearer token drift for {server_name}",
+            )
+            self.assertEqual(
+                apps_mcp[server_name].get("bearer_token_env_var"),
+                expected_key,
+                f"apps.toml bearer token drift for {server_name}",
+            )
+
     def test_current_plugins_inventory_declares_required_global_shared_mcp_refs(self) -> None:
         inventory = load_effective_plugins_inventory()
         self.assertTrue(REQUIRED_GLOBAL_MCP.issubset(set(inventory["shared_mcp"]["refs"])))

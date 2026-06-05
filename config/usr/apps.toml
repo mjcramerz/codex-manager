@@ -530,6 +530,7 @@ tool_timeout_sec = 120
 # linear projects - http transport
 [mcp_servers.linear]
 url = "https://mcp.linear.app/mcp"
+bearer_token_env_var = "LINEAR_API_KEY"
 enabled = false
 required = false
 startup_timeout_sec = 20
@@ -538,6 +539,7 @@ tool_timeout_sec = 120
 # figma - http transport
 [mcp_servers.figma]
 url = "https://mcp.figma.com/mcp"
+bearer_token_env_var = "FIGMA_OAUTH_TOKEN"
 enabled = false
 required = false
 startup_timeout_sec = 20
@@ -546,6 +548,7 @@ tool_timeout_sec = 120
 # render - http transport
 [mcp_servers.render]
 url = "https://mcp.render.com/mcp"
+bearer_token_env_var = "RENDER_API_KEY"
 enabled = false
 required = false
 startup_timeout_sec = 20
@@ -554,6 +557,7 @@ tool_timeout_sec = 120
 # vercel - http transport
 [mcp_servers.vercel]
 url = "https://mcp.vercel.com"
+bearer_token_env_var = "VERCEL_API_TOKEN"
 enabled = true
 required = false
 startup_timeout_sec = 20
@@ -570,6 +574,7 @@ tool_timeout_sec = 120
 # jina-ai - http transport
 [mcp_servers.jina-ai]
 url = "https://mcp.jina.ai/v1"
+bearer_token_env_var = "JINA_API_KEY"
 enabled = true
 required = false
 startup_timeout_sec = 20
@@ -578,6 +583,7 @@ tool_timeout_sec = 120
 # atlassian - http transport
 [mcp_servers.atlassian]
 url = "https://mcp.atlassian.com/v1/mcp"
+bearer_token_env_var = "ATLASSIAN_MCP_TOKEN"
 enabled = false
 required = false
 startup_timeout_sec = 20
@@ -586,6 +592,7 @@ tool_timeout_sec = 120
 # stripe - http transport
 [mcp_servers.stripe]
 url = "https://mcp.stripe.com"
+bearer_token_env_var = "STRIPE_API_KEY"
 enabled = false
 required = false
 startup_timeout_sec = 20
@@ -594,6 +601,7 @@ tool_timeout_sec = 120
 # cloudflare-api - http transport
 [mcp_servers.cloudflare-api]
 url = "https://mcp.cloudflare.com/mcp"
+bearer_token_env_var = "CLOUDFLARE_API_TOKEN"
 enabled = true
 required = false
 startup_timeout_sec = 20
@@ -634,6 +642,7 @@ tool_timeout_sec = 120
 # huggingface - http transport
 [mcp_servers.huggingface]
 url = "https://huggingface.co/mcp?login"
+bearer_token_env_var = "HUGGINGFACE_TOKEN"
 enabled = true
 required = false
 startup_timeout_sec = 20

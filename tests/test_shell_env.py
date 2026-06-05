@@ -35,6 +35,7 @@ class ShellPathProfileRenderTests(unittest.TestCase):
         self.assertIn('export CODEX_SKILLS="/data/codex/usr/skills"', rendered)
         self.assertIn('"/data/bin"', rendered)
         self.assertIn('"/data/codex/share/helpers"', rendered)
+        self.assertIn('codex-wrapper-aliases.sh', rendered)
         self.assertNotIn('"/data/codex/share/shims"', rendered)
 
 

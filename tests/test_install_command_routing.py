@@ -157,11 +157,11 @@ class InstallCommandRoutingTests(unittest.TestCase):
         with (
             patch.object(codex_install, "load_source_build_environment", return_value={}),
             patch.object(codex_install, "load_source_build_settings", return_value=settings),
-            patch.object(codex_install, "build_if_missing", return_value=build_result) as build_if_missing,
+            patch.object(codex_install, "build_from_settings", return_value=build_result) as build_from_settings,
         ):
             codex_install.Installer.build_install(installer, artifacts)
 
-        build_if_missing.assert_called_once_with(settings)
+        build_from_settings.assert_called_once_with(settings)
         self.assertEqual(
             calls,
             [

@@ -27,8 +27,11 @@ def _validate_shell_path(label: str, value: Path) -> str:
 
 
 EXPORT_KEY_PATTERN = re.compile(r"^[A-Z][A-Z0-9_]*$")
+SHELL_ALIAS_NAME_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
 TMPFS_SIZE_PATTERN = re.compile(r"^[0-9]+%$")
 TMPFS_HELPER_FILENAME = "codex-ensure-tmpfs"
+WRAPPER_ALIASES_FILENAME = "codex-wrapper-aliases.sh"
+WRAPPER_SECRET_ENV_FLAG = "CODEX_INJECT_SECRETS"
 TMPFS_DEFAULT_SIZE = "36%"
 
 
@@ -298,6 +301,7 @@ def render_shell_path_profile(
 ) -> str:
     wrappers_dir = _validate_shell_path("wrapper path", wrapper_dir)
     helpers_dir = _validate_shell_path("share helpers path", share_dir / "helpers")
+    aliases_path = _validate_shell_path("wrapper aliases path", share_dir / "helpers" / WRAPPER_ALIASES_FILENAME)
     export_block = render_shell_export_block(global_vars)
 
     guard_block = ""
@@ -328,7 +332,30 @@ def render_shell_path_profile(
         "  fi\n"
         "done\n"
         "export PATH\n"
+        f'if [ -r "{aliases_path}" ]; then\n'
+        f'  . "{aliases_path}"\n'
+        "fi\n"
     )
+
+
+def render_wrapper_aliases(binary_names: list[str], *, secret_env_flag: str = WRAPPER_SECRET_ENV_FLAG) -> str:
+    if not EXPORT_KEY_PATTERN.fullmatch(secret_env_flag):
+        raise RuntimeRenderError(f"invalid secret env flag: {secret_env_flag}")
+
+    lines = [
+        "# managed by codex installer",
+        'case "${-:-}" in',
+        "  *i*) ;;",
+        "  *) return 0 2>/dev/null || exit 0 ;;",
+        "esac",
+    ]
+    for name in sorted(set(binary_names)):
+        if not SHELL_ALIAS_NAME_PATTERN.fullmatch(name):
+            raise RuntimeRenderError(f"invalid wrapper alias name: {name}")
+        alias_name = f"{name}-s"
+        lines.append(f"unalias {alias_name} 2>/dev/null || true")
+        lines.append(f"alias {alias_name}='{secret_env_flag}=1 command {name}'")
+    return "\n".join(lines) + "\n"
 
 
 def render_codex_shim(
@@ -338,6 +365,7 @@ def render_codex_shim(
     wrapper_dir: Path | None = None,
     managed_secrets_path: Path | None = None,
     managed_secret_helper_path: Path | None = None,
+    host_config_path: Path | None = None,
 ) -> str:
     binary = _validate_shell_path("shim binary path", binary_path)
     export_block = render_shell_export_block(launch_env)
@@ -374,18 +402,26 @@ def render_codex_shim(
         )
         if managed_secret_helper_path is None:
             raise RuntimeRenderError("managed secret helper path is required when managed secrets are configured")
+        if host_config_path is None:
+            raise RuntimeRenderError("host config path is required when managed secrets are configured")
         rendered_managed_secret_helper_path = _validate_shell_path(
             "managed secret helper path",
             managed_secret_helper_path,
         )
+        rendered_host_config_path = _validate_shell_path(
+            "host config path",
+            host_config_path,
+        )
         keyring_block = (
-            f'if [ ! -x "{rendered_managed_secret_helper_path}" ]; then\n'
-            f'  echo "missing codex managed secret helper: {rendered_managed_secret_helper_path}" >&2\n'
-            "  exit 1\n"
-            "fi\n"
-            f'exec /usr/bin/env python3 "{rendered_managed_secret_helper_path}" exec '
-            f'--secrets-file "{rendered_managed_secrets_path}" '
+            f'if [ -n "${{{WRAPPER_SECRET_ENV_FLAG}:-}}" ]; then\n'
+            f'  if [ ! -x "{rendered_managed_secret_helper_path}" ]; then\n'
+            f'    echo "missing codex managed secret helper: {rendered_managed_secret_helper_path}" >&2\n'
+            "    exit 1\n"
+            "  fi\n"
+            f'  exec /usr/bin/env python3 "{rendered_managed_secret_helper_path}" exec '
+            f'--secrets-file "{rendered_managed_secrets_path}" --host-config "{rendered_host_config_path}" '
             f'--binary "{binary}" -- "$@"\n'
+            "fi\n"
         )
 
     return (

@@ -11,9 +11,8 @@ from pathlib import Path
 SECRETS_FILENAME = "secrets.toml"
 KEY_PATTERN = re.compile(r"^[A-Z][A-Z0-9_]*$")
 SERVER_NAME_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]*$")
+SECRET_NAME_PREFIX = "mcp_servers."
 SECRET_TOOL_TIMEOUT_SECONDS = 20
-SECRET_TOOL_SERVICE = "codex-manager"
-SECRET_TOOL_KIND = "env"
 SECRET_TOOL_LABEL_PREFIX = "Codex managed secret"
 
 
@@ -23,6 +22,7 @@ class ManagedSecretsError(RuntimeError):
 
 @dataclass(frozen=True)
 class ManagedSecretsConfig:
+    service: str
     mcp_servers: dict[str, dict[str, bool]]
 
     def enabled_runtime_env_keys(self) -> list[str]:
@@ -39,6 +39,9 @@ class ManagedSecretsConfig:
             keys.extend(sorted(self.mcp_servers[server_name]))
         return keys
 
+    def all_server_names(self) -> list[str]:
+        return sorted(self.mcp_servers)
+
 
 def fail(message: str) -> None:
     raise ManagedSecretsError(message)
@@ -49,6 +52,21 @@ def _normalize_secret_value(key: str, value: str, *, source: str) -> str:
     if "\n" in normalized or "\r" in normalized:
         fail(f"{source} for {key} must be single-line")
     return normalized
+
+
+def _normalize_secret_service(value: str, *, source: str) -> str:
+    normalized = value.strip()
+    if not normalized:
+        fail(f"{source} must be a non-empty string")
+    if any(ch in normalized for ch in ("\x00", "\n", "\r")):
+        fail(f"{source} must not contain control characters")
+    return normalized
+
+
+def managed_secret_lookup_name(server_name: str) -> str:
+    if not SERVER_NAME_PATTERN.fullmatch(server_name):
+        fail(f"invalid managed secret server name: {server_name}")
+    return f"{SECRET_NAME_PREFIX}{server_name}"
 
 
 def parse_managed_secrets_file(path: Path) -> ManagedSecretsConfig:
@@ -66,6 +84,11 @@ def parse_managed_secrets_file(path: Path) -> ManagedSecretsConfig:
     version = payload.get("version", 1)
     if version != 1:
         fail(f"{path} must declare version = 1")
+
+    service = payload.get("service")
+    if not isinstance(service, str):
+        fail(f"{path} must declare service = \"...\"")
+    normalized_service = _normalize_secret_service(service, source=f"{path} service")
 
     raw_mcp_servers = payload.get("mcp_servers")
     if not isinstance(raw_mcp_servers, dict) or not raw_mcp_servers:
@@ -86,7 +109,7 @@ def parse_managed_secrets_file(path: Path) -> ManagedSecretsConfig:
             parsed_table[key] = value
         parsed_servers[server_name] = parsed_table
 
-    return ManagedSecretsConfig(mcp_servers=parsed_servers)
+    return ManagedSecretsConfig(service=normalized_service, mcp_servers=parsed_servers)
 
 
 def secret_tool_available() -> bool:
@@ -100,26 +123,24 @@ def _secret_tool_binary() -> str:
     return binary
 
 
-def _secret_tool_attributes(key: str) -> list[str]:
-    if not KEY_PATTERN.fullmatch(key):
-        fail(f"invalid env key for managed secret lookup: {key}")
+def _secret_tool_attributes(service: str, server_name: str) -> list[str]:
+    lookup_name = managed_secret_lookup_name(server_name)
     return [
         "service",
-        SECRET_TOOL_SERVICE,
-        "kind",
-        SECRET_TOOL_KIND,
+        _normalize_secret_service(service, source="managed secret service"),
         "name",
-        key,
+        lookup_name,
     ]
 
 
-def lookup_managed_secret(key: str) -> str:
+def lookup_managed_secret(config: ManagedSecretsConfig, server_name: str) -> str:
     binary = shutil.which("secret-tool")
     if not binary:
         return ""
+    lookup_name = managed_secret_lookup_name(server_name)
     try:
         proc = subprocess.run(
-            [binary, "lookup", *_secret_tool_attributes(key)],
+            [binary, "lookup", *_secret_tool_attributes(config.service, server_name)],
             check=False,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -127,24 +148,35 @@ def lookup_managed_secret(key: str) -> str:
             timeout=SECRET_TOOL_TIMEOUT_SECONDS,
         )
     except subprocess.TimeoutExpired:
-        fail(f"secret-tool lookup timed out for {key}")
+        fail(f"secret-tool lookup timed out for {lookup_name}")
     except FileNotFoundError as exc:
-        fail(f"secret-tool lookup failed for {key}: {exc}")
+        fail(f"secret-tool lookup failed for {lookup_name}: {exc}")
     if proc.returncode != 0:
         return ""
-    return _normalize_secret_value(key, proc.stdout, source="secret-tool lookup")
+    return _normalize_secret_value(lookup_name, proc.stdout, source="secret-tool lookup")
 
 
-def store_managed_secret(key: str, value: str) -> None:
-    normalized = _normalize_secret_value(key, value, source="managed secret value")
-    label = f"{SECRET_TOOL_LABEL_PREFIX}: {key}"
+def store_managed_secret(
+    config: ManagedSecretsConfig,
+    server_name: str,
+    value: str,
+    *,
+    env_key: str | None = None,
+) -> None:
+    lookup_name = managed_secret_lookup_name(server_name)
+    normalized = _normalize_secret_value(lookup_name, value, source="managed secret value")
+    label = f"{SECRET_TOOL_LABEL_PREFIX}: {lookup_name}"
+    if env_key is not None:
+        if not KEY_PATTERN.fullmatch(env_key):
+            fail(f"invalid env key for managed secret store: {env_key}")
+        label = f"{label} ({env_key})"
     try:
         proc = subprocess.run(
             [
                 _secret_tool_binary(),
                 "store",
                 f"--label={label}",
-                *_secret_tool_attributes(key),
+                *_secret_tool_attributes(config.service, server_name),
             ],
             check=False,
             input=normalized + "\n",
@@ -154,16 +186,17 @@ def store_managed_secret(key: str, value: str) -> None:
             timeout=SECRET_TOOL_TIMEOUT_SECONDS,
         )
     except subprocess.TimeoutExpired:
-        fail(f"secret-tool store timed out for {key}")
+        fail(f"secret-tool store timed out for {lookup_name}")
     if proc.returncode != 0:
         details = proc.stderr.strip() or proc.stdout.strip() or f"exit code {proc.returncode}"
-        fail(f"secret-tool store failed for {key}: {details}")
+        fail(f"secret-tool store failed for {lookup_name}: {details}")
 
 
-def clear_managed_secret(key: str) -> None:
+def clear_managed_secret(config: ManagedSecretsConfig, server_name: str) -> None:
+    lookup_name = managed_secret_lookup_name(server_name)
     try:
         proc = subprocess.run(
-            [_secret_tool_binary(), "clear", *_secret_tool_attributes(key)],
+            [_secret_tool_binary(), "clear", *_secret_tool_attributes(config.service, server_name)],
             check=False,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -171,7 +204,7 @@ def clear_managed_secret(key: str) -> None:
             timeout=SECRET_TOOL_TIMEOUT_SECONDS,
         )
     except subprocess.TimeoutExpired:
-        fail(f"secret-tool clear timed out for {key}")
+        fail(f"secret-tool clear timed out for {lookup_name}")
     if proc.returncode != 0:
         details = proc.stderr.strip() or proc.stdout.strip() or f"exit code {proc.returncode}"
-        fail(f"secret-tool clear failed for {key}: {details}")
+        fail(f"secret-tool clear failed for {lookup_name}: {details}")

@@ -92,6 +92,7 @@ from lib.runtime import (
     render_shell_export_block,
     render_shell_exec_block,
     render_shell_path_profile,
+    render_wrapper_aliases,
 )
 from lib.tar_utils import ArchiveSafetyError, safe_extractall
 from plugins import PLUGINS_BUNDLE_PATTERN
@@ -110,9 +111,7 @@ from skills import rewrite_openai_yaml_dependencies
 from skills import role_tools_from_skills
 from skills import validate_openai_yaml_mcp_dependencies
 from source_build import SourceBuildError
-from source_build import build_if_missing
 from source_build import build_from_settings
-from source_build import ensure_output_artifact
 from source_build import load_source_build_environment
 from source_build import load_source_build_settings
 
@@ -158,6 +157,7 @@ GLOBAL_EXPORT_PATH_KEYS = GLOBAL_EXPORT_REQUIRED
 
 PROCESS_TEMP_ENV_KEYS = ("TMPDIR", "TEMP", "TMP")
 SAFE_PROCESS_TMPDIR = "/tmp"
+WRAPPER_ALIASES_FILENAME = "codex-wrapper-aliases.sh"
 TMPFS_MOUNT_OPTIONS = "size=36%,mode=1777,nodev,nosuid"
 
 SCHEMA_TOOL_SOURCE_FILENAME = "codex_schema_tool.py"
@@ -512,21 +512,22 @@ class Installer:
             parse_toml_file(self.sandbox_path)
         validate_inline_hooks_config(self.repo_layout.user_apps_path, self._hooks_source_dir())
         self._validate_managed_secrets_config()
+        self._validate_home_mcp_managed_secret_config()
         self._validate_repo_layout()
-        self._render_user_config_toml("", Path(self.runtime_vars["CODEX_HOME"]) / "config.toml")
+        self._render_user_config_toml("", self._home_config_path())
 
-    def _expected_managed_secret_mcp_map(self) -> dict[str, list[str]]:
+    def _expected_managed_secret_mcp_map(self) -> dict[str, str]:
         mcp_servers = self.mcp_payload.get("mcp_servers")
         if not isinstance(mcp_servers, dict):
             fail("config/vendor/mcp.toml must declare [mcp_servers]")
 
-        expected: dict[str, list[str]] = {}
+        expected: dict[str, str] = {}
         for server_name, server in mcp_servers.items():
             if not isinstance(server_name, str) or not isinstance(server, dict):
                 fail(f"config/vendor/mcp.toml mcp_servers entry is invalid: {server_name}")
             token_key = server.get("bearer_token_env_var")
             if isinstance(token_key, str) and token_key.strip():
-                expected[server_name] = [token_key.strip()]
+                expected[server_name] = token_key.strip()
         return expected
 
     def _validate_managed_secrets_config(self) -> None:
@@ -550,7 +551,7 @@ class Installer:
 
         seen_keys: dict[str, str] = {}
         for server_name in sorted(expected):
-            expected_keys = sorted(expected[server_name])
+            expected_keys = [expected[server_name]]
             actual_keys = sorted(actual[server_name])
             if actual_keys != expected_keys:
                 fail(
@@ -565,6 +566,24 @@ class Installer:
                         f"across mcp_servers.{existing_server} and mcp_servers.{server_name}"
                     )
                 seen_keys[key] = server_name
+
+    def _validate_home_mcp_managed_secret_config(self) -> None:
+        expected = self._expected_managed_secret_mcp_map()
+        home_payload = self._resolved_user_apps_payload()
+        home_mcp_servers = home_payload.get("mcp_servers", {})
+        if not isinstance(home_mcp_servers, dict):
+            fail("config/usr/apps.toml mcp_servers must be an object")
+
+        for server_name in sorted(expected):
+            server = home_mcp_servers.get(server_name)
+            if not isinstance(server, dict):
+                fail(f"config/usr/apps.toml mcp_servers.{server_name} must be an object")
+            actual_key = server.get("bearer_token_env_var")
+            if not isinstance(actual_key, str) or actual_key.strip() != expected[server_name]:
+                fail(
+                    "config/usr/apps.toml mcp_servers."
+                    f"{server_name} must declare bearer_token_env_var = {expected[server_name]!r}"
+                )
 
     def _sanitize_process_tmpdir(self) -> None:
         if self._stage_mode():
@@ -628,6 +647,9 @@ class Installer:
     def _tmpfs_helper_target(self) -> Path:
         return self._helpers_dir() / TMPFS_HELPER_FILENAME
 
+    def _wrapper_aliases_target(self) -> Path:
+        return self._helpers_dir() / WRAPPER_ALIASES_FILENAME
+
     def _managed_secrets_dir(self) -> Path:
         return ensure_safe_absolute_path("CODEX_ROOT_DIR", self.env["CODEX_ROOT_DIR"]) / "lookup"
 
@@ -654,6 +676,9 @@ class Installer:
 
     def _codex_binary_path(self) -> Path:
         return self._share_dir() / "bin" / "codex"
+
+    def _home_config_path(self) -> Path:
+        return ensure_safe_absolute_path("CODEX_HOME", self.runtime_vars["CODEX_HOME"]) / "config.toml"
 
     def _path_profile_target(self) -> Path:
         system_dir = ensure_safe_absolute_path("CODEX_SYSTEM_DIR", self.env["CODEX_SYSTEM_DIR"])
@@ -997,7 +1022,7 @@ class Installer:
             fail(f"unsupported schema helper command: {command}")
         schema_root = self._schema_root_dir()
         release_package = self._share_dir() / "release" / "pkg" / self.env["CODEX_DOWNLOAD_PKG"]
-        home_config_path = ensure_safe_absolute_path("CODEX_HOME", self.runtime_vars["CODEX_HOME"]) / "config.toml"
+        home_config_path = self._home_config_path()
         tool_path = self._helpers_dir() / SCHEMA_TOOL_SOURCE_FILENAME
         try:
             effective_launch_env = self.launch_env if launch_env is None else launch_env
@@ -1110,6 +1135,9 @@ class Installer:
             return normalized
 
     def _ensure_enabled_managed_secrets(self) -> None:
+        config = self.secrets_config
+        if config is None:
+            fail("managed secrets config is not loaded")
         entries = self._enabled_managed_secret_entries()
         if not entries:
             return
@@ -1118,7 +1146,7 @@ class Installer:
 
         for server_name, key in entries:
             try:
-                if lookup_managed_secret(key).strip():
+                if lookup_managed_secret(config, server_name).strip():
                     continue
             except ManagedSecretsError as exc:
                 fail(str(exc))
@@ -1128,7 +1156,7 @@ class Installer:
                 self._warn_once(f"skipping optional managed secret {key} for mcp_servers.{server_name}")
                 continue
             try:
-                store_managed_secret(key, value)
+                store_managed_secret(config, server_name, value, env_key=key)
             except ManagedSecretsError as exc:
                 fail(str(exc))
 
@@ -1136,14 +1164,14 @@ class Installer:
         config = self.secrets_config
         if config is None:
             fail("managed secrets config is not loaded")
-        keys = config.all_env_keys()
-        if not keys:
+        server_names = config.all_server_names()
+        if not server_names:
             return
         if not secret_tool_available():
             fail("secret-tool is required to clear managed MCP credentials during uninstall")
-        for key in keys:
+        for server_name in server_names:
             try:
-                clear_managed_secret(key)
+                clear_managed_secret(config, server_name)
             except ManagedSecretsError as exc:
                 fail(str(exc))
 
@@ -1758,6 +1786,30 @@ class Installer:
             if not rendered.strip():
                 fail(f"{shell} completion file is empty: {target}")
 
+    @staticmethod
+    def _legacy_secure_wrapper_name(binary_name: str) -> str:
+        rendered = binary_name.strip()
+        if not rendered:
+            fail("wrapper binary name cannot be empty")
+        return f"{rendered}-s"
+
+    def _sync_wrapper_aliases(self, binary_names: list[str]) -> None:
+        try:
+            content = render_wrapper_aliases(binary_names)
+        except RuntimeRenderError as exc:
+            fail(str(exc))
+        self._write_file(self._wrapper_aliases_target(), content, mode=0o644)
+
+    def _remove_legacy_secure_release_shims(self, binary_names: list[str]) -> None:
+        wrapper_dir = self._wrapper_dir()
+        for name in sorted(set(binary_names)):
+            legacy_path = wrapper_dir / self._legacy_secure_wrapper_name(name)
+            if not legacy_path.exists():
+                continue
+            if not self._is_managed_wrapper_file(legacy_path):
+                continue
+            self._remove_path_force(legacy_path)
+
     def _sync_release_shims(
         self,
         binary_names: list[str],
@@ -1774,9 +1826,10 @@ class Installer:
         effective_launch_env = self.launch_env if launch_env is None else launch_env
         managed_secrets_path = self._managed_secrets_path()
         managed_secret_helper_path = self._managed_secret_env_helper_target()
+        home_config_path = self._home_config_path()
         for name in sorted(set(binary_names)):
-            shim_path = wrapper_dir / name
             binary_path = share_dir / "bin" / name
+            shim_path = wrapper_dir / name
             try:
                 shim_content = render_codex_shim(
                     binary_path,
@@ -1785,27 +1838,24 @@ class Installer:
                     wrapper_dir=wrapper_dir,
                     managed_secrets_path=managed_secrets_path,
                     managed_secret_helper_path=managed_secret_helper_path,
+                    host_config_path=home_config_path,
                 )
             except RuntimeRenderError as exc:
                 fail(str(exc))
             self._write_file(shim_path, shim_content, mode=0o755)
+        self._remove_legacy_secure_release_shims(binary_names)
 
     def _install_runtime_binary_wrappers(self, binary_names: list[str]) -> None:
         self._log("installing managed secret helper")
         self._sync_managed_secret_env_helper()
         self._sync_release_shims(binary_names)
+        self._sync_wrapper_aliases(binary_names)
         self._log("installing shell completion files")
         self._install_user_shell_completions()
         self._log("installing schema helper wrappers")
         self._sync_schema_helpers()
 
-    def _existing_release_shim_names(self) -> list[str]:
-        shims_dir = self._wrapper_dir()
-        if not shims_dir.is_dir():
-            return []
-        shim_names = sorted(path.name for path in shims_dir.iterdir() if path.is_file())
-        if shim_names:
-            return shim_names
+    def _existing_release_binary_names(self) -> list[str]:
         bin_dir = self._share_dir() / "bin"
         if not bin_dir.is_dir():
             return []
@@ -1813,9 +1863,10 @@ class Installer:
 
     def _refresh_runtime_launch_wrappers(self, launch_env: dict[str, str]) -> None:
         self._sync_managed_secret_env_helper()
-        shim_names = self._existing_release_shim_names()
-        if shim_names:
-            self._sync_release_shims(shim_names, launch_env=launch_env)
+        binary_names = self._existing_release_binary_names()
+        if binary_names:
+            self._sync_release_shims(binary_names, launch_env=launch_env)
+            self._sync_wrapper_aliases(binary_names)
 
         helpers_dir = self._helpers_dir()
         if not helpers_dir.is_dir():
@@ -1859,6 +1910,9 @@ class Installer:
                 fail(f"missing shim for release binary {binary.name}: {shim_path}")
             if not os.access(shim_path, os.X_OK):
                 fail(f"shim is not executable for release binary {binary.name}: {shim_path}")
+            legacy_secure_shim = shims_dir / self._legacy_secure_wrapper_name(binary.name)
+            if legacy_secure_shim.exists():
+                fail(f"legacy secure shim must not exist for release binary {binary.name}: {legacy_secure_shim}")
 
     def _is_managed_wrapper_file(self, path: Path) -> bool:
         if path.is_symlink() or not path.is_file():
@@ -2818,23 +2872,19 @@ class Installer:
             fail(str(exc))
 
         if self.dry_run:
-            existing_output = ensure_output_artifact(source_build_settings.output_dir)
-            if existing_output is not None:
-                print(f"[dry-run] install source-built binaries from {existing_output}")
-            else:
-                print(
-                    "[dry-run] build codex from source "
-                    f"({source_build_settings.repo_url}) into {source_build_settings.output_dir}"
-                )
-                print(
-                    "[dry-run] install source-built binaries "
-                    f"from {source_build_settings.output_dir} into {Path(self.env['CODEX_SHARE_DIR']) / 'bin'}"
-                )
+            print(
+                "[dry-run] build codex from source "
+                f"({source_build_settings.repo_url}) into {source_build_settings.output_dir}"
+            )
+            print(
+                "[dry-run] install source-built binaries "
+                f"from {source_build_settings.output_dir} into {Path(self.env['CODEX_SHARE_DIR']) / 'bin'}"
+            )
             return
 
-        self._log("building source artifacts if needed")
+        self._log("building source artifacts")
         try:
-            build_result = build_if_missing(source_build_settings)
+            build_result = build_from_settings(source_build_settings)
         except SourceBuildError as exc:
             fail(str(exc))
 
