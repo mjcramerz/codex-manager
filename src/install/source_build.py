@@ -78,13 +78,14 @@ def _run_checked(
     cwd: Path | None = None,
     timeout: int,
     label: str,
+    stream_output: bool = False,
 ) -> subprocess.CompletedProcess[str]:
     try:
         proc = subprocess.run(
             args,
             cwd=str(cwd) if cwd is not None else None,
             check=False,
-            capture_output=True,
+            capture_output=not stream_output,
             text=True,
             timeout=timeout,
         )
@@ -92,6 +93,9 @@ def _run_checked(
         raise SourceBuildError(f"{label} timed out after {timeout} seconds") from exc
     if proc.returncode == 0:
         return proc
+
+    if stream_output:
+        raise SourceBuildError(f"{label} failed with exit code {proc.returncode}")
 
     stderr = _trim_error_output(proc.stderr)
     stdout = _trim_error_output(proc.stdout)
@@ -380,6 +384,11 @@ def _resolved_base_ref(settings: SourceBuildSettings, checkout_dir: Path) -> str
 
 
 def build_from_settings(settings: SourceBuildSettings) -> SourceBuildResult:
+    print(f"[build] source repository: {settings.repo_url}")
+    print(f"[build] checkout root: {settings.checkout_dir}")
+    print(f"[build] build root: {settings.build_root}")
+    print(f"[build] cache root: {settings.cache_root}")
+    print(f"[build] published output alias: {settings.output_dir}")
     checkout_dir = ensure_source_checkout(settings)
     build_root = settings.build_root
     cache_root = settings.cache_root
@@ -387,6 +396,7 @@ def build_from_settings(settings: SourceBuildSettings) -> SourceBuildResult:
     if not script_path.is_file():
         raise SourceBuildError(f"source build script not found: {script_path}")
 
+    print(f"[build] invoking source build script: {script_path}")
     _run_checked(
         [
             "bash",
@@ -401,17 +411,22 @@ def build_from_settings(settings: SourceBuildSettings) -> SourceBuildResult:
         cwd=checkout_dir,
         timeout=BUILD_TIMEOUT_SECONDS,
         label="build codex from source",
+        stream_output=True,
     )
 
     published_dir = _resolve_latest_build_dir(build_root)
     schema_path = published_dir / "share" / RELEASE_SCHEMA_FILENAME
+    print(f"[build] generating patched schema snapshot: {schema_path}")
     _generate_patched_schema(checkout_dir, schema_path)
     output_alias = _publish_output_alias(settings.output_dir, published_dir)
+    print(f"[build] published artifacts: {published_dir}")
+    print(f"[build] output alias updated: {output_alias}")
 
     try:
         binaries = discover_release_binaries(output_alias)
     except (ReleaseAssetError, RuntimeError) as exc:
         raise SourceBuildError(str(exc)) from exc
+    print("[build] discovered binaries: " + ", ".join(binary.name for binary in binaries))
 
     return SourceBuildResult(
         settings=settings,

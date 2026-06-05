@@ -616,6 +616,7 @@ class Installer:
         self._mkdir_path(target_output_dir)
         merged_config = compile_vendor_config(self.repo_layout, self.variables)
         config_out = target_output_dir / "config.toml"
+        self._log(f"compiling merged runtime config into {config_out}")
         if self.dry_run:
             config_out.write_text(merged_config, encoding="utf-8")
         else:
@@ -2827,6 +2828,7 @@ class Installer:
 
             if not installed:
                 fail("release package did not produce installed binaries")
+            self._log("installed release binaries: " + ", ".join(installed))
             return installed
 
     def _install_source_build_binary(self, output_dir: Path) -> list[str]:
@@ -2861,6 +2863,7 @@ class Installer:
 
         if not installed:
             fail("source build output did not produce installed binaries")
+        self._log("installed source-built binaries: " + ", ".join(installed))
         return installed
 
     def build_install(self, artifacts: CompiledArtifacts) -> None:
@@ -3006,7 +3009,7 @@ class Installer:
     def verify(self, output_dir: Path | None = None) -> None:
         self._render_requirements_toml()
 
-        with tempfile.TemporaryDirectory(prefix="c0d3x-verify-") as td:
+        with tempfile.TemporaryDirectory(prefix="codex-verify-") as td:
             compiled_root = Path(td)
             if output_dir is not None:
                 artifacts = self.compile(output_dir)

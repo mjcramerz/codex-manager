@@ -51,7 +51,7 @@ sub runtime_config {
                 id           => 'codex-manager',
                 display_name => 'codex-manager',
                 match        => {
-                    repo_names   => ['codex-manager', 'c0d3x'],
+                    repo_names   => ['codex-manager', 'codex'],
                     all_of_paths => [
                         'src/install/codex_install.py',
                         'config/usr/apps.toml',
@@ -87,7 +87,7 @@ sub runtime_config {
                     startup_context => [
                         'Repo role: Codex installer and runtime-configuration source tree.',
                         'Primary edit surfaces: `src/install/**`, `config/usr/apps.toml`, `config/agents/*.toml`, runtime configuration under `config/usr/*`, `config/vendor/*`, and source/supporting assets under `resources/**`.',
-                        'Primary local checks for installer and runtime-generation work are `python3 -m compileall -q src tests` and `python3 -m unittest discover -s tests`.',
+                        'Primary local checks for installer and runtime-generation work are `python3 -m compileall src tests` and `python3 -m unittest discover -s tests`.',
                     ],
                     resume_context => [
                         'Resume focus stays on `src/install/**`, `config/usr/**`, `config/vendor/**`, `config/agents/**`, `resources/**`, and `tests/**`.',
@@ -119,7 +119,7 @@ sub runtime_config {
                                 '\bcheck\b',
                             ],
                             lines => [
-                                'For `codex-manager` validation, run `python3 -m compileall -q src tests` and `python3 -m unittest discover -s tests`.',
+                                'For `codex-manager` validation, run `python3 -m compileall src tests` and `python3 -m unittest discover -s tests`.',
                             ],
                         },
                     ],
@@ -130,7 +130,7 @@ sub runtime_config {
                             id                 => 'runtime_generation_validation',
                             changed_path_globs => ['resources/**', 'src/install/**', 'tests/**', 'Makefile'],
                             require_all_patterns => ['\bpython3? -m compileall\b'],
-                            message            => 'Runtime-generation changes ({changed_files_preview}) need `python3 -m compileall -q src tests`.',
+                            message            => 'Runtime-generation changes ({changed_files_preview}) need `python3 -m compileall src tests`.',
                         },
                         {
                             id                 => 'runtime_generation_unit_tests',

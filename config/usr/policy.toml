@@ -108,7 +108,7 @@ allow_unix_sockets = []
 allowed_domains = []
 denied_domains = []
 
-[projects."/data/workspace/cli/c0d3x"]
+[projects."/data/workspace/cli/codex"]
 trust_level = "trusted"
 
 [projects."/data/workspace/core/scripts"]

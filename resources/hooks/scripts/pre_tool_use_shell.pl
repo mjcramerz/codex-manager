@@ -5,10 +5,9 @@ use warnings;
 use FindBin qw($Bin);
 use lib "$Bin/lib";
 
-use Codex::Hook::Script qw(exec_driver);
+use Codex::Hook::Script qw(dispatch_named_wrapper);
 
-exec_driver(
+dispatch_named_wrapper(
     script_dir    => $Bin,
-    event_arg     => 'pre-tool-use',
-    profile_name  => 'shell',
+    wrapper_name  => $0,
 );

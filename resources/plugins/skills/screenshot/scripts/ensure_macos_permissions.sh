@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-: "${PYTHONPYCACHEPREFIX:=/tmp/c0d3x-pycache}"
+: "${PYTHONPYCACHEPREFIX:=/tmp/codex-pycache}"
 mkdir -p -- "$PYTHONPYCACHEPREFIX" 2>/dev/null || true
 export PYTHONPYCACHEPREFIX
 

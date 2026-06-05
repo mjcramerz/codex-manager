@@ -5,6 +5,10 @@ use warnings;
 
 use Exporter qw(import);
 use Codex::Hook::Environment qw(stringify_payload_text);
+use Codex::Hook::McpTool qw(
+  mcp_permission_lines
+  mcp_pre_tool_lines
+);
 use Codex::Hook::ToolProfile qw(tool_group_label tool_group_name);
 
 our @EXPORT_OK = qw(
@@ -53,6 +57,10 @@ sub pre_tool_policy_lines {
     } elsif ($group eq 'mcp') {
         push @lines, '- Keep MCP calls narrow, with the smallest connector/tool scope that answers the current question.';
         push @lines, '- Avoid follow-up connector work that spends money, mutates external state, or widens access without an explicit user need.';
+    } elsif ($group =~ /\Amcp_/) {
+        push @lines, '- Keep MCP calls narrow, with the smallest connector/tool scope that answers the current question.';
+        push @lines, '- Avoid follow-up connector work that spends money, mutates external state, or widens access without an explicit user need.';
+        push @lines, map { "- $_" } mcp_pre_tool_lines($tool_name);
     } else {
         push @lines, '- Prefer deterministic inputs, bounded I/O, and the smallest reviewable mutation.';
     }
@@ -65,12 +73,14 @@ sub permission_request_message {
     my (%args) = @_;
     my $tool_name = $args{tool_name} // 'tool';
     my $label = tool_group_label($tool_name);
-    return join(
-        "\n",
+    my @lines = (
         "Permission request for `$label` (`$tool_name`):",
         '- Keep the scope minimal and name the exact files, paths, or network boundary being requested.',
         '- The justification should connect directly to the current task and avoid broad future-looking access asks.',
     );
+    push @lines, map { "- $_" } mcp_permission_lines($tool_name)
+      if tool_group_name($tool_name) =~ /\Amcp_/;
+    return join("\n", @lines);
 }
 
 sub compact_system_message {

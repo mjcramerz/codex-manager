@@ -84,8 +84,8 @@ def write_file(path: Path, content: str) -> None:
     path.write_text(content, encoding="utf-8")
 
 
-def make_c0d3x_repo(tmpdir: str) -> Path:
-    repo = Path(tmpdir) / "c0d3x"
+def make_codex_manager_repo(tmpdir: str) -> Path:
+    repo = Path(tmpdir) / "codex"
     repo.mkdir()
     init_git_repo(repo)
     write_file(repo / "Makefile", "preflight:\n\t@true\nverify:\n\t@true\n")
@@ -108,8 +108,8 @@ def make_codex_repo(tmpdir: str) -> Path:
     return repo
 
 
-def make_incomplete_c0d3x_repo(tmpdir: str) -> Path:
-    repo = Path(tmpdir) / "c0d3x"
+def make_incomplete_codex_manager_repo(tmpdir: str) -> Path:
+    repo = Path(tmpdir) / "codex"
     repo.mkdir()
     init_git_repo(repo)
     write_file(repo / "Makefile", "all:\n\t@true\n")
@@ -133,7 +133,7 @@ class HookScriptTests(unittest.TestCase):
 
     def test_session_start_lists_matching_runtime_profile(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            repo = make_c0d3x_repo(tmpdir)
+            repo = make_codex_manager_repo(tmpdir)
             write_file(repo / "resources" / "hooks" / "scripts" / "new_driver.py", "print('x')\n")
 
             result = run_hook(
@@ -151,7 +151,7 @@ class HookScriptTests(unittest.TestCase):
 
     def test_session_start_requires_full_match_contract_for_repo_profile(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            repo = make_incomplete_c0d3x_repo(tmpdir)
+            repo = make_incomplete_codex_manager_repo(tmpdir)
 
             result = run_hook(
                 "session-start",
@@ -163,13 +163,13 @@ class HookScriptTests(unittest.TestCase):
 
             payload = json.loads(result.stdout)
             context = payload["hookSpecificOutput"]["additionalContext"]
-            self.assertIn("Repository context for `c0d3x`", context)
+            self.assertIn("Repository context for `codex`", context)
             self.assertNotIn("Active hook runtime profiles:", context)
             self.assertNotIn("Repo role: Codex installer and runtime-configuration source tree.", context)
 
     def test_session_start_injects_mirror_and_patch_context(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            repo = make_c0d3x_repo(tmpdir)
+            repo = make_codex_manager_repo(tmpdir)
             subprocess.run(["git", "checkout", "-qb", "github/mcr/main"], cwd=repo, check=True)
             write_file(repo / "patches" / "release" / "sample.patch", "diff --git a/a b/a\n")
 
@@ -190,7 +190,7 @@ class HookScriptTests(unittest.TestCase):
 
     def test_session_start_includes_environment_summary(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            repo = make_c0d3x_repo(tmpdir)
+            repo = make_codex_manager_repo(tmpdir)
             wrapper_dir = Path(tmpdir) / "bin"
             wrapper_dir.mkdir()
             (wrapper_dir / "docker").write_text(
@@ -216,7 +216,7 @@ class HookScriptTests(unittest.TestCase):
 
     def test_resume_injects_generic_worktree_summary(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            repo = make_c0d3x_repo(tmpdir)
+            repo = make_codex_manager_repo(tmpdir)
             write_file(repo / "tracked.txt", "base\n")
             subprocess.run(["git", "add", "tracked.txt"], cwd=repo, check=True)
             subprocess.run(["git", "commit", "-qm", "tracked"], cwd=repo, check=True)
@@ -242,7 +242,7 @@ class HookScriptTests(unittest.TestCase):
 
     def test_session_start_does_not_fallback_when_no_change_group_matches(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            repo = make_c0d3x_repo(tmpdir)
+            repo = make_codex_manager_repo(tmpdir)
             write_file(repo / "README.md", "# temp\n")
 
             result = run_hook(
@@ -260,7 +260,7 @@ class HookScriptTests(unittest.TestCase):
 
     def test_user_prompt_submit_uses_generic_detection(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            repo = make_c0d3x_repo(tmpdir)
+            repo = make_codex_manager_repo(tmpdir)
 
             result = run_hook(
                 "user-prompt-submit",
@@ -275,12 +275,12 @@ class HookScriptTests(unittest.TestCase):
             self.assertIn("Review requests should lead with concrete findings", context)
             self.assertIn("Repo hook wiring lives inline in `config/usr/apps.toml`", context)
             self.assertIn("behavioral source of truth", context)
-            self.assertIn("python3 -m compileall -q src tests", context)
+            self.assertIn("python3 -m compileall src tests", context)
             self.assertIn("python3 -m unittest discover -s tests", context)
 
     def test_user_prompt_submit_includes_shared_multi_agent_guidance(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            repo = make_c0d3x_repo(tmpdir)
+            repo = make_codex_manager_repo(tmpdir)
 
             result = run_hook(
                 "user-prompt-submit",
@@ -309,7 +309,7 @@ class HookScriptTests(unittest.TestCase):
 
     def test_subagent_start_coordination_wrapper_includes_role_profile_context(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            repo = make_c0d3x_repo(tmpdir)
+            repo = make_codex_manager_repo(tmpdir)
 
             result = run_hook_wrapper(
                 "subagent_start_coordination.pl",
@@ -327,7 +327,7 @@ class HookScriptTests(unittest.TestCase):
 
     def test_subagent_start_delegation_wrapper_includes_role_profile_context(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            repo = make_c0d3x_repo(tmpdir)
+            repo = make_codex_manager_repo(tmpdir)
 
             result = run_hook_wrapper(
                 "subagent_start_delegation.pl",
@@ -345,7 +345,7 @@ class HookScriptTests(unittest.TestCase):
 
     def test_subagent_stop_validation_wrapper_includes_role_profile_context(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            repo = make_c0d3x_repo(tmpdir)
+            repo = make_codex_manager_repo(tmpdir)
             write_file(repo / "resources" / "hooks" / "scripts" / "hook_driver.pl", "print('x')\n")
 
             result = run_hook_wrapper(
@@ -370,7 +370,7 @@ class HookScriptTests(unittest.TestCase):
 
     def test_subagent_stop_synthesis_wrapper_includes_role_profile_context(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            repo = make_c0d3x_repo(tmpdir)
+            repo = make_codex_manager_repo(tmpdir)
             write_file(repo / "resources" / "hooks" / "scripts" / "hook_driver.pl", "print('x')\n")
 
             result = run_hook_wrapper(
@@ -395,7 +395,7 @@ class HookScriptTests(unittest.TestCase):
 
     def test_user_prompt_submit_includes_environment_warnings_for_operational_prompts(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            repo = make_c0d3x_repo(tmpdir)
+            repo = make_codex_manager_repo(tmpdir)
             wrapper_dir = Path(tmpdir) / "bin"
             wrapper_dir.mkdir()
             (wrapper_dir / "docker").write_text(
@@ -420,7 +420,7 @@ class HookScriptTests(unittest.TestCase):
 
     def test_pre_tool_use_blocks_destructive_git_reset(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            repo = make_c0d3x_repo(tmpdir)
+            repo = make_codex_manager_repo(tmpdir)
 
             result = run_hook(
                 "pre-tool-use",
@@ -437,7 +437,7 @@ class HookScriptTests(unittest.TestCase):
 
     def test_pre_tool_use_blocks_structured_git_clean_payload(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            repo = make_c0d3x_repo(tmpdir)
+            repo = make_codex_manager_repo(tmpdir)
 
             result = run_hook(
                 "pre-tool-use",
@@ -454,7 +454,7 @@ class HookScriptTests(unittest.TestCase):
 
     def test_wrapper_script_executes_driver_with_vendored_schema_tree(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            repo = make_c0d3x_repo(tmpdir)
+            repo = make_codex_manager_repo(tmpdir)
 
             result = run_hook_wrapper(
                 "session_start.pl",
@@ -466,11 +466,11 @@ class HookScriptTests(unittest.TestCase):
 
             payload = json.loads(result.stdout)
             context = payload["hookSpecificOutput"]["additionalContext"]
-            self.assertIn("Repository context for `c0d3x`", context)
+            self.assertIn("Repository context for `codex`", context)
 
     def test_permission_request_adds_scope_guidance(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            repo = make_c0d3x_repo(tmpdir)
+            repo = make_codex_manager_repo(tmpdir)
 
             result = run_hook(
                 "permission-request",
@@ -488,7 +488,7 @@ class HookScriptTests(unittest.TestCase):
 
     def test_permission_request_generic_tool_uses_fallback_label(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            repo = make_c0d3x_repo(tmpdir)
+            repo = make_codex_manager_repo(tmpdir)
 
             result = run_hook(
                 "permission-request",
@@ -506,7 +506,7 @@ class HookScriptTests(unittest.TestCase):
 
     def test_post_tool_use_emits_failure_follow_up_context(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            repo = make_c0d3x_repo(tmpdir)
+            repo = make_codex_manager_repo(tmpdir)
 
             result = run_hook(
                 "post-tool-use",
@@ -524,7 +524,7 @@ class HookScriptTests(unittest.TestCase):
 
     def test_post_tool_use_handles_structured_failure_payload(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            repo = make_c0d3x_repo(tmpdir)
+            repo = make_codex_manager_repo(tmpdir)
 
             result = run_hook(
                 "post-tool-use",
@@ -542,7 +542,7 @@ class HookScriptTests(unittest.TestCase):
 
     def test_pre_compact_uses_system_message_only(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            repo = make_c0d3x_repo(tmpdir)
+            repo = make_codex_manager_repo(tmpdir)
 
             result = run_hook(
                 "pre-compact",
@@ -575,7 +575,7 @@ class HookScriptTests(unittest.TestCase):
 
     def test_stop_hook_reentry_stops_instead_of_reblocking(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            repo = make_c0d3x_repo(tmpdir)
+            repo = make_codex_manager_repo(tmpdir)
             write_file(repo / "resources" / "hooks" / "scripts" / "hook_driver.pl", "print('x')\n")
 
             first = run_hook(
@@ -589,7 +589,7 @@ class HookScriptTests(unittest.TestCase):
             )
             first_payload = json.loads(first.stdout)
             self.assertEqual(first_payload["decision"], "block")
-            self.assertIn("python3 -m compileall -q src tests", first_payload["reason"])
+            self.assertIn("python3 -m compileall src tests", first_payload["reason"])
             self.assertIn("local test suite", first_payload["reason"])
 
             second = run_hook(
@@ -607,7 +607,7 @@ class HookScriptTests(unittest.TestCase):
 
     def test_subagent_stop_reuses_stop_guardrails(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            repo = make_c0d3x_repo(tmpdir)
+            repo = make_codex_manager_repo(tmpdir)
             write_file(repo / "resources" / "hooks" / "scripts" / "hook_driver.pl", "print('x')\n")
 
             result = run_hook(
@@ -630,7 +630,7 @@ class HookScriptTests(unittest.TestCase):
 
     def test_subagent_stop_reports_identity_and_missing_handoff(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            repo = make_c0d3x_repo(tmpdir)
+            repo = make_codex_manager_repo(tmpdir)
 
             result = run_hook(
                 "subagent-stop",
@@ -651,7 +651,7 @@ class HookScriptTests(unittest.TestCase):
 
     def test_subagent_stop_includes_transcript_signals(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            repo = make_c0d3x_repo(tmpdir)
+            repo = make_codex_manager_repo(tmpdir)
             transcript_path = Path(tmpdir) / "agent.jsonl"
             transcript_path.write_text(
                 "permission denied while running validation\n"
@@ -679,7 +679,7 @@ class HookScriptTests(unittest.TestCase):
 
     def test_stop_hook_allows_explicit_skip_rationale(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            repo = make_c0d3x_repo(tmpdir)
+            repo = make_codex_manager_repo(tmpdir)
             write_file(repo / "resources" / "hooks" / "scripts" / "hook_driver.pl", "print('x')\n")
 
             result = run_hook(

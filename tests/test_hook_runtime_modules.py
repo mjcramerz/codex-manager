@@ -60,8 +60,12 @@ use Codex::Hook::ToolProfile qw(tool_group_label tool_group_name);
 print JSON::PP::encode_json({
   shell_group => tool_group_name('exec_command'),
   shell_label => tool_group_label('exec_command'),
-  mcp_group => tool_group_name('mcp__openaiDeveloperDocs__search_openai_docs'),
-  mcp_label => tool_group_label('mcp__openaiDeveloperDocs__search_openai_docs'),
+  openai_group => tool_group_name('mcp__openaiDeveloperDocs__search_openai_docs'),
+  openai_label => tool_group_label('mcp__openaiDeveloperDocs__search_openai_docs'),
+  time_group => tool_group_name('mcp__time__get_current_time'),
+  time_label => tool_group_label('mcp__time__get_current_time'),
+  generic_mcp_group => tool_group_name('mcp__github_router__git_status'),
+  generic_mcp_label => tool_group_label('mcp__github_router__git_status'),
   generic_group => tool_group_name('write_stdin'),
   generic_label => tool_group_label('write_stdin'),
 });
@@ -70,10 +74,31 @@ print JSON::PP::encode_json({
         payload = json.loads(proc.stdout)
         self.assertEqual(payload["shell_group"], "shell")
         self.assertEqual(payload["shell_label"], "shell command")
-        self.assertEqual(payload["mcp_group"], "mcp")
-        self.assertEqual(payload["mcp_label"], "MCP tool call")
+        self.assertEqual(payload["openai_group"], "mcp_openai_developer_docs")
+        self.assertEqual(payload["openai_label"], "OpenAI developer docs MCP call")
+        self.assertEqual(payload["time_group"], "mcp_time")
+        self.assertEqual(payload["time_label"], "time MCP call")
+        self.assertEqual(payload["generic_mcp_group"], "mcp")
+        self.assertEqual(payload["generic_mcp_label"], "MCP tool call")
         self.assertEqual(payload["generic_group"], "generic")
         self.assertEqual(payload["generic_label"], "tool call")
+
+    def test_script_dispatch_resolves_wrapper_name_to_event_and_profile(self) -> None:
+        code = r'''
+use Codex::Hook::Script qw(resolve_wrapper_dispatch);
+print JSON::PP::encode_json({
+  subagent => resolve_wrapper_dispatch(wrapper_name => 'subagent_stop_validation.pl'),
+  mcp => resolve_wrapper_dispatch(wrapper_name => 'pre_tool_use_mcp_cloudflare_api.pl'),
+  singleton => resolve_wrapper_dispatch(wrapper_name => 'stop.pl'),
+});
+'''
+        proc = run_perl(code)
+        payload = json.loads(proc.stdout)
+        self.assertEqual(payload["subagent"]["event_arg"], "subagent-stop")
+        self.assertEqual(payload["subagent"]["subagent_profile"], "validation")
+        self.assertEqual(payload["mcp"]["event_arg"], "pre-tool-use")
+        self.assertEqual(payload["mcp"]["profile_name"], "mcp_cloudflare_api")
+        self.assertEqual(payload["singleton"]["event_arg"], "stop")
 
     def test_driver_glob_matching_keeps_single_star_within_one_path_segment(self) -> None:
         code = r'''

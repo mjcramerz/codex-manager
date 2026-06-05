@@ -20,6 +20,7 @@ use Codex::Hook::MultiAgent qw(
   subagent_role_context
 );
 use Codex::Hook::Model qw(normalize_input);
+use Codex::Hook::McpTool qw(mcp_post_tool_lines);
 use Codex::Hook::Output qw(
   emit_block
   emit_context
@@ -657,6 +658,9 @@ sub _post_tool_use_context {
         push @lines, '- The edit result shows a failure or warning; inspect the exact patch boundary before attempting another mutation.';
     } elsif ($group eq 'mcp') {
         push @lines, '- The MCP response shows a failure or warning; keep the next connector call scoped to the failing server, tool, or argument.';
+    } elsif ($group =~ /\Amcp_/) {
+        push @lines, '- The MCP response shows a failure or warning; keep the next connector call scoped to the failing server, tool, or argument.';
+        push @lines, map { "- $_" } mcp_post_tool_lines($tool_name);
     } else {
         push @lines, '- The tool output shows a failure or warning signal; tighten the next step to the failing boundary instead of widening scope.';
     }

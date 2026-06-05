@@ -2,10 +2,12 @@ PYTHON ?= python3
 INSTALLER := src/install/codex_install.py
 COMPILED_DIR ?= src/misc/compiled
 INSTALLER_ARGS ?=
-# Use `make install -- --dry-run` or `make build-install -- --dry-run` to pass
-# the installer flag through without triggering GNU Make's own dry-run mode.
+# Use `make <target> -- --dry-run` for installer-managed dry runs, for example:
+# `make build-src -- --dry-run`, `make build-install -- --dry-run`, or
+# `make install -- --dry-run`. This passes the flag through without triggering
+# GNU Make's own dry-run mode.
 # Keep Python bytecode out of the repo for all Makefile-driven Python commands.
-PYTHON_PYCACHE_PREFIX ?= /tmp/c0d3x-pycache
+PYTHON_PYCACHE_PREFIX ?= /tmp/codex-pycache
 
 ifneq ($(filter --dry-run,$(MAKECMDGOALS)),)
 INSTALLER_ARGS += --dry-run
@@ -27,24 +29,29 @@ PYTHON_ENV := LC_ALL=C TZ=UTC PYTHONPATH=$(CURDIR)/src/python PYTHONDONTWRITEBYT
 .PHONY: preflight verify build-src build-install install update home admin upgrade export tmpfs-mnt tmpfs-umt vars-init vars-reset uninstall nuke --dry-run
 
 preflight:
+	@printf "[make] preflight -> validating installer inputs and runtime contracts\n"
 	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) preflight
 
 verify:
-	$(PYTHON_ENV) $(PYTHON) -m compileall -q src
+	@printf "[make] verify -> byte-compiling src and tests with visible progress\n"
+	$(PYTHON_ENV) $(PYTHON) -m compileall src tests
 
 build-src:
-	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) build-src
+	@printf "[make] build-src -> building source artifacts and patched schema\n"
+	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) build-src $(INSTALLER_ARGS)
 
 build-install:
 	@printf "Confirm 'make build-install' will build and apply runtime changes. Continue? [y/N] "; \
 	read -r confirm; \
 	case "$$confirm" in [yY]|[yY][eE][sS]) ;; *) printf "Aborted.\n"; exit 1 ;; esac
+	@printf "[make] build-install -> building from source and installing runtime assets\n"
 	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) build-install --compiled-dir $(COMPILED_DIR) $(INSTALLER_ARGS)
 
 install:
 	@printf "Confirm 'make install' will apply runtime changes. Continue? [y/N] "; \
 	read -r confirm; \
 	case "$$confirm" in [yY]|[yY][eE][sS]) ;; *) printf "Aborted.\n"; exit 1 ;; esac
+	@printf "[make] install -> installing packaged runtime assets\n"
 	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) install --compiled-dir $(COMPILED_DIR) $(INSTALLER_ARGS)
 
 update:
