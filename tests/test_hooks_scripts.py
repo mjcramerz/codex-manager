@@ -486,6 +486,24 @@ class HookScriptTests(unittest.TestCase):
             self.assertIn("Permission request for `shell command` (`exec_command`)", context)
             self.assertIn("Keep the scope minimal", context)
 
+    def test_permission_request_generic_tool_uses_fallback_label(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_c0d3x_repo(tmpdir)
+
+            result = run_hook(
+                "permission-request",
+                {
+                    "cwd": str(repo),
+                    "tool_name": "write_stdin",
+                    "tool_input": {"chars": "status"},
+                },
+            )
+
+            payload = json.loads(result.stdout)
+            context = payload["systemMessage"]
+            self.assertIn("Permission request for `tool call` (`write_stdin`)", context)
+            self.assertIn("Keep the scope minimal", context)
+
     def test_post_tool_use_emits_failure_follow_up_context(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             repo = make_c0d3x_repo(tmpdir)

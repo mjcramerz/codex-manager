@@ -62,6 +62,8 @@ print JSON::PP::encode_json({
   shell_label => tool_group_label('exec_command'),
   mcp_group => tool_group_name('mcp__openaiDeveloperDocs__search_openai_docs'),
   mcp_label => tool_group_label('mcp__openaiDeveloperDocs__search_openai_docs'),
+  generic_group => tool_group_name('write_stdin'),
+  generic_label => tool_group_label('write_stdin'),
 });
 '''
         proc = run_perl(code)
@@ -70,6 +72,8 @@ print JSON::PP::encode_json({
         self.assertEqual(payload["shell_label"], "shell command")
         self.assertEqual(payload["mcp_group"], "mcp")
         self.assertEqual(payload["mcp_label"], "MCP tool call")
+        self.assertEqual(payload["generic_group"], "generic")
+        self.assertEqual(payload["generic_label"], "tool call")
 
     def test_driver_glob_matching_keeps_single_star_within_one_path_segment(self) -> None:
         code = r'''

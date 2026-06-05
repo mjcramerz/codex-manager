@@ -73,6 +73,7 @@ from layout import RuntimeLayout
 from plugin_bundles import PluginBundleSpec
 from plugin_bundles import render_runtime_plugin_marketplace
 from apps_config import effective_plugins_inventory_payload
+from agent_role_contracts import validate_agent_role_contracts
 from lib.fs_ops import needs_sudo_remove, needs_sudo_write
 from lib.managed_secrets import ManagedSecretsConfig
 from lib.managed_secrets import ManagedSecretsError
@@ -511,6 +512,7 @@ class Installer:
         if self.sandbox_path.is_file():
             parse_toml_file(self.sandbox_path)
         validate_inline_hooks_config(self.repo_layout.user_apps_path, self._hooks_source_dir())
+        validate_agent_role_contracts(self.repo_layout.agents_config_dir, self.repo_layout.user_apps_path)
         self._validate_managed_secrets_config()
         self._validate_home_mcp_managed_secret_config()
         self._validate_repo_layout()

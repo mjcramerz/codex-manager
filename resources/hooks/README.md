@@ -36,7 +36,8 @@ inline `[hooks]` and `hooks.json` exist in one layer, both sets run.
   Generation/validation metadata for the exact inline hook routing contract plus
   shared role/profile metadata. It is not read by the installed Perl runtime.
 - `lib/Codex/Hook/ToolProfile.pm`
-  Tool-family classification for shell, edit, and MCP flows.
+  Tool-family classification for shell, edit, MCP, and generic tool fallback
+  flows.
 - `lib/Codex/Hook/Driver.pm`
   Event dispatcher and generic runtime behavior.
 - `lib/Codex/Hook/Policy.pm`
@@ -81,6 +82,10 @@ aligned with the manifest and the checked-in Perl catalog.
 
 Because Codex runs multiple matching command hooks for the same event
 concurrently, keep matcher groups mutually exclusive.
+
+Tool events keep explicit shell, edit, and MCP matcher groups plus an explicit
+generic fallback group so uncategorized tool calls still pass through hook
+guidance and validation.
 
 `SessionStart` uses a source matcher and currently covers:
 

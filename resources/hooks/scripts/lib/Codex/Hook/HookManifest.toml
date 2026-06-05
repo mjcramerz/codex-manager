@@ -28,7 +28,7 @@ statusMessage = "Checking detected repository constraints"
 
 [[tool_profiles]]
 id = "shell"
-matcher = "^(Bash|exec_command|shell)$"
+matcher = "^(Bash|bash|exec_command|shell)$"
 label = "shell command"
 
 [tool_profiles.events.PreToolUse]
@@ -48,7 +48,7 @@ statusMessage = "Reviewing shell output follow-up"
 
 [[tool_profiles]]
 id = "edit"
-matcher = "^(apply_patch|Edit|Write)$"
+matcher = "^(apply_patch|Edit|edit|Write|write)$"
 label = "edit operation"
 
 [tool_profiles.events.PreToolUse]
@@ -85,6 +85,26 @@ statusMessage = "Checking MCP approval scope"
 script = "post_tool_use_mcp.pl"
 timeout = 20
 statusMessage = "Reviewing MCP follow-up"
+
+[[tool_profiles]]
+id = "generic"
+matcher = "^(?!(?:Bash|bash|exec_command|shell|apply_patch|Edit|edit|Write|write)$)(?!mcp__).+"
+label = "tool call"
+
+[tool_profiles.events.PreToolUse]
+script = "pre_tool_use.pl"
+timeout = 20
+statusMessage = "Checking generic tool guardrails"
+
+[tool_profiles.events.PermissionRequest]
+script = "permission_request.pl"
+timeout = 20
+statusMessage = "Checking generic tool approval scope"
+
+[tool_profiles.events.PostToolUse]
+script = "post_tool_use.pl"
+timeout = 20
+statusMessage = "Reviewing generic tool follow-up"
 
 [[roles]]
 name = "default"

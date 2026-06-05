@@ -1,3 +1,5 @@
+import shutil
+import tempfile
 import tomllib
 import unittest
 from pathlib import Path
@@ -11,34 +13,26 @@ INSTALL_SRC = REPO_ROOT / "src" / "install"
 if str(INSTALL_SRC) not in sys.path:
     sys.path.insert(0, str(INSTALL_SRC))
 
+from common import InstallError  # noqa: E402
 from hook_runtime_catalog import load_hook_catalog  # noqa: E402
-
-EXPECTED_MULTI_AGENT_CONCURRENCY = {
-    "analyst.toml": 2,
-    "coder.toml": 2,
-    "delegator.toml": 3,
-    "default.toml": 2,
-    "explorer.toml": 2,
-    "hunter.toml": 2,
-    "integrator.toml": 1,
-    "manager.toml": 4,
-    "orchestrator.toml": 4,
-    "planner.toml": 2,
-    "reviewer.toml": 1,
-    "synthesizer.toml": 1,
-    "tester.toml": 1,
-    "worker.toml": 1,
-}
-
+from agent_role_contracts import validate_agent_role_contracts  # noqa: E402
 
 class AgentRoleContractsTests(unittest.TestCase):
+    def test_validate_agent_role_contracts_accepts_repo_layout(self) -> None:
+        validate_agent_role_contracts(AGENTS_DIR, APPS_TOML_PATH)
+
+    def test_validate_agent_role_contracts_rejects_missing_role_toml(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            copied_agents_dir = Path(tmpdir) / "agents"
+            shutil.copytree(AGENTS_DIR, copied_agents_dir)
+            (copied_agents_dir / "manager.toml").unlink()
+
+            with self.assertRaisesRegex(InstallError, r"missing role TOMLs: manager"):
+                validate_agent_role_contracts(copied_agents_dir, APPS_TOML_PATH)
+
     def test_manifest_roles_match_agent_configs_and_apps_entries(self) -> None:
         manifest_roles = load_hook_catalog()["roles"]
         expected_role_names = [str(role["name"]) for role in manifest_roles]
-        expected_descriptions = {
-            str(role["name"]): str(role["description"])
-            for role in manifest_roles
-        }
 
         agent_files = sorted(path.stem for path in AGENTS_DIR.glob("*.toml"))
         self.assertEqual(agent_files, sorted(expected_role_names))
@@ -48,47 +42,14 @@ class AgentRoleContractsTests(unittest.TestCase):
         configured_roles = {
             name: entry
             for name, entry in agent_entries.items()
-            if isinstance(entry, dict) and isinstance(entry.get("config_file"), str)
+            if isinstance(entry, dict)
         }
         self.assertEqual(sorted(configured_roles), sorted(expected_role_names))
-        for role_name, entry in configured_roles.items():
-            with self.subTest(role=role_name):
-                self.assertEqual(entry.get("description"), expected_descriptions[role_name])
-                self.assertEqual(entry.get("config_file"), f"${{CODEX_AGENTS}}/{role_name}.toml")
 
     def test_all_agent_role_tomls_parse(self) -> None:
         for path in sorted(AGENTS_DIR.glob("*.toml")):
             with self.subTest(path=path.name):
                 tomllib.loads(path.read_text(encoding="utf-8"))
-
-    def test_agent_role_tomls_do_not_keep_live_artifact_feature(self) -> None:
-        for path in sorted(AGENTS_DIR.glob("*.toml")):
-            payload = tomllib.loads(path.read_text(encoding="utf-8"))
-            with self.subTest(path=path.name):
-                self.assertNotIn("artifact", payload.get("features", {}))
-
-    def test_agent_role_tomls_define_multi_agent_v2_contracts(self) -> None:
-        for path in sorted(AGENTS_DIR.glob("*.toml")):
-            payload = tomllib.loads(path.read_text(encoding="utf-8"))
-            multi_agent_v2 = payload.get("features", {}).get("multi_agent_v2")
-            with self.subTest(path=path.name):
-                self.assertIsInstance(multi_agent_v2, dict)
-                self.assertTrue(multi_agent_v2.get("enabled"))
-                self.assertTrue(multi_agent_v2.get("usage_hint_enabled"))
-                self.assertEqual(
-                    multi_agent_v2.get("max_concurrent_threads_per_session"),
-                    EXPECTED_MULTI_AGENT_CONCURRENCY[path.name],
-                )
-                min_wait = multi_agent_v2.get("min_wait_timeout_ms")
-                default_wait = multi_agent_v2.get("default_wait_timeout_ms")
-                max_wait = multi_agent_v2.get("max_wait_timeout_ms")
-                self.assertIsInstance(min_wait, int)
-                self.assertIsInstance(default_wait, int)
-                self.assertIsInstance(max_wait, int)
-                self.assertLessEqual(min_wait, default_wait)
-                self.assertLessEqual(default_wait, max_wait)
-                self.assertTrue(str(multi_agent_v2.get("root_agent_usage_hint_text", "")).strip())
-                self.assertTrue(str(multi_agent_v2.get("subagent_usage_hint_text", "")).strip())
 
 
 if __name__ == "__main__":

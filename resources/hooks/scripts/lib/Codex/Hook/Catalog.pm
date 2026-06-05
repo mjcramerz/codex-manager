@@ -13,7 +13,7 @@ sub hook_catalog {
         tool_profiles => [
             {
                 id      => 'shell',
-                matcher => '^(Bash|exec_command|shell)$',
+                matcher => '^(Bash|bash|exec_command|shell)$',
                 label   => 'shell command',
                 events  => {
                     PreToolUse => {
@@ -35,7 +35,7 @@ sub hook_catalog {
             },
             {
                 id      => 'edit',
-                matcher => '^(apply_patch|Edit|Write)$',
+                matcher => '^(apply_patch|Edit|edit|Write|write)$',
                 label   => 'edit operation',
                 events  => {
                     PreToolUse => {
@@ -74,6 +74,28 @@ sub hook_catalog {
                         script        => 'post_tool_use_mcp.pl',
                         timeout       => 20,
                         statusMessage => 'Reviewing MCP follow-up',
+                    },
+                },
+            },
+            {
+                id      => 'generic',
+                matcher => '^(?!(?:Bash|bash|exec_command|shell|apply_patch|Edit|edit|Write|write)$)(?!mcp__).+',
+                label   => 'tool call',
+                events  => {
+                    PreToolUse => {
+                        script        => 'pre_tool_use.pl',
+                        timeout       => 20,
+                        statusMessage => 'Checking generic tool guardrails',
+                    },
+                    PermissionRequest => {
+                        script        => 'permission_request.pl',
+                        timeout       => 20,
+                        statusMessage => 'Checking generic tool approval scope',
+                    },
+                    PostToolUse => {
+                        script        => 'post_tool_use.pl',
+                        timeout       => 20,
+                        statusMessage => 'Reviewing generic tool follow-up',
                     },
                 },
             },
