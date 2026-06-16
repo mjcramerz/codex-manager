@@ -104,7 +104,8 @@ class InstallCommandRoutingTests(unittest.TestCase):
             patch.object(codex_install, "load_source_build_settings") as load_source_build_settings,
         ):
             load_source_build_settings.return_value = types.SimpleNamespace(
-                repo_url="https://github.com/imjcramer/codex.git",
+                repo_url="https://github.com/mjcramerz/codex.git",
+                base_ref="mcr/main",
                 output_dir=Path("/tmp/from-process/build/output"),
             )
             codex_install.Installer.build_install(installer, types.SimpleNamespace(config_toml=Path("/tmp/config.toml")))
@@ -124,7 +125,8 @@ class InstallCommandRoutingTests(unittest.TestCase):
             patch.object(codex_install, "load_source_build_settings") as load_source_build_settings,
         ):
             load_source_build_settings.return_value = types.SimpleNamespace(
-                repo_url="https://github.com/imjcramer/codex.git",
+                repo_url="https://github.com/mjcramerz/codex.git",
+                base_ref="mcr/main",
                 output_dir=Path("/data/dryrun/codex/source-build/output"),
             )
             codex_install.Installer.build_install(installer, types.SimpleNamespace(config_toml=Path("/tmp/config.toml")))

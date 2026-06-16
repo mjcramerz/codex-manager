@@ -2877,9 +2877,10 @@ class Installer:
             fail(str(exc))
 
         if self.dry_run:
+            source_ref = source_build_settings.base_ref or "HEAD"
             print(
                 "[dry-run] build codex from source "
-                f"({source_build_settings.repo_url}) into {source_build_settings.output_dir}"
+                f"({source_build_settings.repo_url} @ {source_ref}) into {source_build_settings.output_dir}"
             )
             print(
                 "[dry-run] install source-built binaries "
@@ -3252,6 +3253,7 @@ def run() -> int:
             fail(str(exc))
         if args.dry_run:
             print(f"[dry-run] source repo url={source_build_settings.repo_url}")
+            print(f"[dry-run] source ref={source_build_settings.base_ref or 'HEAD'}")
             print(f"[dry-run] source checkout={source_build_settings.checkout_dir}")
             print(f"[dry-run] build root={source_build_settings.build_root}")
             print(f"[dry-run] cache root={source_build_settings.cache_root}")

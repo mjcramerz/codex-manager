@@ -19,7 +19,6 @@ SOURCE_OUTPUT_DIR_KEY = "CODEX_SOURCE_OUTPUT_DIR"
 SOURCE_CHECKOUT_DIR_KEY = "CODEX_SOURCE_CHECKOUT_DIR"
 SOURCE_BASE_REF_KEY = "CODEX_SOURCE_BASE_REF"
 
-DEFAULT_SOURCE_REPO_URL = "https://github.com/imjcramer/codex.git"
 DEFAULT_BUILD_ROOT = Path("/pool/builds/codex")
 DEFAULT_CACHE_ROOT = Path("/pool/cache/codex")
 DEFAULT_OUTPUT_DIRNAME = "output"
@@ -27,6 +26,10 @@ DEFAULT_CHECKOUT_DIRNAME = "codex-source-checkout"
 RELEASE_SCHEMA_FILENAME = "config.schema.json"
 BUILD_TIMEOUT_SECONDS = 8 * 60 * 60
 SCHEMA_TIMEOUT_SECONDS = 8 * 60 * 60
+GIT_REMOTE_TIMEOUT_SECONDS = 60
+GIT_FETCH_TIMEOUT_SECONDS = 300
+GIT_CHECKOUT_TIMEOUT_SECONDS = 120
+MAX_SOURCE_REF_CHARS = 255
 MAX_ERROR_OUTPUT_CHARS = 2000
 
 
@@ -132,6 +135,18 @@ def _require_https_url(key: str, value: str) -> str:
     return value
 
 
+def _require_source_ref(key: str, value: str) -> str:
+    if not value:
+        raise SourceBuildError(f"missing required source-build setting: {key}")
+    if len(value) > MAX_SOURCE_REF_CHARS:
+        raise SourceBuildError(f"source-build setting {key} is too long")
+    if any(ch.isspace() for ch in value):
+        raise SourceBuildError(f"source-build setting {key} contains whitespace: {value}")
+    if value.startswith("-"):
+        raise SourceBuildError(f"source-build setting {key} must not start with '-': {value}")
+    return value
+
+
 def load_source_build_environment(repo_root: Path) -> dict[str, str]:
     env = {
         key: value
@@ -151,7 +166,7 @@ def load_source_build_environment(repo_root: Path) -> dict[str, str]:
 def load_source_build_settings(env: dict[str, str]) -> SourceBuildSettings:
     repo_url = _require_https_url(
         SOURCE_REPO_URL_KEY,
-        env.get(SOURCE_REPO_URL_KEY, "").strip() or DEFAULT_SOURCE_REPO_URL,
+        _require_env_value(env, SOURCE_REPO_URL_KEY),
     )
     build_root = _require_absolute_path(
         SOURCE_BUILD_ROOT_KEY,
@@ -163,7 +178,8 @@ def load_source_build_settings(env: dict[str, str]) -> SourceBuildSettings:
     )
     output_dir_raw = env.get(SOURCE_OUTPUT_DIR_KEY, "").strip()
     checkout_dir_raw = env.get(SOURCE_CHECKOUT_DIR_KEY, "").strip()
-    base_ref = env.get(SOURCE_BASE_REF_KEY, "").strip() or None
+    base_ref_raw = env.get(SOURCE_BASE_REF_KEY, "").strip()
+    base_ref = _require_source_ref(SOURCE_BASE_REF_KEY, base_ref_raw) if base_ref_raw else None
     output_dir = _require_absolute_path(
         SOURCE_OUTPUT_DIR_KEY,
         output_dir_raw or str(build_root / DEFAULT_OUTPUT_DIRNAME),
@@ -204,16 +220,60 @@ def _checkout_is_usable(checkout_dir: Path) -> bool:
     return not _missing_checkout_paths(checkout_dir)
 
 
+def _sync_checkout_origin(settings: SourceBuildSettings, checkout_dir: Path) -> None:
+    proc = _run_checked(
+        ["git", "-C", str(checkout_dir), "remote", "get-url", "origin"],
+        timeout=GIT_REMOTE_TIMEOUT_SECONDS,
+        label="read source checkout origin url",
+    )
+    current_url = proc.stdout.strip()
+    if current_url == settings.repo_url:
+        return
+    _run_checked(
+        ["git", "-C", str(checkout_dir), "remote", "set-url", "origin", settings.repo_url],
+        timeout=GIT_REMOTE_TIMEOUT_SECONDS,
+        label="update source checkout origin url",
+    )
+
+
+def _ensure_checkout_clean(checkout_dir: Path) -> None:
+    proc = _run_checked(
+        ["git", "-C", str(checkout_dir), "status", "--porcelain"],
+        timeout=GIT_REMOTE_TIMEOUT_SECONDS,
+        label="inspect source checkout state",
+    )
+    if proc.stdout.strip():
+        raise SourceBuildError(f"configured source checkout has local changes: {checkout_dir}")
+
+
+def _sync_checkout_ref(settings: SourceBuildSettings, checkout_dir: Path) -> None:
+    if not settings.base_ref:
+        _run_checked(
+            ["git", "-C", str(checkout_dir), "fetch", "--prune", "origin"],
+            timeout=GIT_FETCH_TIMEOUT_SECONDS,
+            label="refresh source checkout",
+        )
+        return
+    _ensure_checkout_clean(checkout_dir)
+    _run_checked(
+        ["git", "-C", str(checkout_dir), "fetch", "--prune", "origin", settings.base_ref],
+        timeout=GIT_FETCH_TIMEOUT_SECONDS,
+        label=f"fetch source ref {settings.base_ref}",
+    )
+    _run_checked(
+        ["git", "-C", str(checkout_dir), "checkout", "--detach", "FETCH_HEAD"],
+        timeout=GIT_CHECKOUT_TIMEOUT_SECONDS,
+        label=f"checkout source ref {settings.base_ref}",
+    )
+
+
 def ensure_source_checkout(settings: SourceBuildSettings) -> Path:
     checkout_dir = settings.checkout_dir
     checkout_dir.parent.mkdir(parents=True, exist_ok=True)
 
     if _checkout_is_usable(checkout_dir):
-        _run_checked(
-            ["git", "-C", str(checkout_dir), "fetch", "--prune", "origin"],
-            timeout=300,
-            label="refresh source checkout",
-        )
+        _sync_checkout_origin(settings, checkout_dir)
+        _sync_checkout_ref(settings, checkout_dir)
         return checkout_dir
 
     if checkout_dir.exists():
@@ -228,6 +288,7 @@ def ensure_source_checkout(settings: SourceBuildSettings) -> Path:
         timeout=BUILD_TIMEOUT_SECONDS,
         label="clone source repository",
     )
+    _sync_checkout_ref(settings, checkout_dir)
     if not _checkout_is_usable(checkout_dir):
         missing = ", ".join(str(path) for path in _missing_checkout_paths(checkout_dir))
         raise SourceBuildError(f"cloned source checkout is missing expected files: {missing}")
@@ -390,19 +451,21 @@ def build_from_settings(settings: SourceBuildSettings) -> SourceBuildResult:
     print(f"[build] cache root: {settings.cache_root}")
     print(f"[build] published output alias: {settings.output_dir}")
     checkout_dir = ensure_source_checkout(settings)
+    source_ref = _resolved_base_ref(settings, checkout_dir)
     build_root = settings.build_root
     cache_root = settings.cache_root
     script_path = checkout_dir / "scripts" / "release" / "build-codex.sh"
     if not script_path.is_file():
         raise SourceBuildError(f"source build script not found: {script_path}")
 
+    print(f"[build] source ref: {source_ref}")
     print(f"[build] invoking source build script: {script_path}")
     _run_checked(
         [
             "bash",
             str(script_path),
             "--base-ref",
-            _resolved_base_ref(settings, checkout_dir),
+            source_ref,
             "--build-root",
             str(build_root),
             "--cache-root",

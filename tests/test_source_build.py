@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -18,19 +19,26 @@ import source_build  # noqa: E402
 
 
 class SourceBuildSettingsTests(unittest.TestCase):
-    def test_load_source_build_settings_uses_release_workflow_defaults(self) -> None:
-        settings = source_build.load_source_build_settings({})
+    def test_load_source_build_settings_requires_repo_url_and_uses_path_defaults(self) -> None:
+        settings = source_build.load_source_build_settings(
+            {
+                "CODEX_SOURCE_REPO_URL": "https://github.com/mjcramerz/codex.git",
+                "CODEX_SOURCE_BASE_REF": "mcr/main",
+            }
+        )
 
-        self.assertEqual(settings.repo_url, "https://github.com/imjcramer/codex.git")
+        self.assertEqual(settings.repo_url, "https://github.com/mjcramerz/codex.git")
         self.assertEqual(settings.build_root, Path("/pool/builds/codex"))
         self.assertEqual(settings.cache_root, Path("/pool/cache/codex"))
         self.assertEqual(settings.output_dir, Path("/pool/builds/codex/output"))
         self.assertEqual(settings.checkout_dir, Path(tempfile.gettempdir()) / "codex-source-checkout")
+        self.assertEqual(settings.base_ref, "mcr/main")
 
     def test_load_source_build_settings_derives_relative_output_and_checkout(self) -> None:
         settings = source_build.load_source_build_settings(
             {
-                "CODEX_SOURCE_REPO_URL": "https://github.com/imjcramer/codex.git",
+                "CODEX_SOURCE_REPO_URL": "https://github.com/mjcramerz/codex.git",
+                "CODEX_SOURCE_BASE_REF": "mcr/main",
                 "CODEX_SOURCE_BUILD_ROOT": "/tmp/build-root",
                 "CODEX_SOURCE_CACHE_ROOT": "/tmp/cache-root",
             }
@@ -39,13 +47,18 @@ class SourceBuildSettingsTests(unittest.TestCase):
         self.assertEqual(settings.output_dir, Path("/tmp/build-root/output"))
         self.assertEqual(settings.checkout_dir, Path(tempfile.gettempdir()) / "codex-source-checkout")
 
+    def test_load_source_build_settings_requires_repo_url(self) -> None:
+        with self.assertRaisesRegex(source_build.SourceBuildError, "missing required source-build setting: CODEX_SOURCE_REPO_URL"):
+            source_build.load_source_build_settings({})
+
     def test_load_source_build_environment_uses_repo_env_and_allows_explicit_override(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             repo_root = Path(tmpdir)
             (repo_root / ".env").write_text(
                 "\n".join(
                     [
-                        'CODEX_SOURCE_REPO_URL="https://github.com/imjcramer/codex.git"',
+                        'CODEX_SOURCE_REPO_URL="https://github.com/mjcramerz/codex.git"',
+                        'CODEX_SOURCE_BASE_REF="mcr/main"',
                         'CODEX_SOURCE_BUILD_ROOT="/tmp/from-env-file/build"',
                         'CODEX_SOURCE_CACHE_ROOT="/tmp/from-env-file/cache"',
                     ]
@@ -60,9 +73,50 @@ class SourceBuildSettingsTests(unittest.TestCase):
             ):
                 env = source_build.load_source_build_environment(repo_root)
 
-        self.assertEqual(env["CODEX_SOURCE_REPO_URL"], "https://github.com/imjcramer/codex.git")
+        self.assertEqual(env["CODEX_SOURCE_REPO_URL"], "https://github.com/mjcramerz/codex.git")
+        self.assertEqual(env["CODEX_SOURCE_BASE_REF"], "mcr/main")
         self.assertEqual(env["CODEX_SOURCE_BUILD_ROOT"], "/tmp/from-process/build")
         self.assertEqual(env["CODEX_SOURCE_CACHE_ROOT"], "/tmp/from-env-file/cache")
+
+    def test_ensure_source_checkout_repoints_origin_and_syncs_configured_ref(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            checkout_dir = Path(tmpdir) / "checkout"
+            (checkout_dir / ".git").mkdir(parents=True)
+            for path in source_build._expected_checkout_paths(checkout_dir):
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text("ok\n", encoding="utf-8")
+
+            settings = source_build.SourceBuildSettings(
+                repo_url="https://github.com/mjcramerz/codex.git",
+                build_root=Path("/tmp/build-root"),
+                cache_root=Path("/tmp/cache-root"),
+                output_dir=Path("/tmp/output-root"),
+                checkout_dir=checkout_dir,
+                base_ref="mcr/main",
+            )
+
+            def run_checked_side_effect(args: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+                label = kwargs["label"]
+                if label == "read source checkout origin url":
+                    return subprocess.CompletedProcess(args, 0, stdout="https://github.com/legacy-owner/codex.git\n", stderr="")
+                if label == "inspect source checkout state":
+                    return subprocess.CompletedProcess(args, 0, stdout="", stderr="")
+                return subprocess.CompletedProcess(args, 0, stdout="", stderr="")
+
+            with patch.object(source_build, "_run_checked", side_effect=run_checked_side_effect) as run_checked:
+                result = source_build.ensure_source_checkout(settings)
+
+        self.assertEqual(result, checkout_dir)
+        self.assertEqual(
+            [call.kwargs["label"] for call in run_checked.call_args_list],
+            [
+                "read source checkout origin url",
+                "update source checkout origin url",
+                "inspect source checkout state",
+                "fetch source ref mcr/main",
+                "checkout source ref mcr/main",
+            ],
+        )
 
     def test_ensure_output_artifact_requires_binaries_and_schema(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -129,7 +183,7 @@ class SourceBuildSettingsTests(unittest.TestCase):
             output_dir = root / "output"
             published_dir = root / "published"
             settings = source_build.SourceBuildSettings(
-                repo_url="https://github.com/imjcramer/codex.git",
+                repo_url="https://github.com/mjcramerz/codex.git",
                 build_root=root / "build",
                 cache_root=root / "cache",
                 output_dir=output_dir,
@@ -153,6 +207,19 @@ class SourceBuildSettingsTests(unittest.TestCase):
             if call.kwargs.get("label") == "build codex from source"
         )
         self.assertEqual(build_call.kwargs["cwd"], checkout_dir)
+        self.assertEqual(
+            build_call.args[0],
+            [
+                "bash",
+                str(script_path),
+                "--base-ref",
+                "mcr/main",
+                "--build-root",
+                str(settings.build_root),
+                "--cache-root",
+                str(settings.cache_root),
+            ],
+        )
 
 
 if __name__ == "__main__":
