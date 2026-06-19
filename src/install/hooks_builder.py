@@ -141,15 +141,15 @@ def _validate_expected_group_layout(
         )
 
 
-def _load_apps_payload(apps_path: Path) -> dict[str, Any]:
-    if not apps_path.is_file():
-        fail(f"missing TOML file: {apps_path}")
+def _load_hooks_payload(hooks_path: Path) -> dict[str, Any]:
+    if not hooks_path.is_file():
+        fail(f"missing TOML file: {hooks_path}")
     try:
-        payload = tomllib.loads(apps_path.read_text(encoding="utf-8"))
+        payload = tomllib.loads(hooks_path.read_text(encoding="utf-8"))
     except (OSError, tomllib.TOMLDecodeError) as exc:
-        fail(f"invalid TOML at {apps_path}: {exc}")
+        fail(f"invalid TOML at {hooks_path}: {exc}")
     if not isinstance(payload, dict):
-        fail(f"invalid TOML payload shape at {apps_path}")
+        fail(f"invalid TOML payload shape at {hooks_path}")
     return payload
 
 
@@ -166,19 +166,22 @@ def _hooks_table(payload: dict[str, Any], *, path_label: str) -> dict[str, Any]:
     return hooks
 
 
-def load_inline_hooks_config(apps_path: Path) -> dict[str, Any]:
-    payload = _load_apps_payload(apps_path)
-    return _hooks_table(payload, path_label=str(apps_path))
+def load_hooks_config(hooks_path: Path) -> dict[str, Any]:
+    payload = _load_hooks_payload(hooks_path)
+    return _hooks_table(payload, path_label=str(hooks_path))
 
 
-def validate_inline_hooks_config(
-    apps_path: Path,
+def validate_hooks_config(
+    hooks_path: Path,
     scripts_dir: Path,
     *,
     hooks_payload: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    path_label = str(apps_path)
-    hooks = _hooks_table({"hooks": hooks_payload} if hooks_payload is not None else _load_apps_payload(apps_path), path_label=path_label)
+    path_label = str(hooks_path)
+    hooks = _hooks_table(
+        {"hooks": hooks_payload} if hooks_payload is not None else _load_hooks_payload(hooks_path),
+        path_label=path_label,
+    )
     if not scripts_dir.is_dir():
         fail(f"missing hook scripts directory: {scripts_dir}")
 

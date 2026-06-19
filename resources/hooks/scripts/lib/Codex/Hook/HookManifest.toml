@@ -187,6 +187,166 @@ timeout = 20
 statusMessage = "Reviewing time MCP follow-up"
 
 [[tool_profiles]]
+id = "mcp_git"
+matcher = "^mcp__git__.+$"
+label = "git MCP call"
+
+[tool_profiles.events.PreToolUse]
+script = "pre_tool_use_mcp.pl"
+timeout = 20
+statusMessage = "Checking git MCP guardrails"
+
+[tool_profiles.events.PermissionRequest]
+script = "permission_request_mcp.pl"
+timeout = 20
+statusMessage = "Checking git MCP approval scope"
+
+[tool_profiles.events.PostToolUse]
+script = "post_tool_use_mcp.pl"
+timeout = 20
+statusMessage = "Reviewing git MCP follow-up"
+
+[[tool_profiles]]
+id = "mcp_memory"
+matcher = "^mcp__memory__.+$"
+label = "memory MCP call"
+
+[tool_profiles.events.PreToolUse]
+script = "pre_tool_use_mcp.pl"
+timeout = 20
+statusMessage = "Checking memory MCP guardrails"
+
+[tool_profiles.events.PermissionRequest]
+script = "permission_request_mcp.pl"
+timeout = 20
+statusMessage = "Checking memory MCP approval scope"
+
+[tool_profiles.events.PostToolUse]
+script = "post_tool_use_mcp.pl"
+timeout = 20
+statusMessage = "Reviewing memory MCP follow-up"
+
+[[tool_profiles]]
+id = "mcp_markdown"
+matcher = "^mcp__markdown__.+$"
+label = "markdown MCP call"
+
+[tool_profiles.events.PreToolUse]
+script = "pre_tool_use_mcp.pl"
+timeout = 20
+statusMessage = "Checking markdown MCP guardrails"
+
+[tool_profiles.events.PermissionRequest]
+script = "permission_request_mcp.pl"
+timeout = 20
+statusMessage = "Checking markdown MCP approval scope"
+
+[tool_profiles.events.PostToolUse]
+script = "post_tool_use_mcp.pl"
+timeout = 20
+statusMessage = "Reviewing markdown MCP follow-up"
+
+[[tool_profiles]]
+id = "mcp_playwright"
+matcher = "^mcp__playwright__.+$"
+label = "Playwright MCP call"
+
+[tool_profiles.events.PreToolUse]
+script = "pre_tool_use_mcp.pl"
+timeout = 20
+statusMessage = "Checking Playwright MCP guardrails"
+
+[tool_profiles.events.PermissionRequest]
+script = "permission_request_mcp.pl"
+timeout = 20
+statusMessage = "Checking Playwright MCP approval scope"
+
+[tool_profiles.events.PostToolUse]
+script = "post_tool_use_mcp.pl"
+timeout = 20
+statusMessage = "Reviewing Playwright MCP follow-up"
+
+[[tool_profiles]]
+id = "mcp_chrome_devtools"
+matcher = "^mcp__(?:chrome-devtools|chrome_devtools)__.+$"
+label = "Chrome DevTools MCP call"
+
+[tool_profiles.events.PreToolUse]
+script = "pre_tool_use_mcp.pl"
+timeout = 20
+statusMessage = "Checking Chrome DevTools MCP guardrails"
+
+[tool_profiles.events.PermissionRequest]
+script = "permission_request_mcp.pl"
+timeout = 20
+statusMessage = "Checking Chrome DevTools MCP approval scope"
+
+[tool_profiles.events.PostToolUse]
+script = "post_tool_use_mcp.pl"
+timeout = 20
+statusMessage = "Reviewing Chrome DevTools MCP follow-up"
+
+[[tool_profiles]]
+id = "mcp_postgres"
+matcher = "^mcp__postgres__.+$"
+label = "Postgres MCP call"
+
+[tool_profiles.events.PreToolUse]
+script = "pre_tool_use_mcp.pl"
+timeout = 20
+statusMessage = "Checking Postgres MCP guardrails"
+
+[tool_profiles.events.PermissionRequest]
+script = "permission_request_mcp.pl"
+timeout = 20
+statusMessage = "Checking Postgres MCP approval scope"
+
+[tool_profiles.events.PostToolUse]
+script = "post_tool_use_mcp.pl"
+timeout = 20
+statusMessage = "Reviewing Postgres MCP follow-up"
+
+[[tool_profiles]]
+id = "mcp_sqlite"
+matcher = "^mcp__sqlite__.+$"
+label = "SQLite MCP call"
+
+[tool_profiles.events.PreToolUse]
+script = "pre_tool_use_mcp.pl"
+timeout = 20
+statusMessage = "Checking SQLite MCP guardrails"
+
+[tool_profiles.events.PermissionRequest]
+script = "permission_request_mcp.pl"
+timeout = 20
+statusMessage = "Checking SQLite MCP approval scope"
+
+[tool_profiles.events.PostToolUse]
+script = "post_tool_use_mcp.pl"
+timeout = 20
+statusMessage = "Reviewing SQLite MCP follow-up"
+
+[[tool_profiles]]
+id = "mcp_semgrep"
+matcher = "^mcp__semgrep__.+$"
+label = "Semgrep MCP call"
+
+[tool_profiles.events.PreToolUse]
+script = "pre_tool_use_mcp.pl"
+timeout = 20
+statusMessage = "Checking Semgrep MCP guardrails"
+
+[tool_profiles.events.PermissionRequest]
+script = "permission_request_mcp.pl"
+timeout = 20
+statusMessage = "Checking Semgrep MCP approval scope"
+
+[tool_profiles.events.PostToolUse]
+script = "post_tool_use_mcp.pl"
+timeout = 20
+statusMessage = "Reviewing Semgrep MCP follow-up"
+
+[[tool_profiles]]
 id = "mcp_cloudflare_observability"
 matcher = "^mcp__cloudflare-observability__(?:accounts_list|migrate_pages_to_workers_guide|observability_keys|observability_values|query_worker_observability|search_cloudflare_documentation|set_active_account|workers_get_worker|workers_get_worker_code|workers_list)$"
 label = "Cloudflare observability MCP call"

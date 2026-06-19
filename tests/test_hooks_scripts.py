@@ -121,10 +121,14 @@ def make_incomplete_codex_manager_repo(tmpdir: str) -> Path:
 class HookScriptTests(unittest.TestCase):
     maxDiff = None
 
-    def test_apps_toml_carries_full_runtime_hook_table(self) -> None:
-        payload = parse_toml_file(APPS_TOML_PATH)
+    def test_hooks_toml_carries_full_runtime_hook_table(self) -> None:
+        payload = parse_toml_file(REPO_ROOT / "config" / "usr" / "hooks.toml")
         hooks = payload.get("hooks")
         assert_expected_inline_hooks(self, hooks)
+
+    def test_apps_toml_no_longer_includes_hook_table(self) -> None:
+        payload = parse_toml_file(APPS_TOML_PATH)
+        self.assertNotIn("hooks", payload)
 
     def test_runtime_hook_driver_is_repo_sourced_without_manifest_template(self) -> None:
         self.assertFalse((REPO_ROOT / "resources" / "hooks" / "manifest.json").exists())

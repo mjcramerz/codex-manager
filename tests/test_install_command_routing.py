@@ -179,7 +179,7 @@ class InstallCommandRoutingTests(unittest.TestCase):
 
 class InstallConfigToleranceTests(unittest.TestCase):
     def test_resolve_placeholders_allows_literal_regex_dollar(self) -> None:
-        rendered = resolve_placeholders("^(startup|resume|clear|compact)$", {}, "config/usr/apps.toml.hooks.SessionStart.matcher")
+        rendered = resolve_placeholders("^(startup|resume|clear|compact)$", {}, "config/usr/hooks.toml.hooks.SessionStart.matcher")
         self.assertEqual(rendered, "^(startup|resume|clear|compact)$")
 
     def test_home_bundle_keeps_plugins_hooks_and_skills(self) -> None:
@@ -203,13 +203,14 @@ class InstallConfigToleranceTests(unittest.TestCase):
         )
         self.assertEqual(parsed, {})
 
-    def test_home_config_render_merges_full_apps_hooks_table(self) -> None:
+    def test_home_config_render_merges_full_hooks_table(self) -> None:
         installer = codex_install.Installer.__new__(codex_install.Installer)
         installer.repo_root = REPO_ROOT
         installer.repo_layout = codex_install.RepoLayout.from_repo_root(REPO_ROOT)
         installer._warnings_emitted = set()
         installer._warn_once = lambda _message: None
         installer.plugins_payload = codex_install.parse_toml_file(installer.repo_layout.user_apps_path)
+        installer.hooks_payload = codex_install.parse_toml_file(installer.repo_layout.user_hooks_path)
 
         env = codex_install.parse_env_file(REPO_ROOT / ".env")
         vars_payload = codex_install.parse_toml_file(REPO_ROOT / "vars.toml")
@@ -232,6 +233,7 @@ class InstallConfigToleranceTests(unittest.TestCase):
         payload = tomllib.loads(rendered)
         hooks = payload.get("hooks")
         assert_expected_inline_hooks(self, hooks)
+        self.assertNotIn("hooks", installer.plugins_payload)
 
     def test_instruction_override_missing_key_warns_without_blocking(self) -> None:
         installer = codex_install.Installer.__new__(codex_install.Installer)

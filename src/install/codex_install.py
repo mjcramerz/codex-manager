@@ -14,7 +14,6 @@ This installer compiles runtime outputs from repository configuration:
 from __future__ import annotations
 
 import argparse
-import base64
 import copy
 import filecmp
 import getpass
@@ -67,7 +66,7 @@ from common import resolve_placeholders
 from common import toml_key
 from common import toml_value
 from config_merge import compile_vendor_config
-from hooks_builder import validate_inline_hooks_config
+from hooks_builder import validate_hooks_config
 from layout import RepoLayout
 from layout import RuntimeLayout
 from plugin_bundles import PluginBundleSpec
@@ -201,7 +200,6 @@ INSTRUCTIONS_ENTRY_FILENAME_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*$"
 INSTRUCTIONS_ALLOWED_SUFFIXES = {".json", ".lark", ".md"}
 VERSION_PATTERN = re.compile(r"([0-9]+\.[0-9]+\.[0-9]+(?:\.[0-9]+)*(?:-[A-Za-z0-9._]+)*)")
 ENV_KEY_PATTERN = re.compile(r"^[A-Z][A-Z0-9_]*$")
-RELEASE_CREDENTIAL_KEYS = ("GL_DEPLOY_RELEASE_USERNAME", "GL_DEPLOY_RELEASE_TOKEN")
 DRY_RUN_STAGE_ROOT = Path("/data/dryrun/codex")
 DRY_RUN_STAGE_ACTIVATE_FILENAME = "activate-codex-env.sh"
 STAGE_SOURCE_BUILD_ROOT_KEY = "CODEX_SOURCE_BUILD_ROOT"
@@ -256,6 +254,7 @@ class Installer:
         self.mcp_path = self.repo_layout.vendor_mcp_path
         self.skills_path = self.repo_layout.skills_metadata_path
         self.plugins_path = self.repo_layout.user_apps_path
+        self.hooks_path = self.repo_layout.user_hooks_path
         self.plugins_json_path = self.repo_layout.plugins_inventory_path
         self.user_env_path = self.repo_layout.user_env_path
         self.sandbox_path = self.repo_layout.user_policy_path
@@ -270,12 +269,12 @@ class Installer:
         self.mcp_payload: dict[str, Any] = {}
         self.skills_payload: dict[str, Any] = {}
         self.plugins_payload: dict[str, Any] = {}
+        self.hooks_payload: dict[str, Any] = {}
         self.plugins_metadata_payload: dict[str, Any] = {}
         self.effective_plugins_metadata_payload: dict[str, Any] = {}
         self.secrets_config: ManagedSecretsConfig | None = None
         self.allowed_roots: list[Path] = []
         self._keyring_secret_cache: dict[str, str] = {}
-        self._release_credentials_cache: tuple[str, str] | None = None
         self._warnings_emitted: set[str] = set()
 
     def _stage_mode(self) -> bool:
@@ -347,6 +346,7 @@ class Installer:
         mcp_payload_raw = parse_toml_file(self.mcp_path)
         self.skills_payload = parse_json_file(self.skills_path)
         self.plugins_payload = parse_toml_file(self.plugins_path) if self.plugins_path.is_file() else {}
+        self.hooks_payload = parse_toml_file(self.hooks_path)
         if self.plugins_json_path.is_file():
             try:
                 self.plugins_metadata_payload = json.loads(self.plugins_json_path.read_text(encoding="utf-8"))
@@ -420,6 +420,7 @@ class Installer:
             self.repo_layout.user_pref_path,
             self.repo_layout.user_env_path,
             self.repo_layout.user_apps_path,
+            self.repo_layout.user_hooks_path,
             self.repo_layout.user_policy_path,
             self.repo_layout.home_user_dir,
             self.repo_layout.hooks_dir,
@@ -511,7 +512,11 @@ class Installer:
         validate_plugin_bundle_inventory(self, self.repo_layout.plugins_skills_dir)
         if self.sandbox_path.is_file():
             parse_toml_file(self.sandbox_path)
-        validate_inline_hooks_config(self.repo_layout.user_apps_path, self._hooks_source_dir())
+        validate_hooks_config(
+            self.repo_layout.user_hooks_path,
+            self._hooks_source_dir(),
+            hooks_payload=self.hooks_payload.get("hooks") if isinstance(self.hooks_payload, dict) else None,
+        )
         validate_agent_role_contracts(self.repo_layout.agents_config_dir, self.repo_layout.user_apps_path)
         self._validate_managed_secrets_config()
         self._validate_home_mcp_managed_secret_config()
@@ -2488,6 +2493,7 @@ class Installer:
         ):
             rendered = self._append_compiled_fragment(rendered, self._render_user_fragment(path))
         rendered = self._append_compiled_fragment(rendered, self._render_home_apps_fragment())
+        rendered = self._append_compiled_fragment(rendered, self._render_home_hooks_fragment())
         rendered = self._append_compiled_fragment(
             rendered,
             self._render_user_fragment(self.repo_layout.user_policy_path),
@@ -2552,6 +2558,13 @@ class Installer:
             "config/usr/apps.toml",
         )
 
+    def _resolved_user_hooks_payload(self) -> dict[str, Any]:
+        return resolve_object_placeholders(
+            copy.deepcopy(self.hooks_payload),
+            self.variables,
+            "config/usr/hooks.toml",
+        )
+
     def _render_home_apps_fragment(self) -> str:
         apps_payload = self._resolved_user_apps_payload()
         home_mcp_servers = apps_payload.get("mcp_servers", {})
@@ -2573,6 +2586,10 @@ class Installer:
                     f"{server_name} does not define command or url; leaving that entry unchanged"
                 )
         return self._render_toml_document(apps_payload)
+
+    def _render_home_hooks_fragment(self) -> str:
+        hooks_payload = self._resolved_user_hooks_payload()
+        return self._render_toml_document(hooks_payload)
 
     def _rendered_text_is_current(self, path: Path, rendered: str, *, mode: int) -> bool:
         if path.exists() and not path.is_file():
@@ -2663,55 +2680,12 @@ class Installer:
             fail(f"unable to derive release version from package name: {package_name}")
         return matches[-1]
 
-    def _read_release_credentials_from_mapping(
-        self,
-        mapping: dict[str, str],
-        *,
-        source_label: str,
-    ) -> tuple[str, str] | None:
-        values: dict[str, str] = {}
-        for key in RELEASE_CREDENTIAL_KEYS:
-            raw_value = mapping.get(key, "")
-            if not isinstance(raw_value, str):
-                fail(f"{source_label} value for {key} must be string")
-            normalized = raw_value.strip()
-            if normalized and ("\n" in normalized or "\r" in normalized):
-                fail(f"{source_label} value for {key} must be single-line")
-            values[key] = normalized
-
-        if any(values.values()):
-            if not all(values.values()):
-                fail(f"{source_label} must define both GL_DEPLOY_RELEASE_USERNAME and GL_DEPLOY_RELEASE_TOKEN")
-            return values["GL_DEPLOY_RELEASE_USERNAME"], values["GL_DEPLOY_RELEASE_TOKEN"]
-        return None
-
-    def _resolve_release_credentials(self) -> tuple[str, str] | None:
-        if self._release_credentials_cache is not None:
-            self._log("using cached release credentials")
-            return self._release_credentials_cache
-
-        env_credentials = self._read_release_credentials_from_mapping(self.env, source_label=str(self.env_path))
-        if env_credentials is not None:
-            self._release_credentials_cache = env_credentials
-            return env_credentials
-
-        process_credentials = self._read_release_credentials_from_mapping(os.environ, source_label="environment")
-        if process_credentials is not None:
-            self._log("using release credentials from environment")
-            self._release_credentials_cache = process_credentials
-            return process_credentials
-
-        return None
-
-    def _download_file(self, url: str, destination: Path, username: str | None, token: str | None) -> None:
+    def _download_file(self, url: str, destination: Path) -> None:
         if self.dry_run:
             print(f"[dry-run] download {url} -> {destination}")
             return
 
         headers = {"User-Agent": "codex-install/2.0"}
-        if username and token:
-            auth = base64.b64encode(f"{username}:{token}".encode("utf-8")).decode("ascii")
-            headers["Authorization"] = f"Basic {auth}"
 
         with tempfile.NamedTemporaryFile(prefix="codex-download-", suffix=".tmp", delete=False) as handle:
             temp_path = Path(handle.name)
@@ -2769,9 +2743,6 @@ class Installer:
         full_url = self._release_package_url()
         archive_path = self._release_package_path()
 
-        username: str | None = None
-        token: str | None = None
-
         if archive_path.is_file():
             current_sha = hashlib.sha256(archive_path.read_bytes()).hexdigest()
             if current_sha != expected_sha:
@@ -2784,10 +2755,7 @@ class Installer:
                         archive_path.unlink(missing_ok=True)
 
         if not archive_path.is_file():
-            if not self.dry_run:
-                credentials = self._resolve_release_credentials()
-                username, token = credentials if credentials else (None, None)
-            self._download_file(full_url, archive_path, username, token)
+            self._download_file(full_url, archive_path)
 
         if not self.dry_run:
             actual_sha = hashlib.sha256(archive_path.read_bytes()).hexdigest()

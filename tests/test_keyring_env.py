@@ -217,7 +217,6 @@ class InstallerManagedSecretsTests(unittest.TestCase):
         installer.repo_root = repo_root or Path("/tmp/repo")
         installer.env_path = installer.repo_root / ".env"
         installer.dry_run = False
-        installer._release_credentials_cache = None
         installer._log = lambda _message: None
         installer._warn_once = Mock()
         return installer
@@ -358,53 +357,6 @@ class InstallerManagedSecretsTests(unittest.TestCase):
 
         self.assertEqual(clear_mock.call_args_list[0].args, (installer.secrets_config, "cloudflare-api"))
         self.assertEqual(clear_mock.call_args_list[1].args, (installer.secrets_config, "vercel"))
-
-    def test_resolve_release_credentials_prefers_env_file_values(self) -> None:
-        installer = self._make_installer(
-            env={
-                "GL_DEPLOY_RELEASE_USERNAME": "env-user",
-                "GL_DEPLOY_RELEASE_TOKEN": "env-token",
-            }
-        )
-
-        credentials = codex_install.Installer._resolve_release_credentials(installer)
-
-        self.assertEqual(credentials, ("env-user", "env-token"))
-
-    def test_resolve_release_credentials_falls_back_to_process_environment(self) -> None:
-        installer = self._make_installer(
-            env={
-                "GL_DEPLOY_RELEASE_USERNAME": "",
-                "GL_DEPLOY_RELEASE_TOKEN": "",
-            }
-        )
-
-        with patch.dict(
-            os.environ,
-            {
-                "GL_DEPLOY_RELEASE_USERNAME": "process-user",
-                "GL_DEPLOY_RELEASE_TOKEN": "process-token",
-            },
-            clear=False,
-        ):
-            credentials = codex_install.Installer._resolve_release_credentials(installer)
-
-        self.assertEqual(credentials, ("process-user", "process-token"))
-
-    def test_resolve_release_credentials_rejects_partial_values(self) -> None:
-        installer = self._make_installer(
-            env={
-                "GL_DEPLOY_RELEASE_USERNAME": "env-user",
-                "GL_DEPLOY_RELEASE_TOKEN": "",
-            }
-        )
-
-        with self.assertRaisesRegex(
-            codex_install.InstallError,
-            "must define both GL_DEPLOY_RELEASE_USERNAME and GL_DEPLOY_RELEASE_TOKEN",
-        ):
-            codex_install.Installer._resolve_release_credentials(installer)
-
 
 if __name__ == "__main__":
     unittest.main()

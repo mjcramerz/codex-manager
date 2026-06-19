@@ -188,6 +188,182 @@ sub hook_catalog {
                 },
             },
             {
+                id      => 'mcp_git',
+                matcher => '^mcp__git__.+$',
+                label   => 'git MCP call',
+                events  => {
+                    PreToolUse => {
+                        script        => 'pre_tool_use_mcp.pl',
+                        timeout       => 20,
+                        statusMessage => 'Checking git MCP guardrails',
+                    },
+                    PermissionRequest => {
+                        script        => 'permission_request_mcp.pl',
+                        timeout       => 20,
+                        statusMessage => 'Checking git MCP approval scope',
+                    },
+                    PostToolUse => {
+                        script        => 'post_tool_use_mcp.pl',
+                        timeout       => 20,
+                        statusMessage => 'Reviewing git MCP follow-up',
+                    },
+                },
+            },
+            {
+                id      => 'mcp_memory',
+                matcher => '^mcp__memory__.+$',
+                label   => 'memory MCP call',
+                events  => {
+                    PreToolUse => {
+                        script        => 'pre_tool_use_mcp.pl',
+                        timeout       => 20,
+                        statusMessage => 'Checking memory MCP guardrails',
+                    },
+                    PermissionRequest => {
+                        script        => 'permission_request_mcp.pl',
+                        timeout       => 20,
+                        statusMessage => 'Checking memory MCP approval scope',
+                    },
+                    PostToolUse => {
+                        script        => 'post_tool_use_mcp.pl',
+                        timeout       => 20,
+                        statusMessage => 'Reviewing memory MCP follow-up',
+                    },
+                },
+            },
+            {
+                id      => 'mcp_markdown',
+                matcher => '^mcp__markdown__.+$',
+                label   => 'markdown MCP call',
+                events  => {
+                    PreToolUse => {
+                        script        => 'pre_tool_use_mcp.pl',
+                        timeout       => 20,
+                        statusMessage => 'Checking markdown MCP guardrails',
+                    },
+                    PermissionRequest => {
+                        script        => 'permission_request_mcp.pl',
+                        timeout       => 20,
+                        statusMessage => 'Checking markdown MCP approval scope',
+                    },
+                    PostToolUse => {
+                        script        => 'post_tool_use_mcp.pl',
+                        timeout       => 20,
+                        statusMessage => 'Reviewing markdown MCP follow-up',
+                    },
+                },
+            },
+            {
+                id      => 'mcp_playwright',
+                matcher => '^mcp__playwright__.+$',
+                label   => 'Playwright MCP call',
+                events  => {
+                    PreToolUse => {
+                        script        => 'pre_tool_use_mcp.pl',
+                        timeout       => 20,
+                        statusMessage => 'Checking Playwright MCP guardrails',
+                    },
+                    PermissionRequest => {
+                        script        => 'permission_request_mcp.pl',
+                        timeout       => 20,
+                        statusMessage => 'Checking Playwright MCP approval scope',
+                    },
+                    PostToolUse => {
+                        script        => 'post_tool_use_mcp.pl',
+                        timeout       => 20,
+                        statusMessage => 'Reviewing Playwright MCP follow-up',
+                    },
+                },
+            },
+            {
+                id      => 'mcp_chrome_devtools',
+                matcher => '^mcp__(?:chrome-devtools|chrome_devtools)__.+$',
+                label   => 'Chrome DevTools MCP call',
+                events  => {
+                    PreToolUse => {
+                        script        => 'pre_tool_use_mcp.pl',
+                        timeout       => 20,
+                        statusMessage => 'Checking Chrome DevTools MCP guardrails',
+                    },
+                    PermissionRequest => {
+                        script        => 'permission_request_mcp.pl',
+                        timeout       => 20,
+                        statusMessage => 'Checking Chrome DevTools MCP approval scope',
+                    },
+                    PostToolUse => {
+                        script        => 'post_tool_use_mcp.pl',
+                        timeout       => 20,
+                        statusMessage => 'Reviewing Chrome DevTools MCP follow-up',
+                    },
+                },
+            },
+            {
+                id      => 'mcp_postgres',
+                matcher => '^mcp__postgres__.+$',
+                label   => 'Postgres MCP call',
+                events  => {
+                    PreToolUse => {
+                        script        => 'pre_tool_use_mcp.pl',
+                        timeout       => 20,
+                        statusMessage => 'Checking Postgres MCP guardrails',
+                    },
+                    PermissionRequest => {
+                        script        => 'permission_request_mcp.pl',
+                        timeout       => 20,
+                        statusMessage => 'Checking Postgres MCP approval scope',
+                    },
+                    PostToolUse => {
+                        script        => 'post_tool_use_mcp.pl',
+                        timeout       => 20,
+                        statusMessage => 'Reviewing Postgres MCP follow-up',
+                    },
+                },
+            },
+            {
+                id      => 'mcp_sqlite',
+                matcher => '^mcp__sqlite__.+$',
+                label   => 'SQLite MCP call',
+                events  => {
+                    PreToolUse => {
+                        script        => 'pre_tool_use_mcp.pl',
+                        timeout       => 20,
+                        statusMessage => 'Checking SQLite MCP guardrails',
+                    },
+                    PermissionRequest => {
+                        script        => 'permission_request_mcp.pl',
+                        timeout       => 20,
+                        statusMessage => 'Checking SQLite MCP approval scope',
+                    },
+                    PostToolUse => {
+                        script        => 'post_tool_use_mcp.pl',
+                        timeout       => 20,
+                        statusMessage => 'Reviewing SQLite MCP follow-up',
+                    },
+                },
+            },
+            {
+                id      => 'mcp_semgrep',
+                matcher => '^mcp__semgrep__.+$',
+                label   => 'Semgrep MCP call',
+                events  => {
+                    PreToolUse => {
+                        script        => 'pre_tool_use_mcp.pl',
+                        timeout       => 20,
+                        statusMessage => 'Checking Semgrep MCP guardrails',
+                    },
+                    PermissionRequest => {
+                        script        => 'permission_request_mcp.pl',
+                        timeout       => 20,
+                        statusMessage => 'Checking Semgrep MCP approval scope',
+                    },
+                    PostToolUse => {
+                        script        => 'post_tool_use_mcp.pl',
+                        timeout       => 20,
+                        statusMessage => 'Reviewing Semgrep MCP follow-up',
+                    },
+                },
+            },
+            {
                 id      => 'mcp_cloudflare_observability',
                 matcher => '^mcp__cloudflare-observability__(?:accounts_list|migrate_pages_to_workers_guide|observability_keys|observability_values|query_worker_observability|search_cloudflare_documentation|set_active_account|workers_get_worker|workers_get_worker_code|workers_list)$',
                 label   => 'Cloudflare observability MCP call',

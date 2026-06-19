@@ -64,6 +64,22 @@ print JSON::PP::encode_json({
   openai_label => tool_group_label('mcp__openaiDeveloperDocs__search_openai_docs'),
   time_group => tool_group_name('mcp__time__get_current_time'),
   time_label => tool_group_label('mcp__time__get_current_time'),
+  git_group => tool_group_name('mcp__git__git_status'),
+  git_label => tool_group_label('mcp__git__git_status'),
+  memory_group => tool_group_name('mcp__memory__read_graph'),
+  memory_label => tool_group_label('mcp__memory__read_graph'),
+  markdown_group => tool_group_name('mcp__markdown__convert'),
+  markdown_label => tool_group_label('mcp__markdown__convert'),
+  playwright_group => tool_group_name('mcp__playwright__browser_navigate'),
+  playwright_label => tool_group_label('mcp__playwright__browser_navigate'),
+  chrome_group => tool_group_name('mcp__chrome_devtools__navigate_page'),
+  chrome_label => tool_group_label('mcp__chrome_devtools__navigate_page'),
+  postgres_group => tool_group_name('mcp__postgres__query'),
+  postgres_label => tool_group_label('mcp__postgres__query'),
+  sqlite_group => tool_group_name('mcp__sqlite__read_query'),
+  sqlite_label => tool_group_label('mcp__sqlite__read_query'),
+  semgrep_group => tool_group_name('mcp__semgrep__scan'),
+  semgrep_label => tool_group_label('mcp__semgrep__scan'),
   generic_mcp_group => tool_group_name('mcp__github_router__git_status'),
   generic_mcp_label => tool_group_label('mcp__github_router__git_status'),
   generic_group => tool_group_name('write_stdin'),
@@ -78,6 +94,22 @@ print JSON::PP::encode_json({
         self.assertEqual(payload["openai_label"], "OpenAI developer docs MCP call")
         self.assertEqual(payload["time_group"], "mcp_time")
         self.assertEqual(payload["time_label"], "time MCP call")
+        self.assertEqual(payload["git_group"], "mcp_git")
+        self.assertEqual(payload["git_label"], "git MCP call")
+        self.assertEqual(payload["memory_group"], "mcp_memory")
+        self.assertEqual(payload["memory_label"], "memory MCP call")
+        self.assertEqual(payload["markdown_group"], "mcp_markdown")
+        self.assertEqual(payload["markdown_label"], "markdown MCP call")
+        self.assertEqual(payload["playwright_group"], "mcp_playwright")
+        self.assertEqual(payload["playwright_label"], "Playwright MCP call")
+        self.assertEqual(payload["chrome_group"], "mcp_chrome_devtools")
+        self.assertEqual(payload["chrome_label"], "Chrome DevTools MCP call")
+        self.assertEqual(payload["postgres_group"], "mcp_postgres")
+        self.assertEqual(payload["postgres_label"], "Postgres MCP call")
+        self.assertEqual(payload["sqlite_group"], "mcp_sqlite")
+        self.assertEqual(payload["sqlite_label"], "SQLite MCP call")
+        self.assertEqual(payload["semgrep_group"], "mcp_semgrep")
+        self.assertEqual(payload["semgrep_label"], "Semgrep MCP call")
         self.assertEqual(payload["generic_mcp_group"], "mcp")
         self.assertEqual(payload["generic_mcp_label"], "MCP tool call")
         self.assertEqual(payload["generic_group"], "generic")

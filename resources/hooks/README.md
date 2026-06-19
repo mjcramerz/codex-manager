@@ -5,7 +5,7 @@ behavior source of truth in this repository.
 
 The install-facing split is:
 
-1. `config/usr/apps.toml` defines the inline Codex `[hooks]` matcher groups that
+1. `config/usr/hooks.toml` defines the inline Codex `[hooks]` matcher groups that
    are merged into `$CODEX_HOME/config.toml`.
 2. `resources/hooks/scripts/*.pl` provides the installed command entrypoints for
    those matcher groups.
@@ -20,7 +20,7 @@ The `home` / `install` / `upgrade` flow materializes the hook runtime by:
    `$CODEX_HOME/hooks/`
 2. Syncing vendored hook schemas from `resources/hooks/schema/generated/` into
    `$CODEX_HOME/.hooks/schema/generated/`
-3. Merging the inline `[hooks]` table from `config/usr/apps.toml` into
+3. Merging the inline `[hooks]` table from `config/usr/hooks.toml` into
    `$CODEX_HOME/config.toml`
 
 No `hooks.json` bridge is generated or installed. Do not reintroduce a second
@@ -50,7 +50,7 @@ inline `[hooks]` and `hooks.json` exist in one layer, both sets run.
 
 ## Inline hook wiring
 
-`config/usr/apps.toml` carries the full runtime `[hooks]` table. Keep every hook
+`config/usr/hooks.toml` carries the full runtime `[hooks]` table. Keep every hook
 group explicit there. `lib/Codex/Hook/HookManifest.toml` is generation/validation-only
 metadata for every hook family plus shared role/profile metadata; it must not
 replace the explicit TOML hook routing contract.
@@ -60,25 +60,25 @@ contract: matcher groups, script command, timeout, and status message must stay
 aligned with the manifest and the checked-in Perl catalog.
 
 - `SessionStart`
-  - explicit in `config/usr/apps.toml`
+  - explicit in `config/usr/hooks.toml`
 - `UserPromptSubmit`
-  - explicit in `config/usr/apps.toml`
+  - explicit in `config/usr/hooks.toml`
 - `PreToolUse`
-  - explicit in `config/usr/apps.toml`
+  - explicit in `config/usr/hooks.toml`
 - `PermissionRequest`
-  - explicit in `config/usr/apps.toml`
+  - explicit in `config/usr/hooks.toml`
 - `PostToolUse`
-  - explicit in `config/usr/apps.toml`
+  - explicit in `config/usr/hooks.toml`
 - `PreCompact`
-  - explicit in `config/usr/apps.toml`
+  - explicit in `config/usr/hooks.toml`
 - `PostCompact`
-  - explicit in `config/usr/apps.toml`
+  - explicit in `config/usr/hooks.toml`
 - `SubagentStart`
-  - explicit in `config/usr/apps.toml`
+  - explicit in `config/usr/hooks.toml`
 - `SubagentStop`
-  - explicit in `config/usr/apps.toml`
+  - explicit in `config/usr/hooks.toml`
 - `Stop`
-  - explicit in `config/usr/apps.toml`
+  - explicit in `config/usr/hooks.toml`
 
 Because Codex runs multiple matching command hooks for the same event
 concurrently, keep matcher groups mutually exclusive.

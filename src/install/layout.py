@@ -37,6 +37,7 @@ class RepoLayout:
     user_pref_path: Path
     user_env_path: Path
     user_apps_path: Path
+    user_hooks_path: Path
     user_policy_path: Path
 
     @classmethod
@@ -81,6 +82,7 @@ class RepoLayout:
             user_pref_path=user_dir / "pref.toml",
             user_env_path=user_dir / "env.toml",
             user_apps_path=user_dir / "apps.toml",
+            user_hooks_path=user_dir / "hooks.toml",
             user_policy_path=user_dir / "policy.toml",
         )
 
