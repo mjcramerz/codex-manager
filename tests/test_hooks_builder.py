@@ -56,3 +56,16 @@ class HookBuilderTests(unittest.TestCase):
 
         with self.assertRaisesRegex(InstallError, r"hooks\.PostToolUse\[1\]\.hooks\[0\]\.timeout must be"):
             validate_hooks_config(HOOKS_TOML_PATH, HOOK_SCRIPTS_DIR, hooks_payload=hooks)
+
+    def test_generic_matchers_avoid_unsupported_lookaround_tokens(self) -> None:
+        hooks = _hooks_payload()
+        matchers = [
+            hooks["PreToolUse"][-1]["matcher"],
+            hooks["PermissionRequest"][-1]["matcher"],
+            hooks["PostToolUse"][-1]["matcher"],
+            hooks["SubagentStart"][-1]["matcher"],
+            hooks["SubagentStop"][-1]["matcher"],
+        ]
+
+        for matcher in matchers:
+            self.assertNotRegex(matcher, r"\(\?[=!<]")

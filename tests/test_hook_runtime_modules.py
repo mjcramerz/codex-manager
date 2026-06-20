@@ -115,6 +115,25 @@ print JSON::PP::encode_json({
         self.assertEqual(payload["generic_group"], "generic")
         self.assertEqual(payload["generic_label"], "tool call")
 
+    def test_generic_matchers_keep_reserved_names_exclusive(self) -> None:
+        catalog = load_hook_catalog()
+        tool_matcher = next(entry for entry in catalog["tool_profiles"] if entry["id"] == "generic")["matcher"]
+        subagent_matcher = next(entry for entry in catalog["subagent_profiles"] if entry["id"] == "generic")["matcher"]
+
+        self.assertRegex("write_stdin", tool_matcher)
+        self.assertRegex("custom_tool", tool_matcher)
+        self.assertRegex("mcp_", tool_matcher)
+        self.assertNotRegex("Bash", tool_matcher)
+        self.assertNotRegex("shell", tool_matcher)
+        self.assertNotRegex("mcp__git__status", tool_matcher)
+
+        self.assertRegex("default-extra", subagent_matcher)
+        self.assertRegex("worker_bot", subagent_matcher)
+        self.assertRegex("custom", subagent_matcher)
+        self.assertNotRegex("default", subagent_matcher)
+        self.assertNotRegex("manager", subagent_matcher)
+        self.assertNotRegex("tester", subagent_matcher)
+
     def test_script_dispatch_resolves_wrapper_name_to_event_and_profile(self) -> None:
         code = r'''
 use Codex::Hook::Script qw(resolve_wrapper_dispatch);

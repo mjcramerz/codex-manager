@@ -26,8 +26,6 @@ multi_agent = true
 #spawn_csv = false
 remote_models = true
 goals = true
-apps = true
-hooks = true
 browser_use = true
 browser_use_external = true
 computer_use = true
@@ -50,7 +48,6 @@ workspace_dependencies = false
 workspace_owner_usage_nudge = false
 
 # tools
-collab = true
 tool_suggest = true
 # legacy out-of-schema key retained for traceability
 #artifact = true

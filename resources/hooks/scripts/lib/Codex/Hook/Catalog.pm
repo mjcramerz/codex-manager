@@ -7,6 +7,9 @@ use Exporter qw(import);
 
 our @EXPORT_OK = qw(hook_catalog);
 
+my $GENERIC_TOOL_MATCHER = '^(?:[^BEWabemsw].*|B(?:|[^a].*|a(?:|[^s].*|s(?:|[^h].*|h.+)))|E(?:|[^d].*|d(?:|[^i].*|i(?:|[^t].*|t.+)))|W(?:|[^r].*|r(?:|[^i].*|i(?:|[^t].*|t(?:|[^e].*|e.+))))|a(?:|[^p].*|p(?:|[^p].*|p(?:|[^l].*|l(?:|[^y].*|y(?:|[^_].*|_(?:|[^p].*|p(?:|[^a].*|a(?:|[^t].*|t(?:|[^c].*|c(?:|[^h].*|h.+))))))))))|b(?:|[^a].*|a(?:|[^s].*|s(?:|[^h].*|h.+)))|e(?:|[^dx].*|d(?:|[^i].*|i(?:|[^t].*|t.+))|x(?:|[^e].*|e(?:|[^c].*|c(?:|[^_].*|_(?:|[^c].*|c(?:|[^o].*|o(?:|[^m].*|m(?:|[^m].*|m(?:|[^a].*|a(?:|[^n].*|n(?:|[^d].*|d.+)))))))))))|m(?:|[^c].*|c(?:|[^p].*|p(?:|[^_].*|_(?:|[^_].*))))|s(?:|[^h].*|h(?:|[^e].*|e(?:|[^l].*|l(?:|[^l].*|l.+))))|w(?:|[^r].*|r(?:|[^i].*|i(?:|[^t].*|t(?:|[^e].*|e.+)))))$';
+my $GENERIC_SUBAGENT_MATCHER = '^(?:[^acdehimoprstw].*|a(?:|[^n].*|n(?:|[^a].*|a(?:|[^l].*|l(?:|[^y].*|y(?:|[^s].*|s(?:|[^t].*|t.+))))))|c(?:|[^o].*|o(?:|[^d].*|d(?:|[^e].*|e(?:|[^r].*|r.+))))|d(?:|[^e].*|e(?:|[^fl].*|f(?:|[^a].*|a(?:|[^u].*|u(?:|[^l].*|l(?:|[^t].*|t.+))))|l(?:|[^e].*|e(?:|[^g].*|g(?:|[^a].*|a(?:|[^t].*|t(?:|[^o].*|o(?:|[^r].*|r.+))))))))|e(?:|[^x].*|x(?:|[^p].*|p(?:|[^l].*|l(?:|[^o].*|o(?:|[^r].*|r(?:|[^e].*|e(?:|[^r].*|r.+)))))))|h(?:|[^u].*|u(?:|[^n].*|n(?:|[^t].*|t(?:|[^e].*|e(?:|[^r].*|r.+)))))|i(?:|[^n].*|n(?:|[^t].*|t(?:|[^e].*|e(?:|[^g].*|g(?:|[^r].*|r(?:|[^a].*|a(?:|[^t].*|t(?:|[^o].*|o(?:|[^r].*|r.+)))))))))|m(?:|[^a].*|a(?:|[^n].*|n(?:|[^a].*|a(?:|[^g].*|g(?:|[^e].*|e(?:|[^r].*|r.+))))))|o(?:|[^r].*|r(?:|[^c].*|c(?:|[^h].*|h(?:|[^e].*|e(?:|[^s].*|s(?:|[^t].*|t(?:|[^r].*|r(?:|[^a].*|a(?:|[^t].*|t(?:|[^o].*|o(?:|[^r].*|r.+)))))))))))|p(?:|[^l].*|l(?:|[^a].*|a(?:|[^n].*|n(?:|[^n].*|n(?:|[^e].*|e(?:|[^r].*|r.+))))))|r(?:|[^e].*|e(?:|[^v].*|v(?:|[^i].*|i(?:|[^e].*|e(?:|[^w].*|w(?:|[^e].*|e(?:|[^r].*|r.+)))))))|s(?:|[^y].*|y(?:|[^n].*|n(?:|[^t].*|t(?:|[^h].*|h(?:|[^e].*|e(?:|[^s].*|s(?:|[^i].*|i(?:|[^z].*|z(?:|[^e].*|e(?:|[^r].*|r.+))))))))))|t(?:|[^e].*|e(?:|[^s].*|s(?:|[^t].*|t(?:|[^e].*|e(?:|[^r].*|r.+)))))|w(?:|[^o].*|o(?:|[^r].*|r(?:|[^k].*|k(?:|[^e].*|e(?:|[^r].*|r.+))))))$';
+
 sub hook_catalog {
     my $catalog = {
         version => 1,
@@ -497,7 +500,7 @@ sub hook_catalog {
             },
             {
                 id      => 'generic',
-                matcher => '^(?!(?:Bash|bash|exec_command|shell|apply_patch|Edit|edit|Write|write)$)(?!mcp__).+',
+                matcher => $GENERIC_TOOL_MATCHER,
                 label   => 'tool call',
                 events  => {
                     PreToolUse => {
@@ -754,7 +757,7 @@ sub hook_catalog {
             {
                 id           => 'generic',
                 status_label => 'generic',
-                matcher      => '^(?!(?:default|manager|orchestrator|planner|delegator|worker|coder|analyst|synthesizer|integrator|explorer|hunter|reviewer|tester)$).+',
+                matcher      => $GENERIC_SUBAGENT_MATCHER,
                 role_names   => [],
                 start_script => 'subagent_start.pl',
                 stop_script  => 'subagent_stop.pl',
