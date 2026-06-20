@@ -6,6 +6,7 @@ import subprocess
 import tomllib
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 
 SECRETS_FILENAME = "secrets.toml"
@@ -112,6 +113,70 @@ def parse_managed_secrets_file(path: Path) -> ManagedSecretsConfig:
     return ManagedSecretsConfig(service=normalized_service, mcp_servers=parsed_servers)
 
 
+def managed_secret_mcp_env_map(
+    payload: dict[str, Any],
+    *,
+    path_label: str,
+    enabled_only: bool = False,
+) -> dict[str, str]:
+    if not isinstance(payload, dict):
+        fail(f"{path_label} must be a TOML object")
+
+    raw_mcp_servers = payload.get("mcp_servers")
+    if raw_mcp_servers in (None, {}):
+        return {}
+    if not isinstance(raw_mcp_servers, dict):
+        fail(f"{path_label} mcp_servers must be an object")
+
+    exported: dict[str, str] = {}
+    seen_keys: dict[str, str] = {}
+    for server_name, raw_server in raw_mcp_servers.items():
+        if not isinstance(server_name, str) or not SERVER_NAME_PATTERN.fullmatch(server_name):
+            fail(f"{path_label} contains invalid mcp server name: {server_name}")
+        if not isinstance(raw_server, dict):
+            fail(f"{path_label} mcp_servers.{server_name} must be an object")
+
+        token_key = raw_server.get("bearer_token_env_var")
+        if token_key is None:
+            continue
+        if not isinstance(token_key, str):
+            fail(f"{path_label} mcp_servers.{server_name}.bearer_token_env_var must be a string")
+        normalized_key = token_key.strip()
+        if not KEY_PATTERN.fullmatch(normalized_key):
+            fail(f"{path_label} mcp_servers.{server_name}.bearer_token_env_var must be an env var name")
+
+        enabled_value = raw_server.get("enabled")
+        if enabled_value is not None and not isinstance(enabled_value, bool):
+            fail(f"{path_label} mcp_servers.{server_name}.enabled must be boolean")
+
+        command_value = raw_server.get("command")
+        if isinstance(command_value, str) and command_value.strip():
+            fail(
+                f"{path_label} mcp_servers.{server_name} uses command transport and must not declare "
+                "bearer_token_env_var; use env_vars instead"
+            )
+
+        url_value = raw_server.get("url")
+        if not isinstance(url_value, str) or not url_value.strip():
+            fail(
+                f"{path_label} mcp_servers.{server_name} bearer_token_env_var requires a non-empty url transport"
+            )
+
+        existing_server = seen_keys.get(normalized_key)
+        if existing_server is not None:
+            fail(
+                f"{path_label} reuses env key {normalized_key} across "
+                f"mcp_servers.{existing_server} and mcp_servers.{server_name}"
+            )
+        seen_keys[normalized_key] = server_name
+
+        if enabled_only and enabled_value is not True:
+            continue
+
+        exported[server_name] = normalized_key
+    return exported
+
+
 def secret_tool_available() -> bool:
     return bool(shutil.which("secret-tool"))
 
@@ -205,6 +270,13 @@ def clear_managed_secret(config: ManagedSecretsConfig, server_name: str) -> None
         )
     except subprocess.TimeoutExpired:
         fail(f"secret-tool clear timed out for {lookup_name}")
-    if proc.returncode != 0:
-        details = proc.stderr.strip() or proc.stdout.strip() or f"exit code {proc.returncode}"
-        fail(f"secret-tool clear failed for {lookup_name}: {details}")
+    if proc.returncode == 0:
+        return
+
+    if proc.returncode == 1:
+        existing_value = lookup_managed_secret(config, server_name).strip()
+        if not existing_value:
+            return
+
+    details = proc.stderr.strip() or proc.stdout.strip() or f"exit code {proc.returncode}"
+    fail(f"secret-tool clear failed for {lookup_name}: {details}")

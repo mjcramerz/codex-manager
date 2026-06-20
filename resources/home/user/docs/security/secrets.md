@@ -9,6 +9,8 @@
 - For CI, prefer a dedicated secrets manager (e.g., Bitwarden Secrets Manager).
 - For local hosts, prefer keyring-backed storage and retrieval patterns (`bitwarden-secrets-local.md`).
 - Store private keys in a secrets manager; see `key-management.md`.
+- For managed MCP config, keep `bearer_token_env_var` on URL transports only; stdio / `command` transports must use wrapper `env_vars` instead.
+- During uninstall / nuke, clear keyring-backed managed MCP secrets on a best-effort basis and never let already-missing entries block runtime cleanup.
 
 
 ## Navigation

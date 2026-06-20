@@ -93,6 +93,21 @@ class PluginRuntimeContractsTests(unittest.TestCase):
                 f"apps.toml bearer token drift for {server_name}",
             )
 
+    def test_command_transport_servers_do_not_declare_bearer_env_vars(self) -> None:
+        for path in (APPS_TOML_PATH, REPO_ROOT / "config" / "vendor" / "mcp.toml"):
+            payload = parse_toml_file(path)
+            mcp_servers = payload.get("mcp_servers", {})
+            self.assertIsInstance(mcp_servers, dict)
+            for server_name, server in mcp_servers.items():
+                self.assertIsInstance(server, dict)
+                if "command" not in server:
+                    continue
+                self.assertNotIn(
+                    "bearer_token_env_var",
+                    server,
+                    f"{path} command transport server {server_name} must use env_vars instead of bearer_token_env_var",
+                )
+
     def test_current_plugins_inventory_declares_required_global_shared_mcp_refs(self) -> None:
         inventory = load_effective_plugins_inventory()
         self.assertTrue(REQUIRED_GLOBAL_MCP.issubset(set(inventory["shared_mcp"]["refs"])))

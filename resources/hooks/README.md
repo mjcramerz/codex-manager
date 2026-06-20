@@ -120,3 +120,7 @@ The runtime wrappers seed `CODEX_HOOK_SCHEMA_DIR` automatically from either:
 Hook work in this repo should stay schema-first: emit only fields allowed by
 the event output schema, and prefer transcript-driven context over generic
 boilerplate.
+
+Managed MCP auth remains outside the hook payload contract:
+- URL MCP servers may declare `bearer_token_env_var`.
+- Stdio / `command` MCP servers must use wrapper `env_vars` instead.

@@ -51,6 +51,16 @@ make preflight
 make verify
 ```
 
+## Install and cleanup notes
+- `make install` / `make build-install` materialize runtime config, wrapper state, hook assets, and managed shell exports from this repo.
+- `make nuke` / `make uninstall` create a backup first, preserve `CODEX_BACKUP_DIR`, `CODEX_MCP_DIR`, and `CODEX_SQLITE_HOME`, and remove managed shell/profile exports plus runtime paths.
+- Managed keyring cleanup during `nuke` / `uninstall` is best-effort: missing `secret-tool` entries no longer abort the filesystem cleanup.
+- Persisted `CODEX_*` exports are removed by `nuke` / `uninstall`, but the current shell keeps already-exported values until you refresh it, for example with `exec "$SHELL" -l`.
+
+## Managed MCP auth
+- `bearer_token_env_var` is only valid for URL-based MCP servers.
+- Stdio / `command` MCP servers must use `env_vars` passed through their wrapper environment instead of bearer-token fields.
+
 ## Development notes
 - Prefer `rg` / `rg --files` for discovery.
 - Prefer `apply_patch` for focused edits.

@@ -87,13 +87,15 @@ nuke:
 	@printf "Confirm 'make nuke' will remove runtime state. Continue? [y/N] "; \
 	read -r confirm; \
 	case "$$confirm" in [yY]|[yY][eE][sS]) ;; *) printf "Aborted.\n"; exit 1 ;; esac
-	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) nuke --compiled-dir $(COMPILED_DIR)
+	@printf "[make] nuke -> removing runtime state, managed shell exports, and best-effort managed secrets\n"
+	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) nuke --compiled-dir $(COMPILED_DIR) $(INSTALLER_ARGS)
 
 uninstall:
 	@printf "Confirm 'make uninstall' will remove runtime state. Continue? [y/N] "; \
 	read -r confirm; \
 	case "$$confirm" in [yY]|[yY][eE][sS]) ;; *) printf "Aborted.\n"; exit 1 ;; esac
-	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) uninstall --compiled-dir $(COMPILED_DIR)
+	@printf "[make] uninstall -> removing runtime state, managed shell exports, and best-effort managed secrets\n"
+	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) uninstall --compiled-dir $(COMPILED_DIR) $(INSTALLER_ARGS)
 
 --dry-run:
 	@:

@@ -10,8 +10,8 @@ from pathlib import Path
 from lib.managed_secrets import ManagedSecretsError
 from lib.managed_secrets import SECRETS_FILENAME
 from lib.managed_secrets import KEY_PATTERN
-from lib.managed_secrets import SERVER_NAME_PATTERN
 from lib.managed_secrets import lookup_managed_secret
+from lib.managed_secrets import managed_secret_mcp_env_map
 from lib.managed_secrets import parse_managed_secrets_file
 from lib.runtime import RuntimeRenderError
 from lib.runtime import derive_runtime_globals_from_env
@@ -147,33 +147,10 @@ def _runtime_mcp_bearer_env_map(path: Path) -> dict[str, str]:
     if not isinstance(payload, dict):
         fail(f"{path} must be a TOML object")
 
-    raw_mcp_servers = payload.get("mcp_servers")
-    if raw_mcp_servers in (None, {}):
-        return {}
-    if not isinstance(raw_mcp_servers, dict):
-        fail(f"{path} mcp_servers must be an object")
-
-    exported: dict[str, str] = {}
-    for server_name, raw_server in raw_mcp_servers.items():
-        if not isinstance(server_name, str) or not SERVER_NAME_PATTERN.fullmatch(server_name):
-            fail(f"{path} contains invalid mcp server name: {server_name}")
-        if not isinstance(raw_server, dict):
-            fail(f"{path} mcp_servers.{server_name} must be an object")
-        enabled_value = raw_server.get("enabled")
-        if enabled_value is not None and not isinstance(enabled_value, bool):
-            fail(f"{path} mcp_servers.{server_name}.enabled must be boolean")
-        if enabled_value is not True:
-            continue
-        token_key = raw_server.get("bearer_token_env_var")
-        if token_key is None:
-            continue
-        if not isinstance(token_key, str):
-            fail(f"{path} mcp_servers.{server_name}.bearer_token_env_var must be a string")
-        normalized_key = token_key.strip()
-        if not KEY_PATTERN.fullmatch(normalized_key):
-            fail(f"{path} mcp_servers.{server_name}.bearer_token_env_var must be an env var name")
-        exported[server_name] = normalized_key
-    return exported
+    try:
+        return managed_secret_mcp_env_map(payload, path_label=str(path), enabled_only=True)
+    except ManagedSecretsError as exc:
+        fail(str(exc))
 
 
 def collect_lookup_environment(host_config_path: Path, secrets_path: Path) -> dict[str, str]:

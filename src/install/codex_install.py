@@ -79,6 +79,7 @@ from lib.managed_secrets import ManagedSecretsError
 from lib.managed_secrets import SECRETS_FILENAME
 from lib.managed_secrets import clear_managed_secret
 from lib.managed_secrets import lookup_managed_secret
+from lib.managed_secrets import managed_secret_mcp_env_map
 from lib.managed_secrets import parse_managed_secrets_file
 from lib.managed_secrets import secret_tool_available
 from lib.managed_secrets import store_managed_secret
@@ -538,18 +539,10 @@ class Installer:
         self._render_user_config_toml("", self._home_config_path())
 
     def _expected_managed_secret_mcp_map(self) -> dict[str, str]:
-        mcp_servers = self.mcp_payload.get("mcp_servers")
-        if not isinstance(mcp_servers, dict):
-            fail("config/vendor/mcp.toml must declare [mcp_servers]")
-
-        expected: dict[str, str] = {}
-        for server_name, server in mcp_servers.items():
-            if not isinstance(server_name, str) or not isinstance(server, dict):
-                fail(f"config/vendor/mcp.toml mcp_servers entry is invalid: {server_name}")
-            token_key = server.get("bearer_token_env_var")
-            if isinstance(token_key, str) and token_key.strip():
-                expected[server_name] = token_key.strip()
-        return expected
+        try:
+            return managed_secret_mcp_env_map(self.mcp_payload, path_label="config/vendor/mcp.toml")
+        except ManagedSecretsError as exc:
+            fail(str(exc))
 
     def _validate_managed_secrets_config(self) -> None:
         config = self.secrets_config
@@ -591,16 +584,25 @@ class Installer:
     def _validate_home_mcp_managed_secret_config(self) -> None:
         expected = self._expected_managed_secret_mcp_map()
         home_payload = self._resolved_user_apps_payload()
-        home_mcp_servers = home_payload.get("mcp_servers", {})
-        if not isinstance(home_mcp_servers, dict):
-            fail("config/usr/apps.toml mcp_servers must be an object")
+        try:
+            actual = managed_secret_mcp_env_map(home_payload, path_label="config/usr/apps.toml")
+        except ManagedSecretsError as exc:
+            fail(str(exc))
+
+        expected_servers = set(expected)
+        actual_servers = set(actual)
+        if expected_servers != actual_servers:
+            missing = sorted(expected_servers - actual_servers)
+            unexpected = sorted(actual_servers - expected_servers)
+            details: list[str] = []
+            if missing:
+                details.append(f"missing servers: {', '.join(missing)}")
+            if unexpected:
+                details.append(f"unexpected servers: {', '.join(unexpected)}")
+            fail(f"config/usr/apps.toml managed bearer token drift ({'; '.join(details)})")
 
         for server_name in sorted(expected):
-            server = home_mcp_servers.get(server_name)
-            if not isinstance(server, dict):
-                fail(f"config/usr/apps.toml mcp_servers.{server_name} must be an object")
-            actual_key = server.get("bearer_token_env_var")
-            if not isinstance(actual_key, str) or actual_key.strip() != expected[server_name]:
+            if actual[server_name] != expected[server_name]:
                 fail(
                     "config/usr/apps.toml mcp_servers."
                     f"{server_name} must declare bearer_token_env_var = {expected[server_name]!r}"
@@ -1190,12 +1192,13 @@ class Installer:
         if not server_names:
             return
         if not secret_tool_available():
-            fail("secret-tool is required to clear managed MCP credentials during uninstall")
+            self._warn_once("secret-tool is unavailable; skipping managed MCP credential cleanup during uninstall")
+            return
         for server_name in server_names:
             try:
                 clear_managed_secret(config, server_name)
             except ManagedSecretsError as exc:
-                fail(str(exc))
+                self._warn_once(f"{exc}; continuing uninstall without removing that keyring entry")
 
     def _sync_managed_secrets_file(self) -> None:
         path = self._managed_secrets_path()
@@ -2366,7 +2369,7 @@ class Installer:
         if self._stage_mode():
             self._log("skipping managed secret-tool cleanup for staged dry-run uninstall")
         else:
-            self._log("clearing managed secret-tool entries")
+            self._log("clearing managed secret-tool entries (best-effort)")
             self._clear_all_managed_secrets()
 
         self._log("removing runtime paths (preserving backup/mcp/sqlite)")
@@ -3268,6 +3271,7 @@ def run() -> int:
             print("[ok] dry-run complete")
             return 0
         print(f"[ok] {args.command} complete")
+        print('[info] current shell variables remain until session refresh (e.g., run: exec "$SHELL" -l)')
         return 0
 
     if args.command == "vars-reset":

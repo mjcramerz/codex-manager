@@ -17,6 +17,7 @@ if str(INSTALL_SRC) not in sys.path:
 
 from lib import keyring_env  # noqa: E402
 from lib.managed_secrets import ManagedSecretsConfig  # noqa: E402
+from lib.managed_secrets import ManagedSecretsError  # noqa: E402
 from lib.runtime import render_codex_shim  # noqa: E402
 import codex_install  # noqa: E402
 
@@ -43,10 +44,12 @@ class ManagedSecretsHelperTests(unittest.TestCase):
                 "\n".join(
                     [
                         "[mcp_servers.linear]",
+                        'url = "https://mcp.linear.app/mcp"',
                         "enabled = true",
                         'bearer_token_env_var = "LINEAR_API_KEY"',
                         "",
                         "[mcp_servers.vercel]",
+                        'url = "https://mcp.vercel.com"',
                         "enabled = false",
                         'bearer_token_env_var = "VERCEL_API_TOKEN"',
                         "",
@@ -90,6 +93,7 @@ class ManagedSecretsHelperTests(unittest.TestCase):
                 "\n".join(
                     [
                         "[mcp_servers.linear]",
+                        'url = "https://mcp.linear.app/mcp"',
                         "enabled = true",
                         'bearer_token_env_var = "LINEAR_API_KEY"',
                         "",
@@ -105,6 +109,28 @@ class ManagedSecretsHelperTests(unittest.TestCase):
                 exported = keyring_env.collect_lookup_environment(host_config_path, secrets_path)
 
         self.assertEqual(exported, {"LINEAR_API_KEY": "env-secret"})
+
+    def test_runtime_mcp_bearer_env_map_rejects_command_transport(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            host_config_path = Path(tmpdir) / "config.toml"
+            host_config_path.write_text(
+                "\n".join(
+                    [
+                        "[mcp_servers.context7]",
+                        'command = "/usr/bin/context7"',
+                        "enabled = true",
+                        'bearer_token_env_var = "CONTEXT7_API_KEY"',
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(
+                keyring_env.KeyringEnvError,
+                "uses command transport and must not declare bearer_token_env_var",
+            ):
+                keyring_env._runtime_mcp_bearer_env_map(host_config_path)
 
     def test_secrets_config_from_env_file_uses_codex_root(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -413,6 +439,46 @@ class InstallerManagedSecretsTests(unittest.TestCase):
 
         self.assertEqual(clear_mock.call_args_list[0].args, (installer.secrets_config, "cloudflare-api"))
         self.assertEqual(clear_mock.call_args_list[1].args, (installer.secrets_config, "vercel"))
+
+    def test_clear_all_managed_secrets_warns_when_secret_tool_is_unavailable(self) -> None:
+        installer = self._make_installer(
+            secrets_config=ManagedSecretsConfig(
+                service="codex-mcp",
+                mcp_servers={"vercel": {"VERCEL_API_TOKEN": True}},
+            )
+        )
+
+        with patch("codex_install.secret_tool_available", return_value=False):
+            codex_install.Installer._clear_all_managed_secrets(installer)
+
+        installer._warn_once.assert_called_once_with(
+            "secret-tool is unavailable; skipping managed MCP credential cleanup during uninstall"
+        )
+
+    def test_clear_all_managed_secrets_warns_and_continues_on_clear_failure(self) -> None:
+        installer = self._make_installer(
+            secrets_config=ManagedSecretsConfig(
+                service="codex-mcp",
+                mcp_servers={
+                    "linear": {"LINEAR_API_KEY": False},
+                    "vercel": {"VERCEL_API_TOKEN": True},
+                },
+            )
+        )
+
+        with (
+            patch("codex_install.secret_tool_available", return_value=True),
+            patch(
+                "codex_install.clear_managed_secret",
+                side_effect=[ManagedSecretsError("secret-tool clear failed for mcp_servers.linear: exit code 1"), None],
+            ) as clear_mock,
+        ):
+            codex_install.Installer._clear_all_managed_secrets(installer)
+
+        self.assertEqual(clear_mock.call_count, 2)
+        installer._warn_once.assert_called_once_with(
+            "secret-tool clear failed for mcp_servers.linear: exit code 1; continuing uninstall without removing that keyring entry"
+        )
 
 if __name__ == "__main__":
     unittest.main()

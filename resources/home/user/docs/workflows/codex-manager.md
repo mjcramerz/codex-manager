@@ -18,6 +18,12 @@ Purpose: guide work in the Codex installer/runtime-pack source repo that owns in
 - Repo-managed carry-forward: memory tree plus selected operator state files.
 - Runtime-only and never synced back: `$CODEX_HOME/sessions/`, `$CODEX_HOME/shell_snapshots/`, `$CODEX_HOME/.credentials.json`.
 
+## Install and nuke checkpoints
+- Keep `install`, `update`, `nuke`, and `uninstall` idempotent for already-applied or already-removed runtime state.
+- `nuke` / `uninstall` must remove managed shell/profile exports for future sessions and clearly note that the current shell keeps already-exported `CODEX_*` values until refresh.
+- Managed `secret-tool` cleanup during `nuke` / `uninstall` is best-effort; missing keyring entries must not block filesystem cleanup.
+- `bearer_token_env_var` is URL-only MCP config. Stdio / `command` servers must use `env_vars` instead.
+
 ## Validation ladder
 1) syntax/parse checks for touched files
 2) focused unit tests for changed installer logic
