@@ -503,10 +503,10 @@ bearer_token_env_var = "HUGGINGFACE_TOKEN"
 [mcp_servers.context7]
 command = "/data/codex/mcp/wrappers/mcp-context7-wrapper.sh"
 args = []
+# Stdio transports must use env vars passed through the wrapper command.
 env_vars = [
   "CONTEXT7_API_KEY",
 ]
-#bearer_token_env_var = "CONTEXT7_API_KEY"
 enabled_tools = [
   "resolve-library-id",
   "query-docs",
