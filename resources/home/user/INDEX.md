@@ -16,9 +16,9 @@ Purpose: route an agent to one correct runtime-pack entrypoint with minimal cont
 6. `$CODEX_HOME/UNIX.md` before shell-sensitive execution
 
 ## Fast catalogs
+- Memory router: `$CODEX_HOME/memories/MEMORY.md`
 - Runtime docs hub: `$CODEX_HOME/docs/OVERVIEW.md`
-- Runtime prompt guide: `$CODEX_HOME/docs/create-prompts.md`
-- Runtime snippets hub: `$CODEX_HOME/snippets/OVERVIEW.md`
+- Runtime workflow hub: `$CODEX_HOME/docs/workflows/overview.md`
 - Runtime templates hub: `$CODEX_HOME/templates/OVERVIEW.md`
 - Runtime skill roots: `$CODEX_SKILLS` and the managed admin skill root
 - Plugin runtime guide: `$CODEX_HOME/docs/plugins.md`
@@ -30,16 +30,21 @@ Purpose: route an agent to one correct runtime-pack entrypoint with minimal cont
 - Runtime-pack maintenance -> `$CODEX_HOME/index/pack/overview.md`
 - Language or shell conventions only -> `$CODEX_HOME/index/style/overview.md`
 
-## Pack maintenance defaults
+## Current pack defaults
 - Treat `resources/home/user/index/manifest.yml` as routing metadata for pack entrypoints.
 - Keep top-level routing docs short and deterministic.
-- When canonical paths or related-link contracts change, update the affected entrypoint and manifest in the same change.
+- Prefer repo-aware memory routing through `$CODEX_HOME/memories/MEMORY.md`, not raw runtime dumps.
+- Runtime-only state never syncs back into this repo:
+  - `$CODEX_HOME/sessions/`
+  - `$CODEX_HOME/shell_snapshots/`
+  - `$CODEX_HOME/.credentials.json`
 
-## Router catalog
-- `$CODEX_HOME/index/core/overview.md` — core workflows and execution guardrails
-- `$CODEX_HOME/index/domains/overview.md` — platform and tooling routers
-- `$CODEX_HOME/index/pack/overview.md` — docs, plans, skills, templates, snippets, rules, and config
-- `$CODEX_HOME/index/style/overview.md` — style guides and shell/language conventions
+## High-value workflow entrypoints
+- Codex installer/runtime source work -> `$CODEX_HOME/docs/workflows/codex-manager.md`
+- MCP stack repo work -> `$CODEX_HOME/docs/workflows/codex-mcp.md`
+- Cloudflare + GitLab delivery work -> `$CODEX_HOME/docs/workflows/cloudflare-delivery.md`
+- Runtime-pack catalog maintenance -> `$CODEX_HOME/docs/workflows/runtime-pack-maintenance.md`
+- Debian installer repo work -> `$CODEX_HOME/docs/workflows/debian-preseed.md`
 
 ## Stop conditions
 - Open one router.

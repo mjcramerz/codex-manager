@@ -1,5 +1,5 @@
-# Dev containers (devlab / codelab)
-Reproducible dev containers for Codex coding agents and local development workflows.
+# Dev containers
+Purpose: guide reproducible development containers for local work, CI parity, and Codex-oriented tool bundles.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -8,90 +8,35 @@ Reproducible dev containers for Codex coding agents and local development workfl
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-## When to use
-- You need a consistent dev environment across machines or CI.
-- You want a codelab/devlab container with common tooling installed.
-- You want rootless-by-default with an explicit root override.
+## Use this file when
+- you need a portable developer environment across machines
+- you want Docker and Podman support from one scaffold
+- you need to choose between non-root default, root override, or offline runtime
 
-## Engines and modes (full coverage)
-- **Docker rootless**: `docker context use rootless` (default for least privilege).
-- **Docker rootful**: `docker context use rootful` (only when you need it).
-- **Podman rootless**: `podman ...` as your user (default for Podman).
-- **Podman rootful**: `sudo podman ...` or a rootful service when required.
+## Current template contract
+Use `$CODEX_HOME/templates/containers/devlab-codelab-skeleton/` as the primary scaffold.
+It already carries:
+- `compose.yml`
+- `compose.offline.override.yml`
+- `compose.rootful.override.yml`
+- `compose.podman.override.yml`
+- `.env.example`
+- `rootless_env.sh`
 
-## Container user: non-root vs root
-- Default is non-root (`user` in compose + `USER` in Dockerfile).
-- Use a root override only when you must install packages or run privileged tooling.
-- Root inside a **rootless** engine is still unprivileged on the host.
+## Decision points
+- Engine: Docker rootless, Docker rootful, Podman rootless, or Podman rootful
+- Container user: non-root by default; root only for clearly justified package/bootstrap steps
+- Network mode: online build/runtime vs explicit offline runtime
+- Host ownership: UID/GID mapping or `userns_mode: keep-id`
 
-## Tooling baseline (common dev tools)
-The devlab/codelab template installs a baseline set of tools:
-- git, curl/wget, SSH client, CA certs
-- build-essential, pkg-config, cmake, ninja
-- Python 3 + pip + venv
-- Node.js + npm
-- Go + Rust (cargo)
-- jq, ripgrep, fd-find, zip/unzip
+## Validation
+- Render the chosen compose files before first run.
+- Confirm container user, UID/GID, bind-mount ownership, and published ports.
+- Re-run the template's local verification commands after changing the package/tool list.
 
-If you need slimmer images or newer toolchains, replace the package list and pin versions explicitly.
-
-## UID/GID and ports
-- For rootless engines, set `DEV_UID`/`DEV_GID` to the user running the engine (`id -u` / `id -g`) so file ownership matches.
-- Tip: from the copied template root, run `bash rootless_env.sh --dotenv > .env` (or `make env` when the template includes it).
-- Start from `.env.example` in the template and fill UID/GID values as needed.
-- The devlab/codelab template maps `DEV_PORT` (default 8080) to container port 8080.
-- For Podman, **always** use `compose.podman.override.yml` (`userns_mode: keep-id`) when bind-mounting host paths.
-- If you must run as container root, use `compose.rootful.override.yml` (UID/GID 0:0).
-
-## Template
-Use the devlab/codelab template:
-- `$CODEX_HOME/templates/containers/devlab-codelab-skeleton/`
-
-It provides:
-- `compose.yml` for online dev
-- `compose.offline.override.yml` for offline runtime
-- `compose.rootful.override.yml` to run as root inside the container
-- `compose.podman.override.yml` with `userns_mode: keep-id`
-- `.env.example` with UID/GID and proxy placeholders
-
-## Example commands
-Docker (rootless):
-```bash
-docker context use rootless
-docker compose -f compose.yml up --build
-```
-
-Docker (rootful, container root):
-```bash
-docker context use rootful
-docker compose -f compose.yml -f compose.rootful.override.yml up --build
-```
-
-Podman (rootless):
-```bash
-podman compose -f compose.yml -f compose.podman.override.yml up --build
-```
-
-Podman (rootful, container root):
-```bash
-sudo podman compose -f compose.yml -f compose.rootful.override.yml up --build
-```
-
-Offline runtime (no container network):
-```bash
-docker compose -f compose.yml -f compose.offline.override.yml up --build
-# or: podman compose -f compose.yml -f compose.offline.override.yml up --build
-```
-
-## Notes
-- For Podman rootless, require `compose.podman.override.yml` and ensure UID/GID match the engine user.
-- Avoid privileged containers and Docker socket mounts unless explicitly required and reviewed.
-- If `podman compose` is unavailable, use `podman-compose` with the same files.
-
-See also:
+## Related
 - `overview.md`
-- `podman.md`
 - `docker-compose.md`
-- `dockerfile.md`
-- `../workflows/containers.md`
-- `$CODEX_HOME/templates/containers/devlab-codelab-skeleton/`
+- `podman.md`
+- `rootless-docker.md`
+- `$CODEX_HOME/docs/vscode/devcontainer.md`

@@ -11,6 +11,7 @@ Use this plan when following `$CODEX_HOME/docs/workflows/debian-preseed.md`.
 
 ## Inputs
 - `$CODEX_HOME/docs/workflows/debian-preseed.md`
+- `/data/workspace/gitlab/computes/active/debian-preseed-di/README.md`
 
 ## Scope
 - In: steps defined in the `debian-preseed` workflow.
@@ -20,6 +21,7 @@ Use this plan when following `$CODEX_HOME/docs/workflows/debian-preseed.md`.
 
 ## Action items
 [ ] Read `$CODEX_HOME/docs/workflows/debian-preseed.md` and related references.
+[ ] Confirm the repo-specific class/profile/script anchors that the change touches.
 [ ] Collect required inputs and constraints.
 [ ] Execute the workflow steps in order.
 [ ] Validate outputs and document results.

@@ -1,14 +1,5 @@
 # Languages overview
-Guidance for language-specific conventions used in this pack.
-
-
-## Contents
-<!-- BEGIN:contents -->
-- `$CODEX_HOME/docs/lang/go.md` — Go
-- `$CODEX_HOME/docs/lang/html.md` — HTML
-- `$CODEX_HOME/docs/lang/typescript.md` — TypeScript
-<!-- END:contents -->
-
+Purpose: map language-specific guidance to the right document without duplicating the style guides.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -17,13 +8,23 @@ Guidance for language-specific conventions used in this pack.
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
+## Contents
+<!-- BEGIN:contents -->
+- `$CODEX_HOME/docs/lang/go.md` — Go
+- `$CODEX_HOME/docs/lang/html.md` — HTML
+- `$CODEX_HOME/docs/lang/perl.md` — Perl
+- `$CODEX_HOME/docs/lang/rust.md` — Rust
+- `$CODEX_HOME/docs/lang/typescript.md` — TypeScript
+<!-- END:contents -->
 
 ## Quick map
-- Go: `go.md`
-- TypeScript: `typescript.md`
-- HTML: `html.md`
+- Perl: hook runtime, install helpers, and deterministic CLI scripts
+- Rust: Cargo workspaces, release validation, and source-pack parity work
+- Go: CLI/runtime helpers
+- TypeScript: tooling and web surfaces
+- HTML: static documents and semantic structure
 
-See also:
-- `../style/overview.md`
+## Related
+- `$CODEX_HOME/docs/style/overview.md`
+- `$CODEX_HOME/index/domains/lang/overview.md`
 - `$CODEX_HOME/templates/`
-- `$CODEX_HOME/index/domains/lang/languages.md`

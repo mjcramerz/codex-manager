@@ -1,16 +1,5 @@
 # Host hardening overview
-Guidance for OS‑level hardening and tuning.
-
-
-## Contents
-<!-- BEGIN:contents -->
-- `$CODEX_HOME/docs/system/grub.md` — GRUB configuration
-- `$CODEX_HOME/docs/system/kernel.md` — Kernel build & configuration
-- `$CODEX_HOME/docs/system/optimizations.md` — Performance/security optimizations
-- `$CODEX_HOME/docs/system/sysctl.md` — sysctl tuning
-- `$CODEX_HOME/docs/system/usbguard.md` — USBGuard
-<!-- END:contents -->
-
+Purpose: route OS-level boot, kernel, sysctl, optimization, and device-control work to the correct guide.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -19,28 +8,21 @@ Guidance for OS‑level hardening and tuning.
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-
 ## Scope
+- Bootloader and kernel command-line changes
 - Kernel build/config and module policy
-- Bootloader and kernel command line
-- sysctl tuning and baseline security knobs
-- USB device control (USBGuard)
+- Sysctl tuning
+- Performance/security tuning
+- USB device control
 
-## Safety baseline
-- Treat host changes as high‑risk; validate in a VM first.
-- Make changes incremental; test and measure after each change.
-- Keep a rollback plan (previous kernel, previous GRUB config, revert sysctl).
+## Guardrails
+- Treat host changes as high-risk and rollback-sensitive.
+- Validate in a VM or equivalent lab when feasible.
+- Make one class of change at a time and verify it before layering more.
 
 ## Quick map
-- Kernel: `kernel.md`
 - GRUB: `grub.md`
-- sysctl: `sysctl.md`
-- USBGuard: `usbguard.md`
+- Kernel build/config: `kernel.md`
+- sysctl tuning: `sysctl.md`
 - Optimizations: `optimizations.md`
-
-See also:
-- `../workflows/kernel-build.md`
-- `../workflows/sysctl.md`
-- `../workflows/usbguard.md`
-- `$CODEX_HOME/index/domains/system/hardening.md`
-- `$CODEX_HOME/index/domains/system/optimizations.md`
+- USBGuard: `usbguard.md`

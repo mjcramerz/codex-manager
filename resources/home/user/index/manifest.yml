@@ -406,6 +406,10 @@ pack:
     related:
       - $CODEX_HOME/docs/workflows/overview.md
       - $CODEX_HOME/docs/workflows/
+      - $CODEX_HOME/docs/workflows/runtime-pack-maintenance.md
+      - $CODEX_HOME/docs/workflows/codex-manager.md
+      - $CODEX_HOME/docs/workflows/codex-mcp.md
+      - $CODEX_HOME/docs/workflows/cloudflare-delivery.md
       - $CODEX_HOME/docs/workflows/prompts-library.md
       - $CODEX_HOME/index/pack/templates.md
       - $CODEX_HOME/index/pack/plans.md
@@ -423,8 +427,10 @@ style:
     entrypoint: $CODEX_HOME/index/style/style-guides.md
     canonical: $CODEX_HOME/docs/style/overview.md
     related:
+      - $CODEX_HOME/docs/style/shell-runtime.md
       - $CODEX_HOME/docs/style/bash.md
       - $CODEX_HOME/docs/style/sh.md
+      - $CODEX_HOME/docs/style/perl.md
       - $CODEX_HOME/docs/style/python.md
       - $CODEX_HOME/docs/style/rust.md
       - $CODEX_HOME/docs/style/go.md
@@ -467,6 +473,22 @@ style:
       tags:
         - style
         - go
+  perl:
+    kind: entrypoint
+    description: stable link to the canonical Perl style guide.
+    entrypoint: $CODEX_HOME/index/style/perl.md
+    canonical: $CODEX_HOME/docs/style/perl.md
+    related:
+      - $CODEX_HOME/docs/lang/perl.md
+      - $CODEX_HOME/templates/perl/codex-hook-module/
+      - $CODEX_HOME/docs/style/overview.md
+      - skill:lang-perl
+    metadata:
+      version: '1.0'
+      short-description: canonical Perl style guide
+      tags:
+        - style
+        - perl
   python:
     kind: entrypoint
     description: stable link to the canonical Python style guide.
@@ -790,6 +812,8 @@ domains:
       canonical: $CODEX_HOME/docs/lang/overview.md
       related:
         - $CODEX_HOME/docs/lang/go.md
+        - $CODEX_HOME/docs/lang/perl.md
+        - $CODEX_HOME/docs/lang/rust.md
         - $CODEX_HOME/docs/lang/typescript.md
         - $CODEX_HOME/docs/lang/html.md
         - $CODEX_HOME/docs/style/overview.md
@@ -823,12 +847,43 @@ domains:
         - $CODEX_HOME/docs/lang/html.md
         - $CODEX_HOME/snippets/web/html/
         - skill:web-html
+    metadata:
+      version: '1.0'
+      short-description: HTML guidance
+      tags:
+        - lang
+        - html
+    perl:
+      kind: entrypoint
+      description: stable link to Perl guidance.
+      entrypoint: $CODEX_HOME/index/domains/lang/perl.md
+      canonical: $CODEX_HOME/docs/lang/perl.md
+      related:
+        - $CODEX_HOME/docs/lang/perl.md
+        - $CODEX_HOME/docs/style/perl.md
+        - $CODEX_HOME/templates/perl/codex-hook-module/
+        - skill:lang-perl
       metadata:
         version: '1.0'
-        short-description: HTML guidance
+        short-description: Perl guidance
         tags:
           - lang
-          - html
+          - perl
+    rust:
+      kind: entrypoint
+      description: stable link to Rust guidance.
+      entrypoint: $CODEX_HOME/index/domains/lang/rust.md
+      canonical: $CODEX_HOME/docs/lang/rust.md
+      related:
+        - $CODEX_HOME/docs/lang/rust.md
+        - $CODEX_HOME/docs/style/rust.md
+        - skill:lang-rust
+      metadata:
+        version: '1.0'
+        short-description: Rust guidance
+        tags:
+          - lang
+          - rust
     typescript:
       kind: entrypoint
       description: stable link to TypeScript guidance.

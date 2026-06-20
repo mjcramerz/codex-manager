@@ -1,6 +1,5 @@
 # Debian preseed (deep dive)
-Guidance for split‑file preseeds and unattended installs.
-
+Purpose: explain the split-file preseed layout and the operational boundaries behind the higher-level Debian preseed workflow.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -9,37 +8,27 @@ Guidance for split‑file preseeds and unattended installs.
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
+## Use this file when
+- you already chose the Debian preseed route and need the split-file structure
+- you are reviewing what belongs in top-level vs included seed files
+- you are validating late-command scope before changing the installer repo
 
-## Structure
-- `preseed.cfg` (top‑level, includes others)
+## Current split-file pattern
+- `preseed.cfg`
 - `preseed/account.preseed.cfg`
 - `preseed/network.preseed.cfg`
 - `preseed/apt.preseed.cfg`
 - `preseed/partman.preseed.cfg`
 - `preseed/packages.preseed.cfg`
-- `preseed/finish.preseed.cfg` (optional late command)
+- `preseed/finish.preseed.cfg`
 
-## Baseline practices
-- Never include plaintext passwords; use crypt(3) hashes.
-- Always test in a VM before hardware installs.
-- Keep destructive options explicit and documented.
-- Host over HTTPS when possible.
+## Guardrails
+- Never commit plaintext secrets.
+- Keep destructive disk targets explicit and reviewable.
+- Keep `late_command` minimal and prefer deterministic target-side scripts.
+- Test the exact BIOS/UEFI + storage path you intend to ship.
 
-## Late commands
-Use `preseed/late_command` sparingly:
-- Fetch a minimal script and run `in-target`.
-- Avoid long‑running provisioning in the installer environment.
-- Log outputs to a known path for debugging.
-
-## Validation checklist
-- Confirm disk target and partitioning recipe.
-- Verify mirror URLs and connectivity.
-- Boot a VM and validate hostname, network, packages, and bootloader.
-
-See also:
-- `../workflows/debian-preseed.md`
-- `../workflows/overview.md`
+## Related
+- `$CODEX_HOME/docs/workflows/debian-preseed.md`
 - `$CODEX_HOME/templates/virtualization/debian-preseed/`
-- Use skill os-debian-preseed.
 - `$CODEX_HOME/snippets/preseed/include.preseed.cfg`
-- `$CODEX_HOME/index/domains/system/debian-preseed.md`

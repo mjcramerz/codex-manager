@@ -365,5 +365,86 @@ class InstallConfigToleranceTests(unittest.TestCase):
             stage_installer.uninstall.assert_called_once_with()
 
 
+class HomeRuntimeRepoSyncTests(unittest.TestCase):
+    def test_sync_home_runtime_state_to_repo_excludes_runtime_only_artifacts(self) -> None:
+        installer = codex_install.Installer.__new__(codex_install.Installer)
+        installer._sync_tree = Mock()
+        installer._copy_file = Mock()
+
+        with tempfile.TemporaryDirectory() as runtime_dir, tempfile.TemporaryDirectory() as repo_dir:
+            runtime_home = Path(runtime_dir)
+            repo_home = Path(repo_dir)
+
+            for dirname in ("memories", "sessions", "shell_snapshots"):
+                (runtime_home / dirname).mkdir()
+            for filename in (
+                ".credentials.json",
+                ".personality_migration",
+                "history.jsonl",
+                "session_index.jsonl",
+                "version.json",
+            ):
+                (runtime_home / filename).write_text(filename, encoding="utf-8")
+
+            codex_install.Installer._sync_home_runtime_state_to_repo(installer, runtime_home, repo_home)
+
+            installer._sync_tree.assert_called_once_with(
+                runtime_home / "memories",
+                repo_home / "memories",
+                mirror_deletions=False,
+            )
+            copied_files = {call.args[0].name for call in installer._copy_file.call_args_list}
+            self.assertEqual(
+                copied_files,
+                {
+                    ".personality_migration",
+                    "history.jsonl",
+                    "session_index.jsonl",
+                    "version.json",
+                },
+            )
+            self.assertNotIn(".credentials.json", copied_files)
+
+    def test_seed_missing_home_runtime_state_from_repo_skips_runtime_only_artifacts(self) -> None:
+        installer = codex_install.Installer.__new__(codex_install.Installer)
+        installer._copy_tree = Mock()
+        installer._merge_missing_tree = Mock()
+        installer._copy_file = Mock()
+        installer._mkdir_path = Mock()
+
+        with tempfile.TemporaryDirectory() as runtime_dir, tempfile.TemporaryDirectory() as repo_dir:
+            runtime_home = Path(runtime_dir)
+            repo_home = Path(repo_dir)
+
+            for dirname in ("memories", "sessions", "shell_snapshots"):
+                (repo_home / dirname).mkdir()
+            for filename in (
+                ".credentials.json",
+                ".personality_migration",
+                "history.jsonl",
+                "session_index.jsonl",
+                "version.json",
+            ):
+                (repo_home / filename).write_text(filename, encoding="utf-8")
+
+            codex_install.Installer._seed_missing_home_runtime_state_from_repo(installer, repo_home, runtime_home)
+
+            installer._copy_tree.assert_called_once_with(
+                repo_home / "memories",
+                runtime_home / "memories",
+            )
+            copied_files = {call.args[0].name for call in installer._copy_file.call_args_list}
+            self.assertEqual(
+                copied_files,
+                {
+                    ".personality_migration",
+                    "history.jsonl",
+                    "session_index.jsonl",
+                    "version.json",
+                },
+            )
+            self.assertNotIn(".credentials.json", copied_files)
+
+
 if __name__ == "__main__":
     unittest.main()

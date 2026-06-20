@@ -1,6 +1,5 @@
 # React
-Guidance for React component architecture and UX hygiene.
-
+Purpose: guide React component work with explicit state, rendering, accessibility, and validation defaults.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -9,28 +8,25 @@ Guidance for React component architecture and UX hygiene.
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
+## Use this file when
+- the task is primarily React component, hook, or client-state work
+- Next.js routing/runtime concerns are not the main issue
+- you need React-specific validation expectations before editing
 
-## Baseline practices
+## Defaults
 - Prefer function components and hooks.
-- Keep state local; lift only when necessary.
-- Memoize expensive computations in hot paths.
-- Keep component contracts typed (`props`, callbacks, domain models) and avoid implicit `any`.
-- Separate presentational and data-fetching concerns to keep tests fast.
+- Keep state local until a wider ownership boundary is justified.
+- Separate view logic from data fetching and mutation side effects.
+- Keep prop and callback contracts typed and explicit.
 
-## Performance
-- Split bundles by route or feature.
-- Avoid large dependency trees and repeated re-renders.
+## Validation
+- Run typecheck on the affected packages.
+- Run lint plus targeted unit/component tests.
+- Check keyboard flow, focus order, semantics, and contrast.
+- Keep secrets and unsafe HTML/URL handling out of client code.
 
-## Validation checklist
-- Type safety: `pnpm -r typecheck` (or `tsc --noEmit`) on affected packages.
-- Quality gates: `pnpm -r lint`, targeted unit/component tests, and production build.
-- Accessibility: keyboard flow, focus order, semantic landmarks, and color contrast checks.
-- Security: no secrets in client code, sanitize untrusted HTML, and enforce safe URL handling.
-
-See also:
+## Related
 - `overview.md`
 - `nextjs.md`
 - `$CODEX_HOME/templates/web/react-vite-app/`
-- Use skill web-react.
-- `$CODEX_HOME/index/domains/web/frameworks.md`
-- `$CODEX_HOME/index/domains/web/react.md`
+- Use skill `web-react`.

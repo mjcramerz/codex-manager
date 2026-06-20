@@ -11,10 +11,16 @@ Use this router when maintaining the runtime pack itself: docs, plans, skills, t
 
 ## Required source files for pack work
 - `resources/home/user/index/manifest.yml` for routing metadata
-- `resources/home/user/docs/**` for runtime docs
+- `resources/home/user/memories/MEMORY.md` for memory-entry routing
+- `resources/home/user/docs/**` for runtime docs and workflows
 - `resources/home/user/plans/**` for plan templates
-- `resources/skills/metadata.json` plus `resources/skills/**` for skill catalog and skill assets
-- `resources/home/user/docs/create-prompts.md` for prompt-file catalog and rules
+- `resources/home/user/templates/**` for reusable scaffolds
+- `resources/skills/metadata.json` plus `resources/skills/**` for runtime skill catalog and skill assets
+- `resources/plugins/skills/**` plus `resources/plugins/manifest.json` for plugin skills and marketplace wiring
+
+## Runtime-state boundary
+- Source-managed pack content stops at docs, plans, templates, skills, and repo-managed memory carry-forward.
+- Do not reintroduce runtime-only sync for sessions, shell snapshots, or credential store files.
 
 ## Choose one hub
 <!-- BEGIN:contents -->
@@ -33,9 +39,5 @@ Use this router when maintaining the runtime pack itself: docs, plans, skills, t
 ## Recommended progression
 1. Plans and workflows for execution shape
 2. Skills for domain-specific playbooks
-3. UNIX guide for shell-sensitive work
+3. Shell/runtime guidance for execution safety
 4. The specific pack hub you are maintaining
-
-## Do not route here when
-- the task is mainly about a consumer repository rather than the runtime pack
-- a domain router already cleanly identifies the work

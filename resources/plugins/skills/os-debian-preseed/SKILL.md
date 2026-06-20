@@ -28,6 +28,7 @@ interface:
 - generating or updating Debian preseed files
 - automating unattended Debian installs
 - preparing reproducible VM or bare-metal installs
+- grounding changes against the active `debian-preseed-di` repository contract
 
 ## Workflow
 1) Collect requirements (disk layout, network, users, packages)
@@ -57,6 +58,7 @@ interface:
 - `os-debian-preseed/references/risk-register.md`
 - `os-debian-preseed/assets/rollback-checklist.md`
 - `os-debian-preseed/scripts/skill_helper.py`
+- repo anchor: `/data/workspace/gitlab/computes/active/debian-preseed-di/README.md`
 
 ## References
 - `$CODEX_HOME/index/domains/system/debian-preseed.md`

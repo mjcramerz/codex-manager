@@ -1,15 +1,5 @@
 # Lang (domain router, overview)
-Purpose: quick navigation for this domain’s entrypoints.
-
-
-## Contents
-<!-- BEGIN:contents -->
-- `$CODEX_HOME/index/domains/lang/go.md` — Go (entrypoint)
-- `$CODEX_HOME/index/domains/lang/html.md` — HTML (entrypoint)
-- `$CODEX_HOME/index/domains/lang/languages.md` — Languages (entrypoint)
-- `$CODEX_HOME/index/domains/lang/typescript.md` — TypeScript (entrypoint)
-<!-- END:contents -->
-
+Purpose: route language-specific work to one stable entrypoint.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -18,8 +8,17 @@ Purpose: quick navigation for this domain’s entrypoints.
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-Entry points:
-- `$CODEX_HOME/index/domains/lang/languages.md` — stable link to language guidance.
-- `$CODEX_HOME/index/domains/lang/go.md` — stable link to Go guidance.
-- `$CODEX_HOME/index/domains/lang/html.md` — stable link to HTML guidance.
-- `$CODEX_HOME/index/domains/lang/typescript.md` — stable link to TypeScript guidance.
+## Contents
+<!-- BEGIN:contents -->
+- `$CODEX_HOME/index/domains/lang/go.md` — Go (entrypoint)
+- `$CODEX_HOME/index/domains/lang/html.md` — HTML (entrypoint)
+- `$CODEX_HOME/index/domains/lang/languages.md` — Languages (entrypoint)
+- `$CODEX_HOME/index/domains/lang/perl.md` — Perl (entrypoint)
+- `$CODEX_HOME/index/domains/lang/rust.md` — Rust (entrypoint)
+- `$CODEX_HOME/index/domains/lang/typescript.md` — TypeScript (entrypoint)
+<!-- END:contents -->
+
+## Recommended choices
+- Hook/runtime modules and install helpers -> `perl.md`
+- Cargo workspaces and Rust release validation -> `rust.md`
+- General language catalog -> `languages.md`

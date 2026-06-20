@@ -1,7 +1,7 @@
-# Debian preseed (unattended installation)
+# Debian preseed workflow
 
 Start with `$CODEX_HOME/plans/workflows/workflow-debian-preseed.md` before executing this workflow.
-Purpose: guide creation and use of Debian preseed files for unattended installs.
+Purpose: guide unattended Debian installation work, with concrete alignment to the `debian-preseed-di` repository.
 
 
 ## Navigation
@@ -15,6 +15,13 @@ Purpose: guide creation and use of Debian preseed files for unattended installs.
 ## Plan
 - Start from the linked workflow plan template above, then tailor scope, constraints, and validation commands before editing.
 - Keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
+
+## Repo anchors
+- `/data/workspace/gitlab/computes/active/debian-preseed-di/README.md`
+- `d-i/debian/preseed.cfg`
+- `d-i/debian/classes/**`
+- `d-i/debian/hosts/profiles/**`
+- `d-i/debian/scripts/**`
 
 ## Safety first
 - Preseed can wipe disks. Always validate in a VM before real hardware.
@@ -41,6 +48,12 @@ Purpose: guide creation and use of Debian preseed files for unattended installs.
    - `priority=critical`
    - `preseed/url=...` or `preseed/file=...`
 3) Validate post-install state with a script or smoke tests.
+
+## Repo-specific contract
+- Keep storage, class-selection, and late-command behavior grounded in the tracked repo contracts.
+- Treat kernel command-line inputs as untrusted and validate shape early.
+- Keep secrets out of tracked seeds; prefer deployment-time injection for sensitive values.
+- Re-test both happy-path and failure-path boot/install behavior after material preseed changes.
 
 ## Split‑file approach (recommended)
 - Keep `preseed.cfg` minimal and include split seeds.

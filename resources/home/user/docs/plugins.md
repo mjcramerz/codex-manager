@@ -8,6 +8,12 @@ Use this guide when working with runtime plugin bundles inside an installed Code
 - Installed plugin bundles live under `$CODEX_HOME/plugins/cache/<marketplace>/<plugin>/local/`.
 - Plugin bundle ids use `<plugin>@<marketplace>`.
 
+## Current high-value bundles
+- `codex-runtime` for installer/runtime config, codex-mcp alignment, and hook/runtime work.
+- `codex-repo` for active Codex source-tree work.
+- `cloudflare-workers` for Worker plus shared delivery workflows.
+- `system-infra` for host hardening, preseed, and low-level runtime operations.
+
 ## How to invoke plugins and skills
 - Plugins do not appear in `/` slash-command lists.
 - Plugin bundle mentions use the `$` mention picker and store `plugin://<plugin@marketplace>` bindings.
@@ -25,22 +31,6 @@ Use this guide when working with runtime plugin bundles inside an installed Code
 - Inspect enabled plugins with `rg -n "^\[plugins\]" "$CODEX_HOME/config.toml"` and `rg -n "enabled =" "$CODEX_HOME/config.toml"`.
 - Inspect the marketplace with `python3 -m json.tool "$CODEX_HOME/.agents/plugins/marketplace.json"`.
 - Inspect one installed bundle with `find "$CODEX_HOME/plugins/cache" -maxdepth 5 -type f | sort`.
-- Verify skills/apps/MCP parity for each runtime bundle:
-  ```bash
-  python3 - <<'PY'
-  import json
-  import os
-  from pathlib import Path
-
-  root = Path(os.environ["CODEX_HOME"]) / "plugins" / "cache"
-  for plugin in sorted(root.glob("*/*/local/.codex-plugin/plugin.json")):
-      data = json.loads(plugin.read_text())
-      has_skills = bool(data.get("skills"))
-      has_mcp = str(data.get("mcpServers", "")).endswith(".mcp.json")
-      has_apps = str(data.get("apps", "")).endswith(".app.json")
-      print(f"{data.get('name')}: skills={has_skills} mcp={has_mcp} apps={has_apps}")
-  PY
-  ```
 
 ## Related runtime paths
 - `$CODEX_HOME/config.toml`

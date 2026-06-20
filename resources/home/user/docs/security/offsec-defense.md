@@ -1,6 +1,6 @@
 # Offsec defense reference
 
-This reference supports reusable offsec-defense and cyber-defense work without legacy profile gating.
+This reference supports reusable offsec-defense and cyber-defense work with explicit scope, evidence, and rollback boundaries.
 
 
 ## Navigation

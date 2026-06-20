@@ -1,17 +1,5 @@
 # Desktop stack overview
-Guidance for a minimal Wayland desktop stack and desktop integration.
-
-
-## Contents
-<!-- BEGIN:contents -->
-- `$CODEX_HOME/docs/desktop/browsers.md` — Browsers overview
-- `$CODEX_HOME/docs/desktop/desktop-entries.md` — Desktop entries
-- `$CODEX_HOME/docs/desktop/librewolf.md` — LibreWolf
-- `$CODEX_HOME/docs/desktop/mullvad-browser.md` — Mullvad Browser
-- `$CODEX_HOME/docs/desktop/thorium.md` — Thorium Browser
-- `$CODEX_HOME/docs/desktop/wayland.md` — Wayland / Labwc stack
-<!-- END:contents -->
-
+Purpose: route minimal Wayland desktop, desktop-entry, and hardened-browser work to the correct guide.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -20,26 +8,18 @@ Guidance for a minimal Wayland desktop stack and desktop integration.
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-
 ## Scope
-- labwc session setup and configuration
-- waybar / kanshi / swaylock / wofi / wlr‑randr
-- greetd + regreet + cage
-- polkit agents and permissions
-- desktop entries and hardened browsers
-
-## Baseline practices
-- Keep configs minimal and versioned.
-- Prefer Wayland‑native apps and flags.
-- Avoid running user shells with elevated privileges.
+- Wayland/labwc session setup
+- greetd/regreet/cage launch surfaces
+- desktop-entry integration
+- hardened browser guidance
 
 ## Quick map
 - Wayland stack: `wayland.md`
 - Desktop entries: `desktop-entries.md`
-- Browsers: `browsers.md`
+- Browser stack: `browsers.md`
 
-See also:
-- `../workflows/desktop-wayland.md`
-- `../workflows/desktop-entries.md`
-- `../workflows/browsers.md`
-- `$CODEX_HOME/index/domains/desktop/stack.md`
+## Guardrails
+- Keep configs minimal and versioned.
+- Prefer Wayland-native flags and apps.
+- Keep privilege boundaries explicit around polkit, launchers, and browser profile handling.

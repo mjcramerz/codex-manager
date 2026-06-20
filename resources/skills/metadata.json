@@ -69,7 +69,7 @@
     }
   ],
   "summary": {
-    "total_skills": 31,
+    "total_skills": 33,
     "namespaces": {
       "audit": {
         "count": 7,
@@ -79,7 +79,7 @@
         ]
       },
       "common": {
-        "count": 24,
+        "count": 26,
         "role": "common",
         "groups": [
           "user_common"
@@ -603,6 +603,53 @@
         }
       },
       {
+        "name": "lang-perl",
+        "namespace": "common",
+        "role": "common",
+        "groups": [
+          "user_common"
+        ],
+        "description": "Build Perl modules, hook handlers, and deterministic CLI helpers with strict validation and testing guidance.",
+        "skill_path": "common/lang-perl",
+        "skill_file": "common/lang-perl/SKILL.md",
+        "metadata_file": "common/lang-perl/metadata.json",
+        "agent_file": "common/lang-perl/agents/openai.yaml",
+        "references_file": "common/lang-perl/references/latest-sources.md",
+        "short_description": "Build Perl modules and hook scripts safely",
+        "default_prompt": "Act as the \"LANG-Perl\" specialist for \"Build Perl modules and hook scripts safely\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "perl",
+          "hooks",
+          "installer",
+          "runtime"
+        ],
+        "interface": {
+          "display-name": "LANG-Perl",
+          "short-description": "Build Perl modules and hook scripts safely",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#8757D9",
+          "default-prompt": "Act as the \"LANG-Perl\" specialist for \"Build Perl modules and hook scripts safely\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "1.0",
+          "organization": "Codex Setup",
+          "date": "June 20, 2026",
+          "abstract": "Build Perl modules, hook handlers, and deterministic CLI helpers with strict validation and testing guidance.",
+          "references": [
+            "https://perldoc.perl.org/",
+            "https://perldoc.perl.org/perlrun",
+            "https://perldoc.perl.org/perlsec"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      },
+      {
         "name": "lang-python",
         "namespace": "common",
         "role": "common",
@@ -640,6 +687,53 @@
             "https://docs.python.org/3/",
             "https://packaging.python.org/en/latest/tutorials/packaging-projects/",
             "https://docs.pytest.org/"
+          ]
+        },
+        "support": {
+          "has_assets": true,
+          "has_rules": true,
+          "has_scripts": true,
+          "has_references": true
+        }
+      },
+      {
+        "name": "lang-rust",
+        "namespace": "common",
+        "role": "common",
+        "groups": [
+          "user_common"
+        ],
+        "description": "Build Rust workspaces with cargo fmt, clippy, locked builds, and targeted test guidance.",
+        "skill_path": "common/lang-rust",
+        "skill_file": "common/lang-rust/SKILL.md",
+        "metadata_file": "common/lang-rust/metadata.json",
+        "agent_file": "common/lang-rust/agents/openai.yaml",
+        "references_file": "common/lang-rust/references/latest-sources.md",
+        "short_description": "Build Rust workspaces with cargo defaults",
+        "default_prompt": "Act as the \"LANG-Rust\" specialist for \"Build Rust workspaces with cargo defaults\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
+        "tags": [
+          "rust",
+          "cargo",
+          "workspace",
+          "release"
+        ],
+        "interface": {
+          "display-name": "LANG-Rust",
+          "short-description": "Build Rust workspaces with cargo defaults",
+          "icon-small": "assets/icon-32.png",
+          "icon-large": "assets/icon-128.png",
+          "brand-color": "#C44A2A",
+          "default-prompt": "Act as the \"LANG-Rust\" specialist for \"Build Rust workspaces with cargo defaults\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks."
+        },
+        "metadata": {
+          "version": "1.0",
+          "organization": "Codex Setup",
+          "date": "June 20, 2026",
+          "abstract": "Build Rust workspaces with cargo fmt, clippy, locked builds, and targeted test guidance.",
+          "references": [
+            "https://doc.rust-lang.org/book/",
+            "https://doc.rust-lang.org/cargo/",
+            "https://doc.rust-lang.org/clippy/"
           ]
         },
         "support": {

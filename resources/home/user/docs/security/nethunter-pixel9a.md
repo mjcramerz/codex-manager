@@ -1,6 +1,6 @@
 # NetHunter Pixel 9a reference
 
-This guide supports repeatable Pixel 9a NetHunter work without legacy profile gating.
+This guide supports repeatable Pixel 9a NetHunter work with explicit scope, evidence, and rollback guardrails.
 
 
 ## Navigation

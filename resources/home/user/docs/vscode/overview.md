@@ -1,14 +1,5 @@
 # VS Code overview
-Guidance for consistent editor configuration across teams and machines.
-
-
-## Contents
-<!-- BEGIN:contents -->
-- `$CODEX_HOME/docs/vscode/devcontainer.md` — VS Code devcontainers
-- `$CODEX_HOME/docs/vscode/settings.md` — VS Code settings
-- `$CODEX_HOME/docs/vscode/theming.md` — VS Code theming
-<!-- END:contents -->
-
+Purpose: route editor, devcontainer, settings, and extension-related work to the correct guide.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -17,26 +8,19 @@ Guidance for consistent editor configuration across teams and machines.
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-
 ## Scope
-- Settings and keybindings (`settings.json`, `keybindings.json`)
-- Shared defaults and machine-specific overrides
-- Devcontainers and remote development
+- Shared `settings.json` and workspace policy
+- Devcontainers and remote/container development
 - Theming and UX consistency
-- Extensions and marketplace hygiene
-
-## Recommended posture
-- Keep settings minimal and intentional; avoid per-user drift.
-- Prefer documented settings layers for machine- or role-specific customization.
-- Treat devcontainers as code: pin images, review changes, keep secrets out.
-- Enforce workspace trust defaults; avoid executing untrusted code.
+- Extension and marketplace hygiene
 
 ## Quick map
-- Settings: `settings.md`
 - Devcontainers: `devcontainer.md`
+- Settings: `settings.md`
 - Theming: `theming.md`
-- Extensions workflow: `../workflows/vscode-extensions.md`
+- Extension delivery/review workflow: `../workflows/vscode-extensions.md`
 
-See also:
-- `$CODEX_HOME/index/domains/vscode/guidance.md`
-- `$CODEX_HOME/index/domains/vscode/vscode-extension.md`
+## Guardrails
+- Keep workspace trust explicit.
+- Keep settings minimal and intentional.
+- Treat devcontainers as code: pin images, review mounts, and keep secrets out.

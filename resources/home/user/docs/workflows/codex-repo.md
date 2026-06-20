@@ -3,14 +3,12 @@
 Start with `$CODEX_HOME/plans/workflows/workflow-codex-repo.md` before executing this workflow.
 Purpose: keep the Codex source repo and this config pack aligned across tooling, CI/CD, release, and web-stack guidance.
 
-
 ## Navigation
 <!-- BEGIN:nav -->
 - Parent: `$CODEX_HOME/docs/workflows/overview.md`
 - Pack index: `$CODEX_HOME/INDEX.md`
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
-
 
 ## Plan
 - Start from the linked workflow plan template above, then tailor scope, constraints, and validation commands before editing.
@@ -25,7 +23,16 @@ Purpose: keep the Codex source repo and this config pack aligned across tooling,
 - Primary implementation surface: `codex-rs/` (Rust workspace)
 - TypeScript tooling packages: `shell-tool-mcp/`, `sdk/typescript/`, `codex-cli/`
 - CI/release orchestration: `.github/workflows/*.yml`
-- Adjacent delivery/workflow repos to cross-check for drift:
+
+## Adjacent repos to cross-check for drift
+- `codex-manager` for installer/runtime config, runtime pack, hooks, and skill-catalog expectations.
+- `codex-mcp` for MCP launcher/runtime contracts and generated config layout.
+- `delivery` for shared GitLab release/delivery includes that mirror CI policy into GitHub/GitLab publishing.
+- `cf-git-cicd-worker` and `cf-aptly-r2` when Cloudflare-oriented skills or workflow docs depend on current delivery behavior.
+
+## Repo-aware memory guidance
+- Use `$CODEX_HOME/memories/MEMORY.md` only when prior repo-specific decisions actually matter.
+- Treat `$CODEX_HOME/sessions/`, `$CODEX_HOME/shell_snapshots/`, and `$CODEX_HOME/.credentials.json` as runtime-local state, not source-pack inputs.
 
 ## Audit workflow
 1) **Inventory** language/tooling and test/build entrypoints (`justfile`, Cargo, pnpm, Python scripts).
@@ -48,17 +55,8 @@ Purpose: keep the Codex source repo and this config pack aligned across tooling,
   - `config/usr/*` compiles only into `$CODEX_HOME/config.toml`
   - `$CODEX_HOME/config.toml` keeps structured inline profile maps under `[permissions]`
   - `/etc/codex/config.toml` keeps structured inline vendor maps under `[permissions]` without normalizing them into another shape
-- Keep `$CODEX_HOME/.credentials.json` present as file-store bootstrap for OAuth credentials (`mcp_oauth_credentials_store = "file"` deployments).
+- Treat `$CODEX_HOME/.credentials.json` as runtime-local OAuth state; document its runtime role, but do not treat it as repo-synced pack source.
 - Keep `$CODEX_HOME/.models/model_catalog.json` in sync with upstream `codex-rs/core/models.json`.
-
-## Web stack coverage
-- Current Codex source has TypeScript tooling packages but no production React/Next.js/HTMX app tree.
-- Keep web guidance ready-to-use for new product surfaces via:
-  - `$CODEX_HOME/docs/workflows/web-frontend.md`
-  - `$CODEX_HOME/docs/web/overview.md`
-  - Use skill `web-react`.
-  - Use skill `web-nextjs`.
-  - Use skill `web-htmx`.
 
 ## CI/CD and release alignment checklist
 - Build + tag-guard pipeline: `.github/workflows/build-codex-rs.yml`
@@ -67,23 +65,11 @@ Purpose: keep the Codex source repo and this config pack aligned across tooling,
 - GitLab delivery baseline and include wiring: `.gitlab-ci.yml` (shared includes via `${GL_CICD_SHARED_PROJ}`)
 - Always reflect branch/tag policy and signing/publish behavior in pack docs.
 
-## Contributor process alignment
-- Source policy references: the active source repository's `docs/contributing.md` and `docs/CLA.md` when those files exist.
-- Keep pack guidance explicit about issue-first intake, CLA expectations, and reproducible test evidence.
-- This fork snapshot does not currently ship `.github/pull_request_template.md` or `.github/workflows/cla.yml`; treat those as optional overlays instead of required anchors.
-
-## Security checkpoints
-- Ensure pack guidance mirrors source trust boundaries (contributor policy, CI permissions, protected release refs).
-- Verify referenced workflows do not require broader secrets/scopes than source pipelines allow.
-- Track every source-pack security mismatch with owner, issue link, and due date.
-
 ## Testing checkpoints
 - For each mapping update, run or cite source-equivalent Rust/pnpm/Python checks.
 - Validate that every referenced source path/workflow file exists before publishing pack updates.
-- Validate TOML syntax after config changes:
-  - `python3 -c "import tomllib; tomllib.load(open('$CODEX_HOME/config.toml','rb')); tomllib.load(open('/etc/codex/config.toml','rb'))"`
-- Validate catalog JSON syntax after model-catalog refresh:
-  - `python3 -c "import json; json.load(open('$CODEX_HOME/.models/model_catalog.json','r',encoding='utf-8'))"`
+- Validate TOML syntax after config changes.
+- Validate catalog JSON syntax after model-catalog refresh.
 - Re-run pack verification after edits to confirm indexes and links stay consistent.
 
 ## Deployment checkpoints
@@ -94,7 +80,8 @@ Purpose: keep the Codex source repo and this config pack aligned across tooling,
 ## Multi-agent handoff
 - Source auditor hands file-to-file mapping (`source path -> pack doc`) with unresolved gaps.
 - Pack doc owner records which gaps were fixed, deferred, or escalated.
-- Release/docs maintainer confirms `verify.sh` evidence before syncing the updated pack.
+- Release/docs maintainer confirms validation evidence before syncing the updated pack.
+
 See also:
 - `overview.md`
 - `ci-cd.md`

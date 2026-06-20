@@ -1,14 +1,5 @@
 # Infrastructure overview
-Guidance for infrastructure automation and orchestration.
-
-
-## Contents
-<!-- BEGIN:contents -->
-- `$CODEX_HOME/docs/infra/ansible.md` — Ansible
-- `$CODEX_HOME/docs/infra/kubernetes.md` — Kubernetes
-- `$CODEX_HOME/docs/infra/terraform.md` — Terraform
-<!-- END:contents -->
-
+Purpose: route infrastructure work to the right automation surface without mixing Terraform, Ansible, Kubernetes, and virtualization concerns.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -17,25 +8,19 @@ Guidance for infrastructure automation and orchestration.
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-
 ## Scope
-- Infrastructure as Code (Terraform)
-- Configuration management (Ansible)
-- Orchestration (Kubernetes)
+- Terraform for declarative infrastructure
+- Ansible for host and service configuration
+- Kubernetes for workload orchestration
+- Adjacent virtualization docs for VM-centric environments
 
-## Safety baseline
-- Plan before apply; review diffs and lock state.
-- Prefer least privilege and scoped credentials.
-- Treat state files and inventories as sensitive data.
+## Selection guide
+- Desired-state infra with plans/state -> `terraform.md`
+- Idempotent host/service configuration -> `ansible.md`
+- Cluster workload lifecycle and policy -> `kubernetes.md`
+- VM orchestration or host virtualization -> `../virtualization/overview.md`
 
-## Quick map
-- Terraform: `terraform.md`
-- Ansible: `ansible.md`
-- Kubernetes: `kubernetes.md`
-
-See also:
-- `../workflows/terraform.md`
-- `../workflows/ansible.md`
-- `../workflows/kubernetes.md`
-- `../virtualization/overview.md`
-- `$CODEX_HOME/index/domains/infra/tooling.md`
+## Guardrails
+- Plan before apply.
+- Keep secrets and state inventories scoped and protected.
+- Keep provider/module/collection versions pinned and reviewable.

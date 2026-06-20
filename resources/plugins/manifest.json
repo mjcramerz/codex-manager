@@ -14,7 +14,7 @@
   "plugins": {
     "codex-runtime": {
       "name": "codex-runtime",
-      "description": "Runtime configuration, schema diff, and install-audit plugins for managed Codex setups.",
+      "description": "Runtime configuration, installer, codex-mcp, hook-runtime, and setup-audit plugins for managed Codex setups.",
       "category": "Operations",
       "keywords": [
         "codex",
@@ -29,7 +29,10 @@
       "skills": [
         "runtime-config",
         "schema-diff",
-        "setup-audit"
+        "setup-audit",
+        "codex-manager",
+        "codex-mcp",
+        "perl-hooks"
       ],
       "apps": [],
       "mcp": [
@@ -41,7 +44,7 @@
       "interface": {
         "display_name": "Codex Runtime",
         "short_description": "Runtime config, schema diff, and setup audit",
-        "long_description": "Use this plugin for managed Codex runtime configuration, schema comparisons, and installer verification work.",
+        "long_description": "Use this plugin for managed Codex runtime configuration, installer flow changes, codex-mcp alignment, hook-runtime updates, and setup audit work.",
         "developer_name": "Codex Setup",
         "capabilities": [
           "Read",
@@ -63,7 +66,8 @@
         "development"
       ],
       "skills": [
-        "codex-repo"
+        "codex-repo",
+        "rust-cargo"
       ],
       "apps": [
         {
@@ -1230,7 +1234,9 @@
         "durable-objects",
         "sandbox-sdk",
         "web-perf",
-        "workers-best-practices"
+        "workers-best-practices",
+        "cloudflare-git-delivery",
+        "aptly-r2"
       ],
       "apps": [],
       "mcp": [
@@ -1245,7 +1251,7 @@
       "interface": {
         "display_name": "Cloudflare Workers",
         "short_description": "Workers, Durable Objects, and edge-runtime workflows",
-        "long_description": "Use this plugin for Cloudflare Workers platform work, Durable Objects, Workers sandboxing, and production edge-runtime implementation patterns.",
+        "long_description": "Use this plugin for Cloudflare Workers development plus the shared delivery workflows that keep Worker repos, R2 publication, and GitLab CI templates aligned.",
         "developer_name": "Cloudflare",
         "capabilities": [
           "Read",

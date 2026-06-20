@@ -1,0 +1,30 @@
+# codex-manager workflow
+Start with `$CODEX_HOME/plans/workflows/workflow-codex-manager.md` before executing this workflow.
+Purpose: guide work in the Codex installer/runtime-pack source repo that owns install flow, home sync, hooks, runtime config, skills, and plugin marketplace content.
+
+## Primary surfaces
+- Installer: `src/install/**`
+- Runtime config source: `config/usr/**`, `config/vendor/**`, `config/agents/**`
+- Runtime-home source pack: `resources/home/user/**`
+- Hook runtime source: `resources/hooks/scripts/lib/Codex/Hook/**`
+- Skills and plugin marketplace: `resources/skills/**`, `resources/plugins/**`
+
+## Cross-repo alignment
+- Check `codex-mcp` when MCP launcher/runtime expectations change.
+- Check `delivery` when CI templates or Cloudflare deploy expectations change.
+- Check `cf-git-cicd-worker` and `cf-aptly-r2` when Cloudflare-oriented skills or workflows are refreshed.
+
+## State boundary
+- Repo-managed carry-forward: memory tree plus selected operator state files.
+- Runtime-only and never synced back: `$CODEX_HOME/sessions/`, `$CODEX_HOME/shell_snapshots/`, `$CODEX_HOME/.credentials.json`.
+
+## Validation ladder
+1) syntax/parse checks for touched files
+2) focused unit tests for changed installer logic
+3) runtime-pack docs/skill contract tests when catalogs changed
+4) broader repo validation only when scope crosses installer/runtime surfaces
+
+## Related
+- `$CODEX_HOME/plans/workflows/workflow-codex-manager.md`
+- `$CODEX_HOME/docs/workflows/runtime-pack-maintenance.md`
+- `$CODEX_HOME/docs/architecture.md`

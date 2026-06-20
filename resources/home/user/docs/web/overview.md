@@ -1,17 +1,5 @@
 # Web frameworks overview
-Guidance for frontend framework selection and safe defaults.
-
-
-## Contents
-<!-- BEGIN:contents -->
-- `$CODEX_HOME/docs/web/htmx.md` — HTMX
-- `$CODEX_HOME/docs/web/nextjs.md` — Next.js
-- `$CODEX_HOME/docs/web/nuxt.md` — Nuxt
-- `$CODEX_HOME/docs/web/react.md` — React
-- `$CODEX_HOME/docs/web/sveltekit.md` — Svelte / SvelteKit
-- `$CODEX_HOME/docs/web/vue.md` — Vue
-<!-- END:contents -->
-
+Purpose: route frontend and server-driven UI work to the right framework guide without overcommitting to one stack.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -20,31 +8,20 @@ Guidance for frontend framework selection and safe defaults.
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
+## Selection guide
+- React component systems -> `react.md`
+- Full-stack React with server/client boundaries -> `nextjs.md`
+- Server-driven progressive enhancement -> `htmx.md`
+- Vue component logic -> `vue.md`
+- Vue full-stack runtime -> `nuxt.md`
+- SvelteKit route/load/form boundaries -> `sveltekit.md`
 
-## Quick map
-- React: `react.md`
-- Next.js: `nextjs.md`
-- Svelte/SvelteKit: `sveltekit.md`
-- Vue: `vue.md`
-- Nuxt: `nuxt.md`
-- HTMX: `htmx.md`
+## Pack posture
+- Keep TypeScript strict.
+- Treat accessibility and safe URL/content handling as default requirements.
+- Add framework docs only when they map to real templates, skills, or source-repo usage.
 
-## Baseline practices
-- Prefer small bundles and code-splitting.
-- Avoid unbounded client-side state and large dependencies.
-- Keep accessibility in scope (keyboard, contrast, ARIA).
-
-## Decision checklist
-- Use **React** when you need flexible component composition with explicit client-state management.
-- Use **Next.js** when you need mixed SSR/SSG/ISR with clear server/client module boundaries.
-- Use **HTMX** when server-driven rendering and progressive enhancement are priorities.
-- Keep TypeScript strict across all options and wire lint/test/build commands into CI before rollout.
-
-## Codex source reality check
-- Codex source currently uses TypeScript for tooling packages, not a production web app surface.
-- Treat these docs as implementation-ready guidance for new UI surfaces and keep them path-backed once frontend code is introduced.
-
-See also:
+## Related
 - `$CODEX_HOME/templates/web/`
-- `../workflows/web-frontend.md`
-- `$CODEX_HOME/index/domains/web/frameworks.md`
+- `$CODEX_HOME/docs/workflows/web-frontend.md`
+- `$CODEX_HOME/docs/lang/typescript.md`

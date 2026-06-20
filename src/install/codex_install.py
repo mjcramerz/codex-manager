@@ -172,16 +172,23 @@ SHELL_COMPLETION_TARGETS = {
     "bash": Path(".local") / "share" / "bash-completion" / "completions" / "codex",
 }
 
-HOME_RUNTIME_STATE_DIRS = ("memories", "sessions", "shell_snapshots")
-HOME_RUNTIME_MERGED_FILES = (
+HOME_RUNTIME_PRESERVE_DIRS = ("memories", "sessions", "shell_snapshots")
+HOME_RUNTIME_REPO_SYNC_DIRS = ("memories",)
+HOME_RUNTIME_PRESERVE_FILES = (
     ".credentials.json",
     ".personality_migration",
     "history.jsonl",
     "session_index.jsonl",
     "version.json",
 )
-HOME_FILTER_PRESERVE_DIRS = (*HOME_RUNTIME_STATE_DIRS, "tmp", ".agents", "plugins")
-HOME_FILTER_PRESERVE_FILES = (*HOME_RUNTIME_MERGED_FILES, "auth.json")
+HOME_RUNTIME_REPO_SYNC_FILES = (
+    ".personality_migration",
+    "history.jsonl",
+    "session_index.jsonl",
+    "version.json",
+)
+HOME_FILTER_PRESERVE_DIRS = (*HOME_RUNTIME_PRESERVE_DIRS, "tmp", ".agents", "plugins")
+HOME_FILTER_PRESERVE_FILES = (*HOME_RUNTIME_PRESERVE_FILES, "auth.json")
 BACKUP_ACCOUNT_KEY_PATTERN = re.compile(r"^[A-Za-z0-9]{8}$")
 BACKUP_UNKNOWN_ACCOUNT_KEY = "unknown"
 BACKUP_SOURCE_KEY_TO_LABEL = (
@@ -1517,7 +1524,7 @@ class Installer:
                 print(f"[dry-run] skip runtime->repo sync (runtime home missing): {runtime_home}")
             return
 
-        for dirname in HOME_RUNTIME_STATE_DIRS:
+        for dirname in HOME_RUNTIME_REPO_SYNC_DIRS:
             src_dir = runtime_home / dirname
             dst_dir = repo_home / dirname
             if not src_dir.exists():
@@ -1528,7 +1535,7 @@ class Installer:
                 fail(f"repo preserve target must be a directory: {dst_dir}")
             self._sync_tree(src_dir, dst_dir, mirror_deletions=False)
 
-        for filename in HOME_RUNTIME_MERGED_FILES:
+        for filename in HOME_RUNTIME_REPO_SYNC_FILES:
             src_file = runtime_home / filename
             dst_file = repo_home / filename
             if not src_file.exists():
@@ -1585,7 +1592,7 @@ class Installer:
                 self._copy_file(source_file, target_file, mode=mode)
 
     def _seed_missing_home_runtime_state_from_repo(self, repo_home: Path, runtime_home: Path) -> None:
-        for dirname in HOME_RUNTIME_STATE_DIRS:
+        for dirname in HOME_RUNTIME_REPO_SYNC_DIRS:
             src_dir = repo_home / dirname
             dst_dir = runtime_home / dirname
             if dst_dir.exists():
@@ -1603,7 +1610,7 @@ class Installer:
                 continue
             self._mkdir_path(dst_dir)
 
-        for filename in HOME_RUNTIME_MERGED_FILES:
+        for filename in HOME_RUNTIME_REPO_SYNC_FILES:
             src_file = repo_home / filename
             dst_file = runtime_home / filename
             if dst_file.exists():
@@ -2311,7 +2318,7 @@ class Installer:
         sqlite_home = ensure_safe_absolute_path("CODEX_SQLITE_HOME", self.runtime_vars["CODEX_SQLITE_HOME"])
         preserve_roots = sorted({backup_root, mcp_root, sqlite_home}, key=lambda item: str(item))
 
-        self._log("syncing runtime memory/session state back into resources/home/user")
+        self._log("syncing repo-managed CODEX_HOME state back into resources/home/user")
         self._sync_home_runtime_state_to_repo(
             ensure_safe_absolute_path("CODEX_HOME", self.runtime_vars["CODEX_HOME"]),
             self.repo_layout.home_user_dir,
@@ -2892,9 +2899,9 @@ class Installer:
         agents_src = self.repo_layout.agents_config_dir
         home_dst = Path(self.runtime_vars["CODEX_HOME"])
         agents_dst = Path(self.runtime_vars["CODEX_AGENTS"])
-        self._log("syncing preserved CODEX_HOME runtime state back into resources/home/user")
+        self._log("syncing repo-managed CODEX_HOME state back into resources/home/user")
         self._sync_home_runtime_state_to_repo(home_dst, home_src)
-        self._log("seeding missing preserved CODEX_HOME runtime state from resources/home/user")
+        self._log("seeding missing repo-managed CODEX_HOME state from resources/home/user")
         self._seed_missing_home_runtime_state_from_repo(home_src, home_dst)
         self._log("syncing resources/home/user assets to CODEX_HOME (filtered)")
         self._sync_tree_filtered(

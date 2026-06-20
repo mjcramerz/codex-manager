@@ -34,6 +34,7 @@ Purpose: explain how to choose one router and one entrypoint without opening unn
 - Do not treat overviews as deep reference docs.
 - Restart from step 1 if the task changes category.
 
-## Maintenance rules
+## Pack-wide guardrails
 - `resources/home/user/index/manifest.yml` is the source of truth for routing metadata.
 - Keep rendered entrypoints and the manifest aligned when canonical targets or related links change.
+- Keep runtime-only state out of the routing tree and out of repo-synced pack assets.
