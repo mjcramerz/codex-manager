@@ -4,63 +4,58 @@
 guardian_approval = false
 tool_call_mcp_elicitation = true
 elevated_windows_sandbox = false
-enable_experimental_windows_sandbox = false
 experimental_windows_sandbox = false
 default_mode_request_user_input = true
-request_permissions = true
 request_permissions_tool = true
 request_rule = false
 exec_permission_approvals = false
 use_linux_sandbox_bwrap = true
-use_legacy_landlock = false
 auth_elicitation = false
 
 # behavior
 collaboration_modes = true
 enable_fanout = false
 fast_mode = false
-code_mode = false
+code_mode = true
 code_mode_only = false
 memories = true
-memory_tool = true
 personality = true
 child_agents_md = true
-multi_agent = false
+multi_agent = true
 # legacy alias, replaced by enable_fanout
 #spawn_csv = false
 remote_models = true
 goals = true
-connectors = true
+apps = true
 hooks = true
 browser_use = true
 browser_use_external = true
 computer_use = true
 in_app_browser = true
 plugin_sharing = true
-remote_plugin = false
+remote_plugin = true
 external_migration = false
 local_thread_store_compression = false
-chronicle = false
-mentions_v2 = false
+chronicle = true
+mentions_v2 = true
 non_prefixed_mcp_tool_names = false
-remote_compaction_v2 = false
-remote_control = false
-standalone_web_search = false
+remote_compaction_v2 = true
+remote_control = true
+standalone_web_search = true
 steer = true
-telepathy = false
 terminal_resize_reflow = true
-tool_search = false
+tool_search = true
 tool_search_always_defer_mcp_tools = false
 workspace_dependencies = false
 workspace_owner_usage_nudge = false
 
 # tools
-collab = false
+collab = true
 tool_suggest = true
 # legacy out-of-schema key retained for traceability
 #artifact = true
 plugins = true
-codex_hooks = true
+hooks = true
 undo = true
 sqlite = true
 apply_patch_freeform = true

@@ -64,8 +64,8 @@ enabled = true
 
 # agents
 [agents]
-max_threads = 10
-max_depth = 2
+#max_threads = 10
+max_depth = 4
 job_max_runtime_seconds = 5000
 interrupt_message = true
 
