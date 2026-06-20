@@ -19,9 +19,9 @@ Your knowledge of Cloudflare APIs, types, limits, and pricing may be outdated. *
 
 When the task targets the active worker/delivery repos, ground the work in these source trees before broad product browsing:
 
-- `/data/workspace/gitlab/computes/active/cf-git-cicd-worker`
-- `/data/workspace/gitlab/computes/active/cf-aptly-r2`
-- `/data/workspace/gitlab/computes/active/delivery`
+- `cf-git-cicd-worker`
+- `cf-aptly-r2`
+- `delivery`
 
 ## Retrieval Sources
 

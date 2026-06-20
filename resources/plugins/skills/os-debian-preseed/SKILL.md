@@ -58,7 +58,6 @@ interface:
 - `os-debian-preseed/references/risk-register.md`
 - `os-debian-preseed/assets/rollback-checklist.md`
 - `os-debian-preseed/scripts/skill_helper.py`
-- repo anchor: `/data/workspace/gitlab/computes/active/debian-preseed-di/README.md`
 
 ## References
 - `$CODEX_HOME/index/domains/system/debian-preseed.md`

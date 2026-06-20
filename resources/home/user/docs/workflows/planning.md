@@ -12,14 +12,14 @@ Purpose: provide the canonical planning workflow for this pack.
 
 ## Required routing contract
 - `$CODEX_HOME/AGENTS.md`
-- `$CODEX_HOME/memories/MEMORY.md` when the task is repo-aware or ambiguous
+- `$CODEX_HOME/memories/MEMORY.md` when it exists and the task is repo-aware or ambiguous
 - `$CODEX_HOME/INDEX.md`
 - `$CODEX_HOME/index/pack/plans.md` + `$CODEX_HOME/index/pack/workflows.md`
 - `$CODEX_HOME/index/pack/skills.md`
-- follow `$CODEX_HOME/UNIX.md` before running commands
+- follow `$CODEX_HOME/docs/style/shell-runtime.md` before running commands
 
 ## Runtime-state boundary
-- Use the source-managed memory router for context, not raw runtime dumps.
+- Use `$CODEX_HOME/memories/MEMORY.md` for context only when it exists; do not treat runtime memory files as source-managed docs.
 - Do not plan around syncing `$CODEX_HOME/sessions/`, `$CODEX_HOME/shell_snapshots/`, or `$CODEX_HOME/.credentials.json` back into source-controlled assets.
 
 ## Plan selection (quick guide)

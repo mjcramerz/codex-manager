@@ -17,7 +17,7 @@ Purpose: guide unattended Debian installation work, with concrete alignment to t
 - Keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
 
 ## Repo anchors
-- `/data/workspace/gitlab/computes/active/debian-preseed-di/README.md`
+- active Debian preseed repository documentation
 - `d-i/debian/preseed.cfg`
 - `d-i/debian/classes/**`
 - `d-i/debian/hosts/profiles/**`

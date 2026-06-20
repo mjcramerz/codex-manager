@@ -39,12 +39,13 @@ interface:
 - Edit source docs, not generated mirrors.
 - Keep generated `BEGIN/END` blocks untouched unless generator tooling is run.
 - Preserve existing semantics while improving clarity and discoverability.
+- Use repo-relative or runtime-relative paths in prose; never hardcode workstation-specific repository paths.
 
 ## Workflow
 1) Update or add docs in `$CODEX_HOME/docs/` (keep overview/README accurate).
 2) Ensure cross-links to prompts, templates, skills, and snippets are correct.
 3) Update `$CODEX_HOME/index/pack/docs.md` related links as needed.
-4) When docs touch shell guidance, keep Bash paths pointed at `$CODEX_HOME/UNIX.md` and POSIX sh references pointed at `$CODEX_HOME/docs/style/sh.md`.
+4) When docs touch shell guidance, route through `$CODEX_HOME/docs/style/shell-runtime.md` and point shell-specific details at the matching language guide.
 
 ## Agent orchestration
 - Delegate read-only doc/link discovery only.

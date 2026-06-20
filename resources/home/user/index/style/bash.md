@@ -13,7 +13,7 @@ Purpose: stable link to the canonical Bash style guide.
 Canonical content: `$CODEX_HOME/docs/style/bash.md`
 
 Use when:
-- the active shell/session is Bash and `$CODEX_HOME/UNIX.md` already routed you here
+- the active shell/session is Bash and `$CODEX_HOME/docs/style/shell-runtime.md` already routed you here
 - writing or modifying Bash scripts (CI, installers, repo tooling)
 - choosing safe subprocess, filesystem, and input-handling patterns
 

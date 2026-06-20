@@ -42,6 +42,7 @@ interface:
 - Keep diffs minimal and avoid creating low-value support files.
 - Do not hand-edit generated outputs when tooling owns them.
 - Keep skill names lowercase hyphen-case and <= 64 characters.
+- Keep repo anchors portable: prefer repo-relative references for the current repo and logical workspace labels for adjacent repos instead of hardcoded host paths.
 
 ## Workflow
 1) Confirm scope and what behavior/triggering must remain unchanged.

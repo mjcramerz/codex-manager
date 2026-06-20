@@ -22,7 +22,7 @@ interface:
 
 ## Workflow
 1) Trace install, home, admin, and upgrade paths separately.
-2) Verify preserved state, backups, and destructive boundaries explicitly.
+2) Verify runtime-only state never syncs back into source, and check preserved roots, backups, and destructive boundaries explicitly.
 3) Tie each concern to a narrow proof command such as py_compile, preflight, or verify.
 
 ## Agent orchestration

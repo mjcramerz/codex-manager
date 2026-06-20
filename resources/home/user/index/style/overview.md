@@ -10,11 +10,11 @@ Use this when you need language or shell conventions.
 
 ## Load order reminder
 1) `$CODEX_HOME/AGENTS.md`
-2) `$CODEX_HOME/memories/MEMORY.md` when needed
+2) `$CODEX_HOME/memories/MEMORY.md` when it exists and is needed
 3) `$CODEX_HOME/INDEX.md`
 4) `$CODEX_HOME/index/pack/plans.md` + `$CODEX_HOME/index/pack/workflows.md`
 5) `$CODEX_HOME/index/pack/skills.md`
-6) follow `$CODEX_HOME/UNIX.md` before execution
+6) follow `$CODEX_HOME/docs/style/shell-runtime.md` before execution
 
 ## Choose a style entrypoint
 - Shell runtime baseline: `$CODEX_HOME/docs/style/shell-runtime.md`

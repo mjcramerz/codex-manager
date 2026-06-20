@@ -1,6 +1,6 @@
 # Latest sources
 
-Repo anchors:
-- `/data/workspace/gitlab/computes/active/cf-aptly-r2/README.md`
-- `/data/workspace/gitlab/computes/active/cf-aptly-r2/.gitlab-ci.yml`
-- `/data/workspace/gitlab/computes/active/delivery/README.md`
+Focus areas:
+- current Aptly publication worker overview
+- current pipeline entrypoints for publication and signing
+- current shared delivery repository overview

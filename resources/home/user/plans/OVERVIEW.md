@@ -12,6 +12,7 @@ Purpose: explain when a plan is required and how to choose the correct plan fami
 - multiple files, systems, or repositories are involved
 - rollout, rollback, migration, or operational impact matters
 - the work touches external systems, contracts, or long validation chains
+- the work changes routing, instruction assets, or source-to-target runtime boundaries
 
 ## Choose one plan family
 <!-- BEGIN:contents -->

@@ -366,46 +366,7 @@ class InstallConfigToleranceTests(unittest.TestCase):
 
 
 class HomeRuntimeRepoSyncTests(unittest.TestCase):
-    def test_sync_home_runtime_state_to_repo_excludes_runtime_only_artifacts(self) -> None:
-        installer = codex_install.Installer.__new__(codex_install.Installer)
-        installer._sync_tree = Mock()
-        installer._copy_file = Mock()
-
-        with tempfile.TemporaryDirectory() as runtime_dir, tempfile.TemporaryDirectory() as repo_dir:
-            runtime_home = Path(runtime_dir)
-            repo_home = Path(repo_dir)
-
-            for dirname in ("memories", "sessions", "shell_snapshots"):
-                (runtime_home / dirname).mkdir()
-            for filename in (
-                ".credentials.json",
-                ".personality_migration",
-                "history.jsonl",
-                "session_index.jsonl",
-                "version.json",
-            ):
-                (runtime_home / filename).write_text(filename, encoding="utf-8")
-
-            codex_install.Installer._sync_home_runtime_state_to_repo(installer, runtime_home, repo_home)
-
-            installer._sync_tree.assert_called_once_with(
-                runtime_home / "memories",
-                repo_home / "memories",
-                mirror_deletions=False,
-            )
-            copied_files = {call.args[0].name for call in installer._copy_file.call_args_list}
-            self.assertEqual(
-                copied_files,
-                {
-                    ".personality_migration",
-                    "history.jsonl",
-                    "session_index.jsonl",
-                    "version.json",
-                },
-            )
-            self.assertNotIn(".credentials.json", copied_files)
-
-    def test_seed_missing_home_runtime_state_from_repo_skips_runtime_only_artifacts(self) -> None:
+    def test_seed_missing_home_runtime_state_from_repo_only_merges_memories(self) -> None:
         installer = codex_install.Installer.__new__(codex_install.Installer)
         installer._copy_tree = Mock()
         installer._merge_missing_tree = Mock()
@@ -416,8 +377,7 @@ class HomeRuntimeRepoSyncTests(unittest.TestCase):
             runtime_home = Path(runtime_dir)
             repo_home = Path(repo_dir)
 
-            for dirname in ("memories", "sessions", "shell_snapshots"):
-                (repo_home / dirname).mkdir()
+            (repo_home / "memories").mkdir()
             for filename in (
                 ".credentials.json",
                 ".personality_migration",
@@ -433,17 +393,24 @@ class HomeRuntimeRepoSyncTests(unittest.TestCase):
                 repo_home / "memories",
                 runtime_home / "memories",
             )
-            copied_files = {call.args[0].name for call in installer._copy_file.call_args_list}
-            self.assertEqual(
-                copied_files,
-                {
-                    ".personality_migration",
-                    "history.jsonl",
-                    "session_index.jsonl",
-                    "version.json",
-                },
-            )
-            self.assertNotIn(".credentials.json", copied_files)
+            installer._merge_missing_tree.assert_not_called()
+            installer._copy_file.assert_not_called()
+
+    def test_seed_missing_home_runtime_state_from_repo_creates_memories_dir_when_source_missing(self) -> None:
+        installer = codex_install.Installer.__new__(codex_install.Installer)
+        installer._copy_tree = Mock()
+        installer._merge_missing_tree = Mock()
+        installer._mkdir_path = Mock()
+
+        with tempfile.TemporaryDirectory() as runtime_dir, tempfile.TemporaryDirectory() as repo_dir:
+            runtime_home = Path(runtime_dir)
+            repo_home = Path(repo_dir)
+
+            codex_install.Installer._seed_missing_home_runtime_state_from_repo(installer, repo_home, runtime_home)
+
+            installer._mkdir_path.assert_called_once_with(runtime_home / "memories")
+            installer._copy_tree.assert_not_called()
+            installer._merge_missing_tree.assert_not_called()
 
 
 if __name__ == "__main__":

@@ -31,6 +31,9 @@ class RuntimePackStructureContractTests(unittest.TestCase):
             if path.name.endswith(".md") and path != HOME_ROOT / "AGENTS.md":
                 self.assertIn("## Navigation", text, path)
 
+    def test_legacy_unix_entrypoint_is_removed(self) -> None:
+        self.assertFalse((HOME_ROOT / "UNIX.md").exists())
+
     def test_governing_docs_avoid_tool_specific_or_stale_contract_language(self) -> None:
         files = [
             HOME_ROOT / "AGENTS.md",

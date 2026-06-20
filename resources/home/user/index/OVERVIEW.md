@@ -9,11 +9,11 @@ Purpose: explain how to choose one router and one entrypoint without opening unn
 
 ## Required context
 1. `$CODEX_HOME/AGENTS.md`
-2. `$CODEX_HOME/memories/MEMORY.md` when needed
+2. `$CODEX_HOME/memories/MEMORY.md` when it exists and is needed
 3. `$CODEX_HOME/INDEX.md`
 4. `$CODEX_HOME/index/pack/plans.md` and `$CODEX_HOME/index/pack/workflows.md`
 5. `$CODEX_HOME/index/pack/skills.md`
-6. `$CODEX_HOME/UNIX.md` before shell-sensitive execution
+6. `$CODEX_HOME/docs/style/shell-runtime.md` before shell-sensitive execution
 
 ## Routing algorithm
 1. Decide whether the task is pack, domain, core workflow, or style related.

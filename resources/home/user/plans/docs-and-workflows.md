@@ -13,6 +13,8 @@ Use this plan when updating docs, workflows, or doc indexes.
 
 ## Requirements
 - Updated docs with clear ownership and scope.
+- No host-specific repository paths in user-facing docs or instruction assets.
+- Runtime-home docs must reflect one-way source-to-target install behavior.
 
 ## Scope
 - In: `$CODEX_HOME/docs/` and related index entrypoints.
@@ -27,6 +29,7 @@ Use this plan when updating docs, workflows, or doc indexes.
 ## Action items
 [ ] Update or add docs under `$CODEX_HOME/docs/` (include overview/README as needed).
 [ ] Update `$CODEX_HOME/index/pack/docs.md` related links in the manifest.
+[ ] Remove hardcoded workstation paths and stale routing references in the touched docs.
 
 ## Testing and validation
 

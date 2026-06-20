@@ -174,15 +174,8 @@ SHELL_COMPLETION_TARGETS = {
 }
 
 HOME_RUNTIME_PRESERVE_DIRS = ("memories", "sessions", "shell_snapshots")
-HOME_RUNTIME_REPO_SYNC_DIRS = ("memories",)
 HOME_RUNTIME_PRESERVE_FILES = (
     ".credentials.json",
-    ".personality_migration",
-    "history.jsonl",
-    "session_index.jsonl",
-    "version.json",
-)
-HOME_RUNTIME_REPO_SYNC_FILES = (
     ".personality_migration",
     "history.jsonl",
     "session_index.jsonl",
@@ -1521,34 +1514,6 @@ class Installer:
                 if source_child.is_dir():
                     self._remove_path_force(child)
 
-    def _sync_home_runtime_state_to_repo(self, runtime_home: Path, repo_home: Path) -> None:
-        if not runtime_home.exists():
-            if self.dry_run:
-                print(f"[dry-run] skip runtime->repo sync (runtime home missing): {runtime_home}")
-            return
-
-        for dirname in HOME_RUNTIME_REPO_SYNC_DIRS:
-            src_dir = runtime_home / dirname
-            dst_dir = repo_home / dirname
-            if not src_dir.exists():
-                continue
-            if not src_dir.is_dir():
-                fail(f"runtime preserve path must be a directory: {src_dir}")
-            if dst_dir.exists() and not dst_dir.is_dir():
-                fail(f"repo preserve target must be a directory: {dst_dir}")
-            self._sync_tree(src_dir, dst_dir, mirror_deletions=False)
-
-        for filename in HOME_RUNTIME_REPO_SYNC_FILES:
-            src_file = runtime_home / filename
-            dst_file = repo_home / filename
-            if not src_file.exists():
-                continue
-            if not src_file.is_file():
-                fail(f"runtime preserve path must be a file: {src_file}")
-            if dst_file.exists() and dst_file.is_dir():
-                fail(f"repo preserve target must be a file: {dst_file}")
-            self._copy_file(src_file, dst_file)
-
     def _merge_missing_tree(self, src: Path, dst: Path) -> None:
         if not src.is_dir():
             fail(f"merge source directory not found: {src}")
@@ -1595,36 +1560,22 @@ class Installer:
                 self._copy_file(source_file, target_file, mode=mode)
 
     def _seed_missing_home_runtime_state_from_repo(self, repo_home: Path, runtime_home: Path) -> None:
-        for dirname in HOME_RUNTIME_REPO_SYNC_DIRS:
-            src_dir = repo_home / dirname
-            dst_dir = runtime_home / dirname
-            if dst_dir.exists():
-                if not dst_dir.is_dir():
-                    fail(f"runtime preserve target must be a directory: {dst_dir}")
-                if src_dir.exists():
-                    if not src_dir.is_dir():
-                        fail(f"repo preserve source must be a directory: {src_dir}")
-                    self._merge_missing_tree(src_dir, dst_dir)
-                continue
-            if src_dir.exists():
-                if not src_dir.is_dir():
-                    fail(f"repo preserve source must be a directory: {src_dir}")
-                self._copy_tree(src_dir, dst_dir)
-                continue
-            self._mkdir_path(dst_dir)
-
-        for filename in HOME_RUNTIME_REPO_SYNC_FILES:
-            src_file = repo_home / filename
-            dst_file = runtime_home / filename
-            if dst_file.exists():
-                if not dst_file.is_file():
-                    fail(f"runtime preserve target must be a file: {dst_file}")
-                continue
-            if not src_file.exists():
-                continue
-            if not src_file.is_file():
-                fail(f"repo preserve source must be a file: {src_file}")
-            self._copy_file(src_file, dst_file)
+        memories_src = repo_home / "memories"
+        memories_dst = runtime_home / "memories"
+        if memories_dst.exists():
+            if not memories_dst.is_dir():
+                fail(f"runtime preserve target must be a directory: {memories_dst}")
+            if memories_src.exists():
+                if not memories_src.is_dir():
+                    fail(f"repo preserve source must be a directory: {memories_src}")
+                self._merge_missing_tree(memories_src, memories_dst)
+            return
+        if memories_src.exists():
+            if not memories_src.is_dir():
+                fail(f"repo preserve source must be a directory: {memories_src}")
+            self._copy_tree(memories_src, memories_dst)
+            return
+        self._mkdir_path(memories_dst)
 
     def _sync_schema_helpers(self, launch_env: dict[str, str] | None = None) -> None:
         source_tool = self.repo_root / "src" / "misc" / SCHEMA_TOOL_SOURCE_FILENAME
@@ -2321,12 +2272,6 @@ class Installer:
         sqlite_home = ensure_safe_absolute_path("CODEX_SQLITE_HOME", self.runtime_vars["CODEX_SQLITE_HOME"])
         preserve_roots = sorted({backup_root, mcp_root, sqlite_home}, key=lambda item: str(item))
 
-        self._log("syncing repo-managed CODEX_HOME state back into resources/home/user")
-        self._sync_home_runtime_state_to_repo(
-            ensure_safe_absolute_path("CODEX_HOME", self.runtime_vars["CODEX_HOME"]),
-            self.repo_layout.home_user_dir,
-        )
-
         self._log("creating nuke backup")
         self._backup_install_state(flow="uninstall")
 
@@ -2902,9 +2847,7 @@ class Installer:
         agents_src = self.repo_layout.agents_config_dir
         home_dst = Path(self.runtime_vars["CODEX_HOME"])
         agents_dst = Path(self.runtime_vars["CODEX_AGENTS"])
-        self._log("syncing repo-managed CODEX_HOME state back into resources/home/user")
-        self._sync_home_runtime_state_to_repo(home_dst, home_src)
-        self._log("seeding missing repo-managed CODEX_HOME state from resources/home/user")
+        self._log("ensuring preserved CODEX_HOME roots exist without runtime->repo sync")
         self._seed_missing_home_runtime_state_from_repo(home_src, home_dst)
         self._log("syncing resources/home/user assets to CODEX_HOME (filtered)")
         self._sync_tree_filtered(

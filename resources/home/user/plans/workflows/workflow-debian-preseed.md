@@ -11,7 +11,7 @@ Use this plan when following `$CODEX_HOME/docs/workflows/debian-preseed.md`.
 
 ## Inputs
 - `$CODEX_HOME/docs/workflows/debian-preseed.md`
-- `/data/workspace/gitlab/computes/active/debian-preseed-di/README.md`
+- active Debian preseed repository documentation
 
 ## Scope
 - In: steps defined in the `debian-preseed` workflow.

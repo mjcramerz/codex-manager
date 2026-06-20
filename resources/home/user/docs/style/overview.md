@@ -21,7 +21,6 @@ Follow repository-local conventions first. Use this pack as the default when a r
 <!-- END:contents -->
 
 ## Session guides
-- Compatibility shell entrypoint: `$CODEX_HOME/UNIX.md`
 - Canonical shell runtime guidance: `$CODEX_HOME/docs/style/shell-runtime.md`
 
 ## Language guides

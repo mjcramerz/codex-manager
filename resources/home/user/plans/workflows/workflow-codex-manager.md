@@ -20,6 +20,7 @@ Use this plan when following `$CODEX_HOME/docs/workflows/codex-manager.md`.
 ## Action items
 [ ] Route to the workflow and confirm the smallest concrete entrypoint.
 [ ] Inventory the affected files, repos, and runtime contracts.
+[ ] Confirm runtime-home changes remain source-to-target only with no runtime->repo sync.
 [ ] Check install/nuke shell-export, backup, and secret-cleanup behavior.
 [ ] Verify MCP auth fields match server transport semantics.
 [ ] Apply focused updates and keep cross-links in sync.

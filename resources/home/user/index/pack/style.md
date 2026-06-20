@@ -15,7 +15,7 @@ Canonical content: `$CODEX_HOME/docs/style/overview.md`
 Use when:
 - choosing a language-specific style guide
 - enforcing consistent lint/format conventions
-- routing shell-sensitive work from `$CODEX_HOME/UNIX.md` into the deeper style guides
+- routing shell-sensitive work from `$CODEX_HOME/docs/style/shell-runtime.md` into the deeper style guides
 
 <!-- BEGIN:related -->
 Related:

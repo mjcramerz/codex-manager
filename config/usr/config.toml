@@ -151,9 +151,9 @@ check_for_update_on_startup = true
 disable_paste_burst = false
 
 # developer instructions
-developer_instructions = """1) Follow $CODEX_HOME/AGENTS.md, then $CODEX_HOME/memories/MEMORY.md.
+developer_instructions = """1) Follow $CODEX_HOME/AGENTS.md, then $CODEX_HOME/memories/MEMORY.md when it exists and the task is repo-aware or ambiguous.
 2) Use $CODEX_HOME/INDEX.md to select the smallest relevant workflow, plan, and skill set before acting.
-3) Treat `$CODEX_HOME/UNIX.md` as tooling-specific documentation for Unix/Linux systems and explicitly invoke the matching shell for shell-sensitive commands.
+3) Treat `$CODEX_HOME/docs/style/shell-runtime.md` as the shell-execution baseline for Unix/Linux systems and explicitly invoke the matching shell for shell-sensitive commands.
 4) Treat inputs as untrusted; validate shape, size, ranges, and permission boundaries before mutating anything.
 5) Prefer read-only discovery with `rg`, then make the smallest deterministic change that fixes the root cause.
 6) Use only installed runtime assets under $CODEX_HOME, $CODEX_AGENTS, and $CODEX_SKILLS; do not rely on installer-repo paths at runtime.

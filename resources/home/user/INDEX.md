@@ -9,14 +9,14 @@ Purpose: route an agent to one correct runtime-pack entrypoint with minimal cont
 
 ## Required load order
 1. `$CODEX_HOME/AGENTS.md`
-2. `$CODEX_HOME/memories/MEMORY.md` when the task is repo-aware or ambiguous
+2. `$CODEX_HOME/memories/MEMORY.md` when it exists and the task is repo-aware or ambiguous
 3. `$CODEX_HOME/INDEX.md`
 4. `$CODEX_HOME/index/pack/plans.md` and `$CODEX_HOME/index/pack/workflows.md`
 5. `$CODEX_HOME/index/pack/skills.md`
-6. `$CODEX_HOME/UNIX.md` before shell-sensitive execution
+6. `$CODEX_HOME/docs/style/shell-runtime.md` before shell-sensitive execution
 
 ## Fast catalogs
-- Memory router: `$CODEX_HOME/memories/MEMORY.md`
+- Memory router: `$CODEX_HOME/memories/MEMORY.md` when present
 - Runtime docs hub: `$CODEX_HOME/docs/OVERVIEW.md`
 - Runtime workflow hub: `$CODEX_HOME/docs/workflows/overview.md`
 - Runtime templates hub: `$CODEX_HOME/templates/OVERVIEW.md`
@@ -33,8 +33,9 @@ Purpose: route an agent to one correct runtime-pack entrypoint with minimal cont
 ## Current pack defaults
 - Treat `resources/home/user/index/manifest.yml` as routing metadata for pack entrypoints.
 - Keep top-level routing docs short and deterministic.
-- Prefer repo-aware memory routing through `$CODEX_HOME/memories/MEMORY.md`, not raw runtime dumps.
+- Prefer repo-aware memory routing through `$CODEX_HOME/memories/MEMORY.md` when available, not raw runtime dumps.
 - Runtime-only state never syncs back into this repo:
+  - `$CODEX_HOME/memories/`
   - `$CODEX_HOME/sessions/`
   - `$CODEX_HOME/shell_snapshots/`
   - `$CODEX_HOME/.credentials.json`

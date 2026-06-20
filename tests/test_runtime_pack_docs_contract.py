@@ -50,6 +50,7 @@ class RuntimePackDocsContractTests(unittest.TestCase):
             "spawn_agent",
             "send_input",
             "close_agent",
+            "$CODEX_HOME/UNIX.md",
         )
 
         roots = [
@@ -66,6 +67,28 @@ class RuntimePackDocsContractTests(unittest.TestCase):
                 text = path.read_text(encoding="utf-8")
                 for needle in disallowed:
                     self.assertNotIn(needle, text, f"{path} still contains stale reference {needle!r}")
+
+    def test_home_docs_do_not_hardcode_workspace_paths(self) -> None:
+        roots = [
+            HOME_ROOT / "AGENTS.md",
+            HOME_ROOT / "INDEX.md",
+            HOME_ROOT / "docs",
+            HOME_ROOT / "index",
+            HOME_ROOT / "plans",
+            HOME_ROOT / "templates",
+            HOME_ROOT / "snippets",
+        ]
+        banned = (
+            "/var/local/virt/containerd",
+            "/data/workspace",
+            "/data/codex/usr/home",
+        )
+        for root in roots:
+            paths = [root] if root.is_file() else sorted(root.rglob("*.md"))
+            for path in paths:
+                text = path.read_text(encoding="utf-8")
+                for needle in banned:
+                    self.assertNotIn(needle, text, f"{path} hardcodes workspace path {needle!r}")
 
     def test_manifest_has_current_runtime_paths(self) -> None:
         manifest = (HOME_ROOT / "index" / "manifest.yml").read_text(encoding="utf-8")

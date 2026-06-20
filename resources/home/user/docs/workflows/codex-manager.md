@@ -15,8 +15,8 @@ Purpose: guide work in the Codex installer/runtime-pack source repo that owns in
 - Check `cf-git-cicd-worker` and `cf-aptly-r2` when Cloudflare-oriented skills or workflows are refreshed.
 
 ## State boundary
-- Repo-managed carry-forward: memory tree plus selected operator state files.
-- Runtime-only and never synced back: `$CODEX_HOME/sessions/`, `$CODEX_HOME/shell_snapshots/`, `$CODEX_HOME/.credentials.json`.
+- Runtime home is source-to-target only; runtime state never syncs back into this repo.
+- Runtime-only examples: `$CODEX_HOME/memories/`, `$CODEX_HOME/sessions/`, `$CODEX_HOME/shell_snapshots/`, `$CODEX_HOME/.credentials.json`, `$CODEX_HOME/history.jsonl`, `$CODEX_HOME/session_index.jsonl`, `$CODEX_HOME/version.json`, and `$CODEX_HOME/.personality_migration`.
 
 ## Install and nuke checkpoints
 - Keep `install`, `update`, `nuke`, and `uninstall` idempotent for already-applied or already-removed runtime state.

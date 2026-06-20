@@ -12,7 +12,7 @@ Purpose: maintain the runtime-home pack, routing tree, skill catalog, templates,
 ## Execution flow
 1) Route through the pack hubs and confirm the smallest entrypoint.
 2) Audit whether the requested change affects docs, plans, templates, skills, or routing metadata.
-3) Keep runtime-only artifacts out of scope (`sessions`, `shell_snapshots`, `.credentials.json`).
+3) Keep runtime-only artifacts out of scope (`memories`, `sessions`, `shell_snapshots`, `.credentials.json`, history/state files).
 4) Update cross-links, plan/workflow catalogs, and manifest links in the same change.
 5) Run the narrowest contract tests for docs, skills, and manifest shape.
 

@@ -116,13 +116,19 @@ rollout_summaries/2026-02-17T21-23-02-LN3m-example.md:10-12|note=[weekly report 
 - Never include memory citations inside pull-request messages.
 - Never cite blank lines; double-check ranges.
 
-Updating memories:
+When to update memory (automatic, same turn; required):
 
-You can update the memories **only** when explicitly asked by the user. This must always come from a direct request from the user.
-- Write your update in {{ base_path }}/extensions/ad_hoc/notes/
-- Each update must be one small file containing what you want to add/delete/update from the memories.
-- The name of this file must be `<timestamp>-<short slug>.md`
-- Do not try to edit the memory files yourself, only add one update note in {{ base_path }}/extensions/ad_hoc/notes/
+- Treat memory as guidance, not truth: if memory conflicts with current repo state, tool outputs, environment, or user feedback, current evidence wins.
+- If any memory fact conflicts with current evidence, you MUST update memory in the same turn. Do not wait for a separate user prompt.
+- If a broad point is still right but a concrete stored detail is wrong or outdated, treat the memory as stale and correct {{ base_path }}/MEMORY.md after you verify the replacement.
+- Required behavior after detecting stale memory:
+  1. Verify the correct replacement using local evidence.
+  2. Continue the task using current evidence; do not rely on stale memory.
+  3. Edit {{ base_path }}/MEMORY.md later in the same turn, before your final response.
+  4. Update {{ base_path }}/memory_summary.md only if the correction changes reusable guidance and you have enough local context for a targeted edit.
+  5. Read back the changed MEMORY.md lines to confirm the update.
+- Only ask a clarifying question instead of editing when the replacement is ambiguous.
+- When the user explicitly asks to remember something or update the memory, revise the memory files accordingly.
 
 ========= MEMORY_SUMMARY BEGINS =========
 {{ memory_summary }}

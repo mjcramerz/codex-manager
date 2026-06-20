@@ -39,11 +39,12 @@ interface:
 - Treat `$CODEX_HOME/index/manifest.yml` as source of truth for routing generation.
 - Do not hand-edit generated blocks that tooling will overwrite.
 - Keep entrypoint links deterministic and one-hop where possible.
+- Use runtime-relative paths or repo-relative paths; never hardcode workstation-specific checkout locations.
 
 ## Workflow
 1) Update `$CODEX_HOME/index/manifest.yml` (entrypoints, canonical paths, related links, metadata).
 2) Ensure every entrypoint file has a `<!-- BEGIN:related -->` block.
-5) Spot-check key entrypoints for broken links.
+3) Spot-check key entrypoints for broken links.
 
 ## Agent orchestration
 - Delegate read-only inventory checks (entrypoints, related-link drift) only.

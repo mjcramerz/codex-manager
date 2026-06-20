@@ -20,6 +20,6 @@ Template for production-grade Bash scripts when the confirmed runtime is Bash.
 3) Run the narrowest relevant checks (lint/test/build or dry-run) before commit.
 
 Related:
-- `$CODEX_HOME/UNIX.md`
+- `$CODEX_HOME/docs/style/shell-runtime.md`
 - `$CODEX_HOME/docs/style/bash.md`
 - `$CODEX_HOME/snippets/bash/script_skeleton.sh`

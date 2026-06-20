@@ -1,5 +1,5 @@
 # Shell runtime guidance
-Purpose: define the common shell execution rules that used to live in the old monolithic `UNIX.md`.
+Purpose: define the common shell execution rules for shell-sensitive work in the runtime pack.
 
 ## Choose the matching shell
 - Use `zsh` for zsh-sensitive commands and zsh assets.
@@ -25,7 +25,6 @@ Purpose: define the common shell execution rules that used to live in the old mo
 - Do not copy `$CODEX_HOME/.credentials.json` into source-controlled assets.
 
 ## Related
-- `$CODEX_HOME/UNIX.md`
 - `$CODEX_HOME/docs/style/bash.md`
 - `$CODEX_HOME/docs/style/sh.md`
 - `$CODEX_HOME/index/style/overview.md`

@@ -19,23 +19,29 @@ It owns the installer, runtime-pack source tree, hook runtime assets, skill cata
 - `resources/home/user/index/manifest.yml` is the routing metadata source for the runtime-home pack.
 
 ## Runtime-state boundary
-These runtime artifacts are intentionally **not** synced back into the repo-managed home source:
+This repository is the source of truth for installable runtime assets only.
+Runtime state stays on the installed target and never syncs back into this repo.
+
+Examples of target-only runtime state:
+- `$CODEX_HOME/memories/`
 - `$CODEX_HOME/sessions/`
 - `$CODEX_HOME/shell_snapshots/`
 - `$CODEX_HOME/.credentials.json`
-
-Repo-managed carry-forward remains limited to the memory tree and selected operator-facing state files documented in `resources/home/user/AGENTS.md`.
+- `$CODEX_HOME/history.jsonl`
+- `$CODEX_HOME/session_index.jsonl`
+- `$CODEX_HOME/version.json`
+- `$CODEX_HOME/.personality_migration`
 
 ## Adjacent repositories this repo now aligns with
-- `/data/workspace/gitlab/computes/active/debian-preseed-di`
-- `/data/workspace/gitlab/computes/active/cf-aptly-r2`
-- `/data/workspace/gitlab/computes/active/cf-git-cicd-worker`
-- `/data/workspace/gitlab/computes/active/delivery`
-- `/data/workspace/gitlab/computes/active/codex-mcp`
+- `debian-preseed-di`
+- `cf-aptly-r2`
+- `cf-git-cicd-worker`
+- `delivery`
+- `codex-mcp`
 
 ## Useful entrypoints
 - Runtime-pack router: `resources/home/user/INDEX.md`
-- Memory router: `resources/home/user/memories/MEMORY.md`
+- Runtime memory guidance: consult `$CODEX_HOME/memories/MEMORY.md` only when it exists and the task is repo-aware
 - Installer workflow: `resources/home/user/docs/workflows/codex-manager.md`
 - MCP stack workflow: `resources/home/user/docs/workflows/codex-mcp.md`
 - Cloudflare delivery workflow: `resources/home/user/docs/workflows/cloudflare-delivery.md`

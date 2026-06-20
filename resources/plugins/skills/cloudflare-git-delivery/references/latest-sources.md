@@ -1,7 +1,6 @@
 # Latest sources
 
-Repo anchors:
-- `/data/workspace/gitlab/computes/active/cf-git-cicd-worker/README.md`
-- `/data/workspace/gitlab/computes/active/cf-git-cicd-worker/AGENTS.md`
-- `/data/workspace/gitlab/computes/active/delivery/README.md`
-- `/data/workspace/gitlab/computes/active/delivery/.gitlab-ci.yml`
+Focus areas:
+- current Cloudflare worker repository overview and operating contract
+- current shared delivery repository overview
+- current shared pipeline entrypoints and include contract

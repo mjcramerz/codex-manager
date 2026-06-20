@@ -15,7 +15,7 @@ Canonical content: `$CODEX_HOME/docs/workflows/planning.md`
 Use when:
 - any plan-before-coding trigger applies (see `$CODEX_HOME/AGENTS.md`)
 - you need a testable, reviewable plan with acceptance criteria
-- you need to enforce AGENTS -> MEMORY -> INDEX -> plans/workflows -> skills -> `$CODEX_HOME/UNIX.md` routing before execution
+- you need to enforce AGENTS -> MEMORY (when present) -> INDEX -> plans/workflows -> skills -> shell-runtime routing before execution
 
 <!-- BEGIN:related -->
 Related:

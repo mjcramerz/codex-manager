@@ -20,7 +20,7 @@ IFS=$'\n\t'
 ```
 
 Prefer the hardened snippet: `$CODEX_HOME/snippets/bash/strict.sh`.
-If `$CODEX_HOME/AGENTS.md` confirms the active session is Bash, read `$CODEX_HOME/UNIX.md` before using this deeper style guide.
+If `$CODEX_HOME/AGENTS.md` confirms the active session is Bash, read `$CODEX_HOME/docs/style/shell-runtime.md` before using this deeper style guide.
 
 ## Input handling
 - Treat **all inputs as untrusted**: CLI args, env vars, files, git output, network responses.

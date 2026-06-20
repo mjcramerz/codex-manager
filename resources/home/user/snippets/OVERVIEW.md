@@ -25,7 +25,7 @@ Purpose: provide copy-ready hardened patterns for code, config, and operational 
 - desktop, virtualization, and system hardening — host-focused configuration snippets
 
 ## Selection rules
-- Shell-sensitive snippets require `$CODEX_HOME/UNIX.md` and the matching shell runtime.
+- Shell-sensitive snippets require `$CODEX_HOME/docs/style/shell-runtime.md` and the matching shell runtime.
 - Use snippets for patterns; use templates for larger skeletons; use skills or workflows for execution guidance.
 - If a snippet becomes a multi-file scaffold, promote it to a template instead of extending the snippet indefinitely.
 

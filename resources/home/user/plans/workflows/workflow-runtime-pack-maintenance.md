@@ -20,6 +20,7 @@ Use this plan when following `$CODEX_HOME/docs/workflows/runtime-pack-maintenanc
 ## Action items
 [ ] Route to the workflow and confirm the smallest concrete entrypoint.
 [ ] Inventory the affected files, repos, and runtime contracts.
+[ ] Remove hardcoded workstation paths from touched docs, plans, skills, and instruction assets.
 [ ] Apply focused updates and keep cross-links in sync.
 [ ] Run the narrowest relevant validation and record evidence.
 

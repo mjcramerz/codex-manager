@@ -5,11 +5,11 @@ Role definitions live in `$CODEX_HOME/config.toml` under `[agents.*]`, and each 
 
 ## Routing Order
 - Follow `$CODEX_HOME/AGENTS.md`.
-- Load `$CODEX_HOME/memories/MEMORY.md` when the task is repo-aware or depends on prior decisions.
+- Load `$CODEX_HOME/memories/MEMORY.md` when it exists and the task is repo-aware or depends on prior decisions.
 - Route through `$CODEX_HOME/INDEX.md`.
 - Read `$CODEX_HOME/index/pack/plans.md` and `$CODEX_HOME/index/pack/workflows.md`.
 - Load the minimum required skills.
-- Follow `$CODEX_HOME/UNIX.md` before running shell-sensitive commands.
+- Follow `$CODEX_HOME/docs/style/shell-runtime.md` before running shell-sensitive commands.
 
 ## Role Selection
 - `default` — baseline single-owner role for routine coding, config edits, and small integration work.
