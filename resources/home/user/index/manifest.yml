@@ -197,8 +197,8 @@ pack:
     canonical: $CODEX_HOME/config.toml
     related:
       - $CODEX_HOME/.models/model_catalog.json
-      - $CODEX_HOME/.models/instructions/models/model-instructions.md
-      - $CODEX_HOME/.models/instructions/models/compact-prompt.md
+      - $CODEX_HOME/.models/instructions/models/base.md
+      - $CODEX_HOME/.models/instructions/compact/prompt.md
       - $CODEX_HOME/index/pack/docs.md
     metadata:
       version: '1.0'

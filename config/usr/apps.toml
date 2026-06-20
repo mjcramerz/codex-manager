@@ -335,6 +335,8 @@ tool_timeout_sec = 120
 # context7 - stdio transport
 [mcp_servers.context7]
 command = "$CODEX_MCP_DIR/wrappers/mcp-context7-wrapper.sh"
+env_vars = ["CONTEXT7_API_KEY"]
+bearer_token_env_var = "CONTEXT7_API_KEY"
 enabled = true
 required = false
 startup_timeout_sec = 20
@@ -351,7 +353,7 @@ tool_timeout_sec = 120
 # memory - stdio transport
 [mcp_servers.memory]
 command = "$CODEX_MCP_DIR/wrappers/mcp-memory-wrapper.sh"
-enabled = false
+enabled = true
 required = false
 startup_timeout_sec = 20
 tool_timeout_sec = 120
@@ -367,6 +369,7 @@ tool_timeout_sec = 120
 # fetch - stdio transport
 [mcp_servers.fetch]
 command = "$CODEX_MCP_DIR/wrappers/mcp-fetch-wrapper.sh"
+env_vars = ["FETCH_USER_AGENT", "FETCH_PROXY_URL", "FETCH_IGNORE_ROBOTS_TXT"]
 enabled = true
 required = false
 startup_timeout_sec = 20
@@ -383,6 +386,15 @@ tool_timeout_sec = 120
 # time - stdio transport
 [mcp_servers.time]
 command = "$CODEX_MCP_DIR/wrappers/mcp-time-wrapper.sh"
+env_vars = ["LOCAL_TIMEZONE"]
+enabled = true
+required = false
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+# markdown - stdio transport
+[mcp_servers.markdown]
+command = "$CODEX_MCP_DIR/wrappers/mcp-markdown-wrapper.sh"
 enabled = true
 required = false
 startup_timeout_sec = 20
@@ -391,7 +403,8 @@ tool_timeout_sec = 120
 # sqlite - stdio transport
 [mcp_servers.sqlite]
 command = "$CODEX_MCP_DIR/wrappers/mcp-sqlite-wrapper.sh"
-enabled = false
+env_vars = ["SQLITE_DSN", "DSN", "DBHUB_CONFIG"]
+enabled = true
 required = false
 startup_timeout_sec = 20
 tool_timeout_sec = 120
@@ -407,15 +420,24 @@ tool_timeout_sec = 120
 # playwright - stdio transport
 [mcp_servers.playwright]
 command = "$CODEX_MCP_DIR/wrappers/mcp-playwright-wrapper.sh"
-enabled = false
+enabled = true
 required = false
-startup_timeout_sec = 20
-tool_timeout_sec = 120
+startup_timeout_sec = 45
+tool_timeout_sec = 180
+
+# chrome-devtools - stdio transport
+[mcp_servers.chrome-devtools]
+command = "$CODEX_MCP_DIR/wrappers/mcp-chrome-devtools-wrapper.sh"
+enabled = true
+required = false
+startup_timeout_sec = 45
+tool_timeout_sec = 180
 
 # postgres - stdio transport
 [mcp_servers.postgres]
 command = "$CODEX_MCP_DIR/wrappers/mcp-postgres-wrapper.sh"
-enabled = false
+env_vars = ["POSTGRES_DSN", "DATABASE_URL", "DSN", "DBHUB_CONFIG"]
+enabled = true
 required = false
 startup_timeout_sec = 20
 tool_timeout_sec = 120
@@ -427,3 +449,11 @@ enabled = false
 required = false
 startup_timeout_sec = 20
 tool_timeout_sec = 120
+
+# semgrep - stdio transport
+[mcp_servers.semgrep]
+command = "$CODEX_MCP_DIR/wrappers/mcp-semgrep-wrapper.sh"
+enabled = true
+required = false
+startup_timeout_sec = 30
+tool_timeout_sec = 180

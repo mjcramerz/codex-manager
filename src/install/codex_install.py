@@ -197,7 +197,7 @@ PLUGINS_METADATA_FILENAME = "manifest.json"
 INSTRUCTIONS_GROUP_PATTERN = re.compile(r"^[a-z0-9][a-z0-9_-]*$")
 INSTRUCTIONS_ENTRY_KEY_PATTERN = re.compile(r"^[a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)*$")
 INSTRUCTIONS_ENTRY_FILENAME_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*$")
-INSTRUCTIONS_ALLOWED_SUFFIXES = {".json", ".lark", ".md"}
+INSTRUCTIONS_ALLOWED_SUFFIXES = {".json", ".lark", ".md", ".xml"}
 VERSION_PATTERN = re.compile(r"([0-9]+\.[0-9]+\.[0-9]+(?:\.[0-9]+)*(?:-[A-Za-z0-9._]+)*)")
 ENV_KEY_PATTERN = re.compile(r"^[A-Z][A-Z0-9_]*$")
 DRY_RUN_STAGE_ROOT = Path("/data/dryrun/codex")
@@ -206,6 +206,13 @@ STAGE_SOURCE_BUILD_ROOT_KEY = "CODEX_SOURCE_BUILD_ROOT"
 STAGE_SOURCE_CACHE_ROOT_KEY = "CODEX_SOURCE_CACHE_ROOT"
 STAGE_SOURCE_OUTPUT_DIR_KEY = "CODEX_SOURCE_OUTPUT_DIR"
 STAGE_SOURCE_CHECKOUT_DIR_KEY = "CODEX_SOURCE_CHECKOUT_DIR"
+
+
+def resolve_dry_run_stage_root() -> Path:
+    raw = os.environ.get("CODEX_DRY_RUN_STAGE_ROOT", "").strip()
+    if not raw:
+        return DRY_RUN_STAGE_ROOT
+    return ensure_safe_absolute_path("CODEX_DRY_RUN_STAGE_ROOT", raw)
 
 
 def parse_launch_env_table(
@@ -1072,7 +1079,7 @@ class Installer:
         )
 
     def _ensure_runtime_directories(self) -> None:
-        path_values: set[str] = {self.env[key] for key in ENV_ROOT_KEYS if key != "CODEX_MCP_DIR"}
+        path_values: set[str] = {self.env[key] for key in ENV_ROOT_KEYS}
         for key, value in self.runtime_vars.items():
             if key == "CODEX_TMPDIR":
                 continue
@@ -3019,16 +3026,19 @@ class Installer:
                 fail("compiled home config missing [plugins] section")
             self._verify_rendered_plugin_runtime(compiled_root / "plugin-runtime", home_payload)
 
-            dry_installer = Installer(self.repo_root, dry_run=True)
-            dry_installer.load()
-            dry_installer.validate()
-            dry_artifacts = CompiledArtifacts(config_toml=artifacts.config_toml)
-            dry_installer.apply_home_bundle()
-            dry_installer.apply_admin(dry_artifacts)
-            dry_installer.apply_vars_init()
-            dry_installer.apply(dry_artifacts)
-            dry_installer.apply_vars_reset()
-            dry_installer.uninstall()
+            verify_stage_root = compiled_root / "verify-stage"
+            stage_installer = Installer(
+                self.repo_root,
+                dry_run=False,
+                stage_root=verify_stage_root,
+            )
+            stage_installer.load()
+            stage_installer.validate()
+            stage_artifacts = stage_installer.compile(compiled_root / "verify-stage-compiled")
+            stage_installer.apply(stage_artifacts)
+            stage_installer.apply_vars_init()
+            stage_installer.apply_vars_reset()
+            stage_installer.uninstall()
 
     def _enabled_plugin_ids_from_home_payload(self, home_payload: dict[str, Any]) -> set[str]:
         plugins = home_payload.get("plugins")
@@ -3196,7 +3206,8 @@ def parse_args() -> argparse.Namespace:
         "--dry-run",
         action="store_true",
         help=(
-            "For install/build-install, perform an isolated staged install under /data/dryrun/codex; "
+            "For install/build-install, perform an isolated staged install under /data/dryrun/codex "
+            "(or $CODEX_DRY_RUN_STAGE_ROOT if set); "
             "for other commands, print actions without mutating files"
         ),
     )
@@ -3238,7 +3249,7 @@ def run() -> int:
     installer = Installer(
         repo_root=repo_root,
         dry_run=args.dry_run and not stage_dry_run,
-        stage_root=DRY_RUN_STAGE_ROOT if stage_dry_run else None,
+        stage_root=resolve_dry_run_stage_root() if stage_dry_run else None,
     )
 
     installer.load()

@@ -5,8 +5,10 @@ cli_auth_credentials_store = "file"
 mcp_oauth_credentials_store = "file"
 mcp_oauth_callback_port = 8088
 suppress_unstable_features_warning = false
-windows_wsl_setup_acknowledged = false
-approval_policy = "never"
+# legacy Windows-only acknowledgment flag retained for traceability
+#windows_wsl_setup_acknowledged = false
+# legacy approval-policy scalar retained for traceability
+#approval_policy = "never"
 #sandbox_mode = "workspace-write"
 
 default_permissions = "full"
@@ -85,7 +87,8 @@ hide_gpt5_1_migration_prompt = true
 hide_rate_limit_model_nudge = true
 hide_world_writable_warning = true
 
-version = 1
+# legacy out-of-schema source marker retained for traceability
+#version = 1
 
 # Global MCP server definitions only. Bundle-scoped endpoints belong in `resources/plugins/manifest.json`.
 # Per-user enabled defaults belong in `config/usr/apps.toml`; installer rendering writes `$CODEX_HOME`
@@ -361,7 +364,7 @@ startup_timeout_sec = 20
 tool_timeout_sec = 120
 # OAuth login is supported in compatible clients.
 # Optional bearer-token fallback:
-# bearer_token_env_var = "STRIPE_API_KEY"
+bearer_token_env_var = "STRIPE_API_KEY"
 
 [mcp_servers.cloudflare-api]
 url = "https://mcp.cloudflare.com/mcp"
@@ -375,6 +378,8 @@ enabled_tools = [
 #]
 startup_timeout_sec = 20
 tool_timeout_sec = 120
+# Optional bearer token for CI/CD or headless API access:
+bearer_token_env_var = "CLOUDFLARE_API_TOKEN"
 
 [mcp_servers.cloudflare-docs]
 url = "https://docs.mcp.cloudflare.com/mcp"
@@ -498,7 +503,10 @@ bearer_token_env_var = "HUGGINGFACE_TOKEN"
 [mcp_servers.context7]
 command = "/data/codex/mcp/wrappers/mcp-context7-wrapper.sh"
 args = []
-env_vars = []
+env_vars = [
+  "CONTEXT7_API_KEY",
+]
+bearer_token_env_var = "CONTEXT7_API_KEY"
 enabled_tools = [
   "resolve-library-id",
   "query-docs",
@@ -575,7 +583,11 @@ args = []
 enabled_tools = [
   "fetch",
 ]
-env_vars = []
+env_vars = [
+  "FETCH_USER_AGENT",
+  "FETCH_PROXY_URL",
+  "FETCH_IGNORE_ROBOTS_TXT",
+]
 #scopes = [
 #  "*",
 #]
@@ -613,6 +625,18 @@ enabled_tools = [
   "get_current_time",
   "convert_time",
 ]
+env_vars = [
+  "LOCAL_TIMEZONE",
+]
+#scopes = [
+#  "*",
+#]
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+
+[mcp_servers.markdown]
+command = "/data/codex/mcp/wrappers/mcp-markdown-wrapper.sh"
+args = []
 env_vars = []
 #scopes = [
 #  "*",
@@ -631,7 +655,11 @@ enabled_tools = [
   "describe_table",
   "append_insight",
 ]
-env_vars = []
+env_vars = [
+  "SQLITE_DSN",
+  "DSN",
+  "DBHUB_CONFIG",
+]
 #scopes = [
 #  "*",
 #]
@@ -730,13 +758,28 @@ env_vars = []
 startup_timeout_sec = 45
 tool_timeout_sec = 180
 
+[mcp_servers.chrome-devtools]
+command = "/data/codex/mcp/wrappers/mcp-chrome-devtools-wrapper.sh"
+args = []
+env_vars = []
+#scopes = [
+#  "*",
+#]
+startup_timeout_sec = 45
+tool_timeout_sec = 180
+
 [mcp_servers.postgres]
 command = "/data/codex/mcp/wrappers/mcp-postgres-wrapper.sh"
 args = []
 enabled_tools = [
   "query",
 ]
-env_vars = []
+env_vars = [
+  "POSTGRES_DSN",
+  "DATABASE_URL",
+  "DSN",
+  "DBHUB_CONFIG",
+]
 #scopes = [
 #  "*",
 #]
@@ -758,6 +801,16 @@ env_vars = []
 #]
 startup_timeout_sec = 45
 tool_timeout_sec = 120
+
+[mcp_servers.semgrep]
+command = "/data/codex/mcp/wrappers/mcp-semgrep-wrapper.sh"
+args = []
+env_vars = []
+#scopes = [
+#  "*",
+#]
+startup_timeout_sec = 30
+tool_timeout_sec = 180
 
 [shell_environment_policy]
 inherit = "all"

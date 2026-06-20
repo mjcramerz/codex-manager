@@ -79,6 +79,9 @@ url = "https://mcp.linear.app/mcp"
 [mcp_servers.memory.identity]
 command = "$CODEX_MCP_DIR/wrappers/mcp-memory-wrapper.sh"
 
+[mcp_servers.markdown.identity]
+command = "$CODEX_MCP_DIR/wrappers/mcp-markdown-wrapper.sh"
+
 [mcp_servers.microsoft-learn.identity]
 url = "https://learn.microsoft.com/api/mcp"
 
@@ -87,6 +90,9 @@ url = "https://developers.openai.com/mcp"
 
 [mcp_servers.playwright.identity]
 command = "$CODEX_MCP_DIR/wrappers/mcp-playwright-wrapper.sh"
+
+[mcp_servers.chrome-devtools.identity]
+command = "$CODEX_MCP_DIR/wrappers/mcp-chrome-devtools-wrapper.sh"
 
 [mcp_servers.postgres.identity]
 command = "$CODEX_MCP_DIR/wrappers/mcp-postgres-wrapper.sh"
@@ -105,6 +111,9 @@ command = "$CODEX_MCP_DIR/wrappers/mcp-sqlite-wrapper.sh"
 
 [mcp_servers.stripe.identity]
 url = "https://mcp.stripe.com"
+
+[mcp_servers.semgrep.identity]
+command = "$CODEX_MCP_DIR/wrappers/mcp-semgrep-wrapper.sh"
 
 [mcp_servers.time.identity]
 command = "$CODEX_MCP_DIR/wrappers/mcp-time-wrapper.sh"

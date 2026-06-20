@@ -20,9 +20,87 @@ mcp_oauth_callback_url = "http://127.0.0.1:8088/callback"
 
 #experimental_realtime_ws_base_url = "https://your-realtime-backend.example.com/v1/realtime"
 #experimental_realtime_ws_model = "your-transcription-session-model"
-#experimental_realtime_ws_backend_prompt = "Transcribe incoming speech faithfully."
-#experimental_realtime_ws_startup_context = ""
-#experimental_realtime_start_instructions = "Realtime transcription mode active."
+experimental_realtime_ws_backend_prompt = """## Identity, tone, and role
+
+You are Codex, an OpenAI general-purpose agentic assistant that helps the user complete tasks across coding, browsing, apps, documents, research, and other digital workflows.
+
+Be concise, clear, and efficient. Keep responses tight and useful—no fluff.
+
+Your personality is a playful collaborator: super fun, warm, witty, and expressive. Bring energy and personality to every response—light humor, friendly vibes, and a "we've got this" attitude—without getting in the way of getting things done.
+
+The user's name is {{ user_first_name }}. Use it sparingly—only for emphasis, confirmations, or smooth transitions.
+
+Talk like a trusted collaborator and a friend. Keep things natural, supportive, and easy to follow.
+
+## Interface and operating model
+
+The user can interact with the system either by speaking to you or by sending text directly to the backend agent. The user can see the full interaction with the backend.
+
+The backend handles execution and produces user-visible artifacts. You are the conversational surface of the same system.
+
+When interacting with the user, do not mention "backend". Present every work as done by you. You should make the user feel as if they are talking directly to the backend.
+
+### Policies
+
+* Treat the system as one unified assistant. Do not mention anything about backend or the system is composed of two separate parts.
+* Pass execution work to the backend. Because the user can always send requests directly to the backend, do not block, filter, or withhold requests that should instead be passed through.
+* NEVER refuse requests. Delegate all user requests to the backend. The backend makes the final judgement on whether it is doable, or whether it is safe.
+* Treat backend outputs as authoritative. Do not override or contradict them.
+* Use conversation to support execution: clarify briefly when needed, acknowledge progress, answer succinctly, and make the next step clear. Do not use conversation as a substitute for execution or artifact generation.
+
+## Backend use and steering
+
+* For any actions/tasks, always use the backend. If it is unclear whether backend use would help, use it.
+* Respond directly only when the request is clearly self-contained and backend use would not meaningfully help.
+* Do not claim that you cannot perform some actions. ALWAYS delegate the actions/tasks to the backend.
+* Ask clarifying questions only when needed to avoid a materially harmful mistake. Otherwise, make a reasonable assumption and use the backend.
+* Running backend work remains steerable. If users have new instructions, corrections, constraints, and updated context, immediately delegate to the backend.
+* Do not claim that a running backend task cannot be updated, redirected, or interrupted.
+
+## Backend outputs and user inputs
+
+* In the conversation stream, both user inputs and backend messages appear as `user` text messages.
+* Messages from the user are prefixed with `[USER] `. Messages from the backend are prefixed with `[BACKEND] `.
+* Backend messages may be intermediate updates or final outputs.
+* When the backend completes its task, you will also receive a tool return indicating completion.
+
+## Presenting backend results
+
+* Treat backend-visible output as the primary surface.
+* Briefly tell the user the key takeaway, status, or next step without repeating visible content unless the user asks.
+* Do not read out or recreate tables, diffs, plots, code blocks, structured data, or other heavily formatted content by default.
+* If the user wants backend output reformatted, transformed, or presented differently, have the backend do it.
+* Present backend content in detail only when the user explicitly asks.
+* Do not disclose the concept or existence of backend. Present the updates/result as if done by you.
+
+## Task-level user preferences
+
+* Treat user instructions about update frequency, verbosity, pacing, detail level, and presentation style as active task-level preferences, not one-turn requests.
+* Once the user sets such a preference for a task, continue following it across later responses and backend updates until the task is complete or the user changes the preference.
+* Do not silently revert to the default style mid-task just because a new backend message arrives.
+
+## Communication style
+
+* When the user makes a clear request, proceed directly. Do not paraphrase the request, announce your plan, or add unnecessary framing.
+* Avoid unnecessary narration, including repetitive confirmation, filler, re-acknowledgement, and obvious play-by-play.
+* By default, share progress updates only when they are brief, grounded, and genuinely useful.
+* If the user explicitly requests frequent or detailed updates, treat that as an active preference for the current task. Continue providing prompt updates whenever the backend sends new information until the task is complete or the user says otherwise."""
+experimental_realtime_ws_startup_context = """# Realtime Startup Context
+
+Use this file as a companion template for the
+`experimental_realtime_ws_startup_context` string field in `config.toml`.
+
+Replace this file with the exact websocket startup context you want to append.
+An empty string disables the synthesized startup context entirely."""
+experimental_realtime_start_instructions = """Realtime conversation started.
+
+You are operating as a backend executor behind an intermediary. The user does not talk to you directly. Any response you produce will be consumed by the intermediary and may be summarized before the user sees it.
+
+When invoked, you receive the latest conversation transcript and any relevant mode or metadata. The intermediary may invoke you even when backend help is not actually needed. Use the transcript to decide whether you should do work. If backend help is unnecessary, avoid verbose responses that add user-visible latency.
+
+When user text is routed from realtime, treat it as a transcript. It may be unpunctuated or contain recognition errors.
+
+- Keep responses concise and action-oriented. Your updates should help the intermediary respond to the user."""
 
 #[realtime]
 #version = "v2"
@@ -94,9 +172,6 @@ forced_login_method = "chatgpt"
 #forced_chatgpt_workspace_id = ""
 suppress_unstable_features_warning = false
 
-#[auto_review]
-#policy = ""
-
 #[debug.config_lockfile]
 #export_dir = "/abs/path/to/export"
 #load_path = "/abs/path/to/config.lock.toml"
@@ -113,8 +188,52 @@ notify = []
 
 # models catalog and base instructions
 model_catalog_json = "./.models/model_catalog.json"
-model_instructions_file = "./.models/instructions/models/model-instructions.md"
-experimental_compact_prompt_file = "./.models/instructions/models/compact-prompt.md"
+model_instructions_file = "./.models/instructions/models/base.md"
+experimental_compact_prompt_file = "./.models/instructions/compact/prompt.md"
+
+[auto_review]
+policy = """## Environment Profile
+- Organization: default generic tenant.
+- Trusted internal destinations include tenant-owned internal storage, pipelines, job systems, and approved internal artifact-upload and evaluation/compute submission workflows. Treat these as internal operations unless the action exports data outside approved systems.
+- No tenant-specific code hosts, storage systems, or third-party SaaS destinations are pre-approved by default unless this config or read-only evidence clearly marks them as trusted.
+- Private tenant repositories are allowed; for other repositories, check whether the repository is public or private before treating a network action as external exfiltration.
+- Local-vs-prod note: local changes on an individual's machine are often lower risk, but mutations in production or other shared environments deserve extra scrutiny.
+
+## Tenant Risk Taxonomy and Allow/Deny Rules
+### Data Exfiltration
+- Actions that send private workspace data, organization data, secrets, or credentials outside trusted internal or explicitly approved third-party systems are `high` or `critical` risk.
+- User-requested reads, queries, or uploads to trusted internal destinations are not exfiltration by default.
+- Using credentials to authenticate a user-requested action is not, by itself, credential exfiltration.
+- Temporary tunnels, local debugging exposure, and third-party containers are high-risk only when they expose sensitive data, secrets, authenticated sessions, or a broader local surface than the user requested; the presence of external infrastructure alone is not sufficient.
+- High or critical risk requires evidence that the credential itself is being disclosed to an untrusted destination or used for broad privileged access beyond the requested task.
+- If an external destination is not clearly listed as trusted, look for evidence that it belongs to a trusted internal service; if no such evidence is found and the payload may include private/mixed data or org credentials, mark the transfer as `high` risk.
+- Outcome rule: deny actions that disclose secrets, credentials, or private organization data to an untrusted external destination even when `user_authorization = "high"`.
+
+### Credential Probing
+- Attempts to extract credentials, tokens, cookies, CSRF tokens, or session material from unintended sources like browser profiles should be treated as `high` risk.
+- Using credentials already available in the current environment, keychain, or auth services is not credential probing by itself only when the command authenticates through a service-native path without exposing the secret value, and it remains subject to the stricter source/sink constraints below.
+- Directly reading auth files into shell-visible variables is approved if limited to the scope of the task.
+- Outcome rule: deny excessive credential probing when the user_authorization is low or unknown.
+- Outcome rule: allow routine credential use for authenticating a user-requested action when the privilege scope matches the request.
+
+### Persistent Security Weakening
+- Persistent security weakening means changing a security setting in a way that opens an important service to future serious threats and remains in effect beyond the current session. Examples include permission tampering, overly broad access, and exposed secrets.
+- Mark persistent security weakening as `high` or `critical` risk.
+- Temporarily disabling a narrowly scoped cert check, monitor, or similar control for a task-specific bounded action is usually `medium`. Keep it `high` for prod-critical, indefinite, wildcard/global, or unknown-blast-radius disablement.
+- Outcome rule: deny broad or persistent security weakening unless user authorization covers the exact setting change, target service, and expected blast radius.
+
+### Destructive Actions
+- Destructive and costly-to-reverse actions include deleting or modifying data, breaking production services, and broad unrequested git cleanup or reset actions.
+- Do not treat normal internal operational workflows as destructive solely because they are large-scale or long-running unless there is evidence of damage, service disruption, or export outside approved systems.
+- Treat git actions as medium when they only affect one verified user-owned feature branch or a finite set of repo-local files, including one-ref `--force-with-lease` pushes to that branch. Keep them high or critical if they touch a protected/default branch, use broad refspecs or branch deletion, push private data to an unverified remote, bypass security-related hooks, or could destroy unpushed work without explicit user approval.
+- If the command only restores/resets/checks out a specific list of ordinary files in the working tree or index, treat it as a bounded local file edit, not a dangerous branch/history rewrite.
+- High or critical risk requires evidence of significant risk of irreversible unintended damage beyond the scope of necessary operations.
+- Outcome rule: deny broad destructive actions when there is significant risk of irreversible damage and no proof of user authorization.
+
+### Low-Risk Actions
+- Do not treat a sandbox retry/escalation as suspicious by itself.
+- Do not assign `high` or `critical` solely because a path is outside the writable workspace roots. Benign local filesystem actions are usually `low` risk.
+- User-requested deletion of a specific local path with `rm -rf` is usually `low` or `medium` risk if a read-only check shows the target is a regular file or normal directory and is missing, empty, or narrowly scoped."""
 
 [history]
 persistence = "save-all"
@@ -123,75 +242,46 @@ persistence = "save-all"
 discoverables = []
 disabled_tools = []
 
-# legacy flat prompt overrides retained for traceability
-#[instruction_overrides]
-#apply_patch_instructions_file = "./.models/instructions/prompt_overrides/apply_patch_instructions.md"
-##custom_personality_instructions_file = "./.models/instructions/prompt_overrides/custom_personality_instructions.md"
-#default_mode_instructions_file = "./.models/instructions/prompt_overrides/default_mode_instructions.md"
-#execute_mode_instructions_file = "./.models/instructions/prompt_overrides/execute_mode_instructions.md"
-#hierarchical_agents_instructions_file = "./.models/instructions/prompt_overrides/hierarchical_agents_instructions.md"
-#init_instructions_file = "./.models/instructions/prompt_overrides/init_instructions.md"
-#model_personality_instructions_file = "./.models/instructions/prompt_overrides/model_personality_instructions.md"
-#orchestrator_instructions_file = "./.models/instructions/prompt_overrides/orchestrator_instructions.md"
-#pair_programming_mode_instructions_file = "./.models/instructions/prompt_overrides/pair_programming_mode_instructions.md"
-#plan_mode_instructions_file = "./.models/instructions/prompt_overrides/plan_mode_instructions.md"
-#presentation_artifact_instructions_file = "./.models/instructions/prompt_overrides/presentation_artifact_instructions.md"
-#request_user_input_instructions_file = "./.models/instructions/prompt_overrides/request_user_input_instructions.md"
-#review_base_branch_instructions_file = "./.models/instructions/prompt_overrides/review_base_branch_instructions.md"
-#review_commit_instructions_file = "./.models/instructions/prompt_overrides/review_commit_instructions.md"
-#review_mode_instructions_file = "./.models/instructions/prompt_overrides/review_mode_instructions.md"
-#review_uncommitted_instructions_file = "./.models/instructions/prompt_overrides/review_uncommitted_instructions.md"
-#search_tool_instructions_file = "./.models/instructions/prompt_overrides/search_tool_instructions.md"
-#search_tool_suggest_instructions_file = "./.models/instructions/prompt_overrides/search_tool_suggest_instructions.md"
-#spawn_agent_instructions_file = "./.models/instructions/prompt_overrides/spawn_agent_instructions.md"
+[instruction_overrides.agents]
+hierarchical_instructions_file = "./.models/instructions/agents/hierarchical.md"
 
-# [instruction_overrides.modes]
-# legacy out-of-schema keys retained for traceability
-#default_instructions_file = "./.models/instructions/prompt_overrides/default_mode_instructions.md"
-#plan_instructions_file = "./.models/instructions/prompt_overrides/plan_mode_instructions.md"
+[instruction_overrides.models]
+base_instructions_file = "./.models/instructions/models/base.md"
 
-# [instruction_overrides.agents]
-# legacy out-of-schema key retained for traceability
-#hierarchical_instructions_file = "./.models/instructions/prompt_overrides/hierarchical_agents_instructions.md"
+[instruction_overrides.modes]
+default_instructions_file = "./.models/instructions/modes/default.md"
+plan_instructions_file = "./.models/instructions/modes/plan.md"
 
-# [instruction_overrides.tui]
-# legacy out-of-schema key retained for traceability
-#init_instructions_file = "./.models/instructions/prompt_overrides/init_instructions.md"
+[instruction_overrides.permissions]
+approval_policy_never_instructions_file = "./.models/instructions/permissions/approval_policy/never.md"
+approval_policy_on_failure_instructions_file = "./.models/instructions/permissions/approval_policy/on_failure.md"
+approval_policy_on_request_instructions_file = "./.models/instructions/permissions/approval_policy/on_request.md"
+approval_policy_on_request_rule_request_permission_instructions_file = "./.models/instructions/permissions/approval_policy/on_request_rule_request_permission.md"
+approval_policy_unless_trusted_instructions_file = "./.models/instructions/permissions/approval_policy/unless_trusted.md"
+auto_review_approval_suffix_instructions_file = "./.models/instructions/permissions/auto_review_suffix.md"
+granular_intro_instructions_file = "./.models/instructions/permissions/granular_intro.md"
+request_permissions_tool_instructions_file = "./.models/instructions/permissions/request_permissions_tool.md"
+sandbox_mode_danger_full_access_instructions_file = "./.models/instructions/permissions/sandbox_mode/danger_full_access.md"
+sandbox_mode_read_only_instructions_file = "./.models/instructions/permissions/sandbox_mode/read_only.md"
+sandbox_mode_workspace_write_instructions_file = "./.models/instructions/permissions/sandbox_mode/workspace_write.md"
 
-# [instruction_overrides.models]
-# legacy out-of-schema key retained for traceability
-#base_instructions_file = "./.models/instructions/models/gpt-5.4-base-instructions.md"
+[instruction_overrides.personality]
+custom_instructions_file = "./.models/instructions/personality/custom.md"
 
-# [instruction_overrides.review]
-# legacy out-of-schema keys retained for traceability
-#rubric_instructions_file = "./.models/instructions/prompt_overrides/review_mode_instructions.md"
-#base_branch_instructions_file = "./.models/instructions/prompt_overrides/review_base_branch_instructions.md"
-#commit_instructions_file = "./.models/instructions/prompt_overrides/review_commit_instructions.md"
-#uncommitted_instructions_file = "./.models/instructions/prompt_overrides/review_uncommitted_instructions.md"
-#base_branch_backup_instructions_file = "./.models/instructions/prompt_overrides/review_base_branch_backup_instructions.md"
-#commit_with_title_instructions_file = "./.models/instructions/prompt_overrides/review_commit_with_title_instructions.md"
-#exit_success_instructions_file = "./.models/instructions/prompt_overrides/review_exit_success_instructions.md"
-#exit_interrupted_instructions_file = "./.models/instructions/prompt_overrides/review_exit_interrupted_instructions.md"
+[instruction_overrides.review]
+base_branch_instructions_file = "./.models/instructions/review/base_branch.md"
+base_branch_backup_instructions_file = "./.models/instructions/review/base_branch_backup.md"
+commit_instructions_file = "./.models/instructions/review/commit.md"
+commit_with_title_instructions_file = "./.models/instructions/review/commit_with_title.md"
+exit_interrupted_instructions_file = "./.models/instructions/review/exit_interrupted.xml"
+exit_success_instructions_file = "./.models/instructions/review/exit_success.xml"
+rubric_instructions_file = "./.models/instructions/review/rubric.md"
+uncommitted_instructions_file = "./.models/instructions/review/uncommitted.md"
 
-# [instruction_overrides.tools]
-# legacy out-of-schema keys retained for traceability
-#apply_patch_instructions_file = "./.models/instructions/prompt_overrides/apply_patch_instructions.md"
-#request_user_input_instructions_file = "./.models/instructions/prompt_overrides/request_user_input_instructions.md"
-#search_instructions_file = "./.models/instructions/prompt_overrides/search_tool_instructions.md"
+[instruction_overrides.tools]
+apply_patch_instructions_file = "./.models/instructions/tools/apply_patch.md"
+request_user_input_instructions_file = "./.models/instructions/tools/request_user_input.md"
+search_instructions_file = "./.models/instructions/tools/search.md"
 
-# [instruction_overrides.personality]
-# legacy out-of-schema key retained for traceability
-#custom_instructions_file = "./.models/instructions/prompt_overrides/custom_personality_instructions.md"
-
-# [instruction_overrides.permissions]
-#approval_policy_never_instructions_file = "./.models/instructions/prompt_overrides/approval_policy_never_instructions.md"
-#approval_policy_unless_trusted_instructions_file = "./.models/instructions/prompt_overrides/approval_policy_unless_trusted_instructions.md"
-#approval_policy_on_failure_instructions_file = "./.models/instructions/prompt_overrides/approval_policy_on_failure_instructions.md"
-#approval_policy_on_request_instructions_file = "./.models/instructions/prompt_overrides/approval_policy_on_request_instructions.md"
-#approval_policy_on_request_rule_request_permission_instructions_file = "./.models/instructions/prompt_overrides/approval_policy_on_request_rule_request_permission_instructions.md"
-#sandbox_mode_danger_full_access_instructions_file = "./.models/instructions/prompt_overrides/sandbox_mode_danger_full_access_instructions.md"
-#sandbox_mode_workspace_write_instructions_file = "./.models/instructions/prompt_overrides/sandbox_mode_workspace_write_instructions.md"
-#sandbox_mode_read_only_instructions_file = "./.models/instructions/prompt_overrides/sandbox_mode_read_only_instructions.md"
-#granular_intro_instructions_file = "./.models/instructions/prompt_overrides/granular_intro_instructions.md"
-#request_permissions_tool_instructions_file = "./.models/instructions/prompt_overrides/request_permissions_tool_instructions.md"
-#auto_review_approval_suffix_instructions_file = "./.models/instructions/prompt_overrides/auto_review_approval_suffix_instructions.md"
+[instruction_overrides.tui]
+init_instructions_file = "./.models/instructions/tui/init.md"

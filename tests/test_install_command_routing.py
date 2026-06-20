@@ -1,4 +1,5 @@
 import sys
+import tempfile
 import tomllib
 import types
 import unittest
@@ -89,6 +90,22 @@ class InstallCommandRoutingTests(unittest.TestCase):
         installer_cls.assert_called_once()
         self.assertEqual(installer_cls.call_args.kwargs["dry_run"], False)
         self.assertEqual(installer_cls.call_args.kwargs["stage_root"], codex_install.DRY_RUN_STAGE_ROOT)
+
+    def test_install_dry_run_honors_stage_root_environment_override(self) -> None:
+        args = types.SimpleNamespace(command="install", dry_run=True, compiled_dir="src/misc/compiled")
+        stage_root = Path("/tmp/codex-stage-root")
+        with (
+            patch.object(codex_install, "parse_args", return_value=args),
+            patch.object(codex_install, "ensure_non_root_user"),
+            patch.dict("os.environ", {"CODEX_DRY_RUN_STAGE_ROOT": str(stage_root)}, clear=False),
+            patch.object(codex_install, "Installer", autospec=True) as installer_cls,
+        ):
+            installer_cls.return_value._resolved_stage_root.return_value = stage_root
+            rc = codex_install.run()
+
+        self.assertEqual(rc, 0)
+        installer_cls.assert_called_once()
+        self.assertEqual(installer_cls.call_args.kwargs["stage_root"], stage_root)
 
     def test_build_install_uses_source_build_environment_overrides(self) -> None:
         installer = codex_install.Installer.__new__(codex_install.Installer)
@@ -295,6 +312,57 @@ class InstallConfigToleranceTests(unittest.TestCase):
 
         installer._install_stage_environment_exports.assert_called_once_with()
         installer._sync_global_environment.assert_not_called()
+
+    def test_verify_uses_staged_installer_for_apply_cycle(self) -> None:
+        verify_method = codex_install.Installer.verify
+        installer = codex_install.Installer.__new__(codex_install.Installer)
+        installer.repo_root = REPO_ROOT
+        installer.mcp_payload = {"mcp_servers": {"fetch": {"command": "dummy"}}}
+        installer.runtime_vars = {"CODEX_HOME": "/tmp/runtime-home"}
+        installer._render_requirements_toml = Mock()
+        installer._verify_rendered_plugin_runtime = Mock()
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            verify_root = Path(tmpdir)
+            compiled_config = verify_root / "compiled" / "config.toml"
+            compiled_config.parent.mkdir(parents=True, exist_ok=True)
+            compiled_config.write_text(
+                '[mcp_servers.fetch]\ncommand = "dummy"\n',
+                encoding="utf-8",
+            )
+            installer.compile = Mock(return_value=types.SimpleNamespace(config_toml=compiled_config))
+            installer._render_user_config_toml = Mock(return_value='[plugins]\n"codex-repo@codex-local" = { enabled = true }\n')
+
+            stage_installer = Mock()
+            stage_artifacts = types.SimpleNamespace(config_toml=verify_root / "verify-stage-compiled" / "config.toml")
+            stage_installer.compile.return_value = stage_artifacts
+
+            class FixedTempDir:
+                def __init__(self, path: Path) -> None:
+                    self.path = path
+
+                def __enter__(self) -> str:
+                    return str(self.path)
+
+                def __exit__(self, exc_type, exc, tb) -> bool:
+                    return False
+
+            with (
+                patch.object(codex_install.tempfile, "TemporaryDirectory", return_value=FixedTempDir(verify_root)),
+                patch.object(codex_install, "Installer", return_value=stage_installer) as installer_cls,
+            ):
+                verify_method(installer, verify_root / "compiled")
+
+            installer_cls.assert_called_once_with(
+                REPO_ROOT,
+                dry_run=False,
+                stage_root=verify_root / "verify-stage",
+            )
+            stage_installer.load.assert_called_once_with()
+            stage_installer.validate.assert_called_once_with()
+            stage_installer.compile.assert_called_once_with(verify_root / "verify-stage-compiled")
+            stage_installer.apply.assert_called_once_with(stage_artifacts)
+            stage_installer.uninstall.assert_called_once_with()
 
 
 if __name__ == "__main__":
