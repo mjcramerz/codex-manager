@@ -68,16 +68,32 @@ sub _warning_lines {
     my @lines;
     my %seen;
     for my $line (split /\n/, $text) {
-        next if !defined $line;
-        my $trimmed = $line;
-        $trimmed =~ s/^\s+|\s+$//g;
+        my $trimmed = _sanitize_warning_line($line);
         next if !length $trimmed;
-        next if $trimmed !~ /\b(?:warn|warning|error|failed|denied|timeout)\b/i;
         next if $seen{$trimmed}++;
         push @lines, $trimmed;
         last if @lines >= 3;
     }
     return @lines;
+}
+
+sub _sanitize_warning_line {
+    my ($line) = @_;
+    return '' if !defined $line;
+
+    my $trimmed = $line;
+    $trimmed =~ s/^\s+|\s+$//g;
+    return '' if !length $trimmed;
+    return '' if $trimmed !~ /\b(?:warn|warning|error|failed|denied|timeout)\b/i;
+    return '' if $trimmed =~ /\b(?:base_instructions|skills_instructions|plugins_instructions|session_meta)\b/i;
+    return '' if $trimmed =~ /<skills_instructions>|<plugins_instructions>/i;
+    return '' if $trimmed =~ /### (?:Available skills|Skill roots)/i;
+
+    my $max_chars = 220;
+    if (length($trimmed) > $max_chars) {
+        $trimmed = substr($trimmed, 0, $max_chars - 3) . '...';
+    }
+    return $trimmed;
 }
 
 sub transcript_summary_lines {

@@ -86,11 +86,11 @@ sub runtime_config {
                 session_start => {
                     startup_context => [
                         'Repo role: Codex installer and runtime-configuration source tree.',
-                        'Primary edit surfaces: `src/install/**`, `config/usr/apps.toml`, `config/agents/*.toml`, runtime configuration under `config/usr/*`, `config/vendor/*`, and source/supporting assets under `resources/**`.',
-                        'Primary local checks for installer and runtime-generation work are `python3 -m compileall src tests` and `python3 -m unittest discover -s tests`.',
+                        'Edit mainly in `src/install/**`, `config/usr/apps.toml`, `config/usr/*`, `config/vendor/*`, `config/agents/*.toml`, and `resources/**`.',
+                        'Run `python3 -m compileall src tests` and `python3 -m unittest discover -s tests` for installer/runtime changes.',
                     ],
                     resume_context => [
-                        'Resume focus stays on `src/install/**`, `config/usr/**`, `config/vendor/**`, `config/agents/**`, `resources/**`, and `tests/**`.',
+                        'Resume in `src/install/**`, `config/usr/**`, `config/vendor/**`, `config/agents/**`, `resources/**`, and `tests/**`.',
                     ],
                 },
                 user_prompt_submit => {
@@ -188,11 +188,11 @@ sub runtime_config {
                 session_start => {
                     startup_context => [
                         'Repo role: upstream Codex source tree and runtime-contract implementation.',
-                        'High-touch areas for this repo include `codex-rs/core/**`, `codex-rs/tui/**`, `codex-rs/tui_app_server/**`, and other Rust crates under `codex-rs/**`.',
-                        'For local Rust work, run `cd codex-rs && just fmt`, then use the smallest deterministic crate-scoped command with `--target x86_64-unknown-linux-gnu`.',
+                        'Focus on `codex-rs/core/**`, `codex-rs/tui/**`, `codex-rs/tui_app_server/**`, and related crates under `codex-rs/**`.',
+                        'For local Rust work, run `cd codex-rs && just fmt`, then the smallest crate-scoped command with `--target x86_64-unknown-linux-gnu`.',
                     ],
                     resume_context => [
-                        'Resume focus stays on the touched crates under `codex-rs/**` and the smallest deterministic crate-scoped command with `--target x86_64-unknown-linux-gnu`.',
+                        'Resume in the touched `codex-rs/**` crates and keep validation crate-scoped with `--target x86_64-unknown-linux-gnu`.',
                     ],
                 },
                 user_prompt_submit => {

@@ -244,6 +244,30 @@ class HookScriptTests(unittest.TestCase):
             self.assertIn("tracked.txt", context)
             self.assertNotIn("Manifest-defined focus areas", context)
 
+    def test_startup_omits_transcript_signal_summary(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_codex_manager_repo(tmpdir)
+            transcript_path = Path(tmpdir) / "session.jsonl"
+            transcript_path.write_text(
+                "Recent warning: {\"timestamp\":\"2026-06-20T01:21:07.638Z\",\"type\":\"session_meta\",\"payload\":{\"base_instructions\":{\"text\":\"<skills_instructions> ### Available skills\"}}}\n"
+                "command timed out after 20 seconds\n",
+                encoding="utf-8",
+            )
+
+            result = run_hook(
+                "session-start",
+                {
+                    "cwd": str(repo),
+                    "source": "startup",
+                    "transcript_path": str(transcript_path),
+                },
+            )
+
+            payload = json.loads(result.stdout)
+            context = payload["hookSpecificOutput"]["additionalContext"]
+            self.assertNotIn("Recent recurring signals from the session transcript:", context)
+            self.assertNotIn("Available skills", context)
+
     def test_session_start_does_not_fallback_when_no_change_group_matches(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             repo = make_codex_manager_repo(tmpdir)
@@ -277,8 +301,8 @@ class HookScriptTests(unittest.TestCase):
             payload = json.loads(result.stdout)
             context = payload["hookSpecificOutput"]["additionalContext"]
             self.assertIn("Review requests should lead with concrete findings", context)
-            self.assertIn("Repo hook wiring lives inline in `config/usr/apps.toml`", context)
-            self.assertIn("behavioral source of truth", context)
+            self.assertIn("Hook wiring stays inline in `config/usr/apps.toml`", context)
+            self.assertIn("runtime source of truth", context)
             self.assertIn("python3 -m compileall src tests", context)
             self.assertIn("python3 -m unittest discover -s tests", context)
 

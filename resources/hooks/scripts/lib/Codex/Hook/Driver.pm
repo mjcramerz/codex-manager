@@ -336,14 +336,16 @@ sub _session_start_context {
             push @summary, "- Changed files preview: `" . preview_paths($worktree->{preview}) . "`";
         }
     }
-    my @recurring = transcript_summary_lines(path => $payload->{transcript_path});
+    my $source_name = lc($payload->{source} // '');
+    my @recurring = $source_name eq 'resume'
+      ? transcript_summary_lines(path => $payload->{transcript_path})
+      : ();
     if (@recurring) {
         push @summary, '- Recent recurring signals from the session transcript:';
         push @summary, map { "- $_" } @recurring;
     }
 
     my @sections = (join("\n", @summary));
-    my $source_name = lc($payload->{source} // '');
     my $index = 0;
     for my $block (_manifest_block_entries($manifest, \@profiles, 'session_start')) {
         my @lines = $source_name eq 'resume'
@@ -400,9 +402,9 @@ sub _user_prompt_context {
     if ($prompt =~ /\b(hook|hooks|manifest|sessionstart|userpromptsubmit|stop hook)\b/i) {
         push @sections, join(
             "\n",
-            'Repo hook wiring lives inline in `config/usr/apps.toml` and installs into `$CODEX_HOME/config.toml`.',
-            'Perl modules under `resources/hooks/scripts/lib/Codex/Hook/` are the behavioral source of truth; do not reintroduce manifest-driven `hooks.json` generation.',
-            'Keep hook matcher groups mutually exclusive because Codex runs multiple matching command hooks for the same event concurrently. `UserPromptSubmit` and `Stop` still self-filter inside the command.',
+            'Hook wiring stays inline in `config/usr/apps.toml` and installs into `$CODEX_HOME/config.toml`.',
+            'Perl modules under `resources/hooks/scripts/lib/Codex/Hook/` are the runtime source of truth; do not reintroduce manifest-driven `hooks.json` generation.',
+            'Keep matcher groups mutually exclusive because Codex runs matching command hooks concurrently. `UserPromptSubmit` and `Stop` still self-filter inside the command.',
         );
     }
     if ($prompt =~ /\b(github|gitlab|mirror|patch|patches|release|mcr\/)\b/i) {

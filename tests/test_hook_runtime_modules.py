@@ -193,6 +193,30 @@ print JSON::PP::encode_json($result);
         self.assertEqual(payload["rc"], 124)
         self.assertEqual(payload["stderr"], "command timed out")
 
+    def test_transcript_summary_filters_skill_catalog_session_meta_noise(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            transcript_path = Path(tmpdir) / "transcript.jsonl"
+            transcript_path.write_text(
+                "Recent warning: {\"timestamp\":\"2026-06-20T01:21:07.638Z\",\"type\":\"session_meta\",\"payload\":{\"base_instructions\":{\"text\":\"<skills_instructions> ### Available skills ### Skill roots\"}}}\n"
+                "Warning: truncated output (original token count: 12500)\n"
+                "command timed out after 20 seconds\n",
+                encoding="utf-8",
+            )
+
+            code = r'''
+use Codex::Hook::Learning qw(transcript_summary_lines);
+my @lines = transcript_summary_lines(path => $ARGV[0]);
+print JSON::PP::encode_json(\@lines);
+'''
+            proc = run_perl(code, str(transcript_path))
+            payload = json.loads(proc.stdout)
+            rendered = "\n".join(payload)
+            self.assertIn("timeout boundaries", rendered)
+            self.assertIn("Warning: truncated output", rendered)
+            self.assertNotIn("Available skills", rendered)
+            self.assertNotIn("skills_instructions", rendered)
+            self.assertNotIn("base_instructions", rendered)
+
     def test_repo_reuses_cached_git_calls_within_one_process(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             repo = Path(tmpdir) / "repo"
