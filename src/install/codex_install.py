@@ -1129,7 +1129,7 @@ class Installer:
         return entries
 
     def _prompt_managed_secret_value(self, *, server_name: str, key: str) -> str | None:
-        if not sys.stdin.isatty() or not sys.stderr.isatty():
+        if not sys.stdin.isatty() or not sys.stdout.isatty():
             self._warn_once(
                 f"managed secret {key} is enabled for mcp_servers.{server_name} but no interactive terminal is "
                 "available; continuing without storing it"
@@ -1138,7 +1138,7 @@ class Installer:
 
         prompt = f"Enter {key} for mcp_servers.{server_name} (or 's' to skip): "
         while True:
-            value = getpass.getpass(prompt)
+            value = input(prompt)
             normalized = value.strip()
             if normalized.lower() == "s":
                 return None

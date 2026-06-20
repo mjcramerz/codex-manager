@@ -336,7 +336,7 @@ tool_timeout_sec = 120
 [mcp_servers.context7]
 command = "$CODEX_MCP_DIR/wrappers/mcp-context7-wrapper.sh"
 env_vars = ["CONTEXT7_API_KEY"]
-bearer_token_env_var = "CONTEXT7_API_KEY"
+#bearer_token_env_var = "CONTEXT7_API_KEY"
 enabled = true
 required = false
 startup_timeout_sec = 20

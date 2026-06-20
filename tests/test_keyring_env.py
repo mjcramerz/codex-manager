@@ -221,6 +221,62 @@ class InstallerManagedSecretsTests(unittest.TestCase):
         installer._warn_once = Mock()
         return installer
 
+    def test_prompt_managed_secret_value_uses_visible_input(self) -> None:
+        installer = self._make_installer()
+
+        with (
+            patch.object(sys.stdin, "isatty", return_value=True),
+            patch.object(sys.stdout, "isatty", return_value=True),
+            patch("builtins.input", return_value=" visible-secret ") as input_mock,
+        ):
+            value = codex_install.Installer._prompt_managed_secret_value(
+                installer,
+                server_name="vercel",
+                key="VERCEL_API_TOKEN",
+            )
+
+        self.assertEqual(value, "visible-secret")
+        input_mock.assert_called_once_with(
+            "Enter VERCEL_API_TOKEN for mcp_servers.vercel (or 's' to skip): "
+        )
+
+    def test_prompt_managed_secret_value_skips_on_s(self) -> None:
+        installer = self._make_installer()
+
+        with (
+            patch.object(sys.stdin, "isatty", return_value=True),
+            patch.object(sys.stdout, "isatty", return_value=True),
+            patch("builtins.input", return_value="s"),
+        ):
+            value = codex_install.Installer._prompt_managed_secret_value(
+                installer,
+                server_name="vercel",
+                key="VERCEL_API_TOKEN",
+            )
+
+        self.assertIsNone(value)
+
+    def test_prompt_managed_secret_value_retries_on_empty_input(self) -> None:
+        installer = self._make_installer()
+
+        with (
+            patch.object(sys.stdin, "isatty", return_value=True),
+            patch.object(sys.stdout, "isatty", return_value=True),
+            patch("builtins.input", side_effect=["", " retry-secret "]) as input_mock,
+            patch("builtins.print") as print_mock,
+        ):
+            value = codex_install.Installer._prompt_managed_secret_value(
+                installer,
+                server_name="vercel",
+                key="VERCEL_API_TOKEN",
+            )
+
+        self.assertEqual(value, "retry-secret")
+        self.assertEqual(input_mock.call_count, 2)
+        print_mock.assert_called_once_with(
+            "[warn] VERCEL_API_TOKEN cannot be empty; enter a value or 's' to skip"
+        )
+
     def test_repo_secrets_file_tracks_vendor_mcp_token_servers(self) -> None:
         installer = codex_install.Installer(repo_root=REPO_ROOT, dry_run=True)
         installer.load()
