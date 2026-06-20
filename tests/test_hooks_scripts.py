@@ -192,6 +192,28 @@ class HookScriptTests(unittest.TestCase):
             self.assertIn("Current branch `github/mcr/main` is a read-only mirror branch.", context)
             self.assertIn("`patches/release/` exists.", context)
 
+    def test_session_start_injects_salsa_packaging_mirror_context(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_codex_manager_repo(tmpdir)
+            subprocess.run(["git", "branch", "gitlab/mcr/main"], cwd=repo, check=True)
+            subprocess.run(["git", "branch", "pristine-tar"], cwd=repo, check=True)
+            subprocess.run(["git", "tag", "upstream/0.20.1"], cwd=repo, check=True)
+            subprocess.run(["git", "tag", "debian/0.20.1-1"], cwd=repo, check=True)
+
+            result = run_hook(
+                "session-start",
+                {
+                    "cwd": str(repo),
+                    "source": "startup",
+                },
+            )
+
+            payload = json.loads(result.stdout)
+            context = payload["hookSpecificOutput"]["additionalContext"]
+            self.assertIn("Debian Salsa packaging mirror detected", context)
+            self.assertIn("`pristine-tar`, `upstream/*`, and `debian/*`", context)
+            self.assertIn("Packaging refs preview:", context)
+
     def test_session_start_includes_environment_summary(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             repo = make_codex_manager_repo(tmpdir)
@@ -326,14 +348,38 @@ class HookScriptTests(unittest.TestCase):
             self.assertIn("`send_input`", context)
             self.assertIn("`wait_agent`", context)
             self.assertIn("`close_agent`", context)
-            self.assertIn("`manager`:", context)
-            self.assertIn("`orchestrator`:", context)
             self.assertIn("`planner`:", context)
             self.assertIn("`delegator`:", context)
-            self.assertIn("`analyst`:", context)
-            self.assertIn("`synthesizer`:", context)
-            self.assertIn("`explorer`:", context)
-            self.assertIn("`tester`:", context)
+            self.assertIn("`orchestrator`:", context)
+            self.assertLess(len(context), 1800)
+
+    def test_resume_context_stays_bounded_with_noisy_transcript(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_codex_manager_repo(tmpdir)
+            transcript_path = Path(tmpdir) / "session.jsonl"
+            giant_warning = "Warning: " + ("x" * 8000)
+            transcript_path.write_text(
+                "\n".join([
+                    giant_warning,
+                    giant_warning,
+                    "command timed out after 20 seconds",
+                    "permission denied while writing file",
+                ] * 40),
+                encoding="utf-8",
+            )
+
+            result = run_hook(
+                "session-start",
+                {
+                    "cwd": str(repo),
+                    "source": "resume",
+                    "transcript_path": str(transcript_path),
+                },
+            )
+
+            payload = json.loads(result.stdout)
+            context = payload["hookSpecificOutput"]["additionalContext"]
+            self.assertLess(len(context), 1800)
 
     def test_subagent_start_coordination_wrapper_includes_role_profile_context(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -446,7 +492,28 @@ class HookScriptTests(unittest.TestCase):
             self.assertIn("Local environment signals:", context)
             self.assertIn("Probe `docker ps`: failed (Cannot connect to the Docker daemon).", context)
 
-    def test_pre_tool_use_blocks_destructive_git_reset(self) -> None:
+    def test_user_prompt_submit_mentions_salsa_packaging_mirror_context(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_codex_manager_repo(tmpdir)
+            subprocess.run(["git", "branch", "gitlab/mcr/main"], cwd=repo, check=True)
+            subprocess.run(["git", "branch", "pristine-tar"], cwd=repo, check=True)
+            subprocess.run(["git", "tag", "upstream/0.20.1"], cwd=repo, check=True)
+            subprocess.run(["git", "tag", "debian/0.20.1-1"], cwd=repo, check=True)
+
+            result = run_hook(
+                "user-prompt-submit",
+                {
+                    "cwd": str(repo),
+                    "prompt": "Check the gitlab mirror and packaging refs for rebuild flow.",
+                },
+            )
+
+            payload = json.loads(result.stdout)
+            context = payload["hookSpecificOutput"]["additionalContext"]
+            self.assertIn("Debian Salsa packaging mirror", context)
+            self.assertIn("`pristine-tar`, `upstream/*`, and `debian/*`", context)
+
+    def test_pre_tool_use_shell_command_is_disabled(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             repo = make_codex_manager_repo(tmpdir)
 
@@ -459,11 +526,9 @@ class HookScriptTests(unittest.TestCase):
                 },
             )
 
-            payload = json.loads(result.stdout)
-            self.assertEqual(payload["decision"], "block")
-            self.assertIn("destructive `git reset --hard` path", payload["reason"])
+            self.assertEqual(result.stdout.strip(), "")
 
-    def test_pre_tool_use_blocks_structured_git_clean_payload(self) -> None:
+    def test_pre_tool_use_shell_structured_payload_is_disabled(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             repo = make_codex_manager_repo(tmpdir)
 
@@ -476,9 +541,7 @@ class HookScriptTests(unittest.TestCase):
                 },
             )
 
-            payload = json.loads(result.stdout)
-            self.assertEqual(payload["decision"], "block")
-            self.assertIn("destructive `git clean -fd` path", payload["reason"])
+            self.assertEqual(result.stdout.strip(), "")
 
     def test_wrapper_script_executes_driver_with_vendored_schema_tree(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -496,7 +559,7 @@ class HookScriptTests(unittest.TestCase):
             context = payload["hookSpecificOutput"]["additionalContext"]
             self.assertIn("Repository context for `codex`", context)
 
-    def test_permission_request_adds_scope_guidance(self) -> None:
+    def test_permission_request_shell_command_is_disabled(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             repo = make_codex_manager_repo(tmpdir)
 
@@ -509,10 +572,7 @@ class HookScriptTests(unittest.TestCase):
                 },
             )
 
-            payload = json.loads(result.stdout)
-            context = payload["systemMessage"]
-            self.assertIn("Permission request for `shell command` (`exec_command`)", context)
-            self.assertIn("Keep the scope minimal", context)
+            self.assertEqual(result.stdout.strip(), "")
 
     def test_permission_request_generic_tool_uses_fallback_label(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -532,7 +592,7 @@ class HookScriptTests(unittest.TestCase):
             self.assertIn("Permission request for `tool call` (`write_stdin`)", context)
             self.assertIn("Keep the scope minimal", context)
 
-    def test_post_tool_use_emits_failure_follow_up_context(self) -> None:
+    def test_post_tool_use_shell_command_is_disabled(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             repo = make_codex_manager_repo(tmpdir)
 
@@ -545,12 +605,9 @@ class HookScriptTests(unittest.TestCase):
                 },
             )
 
-            payload = json.loads(result.stdout)
-            context = payload["hookSpecificOutput"]["additionalContext"]
-            self.assertIn("Post-tool follow-up for `shell command` (`exec_command`)", context)
-            self.assertIn("failing command, flag, or path", context)
+            self.assertEqual(result.stdout.strip(), "")
 
-    def test_post_tool_use_handles_structured_failure_payload(self) -> None:
+    def test_post_tool_use_shell_structured_payload_is_disabled(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             repo = make_codex_manager_repo(tmpdir)
 
@@ -563,10 +620,55 @@ class HookScriptTests(unittest.TestCase):
                 },
             )
 
-            payload = json.loads(result.stdout)
-            context = payload["hookSpecificOutput"]["additionalContext"]
-            self.assertIn("Post-tool follow-up for `shell command` (`exec_command`)", context)
-            self.assertIn("permission denied while writing file", context)
+            self.assertEqual(result.stdout.strip(), "")
+
+    def test_generic_post_tool_use_wrapper_noops_for_shell_overlap(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_codex_manager_repo(tmpdir)
+
+            result = run_hook_wrapper(
+                "post_tool_use.pl",
+                {
+                    "cwd": str(repo),
+                    "hook_event_name": "PostToolUse",
+                    "model": "unknown-model",
+                    "permission_mode": "default",
+                    "session_id": "session-1",
+                    "tool_input": {"cmd": "git status"},
+                    "tool_name": "exec_command",
+                    "tool_response": "permission denied while writing file",
+                    "tool_use_id": "tool-use-1",
+                    "transcript_path": None,
+                    "turn_id": "turn-1",
+                },
+            )
+
+            self.assertEqual(result.stdout.strip(), "")
+            self.assertEqual(result.returncode, 0)
+
+    def test_generic_mcp_post_tool_use_wrapper_noops_for_specific_profile(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_codex_manager_repo(tmpdir)
+
+            result = run_hook_wrapper(
+                "post_tool_use_mcp.pl",
+                {
+                    "cwd": str(repo),
+                    "hook_event_name": "PostToolUse",
+                    "model": "unknown-model",
+                    "permission_mode": "default",
+                    "session_id": "session-1",
+                    "tool_input": {},
+                    "tool_name": "mcp__git__status",
+                    "tool_response": {"stderr": "failed to query status", "rc": 1},
+                    "tool_use_id": "tool-use-1",
+                    "transcript_path": None,
+                    "turn_id": "turn-1",
+                },
+            )
+
+            self.assertEqual(result.stdout.strip(), "")
+            self.assertEqual(result.returncode, 0)
 
     def test_pre_compact_uses_system_message_only(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

@@ -103,7 +103,7 @@ sub transcript_summary_lines {
 
     my $text = read_file_tail(
         path      => $path,
-        max_bytes => $args{max_bytes} // 160_000,
+        max_bytes => $args{max_bytes} // 24_000,
     );
     return () if !length $text;
 

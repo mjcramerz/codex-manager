@@ -62,7 +62,7 @@ sub stop_system_message {
     push @lines, '- The handoff must identify owned files, checks run, unresolved risks, and whether parent-side validation remains.';
     push @lines, _handoff_signal_lines($payload->{last_assistant_message});
 
-    my @transcript_lines = transcript_summary_lines(path => $transcript_path, max_bytes => 80_000);
+    my @transcript_lines = transcript_summary_lines(path => $transcript_path, max_bytes => 24_000);
     if (@transcript_lines) {
         push @lines, 'Subagent transcript signals:';
         push @lines, map { "- $_" } @transcript_lines;

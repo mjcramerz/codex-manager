@@ -27,26 +27,6 @@ timeout = 25
 statusMessage = "Checking detected repository constraints"
 
 [[tool_profiles]]
-id = "shell"
-matcher = "^(Bash|bash|exec_command|shell)$"
-label = "shell command"
-
-[tool_profiles.events.PreToolUse]
-script = "pre_tool_use_shell.pl"
-timeout = 25
-statusMessage = "Checking shell command guardrails"
-
-[tool_profiles.events.PermissionRequest]
-script = "permission_request_shell.pl"
-timeout = 20
-statusMessage = "Checking shell approval scope"
-
-[tool_profiles.events.PostToolUse]
-script = "post_tool_use_shell.pl"
-timeout = 20
-statusMessage = "Reviewing shell output follow-up"
-
-[[tool_profiles]]
 id = "edit"
 matcher = "^(apply_patch|Edit|edit|Write|write)$"
 label = "edit operation"

@@ -15,28 +15,6 @@ sub hook_catalog {
         version => 1,
         tool_profiles => [
             {
-                id      => 'shell',
-                matcher => '^(Bash|bash|exec_command|shell)$',
-                label   => 'shell command',
-                events  => {
-                    PreToolUse => {
-                        script        => 'pre_tool_use_shell.pl',
-                        timeout       => 25,
-                        statusMessage => 'Checking shell command guardrails',
-                    },
-                    PermissionRequest => {
-                        script        => 'permission_request_shell.pl',
-                        timeout       => 20,
-                        statusMessage => 'Checking shell approval scope',
-                    },
-                    PostToolUse => {
-                        script        => 'post_tool_use_shell.pl',
-                        timeout       => 20,
-                        statusMessage => 'Reviewing shell output follow-up',
-                    },
-                },
-            },
-            {
                 id      => 'edit',
                 matcher => '^(apply_patch|Edit|edit|Write|write)$',
                 label   => 'edit operation',

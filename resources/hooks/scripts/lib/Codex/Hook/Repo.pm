@@ -11,7 +11,9 @@ use Codex::Hook::Runner qw(run_command);
 our @EXPORT_OK = qw(
   git_root
   current_branch
+  has_salsa_packaging_layout
   list_mirror_refs
+  list_packaging_refs
   preferred_mirror_main_branch
   list_changed_files
   summarize_worktree
@@ -130,6 +132,7 @@ sub _list_refs {
             '--format=%(refname:short)',
             'refs/heads',
             'refs/remotes',
+            'refs/tags',
         ],
         timeout => 10,
     );
@@ -142,6 +145,26 @@ sub _list_refs {
 sub list_mirror_refs {
     my ($repo_root) = @_;
     return grep { $_ =~ m{\A(?:github|gitlab|origin/github|origin/gitlab)/} } _list_refs($repo_root);
+}
+
+sub list_packaging_refs {
+    my ($repo_root) = @_;
+    return grep {
+        $_ eq 'pristine-tar'
+          || $_ eq 'origin/pristine-tar'
+          || $_ =~ m{\A(?:origin/)?upstream/}
+          || $_ =~ m{\A(?:origin/)?debian/}
+    } _list_refs($repo_root);
+}
+
+sub has_salsa_packaging_layout {
+    my ($repo_root) = @_;
+    my @mirror_refs = list_mirror_refs($repo_root);
+    return 0 if !grep { $_ =~ m{\A(?:gitlab|origin/gitlab)/} } @mirror_refs;
+
+    my @packaging_refs = list_packaging_refs($repo_root);
+    my $has_pristine = grep { $_ eq 'pristine-tar' || $_ eq 'origin/pristine-tar' } @packaging_refs;
+    return $has_pristine ? 1 : 0;
 }
 
 sub preferred_mirror_main_branch {

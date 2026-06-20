@@ -81,6 +81,12 @@ sub resolve_wrapper_dispatch {
             event_arg => _event_arg_from_root($1),
         };
     }
+    if ($root =~ /\A(pre_tool_use|permission_request|post_tool_use)\z/) {
+        return {
+            event_arg    => _event_arg_from_root($1),
+            profile_name => 'generic',
+        };
+    }
     if ($root =~ /\A(pre_tool_use|permission_request|post_tool_use)_(.+)\z/) {
         return {
             event_arg    => _event_arg_from_root($1),

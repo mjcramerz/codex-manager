@@ -28,12 +28,6 @@ hooks = [
 ]
 
 [[hooks.PreToolUse]]
-matcher = "^(Bash|bash|exec_command|shell)$"
-hooks = [
-  { type = "command", command = "perl ${CODEX_HOME}/hooks/scripts/pre_tool_use_shell.pl", timeout = 25, statusMessage = "Checking shell command guardrails" },
-]
-
-[[hooks.PreToolUse]]
 matcher = "^(apply_patch|Edit|edit|Write|write)$"
 hooks = [
   { type = "command", command = "perl ${CODEX_HOME}/hooks/scripts/pre_tool_use_edit.pl", timeout = 20, statusMessage = "Checking edit guardrails" },
@@ -166,12 +160,6 @@ hooks = [
 ]
 
 [[hooks.PermissionRequest]]
-matcher = "^(Bash|bash|exec_command|shell)$"
-hooks = [
-  { type = "command", command = "perl ${CODEX_HOME}/hooks/scripts/permission_request_shell.pl", timeout = 20, statusMessage = "Checking shell approval scope" },
-]
-
-[[hooks.PermissionRequest]]
 matcher = "^(apply_patch|Edit|edit|Write|write)$"
 hooks = [
   { type = "command", command = "perl ${CODEX_HOME}/hooks/scripts/permission_request_edit.pl", timeout = 15, statusMessage = "Checking edit approval scope" },
@@ -301,12 +289,6 @@ hooks = [
 matcher = "^(?:[^BEWabemsw].*|B(?:|[^a].*|a(?:|[^s].*|s(?:|[^h].*|h.+)))|E(?:|[^d].*|d(?:|[^i].*|i(?:|[^t].*|t.+)))|W(?:|[^r].*|r(?:|[^i].*|i(?:|[^t].*|t(?:|[^e].*|e.+))))|a(?:|[^p].*|p(?:|[^p].*|p(?:|[^l].*|l(?:|[^y].*|y(?:|[^_].*|_(?:|[^p].*|p(?:|[^a].*|a(?:|[^t].*|t(?:|[^c].*|c(?:|[^h].*|h.+))))))))))|b(?:|[^a].*|a(?:|[^s].*|s(?:|[^h].*|h.+)))|e(?:|[^dx].*|d(?:|[^i].*|i(?:|[^t].*|t.+))|x(?:|[^e].*|e(?:|[^c].*|c(?:|[^_].*|_(?:|[^c].*|c(?:|[^o].*|o(?:|[^m].*|m(?:|[^m].*|m(?:|[^a].*|a(?:|[^n].*|n(?:|[^d].*|d.+)))))))))))|m(?:|[^c].*|c(?:|[^p].*|p(?:|[^_].*|_(?:|[^_].*))))|s(?:|[^h].*|h(?:|[^e].*|e(?:|[^l].*|l(?:|[^l].*|l.+))))|w(?:|[^r].*|r(?:|[^i].*|i(?:|[^t].*|t(?:|[^e].*|e.+)))))$"
 hooks = [
   { type = "command", command = "perl ${CODEX_HOME}/hooks/scripts/permission_request.pl", timeout = 20, statusMessage = "Checking generic tool approval scope" },
-]
-
-[[hooks.PostToolUse]]
-matcher = "^(Bash|bash|exec_command|shell)$"
-hooks = [
-  { type = "command", command = "perl ${CODEX_HOME}/hooks/scripts/post_tool_use_shell.pl", timeout = 20, statusMessage = "Reviewing shell output follow-up" },
 ]
 
 [[hooks.PostToolUse]]

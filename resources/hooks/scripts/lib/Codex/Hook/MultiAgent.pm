@@ -28,6 +28,35 @@ sub _lines {
     return @lines;
 }
 
+sub _selected_role_names {
+    my ($prompt) = @_;
+    my @names = ('planner');
+    push @names, 'delegator'
+      if $prompt =~ /\b(?:delegate|delegation|spawn_agent|spawn_agents_on_csv|handoff|assign)\b/i;
+    push @names, 'orchestrator'
+      if $prompt =~ /\b(?:orchestrat|wait_agent|resume_agent|close_agent|fanout|parallel agents?)\b/i;
+    push @names, 'analyst'
+      if $prompt =~ /\b(?:analysis|analy[sz]e|compare|reconcile)\b/i;
+    push @names, 'synthesizer'
+      if $prompt =~ /\b(?:synthes|merge|summari[sz]e|combine|converge)\b/i;
+    push @names, 'explorer'
+      if $prompt =~ /\b(?:explore|research|investigat|survey)\b/i;
+    push @names, 'tester'
+      if $prompt =~ /\b(?:test|tests|verify|validation|check)\b/i;
+    if (@names == 1) {
+        push @names, qw(delegator orchestrator);
+    }
+
+    my @unique;
+    my %seen;
+    for my $name (@names) {
+        next if !defined $name || !length $name || $seen{$name}++;
+        push @unique, $name;
+        last if @unique >= 5;
+    }
+    return @unique;
+}
+
 sub _role_catalog {
     my ($manifest) = @_;
     return () if ref($manifest) ne 'HASH';
@@ -43,8 +72,7 @@ sub _role_line {
         next if !length($name) || $name ne $agent_type;
         my $description = _trim($role->{description});
         my $use_when = _trim($role->{use_when});
-        my $line = "`$name`: $description";
-        $line .= " Use when: $use_when" if length $use_when;
+        my $line = "`$name`: " . (length($use_when) ? $use_when : $description);
         return $line;
     }
     return undef;
@@ -110,18 +138,11 @@ sub multi_agent_prompt_context {
         push @sections, join("\n", @lines);
     }
 
-    my @role_lines;
-    for my $role (_role_catalog($manifest)) {
-        my $name = _trim($role->{name});
-        next if !length $name;
-        my $description = _trim($role->{description});
-        my $use_when = _trim($role->{use_when});
-        my $line = "`$name`: $description";
-        $line .= " Use when: $use_when" if length $use_when;
-        push @role_lines, $line;
-    }
+    my @roles = _role_catalog($manifest);
+    my @role_lines = grep { defined($_) && length($_) }
+      map { _role_line(\@roles, $_) } _selected_role_names($prompt);
     if (@role_lines) {
-        push @sections, join("\n", 'Available role hints:', map { "- $_" } @role_lines);
+        push @sections, join("\n", 'Relevant role hints:', map { "- $_" } @role_lines);
     }
 
     return @sections ? join("\n\n", @sections) : undef;

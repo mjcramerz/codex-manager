@@ -39,8 +39,10 @@ use Codex::Hook::Repo qw(
   current_branch
   git_root
   has_patch_release_dir
+  has_salsa_packaging_layout
   list_changed_files
   list_mirror_refs
+  list_packaging_refs
   preferred_mirror_main_branch
   preview_paths
   summarize_worktree
@@ -50,11 +52,17 @@ use Codex::Hook::Schema qw(validate_event_input);
 use Codex::Hook::Subagent qw(start_context);
 use Codex::Hook::SubagentStop qw(stop_system_message);
 use Codex::Hook::RuntimeConfig qw(runtime_config);
-use Codex::Hook::ToolProfile qw(tool_group_label tool_group_name);
+use Codex::Hook::ToolProfile qw(
+  active_tool_profile_is_primary
+  tool_group_label
+  tool_group_name
+  tool_hooks_enabled
+);
 
 our @EXPORT_OK = qw(run_event);
 
-our $TRANSCRIPT_TAIL_BYTES = 120000;
+our $MAX_CONTEXT_CHARS = 1800;
+our $TRANSCRIPT_TAIL_BYTES = 24000;
 
 sub _load_input {
     local $/;
@@ -79,7 +87,36 @@ sub _join_sections {
     my (@sections) = @_;
     my @filtered = grep { defined($_) && length($_) } @sections;
     return undef if !@filtered;
-    return join("\n\n", @filtered);
+
+    my $result = '';
+    my $omitted = 0;
+    for my $section (@filtered) {
+        my $section_prefix = length($result) ? "\n\n" : '';
+        my $full_candidate = $result . $section_prefix . $section;
+        if (length($full_candidate) <= $MAX_CONTEXT_CHARS) {
+            $result = $full_candidate;
+            next;
+        }
+
+        my $partial = '';
+        for my $line (split /\n/, $section) {
+            my $line_prefix = length($partial) ? "\n" : '';
+            my $candidate = $result . $section_prefix . $partial . $line_prefix . $line;
+            last if length($candidate) > $MAX_CONTEXT_CHARS;
+            $partial .= $line_prefix . $line;
+        }
+        $result .= $section_prefix . $partial if length $partial;
+        $omitted = 1;
+        last;
+    }
+
+    if ($omitted) {
+        my $notice = "\n\n- Additional hook context omitted for brevity.";
+        if (length($result . $notice) <= $MAX_CONTEXT_CHARS) {
+            $result .= $notice;
+        }
+    }
+    return $result;
 }
 
 sub _glob_regex {
@@ -288,7 +325,9 @@ sub _session_start_context {
     my @changed_areas = _detect_changed_areas(\@changed_files, $manifest, \@profiles);
     my $current = current_branch($repo_root);
     my @mirror_refs = list_mirror_refs($repo_root);
+    my @packaging_refs = list_packaging_refs($repo_root);
     my $mirror_main = preferred_mirror_main_branch($repo_root);
+    my $has_salsa_packaging = has_salsa_packaging_layout($repo_root);
     my $worktree = summarize_worktree($repo_root);
     my @profile_ids = map { $_->{id} } grep { ref($_) eq 'HASH' && defined($_->{id}) && length($_->{id}) } @profiles;
     my $profile_id = @profile_ids ? $profile_ids[0] : '';
@@ -315,6 +354,10 @@ sub _session_start_context {
       if @profile_ids;
     push @summary, "- Mirror refs detected (`github/*` or `gitlab/*`). Treat those branches as read-only mirrors and true-sync `mcr/main` from `" . ($mirror_main || 'github/mcr/main or gitlab/mcr/main') . "`, then `mcr/staging` from `mcr/main`, then `mcr/release` from `mcr/staging`, preserving only protected paths."
       if @mirror_refs;
+    push @summary, '- Debian Salsa packaging mirror detected (`gitlab/*` + `pristine-tar`). Preserve packaging refs such as `pristine-tar`, `upstream/*`, and `debian/*` for rebuild/import workflows.'
+      if $has_salsa_packaging;
+    push @summary, "- Packaging refs preview: `" . preview_paths(\@packaging_refs, 3) . "`"
+      if $has_salsa_packaging && @packaging_refs;
     push @summary, "- Current branch `$current` is a read-only mirror branch."
       if $current =~ m{\A(?:github|gitlab)/};
     push @summary, "- `patches/release/` exists. Keep local patch work check-only with commands such as `git apply --check`, `scripts/release/check_release_patches.sh HEAD`, `git mcr-fork-check`, or `git mcr-fork-test`."
@@ -410,11 +453,14 @@ sub _user_prompt_context {
     if ($prompt =~ /\b(github|gitlab|mirror|patch|patches|release|mcr\/)\b/i) {
         my @lines;
         my @mirror_refs = list_mirror_refs($repo_root);
+        my $has_salsa_packaging = has_salsa_packaging_layout($repo_root);
         if (@mirror_refs) {
             push @lines, 'Mirror refs are present. Treat `github/*` and `gitlab/*` branches as read-only mirrors; true-sync `mcr/main` from `'
               . (preferred_mirror_main_branch($repo_root) || 'github/mcr/main or gitlab/mcr/main')
               . '`, then promote `mcr/staging` and `mcr/release` with the same protected-path contract.';
         }
+        push @lines, '`gitlab/*` plus `pristine-tar` indicates a Debian Salsa packaging mirror; preserve `pristine-tar`, `upstream/*`, and `debian/*` refs for rebuild/import flows.'
+          if $has_salsa_packaging;
         push @lines, '`patches/release/` exists. Keep local patch work check-only with commands such as `git apply --check`, `scripts/release/check_release_patches.sh HEAD`, `git mcr-fork-check`, or `git mcr-fork-test`.'
           if has_patch_release_dir($repo_root);
         push @sections, join("\n", @lines) if @lines;
@@ -642,6 +688,8 @@ sub _pre_tool_use_context {
 
 sub _permission_request_context {
     my ($payload) = @_;
+    return undef if !tool_hooks_enabled($payload->{tool_name});
+    return undef if !active_tool_profile_is_primary($payload->{tool_name});
     return permission_request_message(tool_name => $payload->{tool_name});
 }
 
@@ -729,15 +777,20 @@ sub run_event {
         return 0;
     }
     if ($event_arg eq 'pre-tool-use') {
+        return 0 if !tool_hooks_enabled($payload->{tool_name});
+        return 0 if !active_tool_profile_is_primary($payload->{tool_name});
         my $context = _pre_tool_use_context($manifest, $payload);
         emit_context('PreToolUse', $context, undef) if defined $context && length $context;
         return 0;
     }
     if ($event_arg eq 'permission-request') {
-        emit_system_message(_permission_request_context($payload));
+        my $context = _permission_request_context($payload);
+        emit_system_message($context) if defined $context && length $context;
         return 0;
     }
     if ($event_arg eq 'post-tool-use') {
+        return 0 if !tool_hooks_enabled($payload->{tool_name});
+        return 0 if !active_tool_profile_is_primary($payload->{tool_name});
         my $context = _post_tool_use_context($payload);
         emit_context('PostToolUse', $context, undef) if defined $context && length $context;
         return 0;
