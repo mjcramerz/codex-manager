@@ -1,5 +1,5 @@
 # Runtime-pack maintenance workflow
-Purpose: maintain the runtime-home pack, routing tree, skill catalog, templates, and repo-managed memory entrypoints without drifting into runtime-only state.
+Purpose: maintain the runtime-home pack, routing tree, skill catalog, templates, snippets, plugin metadata, and memory router with installed-path coherence.
 
 Start with `$CODEX_HOME/plans/workflows/workflow-runtime-pack-maintenance.md` before executing this workflow.
 
@@ -13,7 +13,7 @@ Start with `$CODEX_HOME/plans/workflows/workflow-runtime-pack-maintenance.md` be
 ## Execution flow
 1) Route through the pack hubs and confirm the smallest entrypoint.
 2) Audit whether the requested change affects docs, plans, templates, skills, or routing metadata.
-3) Keep runtime-only artifacts out of scope (`sessions`, `shell_snapshots`, `.credentials.json`), but keep the memory router and mirrored instruction assets in scope when the task is memory-related.
+3) Keep scope on stable pack assets: routing, docs, plans, templates, snippets, skills, plugins, and the memory router when the task is memory-related.
 4) Update cross-links, plan/workflow catalogs, and manifest links in the same change.
 5) Run the narrowest contract tests for docs, skills, and manifest shape.
 

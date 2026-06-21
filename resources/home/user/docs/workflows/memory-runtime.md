@@ -19,9 +19,9 @@ Purpose: record that the standalone memory-transfer workflow was removed from th
 - For installer-owned memory/state handling, use `$CODEX_HOME/docs/workflows/codex-manager.md`.
 - For runtime-pack cleanup or catalog updates, use `$CODEX_HOME/docs/workflows/runtime-pack-maintenance.md`.
 
-## Runtime-state boundary
-- `$CODEX_HOME/sessions/`, `$CODEX_HOME/shell_snapshots/`, and `$CODEX_HOME/.credentials.json` are runtime-only artifacts.
-- They are not replacement mechanisms for the retired transfer flow and must not be treated as pack source.
+## Current boundary
+- The retired transfer flow is not replaced by ad hoc state copies or alternate staging paths.
+- Route all current memory guidance through the maintained entrypoints listed above.
 
 ## Cleanup checklist
 1. Remove or rewrite stale references to `codex-db-fetch`.

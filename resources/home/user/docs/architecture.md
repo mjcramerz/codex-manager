@@ -19,21 +19,20 @@ Purpose: explain how the codex-manager source tree, the runtime-home pack, hook 
 ## Sync boundary
 - The repo is the source of truth for installable pack content.
 - Runtime state stays on the installed target and never syncs back into source control.
-- Repo-managed carry-forward is limited to operator-facing state that intentionally seeds or documents the runtime:
-  - `$CODEX_HOME/memories/`
-  - `$CODEX_HOME/history.jsonl`
-  - `$CODEX_HOME/session_index.jsonl`
-  - `$CODEX_HOME/version.json`
-  - `$CODEX_HOME/.personality_migration`
-- The following are runtime-only and must never be treated as source-managed pack content:
-  - `$CODEX_HOME/sessions/`
-  - `$CODEX_HOME/shell_snapshots/`
-  - `$CODEX_HOME/.credentials.json`
+- Agent-facing pack guidance should stay on stable installed surfaces:
+  - `$CODEX_HOME/docs/**`
+  - `$CODEX_HOME/index/**`
+  - `$CODEX_HOME/plans/**`
+  - `$CODEX_HOME/templates/**`
+  - `$CODEX_HOME/snippets/**`
+  - `$CODEX_HOME/plugins/cache/**`
+  - `$CODEX_HOME/.agents/plugins/marketplace.json`
+  - `$CODEX_SKILLS/**`
 
 ## Why the boundary matters
-- Session transcripts and shell snapshots are high-churn runtime artifacts, not reusable pack guidance.
-- The credential store is sensitive runtime state and must stay local to the installed environment.
-- Keeping those artifacts out of the pack keeps routing fast, docs cleaner, and repo diffs reviewable.
+- Installed runtime paths stay coherent after the pack is rendered into `$CODEX_HOME`.
+- Agent guidance stays fast to route when it points at stable docs, plans, skills, templates, snippets, and plugin metadata.
+- Avoiding repository-source paths in runtime docs keeps the installed pack self-contained.
 
 ## Source-pack operating shape
 1. Route through `INDEX.md` and the `index/**` entrypoints.

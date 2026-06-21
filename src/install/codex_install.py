@@ -71,6 +71,7 @@ from layout import RepoLayout
 from layout import RuntimeLayout
 from plugin_bundles import PluginBundleSpec
 from plugin_bundles import render_runtime_plugin_marketplace
+from plugin_bundles import runtime_marketplace_source_path
 from apps_config import effective_plugins_inventory_payload
 from agent_role_contracts import validate_agent_role_contracts
 from lib.fs_ops import needs_sudo_remove, needs_sudo_write
@@ -3072,7 +3073,7 @@ class Installer:
                 fail(f"{marketplace_path} plugin source must be an object for {plugin_name}")
             if source.get("source") != "local":
                 fail(f"{marketplace_path} plugin source must be local for {plugin_name}")
-            expected_path = f"./plugins/cache/{marketplace_name}/{plugin_name}/local"
+            expected_path = runtime_marketplace_source_path(marketplace_name, plugin_name)
             if source.get("path") != expected_path:
                 fail(f"{marketplace_path} plugin source path is invalid for {plugin_name}")
             actual_marketplace_names.add(plugin_name)

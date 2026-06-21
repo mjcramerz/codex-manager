@@ -94,4 +94,4 @@ Notes:
 
 ## Related
 - Docs: `$CODEX_HOME/docs/security/overview.md`
-- CI templates: `../../ci/github-actions/`
+- CI templates: `$CODEX_HOME/templates/ci/github-actions/`

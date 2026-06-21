@@ -35,4 +35,4 @@ Purpose: provide the top-level map for runtime-pack documentation and help the a
 - Keep docs operational, concrete, and path-correct.
 - Use `$CODEX_HOME`, `$CODEX_AGENTS`, and `$CODEX_SKILLS` runtime paths instead of repository-source paths unless the repo itself is the subject.
 - Keep prompt-file references centralized in `$CODEX_HOME/docs/create-prompts.md`.
-- Treat runtime-only state as out of scope for documentation source, but keep the memory router and memory instruction assets in scope when that contract changes.
+- Keep documentation focused on stable pack surfaces; route memory-specific work through `$CODEX_HOME/memories/MEMORY.md` when needed.

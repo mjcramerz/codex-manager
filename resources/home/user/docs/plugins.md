@@ -6,6 +6,7 @@ Use this guide when working with runtime plugin bundles inside an installed Code
 - Plugin enablement lives in `$CODEX_HOME/config.toml` under `[plugins]`.
 - Marketplace metadata lives in `$CODEX_HOME/.agents/plugins/marketplace.json`.
 - Installed plugin bundles live under `$CODEX_HOME/plugins/cache/<marketplace>/<plugin>/local/`.
+- Marketplace source paths must resolve from `$CODEX_HOME/.agents/plugins/marketplace.json` back to `$CODEX_HOME/plugins/cache/<marketplace>/<plugin>/local/`.
 - Plugin bundle ids use `<plugin>@<marketplace>`.
 
 ## Current high-value bundles

@@ -1,5 +1,5 @@
 # Memory router
-Purpose: route memory-related work to one maintained entrypoint without confusing source-managed memory assets with runtime-only state.
+Purpose: route memory-related work to one maintained entrypoint and keep memory guidance anchored to installed Codex paths.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -23,6 +23,6 @@ Purpose: route memory-related work to one maintained entrypoint without confusin
 - Runtime memory configuration is rendered into `$CODEX_HOME/config.toml`
 
 ## Boundary rules
-- Treat `$CODEX_HOME/memories/` in this pack as operator-facing source content only when the task is about the memory router, seeded carry-forward docs, or memory instruction assets.
-- Treat `$CODEX_HOME/sessions/`, `$CODEX_HOME/shell_snapshots/`, and `$CODEX_HOME/.credentials.json` as runtime-only artifacts.
+- Treat `$CODEX_HOME/memories/` in this pack as the maintained memory router and operator-facing memory guidance surface.
+- Route installer/render behavior through `$CODEX_HOME/docs/workflows/codex-manager.md`.
 - Do not recreate retired export/import workflows or runtime dumps as source-managed pack guidance.

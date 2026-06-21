@@ -33,12 +33,8 @@ Purpose: route an agent to one correct runtime-pack entrypoint with minimal cont
 ## Current pack defaults
 - Treat `$CODEX_HOME/index/manifest.yml` as routing metadata for pack entrypoints.
 - Keep top-level routing docs short and deterministic.
-- Prefer repo-aware memory routing through `$CODEX_HOME/memories/MEMORY.md`, not raw runtime dumps.
-- Repo-managed carry-forward is limited to `$CODEX_HOME/memories/`, `$CODEX_HOME/history.jsonl`, `$CODEX_HOME/session_index.jsonl`, `$CODEX_HOME/version.json`, and `$CODEX_HOME/.personality_migration`.
-- Runtime-only state never syncs back into this repo:
-  - `$CODEX_HOME/sessions/`
-  - `$CODEX_HOME/shell_snapshots/`
-  - `$CODEX_HOME/.credentials.json`
+- Prefer repo-aware memory routing through `$CODEX_HOME/memories/MEMORY.md`.
+- Keep plugin and skill guidance anchored to installed runtime paths such as `$CODEX_HOME/plugins/cache/**`, `$CODEX_HOME/.agents/plugins/marketplace.json`, and `$CODEX_SKILLS/**`.
 
 ## High-value workflow entrypoints
 - Codex installer/runtime source work -> `$CODEX_HOME/docs/workflows/codex-manager.md`

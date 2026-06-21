@@ -21,7 +21,7 @@ Start with `$CODEX_HOME/plans/workflows/workflow-planning.md` before executing t
 ## Runtime-state boundary
 - Use `$CODEX_HOME/memories/MEMORY.md` for context only when prior decisions matter.
 - Treat the memory router and mirrored memory instruction assets as source-managed pack content when planning memory-related work.
-- Do not plan around syncing `$CODEX_HOME/sessions/`, `$CODEX_HOME/shell_snapshots/`, or `$CODEX_HOME/.credentials.json` back into source-controlled assets.
+- Keep plans grounded in stable installed pack surfaces and avoid repository-source paths in final guidance.
 
 ## Plan selection (quick guide)
 - **Workflow-specific work**: use `$CODEX_HOME/plans/workflows/` (for example `workflow-<name>.md`).

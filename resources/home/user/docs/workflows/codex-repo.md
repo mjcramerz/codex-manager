@@ -32,7 +32,7 @@ Purpose: keep the Codex source repo and this config pack aligned across tooling,
 
 ## Repo-aware memory guidance
 - Use `$CODEX_HOME/memories/MEMORY.md` only when prior repo-specific decisions actually matter.
-- Treat `$CODEX_HOME/sessions/`, `$CODEX_HOME/shell_snapshots/`, and `$CODEX_HOME/.credentials.json` as runtime-local state, not source-pack inputs.
+- Keep runtime-pack references pointed at stable installed docs, plans, skills, templates, snippets, and plugin metadata.
 
 ## Audit workflow
 1) **Inventory** language/tooling and test/build entrypoints (`justfile`, Cargo, pnpm, Python scripts).
@@ -55,7 +55,6 @@ Purpose: keep the Codex source repo and this config pack aligned across tooling,
   - user-level compiled config lives in `$CODEX_HOME/config.toml`
   - `$CODEX_HOME/config.toml` keeps structured inline profile maps under `[permissions]`
   - `/etc/codex/config.toml` keeps structured inline vendor maps under `[permissions]` without normalizing them into another shape
-- Treat `$CODEX_HOME/.credentials.json` as runtime-local OAuth state; document its runtime role, but do not treat it as repo-synced pack source.
 - Keep `$CODEX_HOME/.models/model_catalog.json` in sync with upstream `codex-rs/core/models.json`.
 
 ## CI/CD and release alignment checklist

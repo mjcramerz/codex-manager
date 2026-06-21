@@ -51,6 +51,13 @@ class RuntimePackDocsContractTests(unittest.TestCase):
             "send_input",
             "close_agent",
             "$CODEX_HOME/UNIX.md",
+            "$CODEX_HOME/sessions/",
+            "$CODEX_HOME/shell_snapshots/",
+            "$CODEX_HOME/.credentials.json",
+            "$CODEX_HOME/history.jsonl",
+            "$CODEX_HOME/session_index.jsonl",
+            "$CODEX_HOME/version.json",
+            "$CODEX_HOME/.personality_migration",
         )
 
         roots = [

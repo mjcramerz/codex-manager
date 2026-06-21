@@ -38,4 +38,4 @@ Purpose: define how runtime prompt files under `$CODEX_HOME/.prompt/` should be 
 ## Maintenance notes
 - Keep prompt file names lower-case and hyphenated.
 - When adding a new prompt file, update this document and nowhere else in `$CODEX_HOME/*`.
-- Do not reference runtime-only state or local credentials from prompt assets.
+- Do not reference transient local state or machine-specific secrets from prompt assets.

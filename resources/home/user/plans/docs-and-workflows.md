@@ -14,7 +14,7 @@ Use this plan when updating docs, workflows, or doc indexes.
 - Updated docs with clear ownership and scope.
 - No host-specific repository paths in user-facing docs or instruction assets.
 - Runtime-home docs must reflect one-way source-to-target install behavior.
-- Repo-aware memory routing and runtime-only boundaries stay explicit.
+- Repo-aware memory routing stays explicit and installed-path references stay coherent.
 
 ## Scope
 - In: `$CODEX_HOME/docs/` and related index entrypoints.

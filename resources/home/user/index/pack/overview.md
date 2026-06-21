@@ -18,9 +18,9 @@ Use this router when maintaining the runtime pack itself: docs, plans, skills, t
 - `$CODEX_SKILLS/**` for the runtime skill catalog and skill assets
 - `$CODEX_HOME/plugins/cache/**` plus `$CODEX_HOME/.agents/plugins/marketplace.json` for plugin bundles and marketplace wiring
 
-## Runtime-state boundary
-- Source-managed pack content stops at docs, plans, templates, skills, rules, snippets, routing metadata, and the memory router.
-- Do not reintroduce runtime-only sync for sessions, shell snapshots, or credential store files.
+## Pack scope
+- Source-managed pack content stops at docs, plans, templates, skills, rules, snippets, routing metadata, plugins, and the memory router.
+- Keep installed-path references coherent across `$CODEX_HOME/**`, `$CODEX_AGENTS/**`, and `$CODEX_SKILLS/**`.
 - Treat `$CODEX_HOME/memories/MEMORY.md` and the mirrored memory instruction assets as pack source when the task is memory-related.
 
 ## Choose one hub

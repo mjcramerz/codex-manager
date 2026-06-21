@@ -17,8 +17,8 @@ Start with `$CODEX_HOME/plans/workflows/workflow-codex-manager.md` before execut
 
 ## State boundary
 - Runtime home is source-to-target only; runtime state never syncs back into this repo.
-- Repo-managed carry-forward may intentionally include `$CODEX_HOME/memories/`, `$CODEX_HOME/history.jsonl`, `$CODEX_HOME/session_index.jsonl`, `$CODEX_HOME/version.json`, and `$CODEX_HOME/.personality_migration` when those artifacts are seeded from source.
-- Runtime-only examples stay limited to `$CODEX_HOME/sessions/`, `$CODEX_HOME/shell_snapshots/`, and `$CODEX_HOME/.credentials.json`.
+- Keep guidance centered on installed config, docs, plans, skills, templates, snippets, and plugin marketplace surfaces.
+- Route memory-specific guidance through `$CODEX_HOME/memories/MEMORY.md` and the matching workflow entrypoints.
 
 ## Install and nuke checkpoints
 - Keep `install`, `update`, `nuke`, and `uninstall` idempotent for already-applied or already-removed runtime state.

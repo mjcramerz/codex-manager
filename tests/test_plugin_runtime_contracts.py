@@ -24,6 +24,7 @@ from plugins import sync_runtime_plugin_bundle  # noqa: E402
 from plugins import validate_plugin_skill_metadata  # noqa: E402
 from plugin_bundles import render_runtime_plugin_marketplace  # noqa: E402
 from plugin_bundles import render_runtime_plugin_manifest  # noqa: E402
+from plugin_bundles import runtime_marketplace_source_path  # noqa: E402
 from skills import role_tools_from_skills  # noqa: E402
 
 
@@ -451,6 +452,23 @@ class PluginRuntimeContractsTests(unittest.TestCase):
         self.assertEqual(first["policy"]["installation"], "AVAILABLE")
         self.assertIn(first["policy"]["authentication"], {"ON_INSTALL", "ON_USE"})
         self.assertTrue(first["category"])
+
+    def test_rendered_marketplace_source_paths_resolve_to_runtime_plugin_cache(self) -> None:
+        bundles = load_plugin_bundles()
+        marketplace_name = load_effective_plugins_inventory()["marketplace_name"]
+        payload = json.loads(render_runtime_plugin_marketplace(marketplace_name, bundles))
+        runtime_marketplace_dir = Path("/data/codex/usr/home/.agents/plugins")
+        runtime_plugins_dir = Path("/data/codex/usr/home/plugins/cache")
+
+        for entry in payload["plugins"]:
+            plugin_name = entry["name"]
+            expected_relative = runtime_marketplace_source_path(marketplace_name, plugin_name)
+            self.assertEqual(entry["source"]["path"], expected_relative)
+            resolved = (runtime_marketplace_dir / expected_relative).resolve()
+            self.assertEqual(
+                resolved,
+                runtime_plugins_dir / marketplace_name / plugin_name / "local",
+            )
 
     def test_rendered_plugin_manifest_preserves_site_facing_interface_metadata(self) -> None:
         bundles = {bundle.name: bundle for bundle in load_plugin_bundles()}

@@ -40,18 +40,18 @@ This contract applies to `$CODEX_HOME` and every child path unless a deeper `AGE
 6) Follow `$CODEX_HOME/docs/style/shell-runtime.md` before shell-sensitive work.
 7) Open one concrete entrypoint, then stop broad browsing.
 
-## Runtime-state boundary
-- Source-managed memory router: `$CODEX_HOME/memories/MEMORY.md`.
-- Runtime-only artifacts must never be treated as pack source and must never sync back into this repo:
-  - `$CODEX_HOME/sessions/`
-  - `$CODEX_HOME/shell_snapshots/`
-  - `$CODEX_HOME/.credentials.json`
-- Repo-managed runtime carry-forward is limited to operator-facing state that intentionally seeds or documents the runtime:
-  - `memories/**`
-  - `history.jsonl`
-  - `session_index.jsonl`
-  - `version.json`
-  - `.personality_migration`
+## Pack focus
+- Keep agent guidance centered on stable installed surfaces:
+  - `$CODEX_HOME/docs/**`
+  - `$CODEX_HOME/index/**`
+  - `$CODEX_HOME/plans/**`
+  - `$CODEX_HOME/templates/**`
+  - `$CODEX_HOME/snippets/**`
+  - `$CODEX_HOME/rules/**`
+  - `$CODEX_HOME/memories/MEMORY.md`
+  - `$CODEX_HOME/plugins/cache/**`
+  - `$CODEX_HOME/.agents/plugins/marketplace.json`
+- Use installed runtime paths in user-facing guidance; do not teach from repository-source paths.
 
 ## Source-of-truth map
 - `$CODEX_HOME/INDEX.md` is the top router for the runtime pack.
@@ -66,7 +66,7 @@ This contract applies to `$CODEX_HOME` and every child path unless a deeper `AGE
 ## Documentation and routing rules
 - Keep top-level routing docs concise. Route first, dive deeper only when needed.
 - Update cross-links in the same change when files move or canonical paths change.
-- If a doc references a runtime path, verify that the path exists in the current source pack or clearly mark it runtime-only.
+- If a doc references a runtime path, verify that the path exists in the installed pack.
 - Do not leave stale machine-specific repository references in user-facing guidance.
 - Do not hardcode workstation-specific repository paths in docs, plans, or instruction assets.
 - Do not leave unresolved placeholders in non-template docs, plans, or workflow guides.

@@ -37,4 +37,4 @@ Purpose: explain how to choose one router and one entrypoint without opening unn
 ## Pack-wide guardrails
 - `$CODEX_HOME/index/manifest.yml` is the source of truth for routing metadata.
 - Keep rendered entrypoints and the manifest aligned when canonical targets or related links change.
-- Keep runtime-only state out of the routing tree, but keep the source-managed memory router and seeded memory guidance aligned with the rest of the pack.
+- Keep routing focused on stable installed entrypoints and keep the memory router aligned with the rest of the pack.

@@ -19,10 +19,9 @@ Purpose: define the common shell execution rules for shell-sensitive work in the
 - Prefer explicit arrays or direct argv execution over shell-string construction.
 - Reparse structured files after mutation.
 
-## Runtime-only state
-- Shell transcripts and snapshots are not pack source.
-- Do not document or template workflows around `$CODEX_HOME/sessions/` or `$CODEX_HOME/shell_snapshots/`.
-- Do not copy `$CODEX_HOME/.credentials.json` into source-controlled assets.
+## Documentation scope
+- Keep shell guidance focused on shell choice, reproducibility, validation, and command safety.
+- Route plugin, skill, and workflow ownership questions through the matching pack entrypoints instead of shell guidance.
 
 ## Related
 - `$CODEX_HOME/docs/style/bash.md`
