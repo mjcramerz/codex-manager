@@ -185,6 +185,6 @@ describe("Scheduled Handler", () => {
 
 ## See Also
 
-- [README.md](./README.md) - Overview
-- [api.md](./api.md) - Handler implementation
-- [gotchas.md](./gotchas.md) - Troubleshooting
+- [README.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/cron-triggers/README.md) - Overview
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/cron-triggers/api.md) - Handler implementation
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/cron-triggers/gotchas.md) - Troubleshooting

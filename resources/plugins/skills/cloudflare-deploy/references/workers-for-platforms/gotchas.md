@@ -131,4 +131,4 @@ See [Cloudflare API Rate Limits](https://developers.cloudflare.com/fundamentals/
 | Outbound Worker subrequests | Not intercepted for DO/mTLS | Only regular fetch() calls |
 | TCP sockets with outbound | Disabled | `connect()` API unavailable |
 
-See [README.md](./README.md), [configuration.md](./configuration.md), [api.md](./api.md), [patterns.md](./patterns.md)
+See [README.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers-for-platforms/README.md), [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers-for-platforms/configuration.md), [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers-for-platforms/api.md), [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers-for-platforms/patterns.md)

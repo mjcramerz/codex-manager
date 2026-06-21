@@ -1,20 +1,20 @@
 ---
-title: Ci Gitlab Cicd Rules
+title: Codex MCP Rules
 status: active
 owner: Matthew Cramer
 tags:
 - skills
 - all
-- ci-gitlab-cicd
+- codex-mcp
 - rules
 - rules-md
 - user
 - web
 updated: '2026-02-20'
 ---
-# Ci Gitlab Cicd Rules
+# Codex MCP Rules
 
 ## Required checks
-- Follow the workflow in `../SKILL.md`.
-- Prefer deterministic scripts in `../scripts/`.
-- Use references in `../references/` for factual guidance.
+- Follow the workflow in `$CODEX_HOME/plugins/cache/codex-local/codex-runtime/local/skills/codex-mcp/SKILL.md`.
+- Prefer deterministic scripts in `$CODEX_HOME/plugins/cache/codex-local/codex-runtime/local/skills/codex-mcp/scripts/`.
+- Use references in `$CODEX_HOME/plugins/cache/codex-local/codex-runtime/local/skills/codex-mcp/references/` for factual guidance.

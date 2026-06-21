@@ -182,4 +182,4 @@ script:
   - npx wrangler deploy
 ```
 
-See: [api.md](./api.md), [patterns.md](./patterns.md)
+See: [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/secrets-store/api.md), [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/secrets-store/patterns.md)

@@ -81,11 +81,11 @@ async tail(events: TraceItem[], env: Env, ctx: ExecutionContext): Promise<void>
 
 ## In This Reference
 
-- [Configuration](./configuration.md) - wrangler.jsonc setup, bindings, environments
-- [API](./api.md) - Runtime APIs, bindings, execution context
-- [Patterns](./patterns.md) - Common workflows, testing, optimization
-- [Frameworks](./frameworks.md) - Hono, routing, validation
-- [Gotchas](./gotchas.md) - Common issues, limits, troubleshooting
+- [Configuration]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workers/configuration.md) - wrangler.jsonc setup, bindings, environments
+- [API]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workers/api.md) - Runtime APIs, bindings, execution context
+- [Patterns]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workers/patterns.md) - Common workflows, testing, optimization
+- [Frameworks]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workers/frameworks.md) - Hono, routing, validation
+- [Gotchas]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workers/gotchas.md) - Common issues, limits, troubleshooting
 
 ## Reading Order
 
@@ -100,9 +100,9 @@ async tail(events: TraceItem[], env: Env, ctx: ExecutionContext): Promise<void>
 
 ## See Also
 
-- [KV](../kv/README.md) - Key-value storage
-- [D1](../d1/README.md) - SQL database
-- [R2](../r2/README.md) - Object storage
-- [Durable Objects](../durable-objects/README.md) - Stateful coordination
-- [Queues](../queues/README.md) - Message queues
-- [Wrangler](../wrangler/README.md) - CLI tool reference
+- [KV]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/kv/README.md) - Key-value storage
+- [D1]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/d1/README.md) - SQL database
+- [R2]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/r2/README.md) - Object storage
+- [Durable Objects]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/durable-objects/README.md) - Stateful coordination
+- [Queues]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/queues/README.md) - Message queues
+- [Wrangler]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/wrangler/README.md) - CLI tool reference

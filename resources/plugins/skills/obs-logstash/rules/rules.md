@@ -15,6 +15,6 @@ updated: '2026-02-20'
 # Obs Logstash Rules
 
 ## Required checks
-- Follow the workflow in `../SKILL.md`.
-- Prefer deterministic scripts in `../scripts/`.
-- Use references in `../references/` for factual guidance.
+- Follow the workflow in `$CODEX_HOME/plugins/cache/codex-local/observability/local/skills/obs-logstash/SKILL.md`.
+- Prefer deterministic scripts in `$CODEX_HOME/plugins/cache/codex-local/observability/local/skills/obs-logstash/scripts/`.
+- Use references in `$CODEX_HOME/plugins/cache/codex-local/observability/local/skills/obs-logstash/references/` for factual guidance.

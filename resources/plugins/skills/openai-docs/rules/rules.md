@@ -15,6 +15,6 @@ updated: '2026-02-20'
 # OpenAI Docs Rules
 
 ## Required checks
-- Follow the workflow in `../SKILL.md`.
-- Prefer deterministic scripts in `../scripts/`.
-- Use references in `../references/` for factual guidance.
+- Follow the workflow in `$CODEX_HOME/plugins/cache/codex-local/openai-apps/local/skills/openai-docs/SKILL.md`.
+- Prefer deterministic scripts in `$CODEX_HOME/plugins/cache/codex-local/openai-apps/local/skills/openai-docs/scripts/`.
+- Use references in `$CODEX_HOME/plugins/cache/codex-local/openai-apps/local/skills/openai-docs/references/` for factual guidance.

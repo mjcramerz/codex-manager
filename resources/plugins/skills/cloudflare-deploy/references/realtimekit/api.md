@@ -207,6 +207,6 @@ UI Kit handles state transitions automatically.
 
 ## See Also
 
-- [Configuration](./configuration.md) - Setup and installation
-- [Patterns](./patterns.md) - Usage examples
-- [README](./README.md) - Overview and quick start
+- [Configuration]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/realtimekit/configuration.md) - Setup and installation
+- [Patterns]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/realtimekit/patterns.md) - Usage examples
+- [README]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/realtimekit/README.md) - Overview and quick start

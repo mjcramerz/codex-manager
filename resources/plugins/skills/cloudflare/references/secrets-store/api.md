@@ -197,4 +197,4 @@ async function getAllSecrets(
 }
 ```
 
-See: [configuration.md](./configuration.md), [patterns.md](./patterns.md), [gotchas.md](./gotchas.md)
+See: [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/secrets-store/configuration.md), [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/secrets-store/patterns.md), [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/secrets-store/gotchas.md)

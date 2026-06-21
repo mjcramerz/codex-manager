@@ -33,9 +33,9 @@ Plan and validate custom Linux kernel builds.
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
-- `../scripts/skill_helper.py`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-kernel/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-kernel/agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-kernel/scripts/skill_helper.py`
 
 ## Reference files in this directory
 - `latest-sources.md`

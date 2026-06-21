@@ -193,4 +193,4 @@ export default {
 
 **Note:** Doesn't intercept DO/mTLS fetch.
 
-See [README.md](./README.md), [configuration.md](./configuration.md), [patterns.md](./patterns.md), [gotchas.md](./gotchas.md)
+See [README.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workers-for-platforms/README.md), [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workers-for-platforms/configuration.md), [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workers-for-platforms/patterns.md), [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workers-for-platforms/gotchas.md)

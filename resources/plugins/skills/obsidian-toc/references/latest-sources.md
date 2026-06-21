@@ -31,8 +31,8 @@ Generate or update a table of contents for Obsidian Markdown notes. Use when a n
 - Resources
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/obsidian/local/skills/obsidian-toc/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/obsidian/local/skills/obsidian-toc/agents/openai.yaml`
 
 ## External references
 - [Obsidian help](https://help.obsidian.md/) - Obsidian Markdown and vault workflow references.

@@ -1,6 +1,6 @@
 # Configuration
 
-See [README.md](./README.md) for overview.
+See [README.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/hyperdrive/README.md) for overview.
 
 ## Create Config
 
@@ -98,7 +98,7 @@ For Workers making **multiple queries** per request, enable Smart Placement to e
 }
 ```
 
-**Benefits:** Multi-query Workers run closer to DB, reducing round-trip latency. See [patterns.md](./patterns.md) for examples.
+**Benefits:** Multi-query Workers run closer to DB, reducing round-trip latency. See [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/hyperdrive/patterns.md) for examples.
 
 ## Private DB via Tunnel
 
@@ -156,4 +156,4 @@ export CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE="mysql://user:pa
 npx wrangler dev --remote  # Uses deployed config, affects production
 ```
 
-See [api.md](./api.md), [patterns.md](./patterns.md), [gotchas.md](./gotchas.md).
+See [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/hyperdrive/api.md), [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/hyperdrive/patterns.md), [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/hyperdrive/gotchas.md).

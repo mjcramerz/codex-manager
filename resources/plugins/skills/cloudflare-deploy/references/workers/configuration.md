@@ -180,6 +180,6 @@ npx wrangler deploy --dry-run    # Validate only
 
 ## See Also
 
-- [API](./api.md) - Runtime APIs and bindings usage
-- [Patterns](./patterns.md) - Deployment strategies
-- [Wrangler](../wrangler/README.md) - CLI reference
+- [API]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers/api.md) - Runtime APIs and bindings usage
+- [Patterns]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers/patterns.md) - Deployment strategies
+- [Wrangler]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/wrangler/README.md) - CLI reference

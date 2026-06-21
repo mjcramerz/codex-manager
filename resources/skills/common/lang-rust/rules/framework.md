@@ -1,11 +1,11 @@
 ---
-title: Lang Go Framework
+title: LANG-Rust Framework
 status: active
 owner: Matthew Cramer
 tags:
 - skills
 - all
-- lang-go
+- lang-rust
 - rules
 - framework-md
 - framework
@@ -13,9 +13,9 @@ tags:
 - default
 updated: '2026-02-20'
 ---
-# Lang Go Framework
+# LANG-Rust Framework
 
-- Skill: `lang-go`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Skill: `lang-rust`
+- Source of truth: `$CODEX_SKILLS/common/lang-rust/SKILL.md`
+- Runtime agent config: `$CODEX_SKILLS/common/lang-rust/agents/openai.yaml`
+- Supporting docs: `$CODEX_SKILLS/common/lang-rust/references/`

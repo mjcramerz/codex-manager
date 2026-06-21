@@ -15,6 +15,6 @@ updated: '2026-02-20'
 # WORKFLOW-Plans Rules
 
 ## Required checks
-- Follow the workflow in `../SKILL.md`.
-- Prefer deterministic scripts in `../scripts/`.
-- Use references in `../references/` for factual guidance.
+- Follow the workflow in `$CODEX_SKILLS/common/workflow-plans/SKILL.md`.
+- Prefer deterministic scripts in `$CODEX_SKILLS/common/workflow-plans/scripts/`.
+- Use references in `$CODEX_SKILLS/common/workflow-plans/references/` for factual guidance.

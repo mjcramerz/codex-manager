@@ -55,11 +55,11 @@ interface:
 - Before/after key snapshot plus workload impact notes and residual risk.
 
 ## Local resources
-- `infra-sysctl/references/latest-sources.md`
-- `infra-sysctl/references/operations-checklist.md`
-- `infra-sysctl/references/risk-register.md`
-- `infra-sysctl/assets/rollback-checklist.md`
-- `infra-sysctl/scripts/skill_helper.py`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-sysctl/references/latest-sources.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-sysctl/references/operations-checklist.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-sysctl/references/risk-register.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-sysctl/assets/rollback-checklist.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-sysctl/scripts/skill_helper.py`
 
 ## References
 - `$CODEX_HOME/index/domains/system/sysctl.md`

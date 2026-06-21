@@ -33,9 +33,9 @@ Apply sysctl tuning with safety and rollback.
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
-- `../scripts/skill_helper.py`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-sysctl/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-sysctl/agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-sysctl/scripts/skill_helper.py`
 
 ## Reference files in this directory
 - `latest-sources.md`

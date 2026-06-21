@@ -12,5 +12,5 @@ updated: '2026-03-12'
 
 - Skill: `data-json`
 - Category: `COMMON`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
+- Source of truth: `$CODEX_SKILLS/common/data-json/SKILL.md`
+- Runtime agent config: `$CODEX_SKILLS/common/data-json/agents/openai.yaml`

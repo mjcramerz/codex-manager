@@ -1,11 +1,11 @@
 ---
-title: Lang Go Framework
+title: LANG-Perl Framework
 status: active
 owner: Matthew Cramer
 tags:
 - skills
 - all
-- lang-go
+- lang-perl
 - rules
 - framework-md
 - framework
@@ -13,9 +13,9 @@ tags:
 - default
 updated: '2026-02-20'
 ---
-# Lang Go Framework
+# LANG-Perl Framework
 
-- Skill: `lang-go`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Skill: `lang-perl`
+- Source of truth: `$CODEX_SKILLS/common/lang-perl/SKILL.md`
+- Runtime agent config: `$CODEX_SKILLS/common/lang-perl/agents/openai.yaml`
+- Supporting docs: `$CODEX_SKILLS/common/lang-perl/references/`

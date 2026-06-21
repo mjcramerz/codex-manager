@@ -17,7 +17,7 @@
 | 5.x | Current | Auto-generated from OpenAPI, breaking changes from v4 |
 | 4.x | Legacy | Manual maintenance, deprecated |
 
-**Critical:** v5 renamed many resources (`cloudflare_record` → `cloudflare_dns_record`, `cloudflare_worker_*` → `cloudflare_workers_*`). See [gotchas.md](./gotchas.md#v5-breaking-changes) for migration details.
+**Critical:** v5 renamed many resources (`cloudflare_record` → `cloudflare_dns_record`, `cloudflare_worker_*` → `cloudflare_workers_*`). See [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/terraform/gotchas.md#v5-breaking-changes) for migration details.
 
 ## Provider Setup
 
@@ -84,19 +84,19 @@ cf-terraforming import --resource-type cloudflare_dns_record --zone <zone-id>
 
 ## Reading Order
 
-1. Start with [README.md](./README.md) for provider setup and authentication
-2. Review [configuration.md](./configuration.md) for resource configurations
-3. Check [api.md](./api.md) for data sources and existing resource queries
-4. See [patterns.md](./patterns.md) for multi-environment and CI/CD patterns
-5. Read [gotchas.md](./gotchas.md) for state drift, v5 breaking changes, and troubleshooting
+1. Start with [README.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/terraform/README.md) for provider setup and authentication
+2. Review [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/terraform/configuration.md) for resource configurations
+3. Check [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/terraform/api.md) for data sources and existing resource queries
+4. See [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/terraform/patterns.md) for multi-environment and CI/CD patterns
+5. Read [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/terraform/gotchas.md) for state drift, v5 breaking changes, and troubleshooting
 
 ## In This Reference
-- [configuration.md](./configuration.md) - Resources for zones, DNS, workers, KV, R2, D1, Pages, rulesets
-- [api.md](./api.md) - Data sources for existing resources
-- [patterns.md](./patterns.md) - Architecture patterns, multi-env setup, CI/CD integration
-- [gotchas.md](./gotchas.md) - Common issues, security, best practices
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/terraform/configuration.md) - Resources for zones, DNS, workers, KV, R2, D1, Pages, rulesets
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/terraform/api.md) - Data sources for existing resources
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/terraform/patterns.md) - Architecture patterns, multi-env setup, CI/CD integration
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/terraform/gotchas.md) - Common issues, security, best practices
 
 ## See Also
-- [pulumi](../pulumi/) - Alternative IaC tool for Cloudflare
-- [wrangler](../wrangler/) - CLI deployment alternative
-- [workers](../workers/) - Worker runtime documentation
+- [pulumi]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/pulumi/) - Alternative IaC tool for Cloudflare
+- [wrangler]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/wrangler/) - CLI deployment alternative
+- [workers]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers/) - Worker runtime documentation

@@ -30,8 +30,8 @@ Help address review/issue comments on the open GitHub PR for the current branch 
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/github/local/skills/github-pr-comments/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/github/local/skills/github-pr-comments/agents/openai.yaml`
 
 ## External references
 - [Git documentation](https://git-scm.com/doc) - Core git behavior and safe workflows.

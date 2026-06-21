@@ -39,8 +39,8 @@ interface:
 - Reviewable changes with explicit validation evidence.
 
 ## Local resources
-- `aptly-r2/references/latest-sources.md`
-- `aptly-r2/scripts/skill_helper.py`
+- `$CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/aptly-r2/references/latest-sources.md`
+- `$CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/aptly-r2/scripts/skill_helper.py`
 
 ## References
 - `$CODEX_HOME/docs/workflows/codex-manager.md`

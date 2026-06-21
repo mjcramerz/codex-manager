@@ -171,4 +171,4 @@ await client.zones.rulesets.phases.entrypoint.update("http_request_cache_setting
 
 **Rationale**: Attackers randomize query strings (`?random=123456`) to bypass cache. Excluding query params ensures cache hits absorb attack traffic.
 
-See [configuration.md](./configuration.md) for rule structure details.
+See [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/ddos/configuration.md) for rule structure details.

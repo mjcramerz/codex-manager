@@ -129,13 +129,13 @@ const playerParams = new URLSearchParams({
 
 ## In This Reference
 
-- [README.md](./README.md) - Overview and quick start
-- [api.md](./api.md) - On-demand video APIs
-- [api-live.md](./api-live.md) - Live streaming APIs
-- [patterns.md](./patterns.md) - Full-stack flows, best practices
-- [gotchas.md](./gotchas.md) - Error codes, troubleshooting
+- [README.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/stream/README.md) - Overview and quick start
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/stream/api.md) - On-demand video APIs
+- [api-live.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/stream/api-live.md) - Live streaming APIs
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/stream/patterns.md) - Full-stack flows, best practices
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/stream/gotchas.md) - Error codes, troubleshooting
 
 ## See Also
 
-- [wrangler](../wrangler/) - Wrangler CLI and configuration
-- [workers](../workers/) - Deploy Stream APIs in Workers
+- [wrangler]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/wrangler/) - Wrangler CLI and configuration
+- [workers]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers/) - Deploy Stream APIs in Workers

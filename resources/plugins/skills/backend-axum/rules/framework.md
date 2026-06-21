@@ -16,6 +16,6 @@ updated: '2026-02-20'
 # Backend Axum Framework
 
 - Skill: `backend-axum`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Source of truth: `$CODEX_HOME/plugins/cache/codex-local/backend/local/skills/backend-axum/SKILL.md`
+- Runtime agent config: `$CODEX_HOME/plugins/cache/codex-local/backend/local/skills/backend-axum/agents/openai.yaml`
+- Supporting docs: `$CODEX_HOME/plugins/cache/codex-local/backend/local/skills/backend-axum/references/`

@@ -126,7 +126,7 @@ Asset not caching in Cache Reserve?
 
 ## See Also
 
-- [README](./README.md) - Overview and core concepts
-- [Configuration](./configuration.md) - Setup and Cache Rules
-- [API Reference](./api.md) - Purging and monitoring
-- [Patterns](./patterns.md) - Best practices and optimization
+- [README]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/cache-reserve/README.md) - Overview and core concepts
+- [Configuration]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/cache-reserve/configuration.md) - Setup and Cache Rules
+- [API Reference]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/cache-reserve/api.md) - Purging and monitoring
+- [Patterns]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/cache-reserve/patterns.md) - Best practices and optimization

@@ -30,8 +30,8 @@ Configure Kibana spaces, roles, and dashboards safely.
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/observability/local/skills/obs-kibana/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/observability/local/skills/obs-kibana/agents/openai.yaml`
 
 ## External references
 - [Elastic docs](https://www.elastic.co/docs) - Elasticsearch, Logstash, and Kibana platform docs.

@@ -16,6 +16,6 @@ updated: '2026-02-20'
 # Infra Virtualization Framework
 
 - Skill: `infra-virtualization`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Source of truth: `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-virtualization/SKILL.md`
+- Runtime agent config: `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-virtualization/agents/openai.yaml`
+- Supporting docs: `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-virtualization/references/`

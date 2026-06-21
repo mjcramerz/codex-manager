@@ -15,6 +15,6 @@ updated: '2026-02-20'
 # Infra Virsh Rules
 
 ## Required checks
-- Follow the workflow in `../SKILL.md`.
-- Prefer deterministic scripts in `../scripts/`.
-- Use references in `../references/` for factual guidance.
+- Follow the workflow in `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-virsh/SKILL.md`.
+- Prefer deterministic scripts in `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-virsh/scripts/`.
+- Use references in `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-virsh/references/` for factual guidance.

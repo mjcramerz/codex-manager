@@ -2,8 +2,8 @@
 
 ## Job fails with size or seconds errors
 - Cause: size not supported by model, or seconds not in 4/8/12.
-- Fix: match size to model; use only "4", "8", or "12" seconds (see `./video-api.md`).
-- If you see `invalid_type` for seconds, update `../scripts/sora.py` or pass a string value for `--seconds`.
+- Fix: match size to model; use only "4", "8", or "12" seconds (see `$CODEX_HOME/plugins/cache/codex-local/ai-media/local/skills/sora/references/video-api.md`).
+- If you see `invalid_type` for seconds, update `$CODEX_HOME/plugins/cache/codex-local/ai-media/local/skills/sora/scripts/sora.py` or pass a string value for `--seconds`.
 
 ## openai SDK not installed
 - Cause: running `python "$SORA_CLI" ...` without the OpenAI SDK available.
@@ -15,7 +15,7 @@
 
 ## Prompt shell escaping issues
 - Cause: multi-line prompts or quotes break the shell.
-- Fix: use `--prompt-file prompt.txt` (see `./cli.md` for an example).
+- Fix: use `--prompt-file prompt.txt` (see `$CODEX_HOME/plugins/cache/codex-local/ai-media/local/skills/sora/references/cli.md` for an example).
 
 ## Prompt looks double-wrapped ("Primary request: Use case: ...")
 - Cause: you structured the prompt manually but left CLI augmentation on.

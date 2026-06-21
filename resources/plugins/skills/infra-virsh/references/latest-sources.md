@@ -33,9 +33,9 @@ Manage libvirt/KVM workflows with virsh safely.
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
-- `../scripts/skill_helper.py`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-virsh/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-virsh/agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-virsh/scripts/skill_helper.py`
 
 ## Reference files in this directory
 - `domain-xml-guardrails.md`

@@ -35,8 +35,8 @@ Comprehensive ADHD planning and CBT-based (sometimes requested as "CBD") daily t
 - Notes
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/health-planning/local/skills/health-adhd-cbt/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/health-planning/local/skills/health-adhd-cbt/agents/openai.yaml`
 
 ## External references
 - [NIMH ADHD overview](https://www.nimh.nih.gov/health/topics/attention-deficit-hyperactivity-disorder-adhd) - High-level ADHD guidance and references.

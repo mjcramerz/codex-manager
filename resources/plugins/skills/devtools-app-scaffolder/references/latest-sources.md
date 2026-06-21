@@ -33,8 +33,8 @@ Scaffold full-fledged apps using the provided templates; wire up config, logging
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/backend/local/skills/devtools-app-scaffolder/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/backend/local/skills/devtools-app-scaffolder/agents/openai.yaml`
 
 ## External references
 - [FastAPI documentation](https://fastapi.tiangolo.com/) - API scaffolding and validation patterns.

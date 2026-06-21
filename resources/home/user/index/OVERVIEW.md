@@ -9,7 +9,7 @@ Purpose: explain how to choose one router and one entrypoint without opening unn
 
 ## Required context
 1. `$CODEX_HOME/AGENTS.md`
-2. `$CODEX_HOME/memories/MEMORY.md` when it exists and is needed
+2. `$CODEX_HOME/memories/MEMORY.md` when it is needed
 3. `$CODEX_HOME/INDEX.md`
 4. `$CODEX_HOME/index/pack/plans.md` and `$CODEX_HOME/index/pack/workflows.md`
 5. `$CODEX_HOME/index/pack/skills.md`
@@ -35,6 +35,6 @@ Purpose: explain how to choose one router and one entrypoint without opening unn
 - Restart from step 1 if the task changes category.
 
 ## Pack-wide guardrails
-- `resources/home/user/index/manifest.yml` is the source of truth for routing metadata.
+- `$CODEX_HOME/index/manifest.yml` is the source of truth for routing metadata.
 - Keep rendered entrypoints and the manifest aligned when canonical targets or related links change.
-- Keep runtime-only state out of the routing tree and out of repo-synced pack assets.
+- Keep runtime-only state out of the routing tree, but keep the source-managed memory router and seeded memory guidance aligned with the rest of the pack.

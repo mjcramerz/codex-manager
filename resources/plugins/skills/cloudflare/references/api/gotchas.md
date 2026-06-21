@@ -104,7 +104,7 @@ for await (const zone of client.zones.list()) {
 
 **Cause:** Workers subrequests count as separate API calls.
 
-**Solution:** Use bindings instead of REST API in Workers (see ../bindings/).
+**Solution:** Use bindings instead of REST API in Workers (see $CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/bindings/).
 
 ```typescript
 // ❌ WRONG - REST API in Workers (counts against rate limit)
@@ -220,6 +220,6 @@ export async function getZoneDetails(zoneId: string) {
 
 ## See Also
 
-- [api.md](./api.md) - Error types, authentication
-- [configuration.md](./configuration.md) - Timeout/retry configuration
-- [patterns.md](./patterns.md) - Error handling patterns
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/api/api.md) - Error types, authentication
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/api/configuration.md) - Timeout/retry configuration
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/api/patterns.md) - Error handling patterns

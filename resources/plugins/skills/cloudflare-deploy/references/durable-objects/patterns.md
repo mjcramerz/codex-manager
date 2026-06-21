@@ -196,6 +196,6 @@ async myMethod() {
 
 ## See Also
 
-- **[API](./api.md)** - ctx methods, WebSocket handlers
-- **[Gotchas](./gotchas.md)** - Hibernation caveats, common errors
-- **[DO Storage](../do-storage/README.md)** - Storage patterns and transactions
+- **[API]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/durable-objects/api.md)** - ctx methods, WebSocket handlers
+- **[Gotchas]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/durable-objects/gotchas.md)** - Hibernation caveats, common errors
+- **[DO Storage]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/do-storage/README.md)** - Storage patterns and transactions

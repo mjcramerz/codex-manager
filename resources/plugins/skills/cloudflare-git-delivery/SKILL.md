@@ -39,8 +39,8 @@ interface:
 - Reviewable changes with explicit validation evidence.
 
 ## Local resources
-- `cloudflare-git-delivery/references/latest-sources.md`
-- `cloudflare-git-delivery/scripts/skill_helper.py`
+- `$CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare-git-delivery/references/latest-sources.md`
+- `$CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare-git-delivery/scripts/skill_helper.py`
 
 ## References
 - `$CODEX_HOME/docs/workflows/codex-manager.md`

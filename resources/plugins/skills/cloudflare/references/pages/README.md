@@ -67,22 +67,22 @@ npx wrangler pages deployment tail --project-name=my-project
 
 **New to Pages?** Start here:
 1. README.md (you are here) - Overview & quick start
-2. [configuration.md](./configuration.md) - Project setup, wrangler.jsonc, bindings
-3. [api.md](./api.md) - Functions API, routing, context
-4. [patterns.md](./patterns.md) - Common implementations
-5. [gotchas.md](./gotchas.md) - Troubleshooting & pitfalls
+2. [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pages/configuration.md) - Project setup, wrangler.jsonc, bindings
+3. [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pages/api.md) - Functions API, routing, context
+4. [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pages/patterns.md) - Common implementations
+5. [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pages/gotchas.md) - Troubleshooting & pitfalls
 
 **Quick reference?** Jump to relevant file above.
 
 ## In This Reference
 
-- [configuration.md](./configuration.md) - wrangler.jsonc, build, env vars, Smart Placement
-- [api.md](./api.md) - Functions API, bindings, context, advanced mode
-- [patterns.md](./patterns.md) - Full-stack patterns, framework integration
-- [gotchas.md](./gotchas.md) - Build issues, limits, debugging, framework warnings
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pages/configuration.md) - wrangler.jsonc, build, env vars, Smart Placement
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pages/api.md) - Functions API, bindings, context, advanced mode
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pages/patterns.md) - Full-stack patterns, framework integration
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pages/gotchas.md) - Build issues, limits, debugging, framework warnings
 
 ## See Also
 
-- [pages-functions](../pages-functions/) - File-based routing, middleware
-- [d1](../d1/) - SQL database for Pages Functions
-- [kv](../kv/) - Key-value storage for caching/state
+- [pages-functions]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pages-functions/) - File-based routing, middleware
+- [d1]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/d1/) - SQL database for Pages Functions
+- [kv]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/kv/) - Key-value storage for caching/state

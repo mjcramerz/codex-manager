@@ -31,8 +31,8 @@ Create, update, and structure Obsidian documentation vaults and notes. Use when 
 - Resources
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/obsidian/local/skills/obsidian-docs/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/obsidian/local/skills/obsidian-docs/agents/openai.yaml`
 
 ## External references
 - [Obsidian help](https://help.obsidian.md/) - Obsidian Markdown and vault workflow references.

@@ -37,9 +37,9 @@ Prepare meeting materials with Notion context and Codex research; use when gathe
 - References and examples
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
-- `../reference/` (previous notes retained by this skill)
+- `$CODEX_HOME/plugins/cache/codex-local/notion/local/skills/notion-meeting-intelligence/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/notion/local/skills/notion-meeting-intelligence/agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/notion/local/skills/notion-meeting-intelligence/reference/` (previous notes retained by this skill)
 
 ## External references
 - [Notion API intro](https://developers.notion.com/reference/intro) - Notion integration behavior and limits.

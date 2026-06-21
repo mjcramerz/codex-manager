@@ -37,9 +37,9 @@ Capture conversations and decisions into structured Notion pages; use when turni
 - References and examples
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
-- `../reference/` (previous notes retained by this skill)
+- `$CODEX_HOME/plugins/cache/codex-local/notion/local/skills/notion-knowledge-capture/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/notion/local/skills/notion-knowledge-capture/agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/notion/local/skills/notion-knowledge-capture/reference/` (previous notes retained by this skill)
 
 ## External references
 - [Notion API intro](https://developers.notion.com/reference/intro) - Notion integration behavior and limits.

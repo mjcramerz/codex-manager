@@ -142,6 +142,6 @@ If successful, returns JSON array of results.
 
 ## See Also
 
-- [r2-data-catalog/configuration.md](../r2-data-catalog/configuration.md) - Detailed token setup and PyIceberg connection
+- [r2-data-catalog/configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/r2-data-catalog/configuration.md) - Detailed token setup and PyIceberg connection
 - [patterns.md](patterns.md) - Query examples using configuration
 - [gotchas.md](gotchas.md) - Common configuration errors

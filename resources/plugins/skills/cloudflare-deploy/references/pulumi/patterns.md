@@ -188,4 +188,4 @@ const worker = new cloudflare.WorkerScript("worker", {
 ```
 
 ---
-See: [README.md](./README.md), [configuration.md](./configuration.md), [api.md](./api.md), [gotchas.md](./gotchas.md)
+See: [README.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/pulumi/README.md), [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/pulumi/configuration.md), [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/pulumi/api.md), [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/pulumi/gotchas.md)

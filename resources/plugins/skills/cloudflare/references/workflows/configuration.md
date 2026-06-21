@@ -148,4 +148,4 @@ export const onRequest: PagesFunction<Env> = async ({ env, request }) => {
 
 Configure in wrangler.jsonc under `service_bindings`.
 
-See: [api.md](./api.md), [patterns.md](./patterns.md)
+See: [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workflows/api.md), [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workflows/patterns.md)

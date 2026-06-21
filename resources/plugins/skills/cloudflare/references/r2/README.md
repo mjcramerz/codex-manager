@@ -82,14 +82,14 @@ async queue(batch: MessageBatch, env: Env) {
 
 ## In This Reference
 
-- [configuration.md](./configuration.md) - Bindings, S3 SDK, CORS, lifecycles, token scopes
-- [api.md](./api.md) - Workers API, multipart, conditional requests, presigned URLs
-- [patterns.md](./patterns.md) - Streaming, caching, client uploads, public buckets
-- [gotchas.md](./gotchas.md) - List truncation, etag format, stream length, S3 SDK region
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/r2/configuration.md) - Bindings, S3 SDK, CORS, lifecycles, token scopes
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/r2/api.md) - Workers API, multipart, conditional requests, presigned URLs
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/r2/patterns.md) - Streaming, caching, client uploads, public buckets
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/r2/gotchas.md) - List truncation, etag format, stream length, S3 SDK region
 
 ## See Also
 
-- [workers](../workers/) - Worker runtime and fetch handlers
-- [kv](../kv/) - Metadata storage for R2 objects
-- [d1](../d1/) - Store R2 URLs in relational database
-- [queues](../queues/) - Process R2 uploads asynchronously
+- [workers]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workers/) - Worker runtime and fetch handlers
+- [kv]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/kv/) - Metadata storage for R2 objects
+- [d1]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/d1/) - Store R2 URLs in relational database
+- [queues]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/queues/) - Process R2 uploads asynchronously

@@ -172,13 +172,13 @@ const payloadWithRules = {
 
 ## In This Reference
 
-- [README.md](./README.md) - Overview and quick start
-- [configuration.md](./configuration.md) - Setup and config
-- [api.md](./api.md) - On-demand video APIs
-- [api-live.md](./api-live.md) - Live streaming APIs
-- [gotchas.md](./gotchas.md) - Error codes, troubleshooting
+- [README.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/stream/README.md) - Overview and quick start
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/stream/configuration.md) - Setup and config
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/stream/api.md) - On-demand video APIs
+- [api-live.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/stream/api-live.md) - Live streaming APIs
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/stream/gotchas.md) - Error codes, troubleshooting
 
 ## See Also
 
-- [workers](../workers/) - Deploy Stream APIs in Workers
-- [pages](../pages/) - Integrate Stream with Pages
+- [workers]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers/) - Deploy Stream APIs in Workers
+- [pages]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/pages/) - Integrate Stream with Pages

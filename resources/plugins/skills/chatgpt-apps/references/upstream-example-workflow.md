@@ -8,7 +8,7 @@ Prefer these starting points in order:
 
 1. Official OpenAI Apps SDK examples
 2. Version-matched `@modelcontextprotocol/ext-apps` examples
-3. Local `../scripts/scaffold_node_ext_apps.mjs` fallback
+3. Local `$CODEX_HOME/plugins/cache/codex-local/openai-apps/local/skills/chatgpt-apps/scripts/scaffold_node_ext_apps.mjs` fallback
 
 This keeps the skill aligned with current docs and maintained example code while still preserving a low-dependency fallback when examples are not a good fit.
 
@@ -47,7 +47,7 @@ Typical examples from upstream flows:
 
 ### 3. Local fallback scaffold
 
-Use `../scripts/scaffold_node_ext_apps.mjs` when:
+Use `$CODEX_HOME/plugins/cache/codex-local/openai-apps/local/skills/chatgpt-apps/scripts/scaffold_node_ext_apps.mjs` when:
 
 - No close upstream example exists
 - The user wants a tiny Node + vanilla HTML starter

@@ -101,29 +101,29 @@ ingress:
 
 **New to Cloudflare Tunnel:**
 1. This README (overview, quick start)
-2. [networking.md](./networking.md) - Firewall rules, connectivity pre-checks
-3. [configuration.md](./configuration.md) - Config file options, ingress rules
-4. [patterns.md](./patterns.md) - Docker, Kubernetes, production deployment
-5. [gotchas.md](./gotchas.md) - Troubleshooting, best practices
+2. [networking.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/tunnel/networking.md) - Firewall rules, connectivity pre-checks
+3. [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/tunnel/configuration.md) - Config file options, ingress rules
+4. [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/tunnel/patterns.md) - Docker, Kubernetes, production deployment
+5. [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/tunnel/gotchas.md) - Troubleshooting, best practices
 
 **Enterprise deployment:**
-1. [networking.md](./networking.md) - Corporate firewall requirements
-2. [gotchas.md](./gotchas.md) - HA setup, security best practices
-3. [patterns.md](./patterns.md) - Kubernetes, rolling updates
+1. [networking.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/tunnel/networking.md) - Corporate firewall requirements
+2. [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/tunnel/gotchas.md) - HA setup, security best practices
+3. [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/tunnel/patterns.md) - Kubernetes, rolling updates
 
 **Programmatic control:**
-1. [api.md](./api.md) - REST API, TypeScript SDK
+1. [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/tunnel/api.md) - REST API, TypeScript SDK
 
 ## In This Reference
 
-- [networking.md](./networking.md) - Firewall rules, ports, connectivity pre-checks
-- [configuration.md](./configuration.md) - Config file options, ingress rules, TLS settings
-- [api.md](./api.md) - REST API, TypeScript SDK, token-based tunnels
-- [patterns.md](./patterns.md) - Docker, Kubernetes, Terraform, HA, use cases
-- [gotchas.md](./gotchas.md) - Troubleshooting, limitations, best practices
+- [networking.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/tunnel/networking.md) - Firewall rules, ports, connectivity pre-checks
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/tunnel/configuration.md) - Config file options, ingress rules, TLS settings
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/tunnel/api.md) - REST API, TypeScript SDK, token-based tunnels
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/tunnel/patterns.md) - Docker, Kubernetes, Terraform, HA, use cases
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/tunnel/gotchas.md) - Troubleshooting, limitations, best practices
 
 ## See Also
 
-- [workers](../workers/) - Workers with Tunnel integration
+- [workers]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers/) - Workers with Tunnel integration
 - [access](../access/) - Zero Trust access policies
 - [warp](../warp/) - WARP client for private networks

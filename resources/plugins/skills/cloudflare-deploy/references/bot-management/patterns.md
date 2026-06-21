@@ -179,4 +179,4 @@ Rate limiting > Custom rules
 
 ## See Also
 
-- [gotchas.md](./gotchas.md) - Common errors, false positives/negatives, limitations
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/bot-management/gotchas.md) - Common errors, false positives/negatives, limitations

@@ -53,10 +53,10 @@ Private, high-performance connectivity to Cloudflare's network. **Enterprise-onl
 2-4 weeks typical. Steps: request → config review → order connection → configure → test → enable health checks → activate → monitor.
 
 ## In This Reference
-- [configuration.md](./configuration.md) - BGP, routing, setup
-- [api.md](./api.md) - API endpoints, SDKs
-- [patterns.md](./patterns.md) - HA, hybrid cloud, failover
-- [gotchas.md](./gotchas.md) - Troubleshooting, limits
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/network-interconnect/configuration.md) - BGP, routing, setup
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/network-interconnect/api.md) - API endpoints, SDKs
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/network-interconnect/patterns.md) - HA, hybrid cloud, failover
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/network-interconnect/gotchas.md) - Troubleshooting, limits
 
 ## Reading Order by Task
 
@@ -95,5 +95,5 @@ Private, high-performance connectivity to Cloudflare's network. **Enterprise-onl
 - Maintenance window coordination
 
 ## See Also
-- [tunnel](../tunnel/) - Alternative for private network connectivity
-- [spectrum](../spectrum/) - Layer 4 proxy for TCP/UDP traffic
+- [tunnel]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/tunnel/) - Alternative for private network connectivity
+- [spectrum]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/spectrum/) - Layer 4 proxy for TCP/UDP traffic

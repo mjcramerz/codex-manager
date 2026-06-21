@@ -15,6 +15,6 @@ updated: '2026-03-06'
 # Repo Ops Framework
 
 - Skill: `repo-ops`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Source of truth: `$CODEX_SKILLS/common/repo-ops/SKILL.md`
+- Runtime agent config: `$CODEX_SKILLS/common/repo-ops/agents/openai.yaml`
+- Supporting docs: `$CODEX_SKILLS/common/repo-ops/references/`

@@ -143,8 +143,8 @@ wrangler d1 migrations apply <db-name>
 
 ## See Also
 
-- [README](./README.md) - Provider setup
-- [Configuration](./configuration.md) - Resources
-- [API](./api.md) - Data sources
-- [Patterns](./patterns.md) - Use cases
+- [README]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/terraform/README.md) - Provider setup
+- [Configuration]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/terraform/configuration.md) - Resources
+- [API]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/terraform/api.md) - Data sources
+- [Patterns]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/terraform/patterns.md) - Use cases
 - Provider docs: https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs

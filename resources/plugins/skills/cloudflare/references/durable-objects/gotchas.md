@@ -66,7 +66,7 @@ private getHeavyData() {
 
 **Problem:** 503 errors under load  
 **Cause:** Single DO exceeding ~1K req/s throughput limit  
-**Solution:** Shard across multiple DOs (see [Patterns: Sharding](./patterns.md))
+**Solution:** Shard across multiple DOs (see [Patterns: Sharding]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/durable-objects/patterns.md))
 
 ### "Storage Quota Exceeded (Write failures)"
 
@@ -192,6 +192,6 @@ export default {
 
 ## See Also
 
-- **[Patterns](./patterns.md)** - Workarounds for common limitations
-- **[API](./api.md)** - Storage limits and quotas
-- **[Configuration](./configuration.md)** - Setting CPU limits
+- **[Patterns]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/durable-objects/patterns.md)** - Workarounds for common limitations
+- **[API]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/durable-objects/api.md)** - Storage limits and quotas
+- **[Configuration]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/durable-objects/configuration.md)** - Setting CPU limits

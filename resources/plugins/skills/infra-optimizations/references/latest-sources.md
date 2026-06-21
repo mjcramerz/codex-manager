@@ -33,9 +33,9 @@ Plan host performance/security tuning with measurement and rollback.
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
-- `../scripts/skill_helper.py`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-optimizations/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-optimizations/agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-optimizations/scripts/skill_helper.py`
 
 ## Reference files in this directory
 - `latest-sources.md`

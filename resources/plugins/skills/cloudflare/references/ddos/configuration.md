@@ -90,4 +90,4 @@ Configure via Notifications:
 - Filters: zones, hostnames, RPS/PPS/Mbps thresholds, IPs, protocols
 - Mechanisms: email, webhooks, PagerDuty
 
-See [api.md](./api.md#alert-configuration) for API examples.
+See [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/ddos/api.md#alert-configuration) for API examples.

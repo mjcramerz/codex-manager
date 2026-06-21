@@ -183,6 +183,6 @@ await auth.dispose();
 
 ## See Also
 
-- [README.md](./README.md) - CLI commands
-- [configuration.md](./configuration.md) - Config
-- [patterns.md](./patterns.md) - Testing patterns
+- [README.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/wrangler/README.md) - CLI commands
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/wrangler/configuration.md) - Config
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/wrangler/patterns.md) - Testing patterns

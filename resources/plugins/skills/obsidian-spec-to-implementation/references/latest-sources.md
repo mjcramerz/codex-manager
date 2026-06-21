@@ -31,8 +31,8 @@ Convert specs into implementation plans and task notes in Obsidian. Use when tur
 - Resources
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/obsidian/local/skills/obsidian-spec-to-implementation/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/obsidian/local/skills/obsidian-spec-to-implementation/agents/openai.yaml`
 
 ## External references
 - [Obsidian help](https://help.obsidian.md/) - Obsidian Markdown and vault workflow references.

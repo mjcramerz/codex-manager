@@ -69,5 +69,5 @@ Non-zero exit code means not authenticated.
 
 ## See Also
 
-- [terraform/README.md](../terraform/README.md) - Terraform provider auth
-- [pulumi/README.md](../pulumi/README.md) - Pulumi provider auth
+- [terraform/README.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/terraform/README.md) - Terraform provider auth
+- [pulumi/README.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/pulumi/README.md) - Pulumi provider auth

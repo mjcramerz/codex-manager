@@ -18,10 +18,10 @@ Cloudflare TURN (Traversal Using Relays around NAT) Service is a managed relay s
 
 | File | Purpose |
 |------|---------|
-| [api.md](./api.md) | Credentials API, TURN key management, types, constraints |
-| [configuration.md](./configuration.md) | Worker setup, wrangler.jsonc, env vars, IP allowlisting |
-| [patterns.md](./patterns.md) | Implementation patterns, use cases, integration examples |
-| [gotchas.md](./gotchas.md) | Troubleshooting, limits, security, common mistakes |
+| [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/turn/api.md) | Credentials API, TURN key management, types, constraints |
+| [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/turn/configuration.md) | Worker setup, wrangler.jsonc, env vars, IP allowlisting |
+| [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/turn/patterns.md) | Implementation patterns, use cases, integration examples |
+| [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/turn/gotchas.md) | Troubleshooting, limits, security, common mistakes |
 
 ## Reading Order
 
@@ -54,10 +54,10 @@ Cloudflare TURN (Traversal Using Relays around NAT) Service is a managed relay s
 
 ## Quick Start
 
-1. **Create TURN key via API**: see [api.md#create-turn-key](./api.md#create-turn-key)
-2. **Generate credentials**: see [api.md#generate-temporary-credentials](./api.md#generate-temporary-credentials)
-3. **Configure Worker**: see [configuration.md#cloudflare-worker-integration](./configuration.md#cloudflare-worker-integration)
-4. **Implement client**: see [patterns.md#basic-turn-configuration-browser](./patterns.md#basic-turn-configuration-browser)
+1. **Create TURN key via API**: see [api.md#create-turn-key]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/turn/api.md#create-turn-key)
+2. **Generate credentials**: see [api.md#generate-temporary-credentials]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/turn/api.md#generate-temporary-credentials)
+3. **Configure Worker**: see [configuration.md#cloudflare-worker-integration]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/turn/configuration.md#cloudflare-worker-integration)
+4. **Implement client**: see [patterns.md#basic-turn-configuration-browser]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/turn/patterns.md#basic-turn-configuration-browser)
 
 ## When to Use TURN
 

@@ -19,7 +19,7 @@ Multi-tenant platform with isolated customer code execution at scale.
 
 [![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/cloudflare/workers-for-platforms-example)
 
-**Manual setup:** See [configuration.md](./configuration.md) for namespace creation and dispatch worker configuration.
+**Manual setup:** See [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers-for-platforms/configuration.md) for namespace creation and dispatch worker configuration.
 
 ## Key Features
 
@@ -76,14 +76,14 @@ Worker mode?
 
 | File | Purpose | When to Read |
 |------|---------|--------------|
-| [configuration.md](./configuration.md) | Namespace setup, dispatch worker config | First-time setup, changing limits |
-| [api.md](./api.md) | User worker API, dispatch API, outbound worker | Deploying workers, SDK integration |
-| [patterns.md](./patterns.md) | Multi-tenancy, routing, egress control | Planning architecture, scaling |
-| [gotchas.md](./gotchas.md) | Limits, isolation issues, best practices | Debugging, production prep |
+| [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers-for-platforms/configuration.md) | Namespace setup, dispatch worker config | First-time setup, changing limits |
+| [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers-for-platforms/api.md) | User worker API, dispatch API, outbound worker | Deploying workers, SDK integration |
+| [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers-for-platforms/patterns.md) | Multi-tenancy, routing, egress control | Planning architecture, scaling |
+| [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers-for-platforms/gotchas.md) | Limits, isolation issues, best practices | Debugging, production prep |
 
 ## See Also
-- [workers](../workers/) - Core Workers runtime documentation
-- [durable-objects](../durable-objects/) - Stateful multi-tenant patterns
-- [sandbox](../sandbox/) - Alternative for untrusted code execution
+- [workers]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers/) - Core Workers runtime documentation
+- [durable-objects]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/durable-objects/) - Stateful multi-tenant patterns
+- [sandbox]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/sandbox/) - Alternative for untrusted code execution
 - [Reference Architecture: Programmable Platforms](https://developers.cloudflare.com/reference-architecture/diagrams/serverless/programmable-platforms/)
 - [Reference Architecture: AI Vibe Coding Platform](https://developers.cloudflare.com/reference-architecture/diagrams/ai/ai-vibe-coding-platform/)

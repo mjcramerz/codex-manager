@@ -78,4 +78,4 @@ Edit:
 - sketch-to-render: Preserve layout, proportions, and perspective; add plausible materials, lighting, and environment; "do not add new elements or text."
 
 ## Where to find copy/paste recipes
-For copy/paste prompt specs (examples only), see `./sample-prompts.md`. This file focuses on principles, structure, and iteration patterns.
+For copy/paste prompt specs (examples only), see `$CODEX_HOME/plugins/cache/codex-local/ai-media/local/skills/imagegen/references/sample-prompts.md`. This file focuses on principles, structure, and iteration patterns.

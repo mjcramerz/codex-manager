@@ -56,11 +56,11 @@ interface:
 - Validation evidence block with lint/syntax/check/idempotence results and any accepted residual risk.
 
 ## Local resources
-- `iac-ansible/references/latest-sources.md`
-- `iac-ansible/references/operations-checklist.md`
-- `iac-ansible/references/risk-register.md`
-- `iac-ansible/assets/rollback-checklist.md`
-- `iac-ansible/scripts/skill_helper.py`
+- `$CODEX_HOME/plugins/cache/codex-local/iac/local/skills/iac-ansible/references/latest-sources.md`
+- `$CODEX_HOME/plugins/cache/codex-local/iac/local/skills/iac-ansible/references/operations-checklist.md`
+- `$CODEX_HOME/plugins/cache/codex-local/iac/local/skills/iac-ansible/references/risk-register.md`
+- `$CODEX_HOME/plugins/cache/codex-local/iac/local/skills/iac-ansible/assets/rollback-checklist.md`
+- `$CODEX_HOME/plugins/cache/codex-local/iac/local/skills/iac-ansible/scripts/skill_helper.py`
 
 ## References
 - `$CODEX_HOME/docs/workflows/ansible.md`

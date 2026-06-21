@@ -191,7 +191,7 @@ console.log(mediaLibrary);
 
 ## See Also
 
-- [README](./README.md) - Overview and core concepts
-- [Configuration](./configuration.md) - Setup and Cache Rules
-- [API Reference](./api.md) - Purging and monitoring
-- [Gotchas](./gotchas.md) - Common issues and troubleshooting
+- [README]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/cache-reserve/README.md) - Overview and core concepts
+- [Configuration]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/cache-reserve/configuration.md) - Setup and Cache Rules
+- [API Reference]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/cache-reserve/api.md) - Purging and monitoring
+- [Gotchas]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/cache-reserve/gotchas.md) - Common issues and troubleshooting

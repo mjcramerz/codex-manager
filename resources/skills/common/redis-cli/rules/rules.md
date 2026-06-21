@@ -15,8 +15,8 @@ updated: '2026-03-11'
 # DB Redis CLI Rules
 
 ## Required checks
-- Follow the workflow in `../SKILL.md`.
-- Prefer deterministic scripts in `../scripts/`.
-- Use references in `../references/` for factual guidance.
+- Follow the workflow in `$CODEX_SKILLS/common/redis-cli/SKILL.md`.
+- Prefer deterministic scripts in `$CODEX_SKILLS/common/redis-cli/scripts/`.
+- Use references in `$CODEX_SKILLS/common/redis-cli/references/` for factual guidance.
 - Use `SCAN` rather than `KEYS *` for non-trivial keyspaces.
 - Confirm DB selection and write-risk boundaries before mutating keys.

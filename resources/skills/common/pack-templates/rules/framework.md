@@ -16,6 +16,6 @@ updated: '2026-02-20'
 # PACK-Templates Framework
 
 - Skill: `pack-templates`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Source of truth: `$CODEX_SKILLS/common/pack-templates/SKILL.md`
+- Runtime agent config: `$CODEX_SKILLS/common/pack-templates/agents/openai.yaml`
+- Supporting docs: `$CODEX_SKILLS/common/pack-templates/references/`

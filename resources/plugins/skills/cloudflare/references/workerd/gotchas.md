@@ -136,4 +136,4 @@ bindings = [(name = "API", service = (external = (address = "api.com:443", http 
 6. **Isolate issue**: Minimal repro config
 7. **Review schema**: [workerd.capnp](https://github.com/cloudflare/workerd/blob/main/src/workerd/server/workerd.capnp)
 
-See [configuration.md](./configuration.md) for config details, [patterns.md](./patterns.md) for working examples, [api.md](./api.md) for runtime APIs.
+See [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workerd/configuration.md) for config details, [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workerd/patterns.md) for working examples, [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workerd/api.md) for runtime APIs.

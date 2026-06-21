@@ -1,7 +1,7 @@
 # Plan
+Purpose: update docs, workflows, or doc indexes without breaking runtime-pack routing or memory boundaries.
 
 Use this plan when updating docs, workflows, or doc indexes.
-
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -10,11 +10,11 @@ Use this plan when updating docs, workflows, or doc indexes.
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-
 ## Requirements
 - Updated docs with clear ownership and scope.
 - No host-specific repository paths in user-facing docs or instruction assets.
 - Runtime-home docs must reflect one-way source-to-target install behavior.
+- Repo-aware memory routing and runtime-only boundaries stay explicit.
 
 ## Scope
 - In: `$CODEX_HOME/docs/` and related index entrypoints.
@@ -25,13 +25,13 @@ Use this plan when updating docs, workflows, or doc indexes.
 - `$CODEX_HOME/docs/workflows/overview.md`
 - `$CODEX_HOME/index/pack/docs.md`
 - `$CODEX_HOME/index/pack/workflows.md`
+- `$CODEX_HOME/memories/MEMORY.md`
 
 ## Action items
 [ ] Update or add docs under `$CODEX_HOME/docs/` (include overview/README as needed).
+[ ] Keep `$CODEX_HOME/memories/MEMORY.md`, workflow catalogs, and cross-links aligned when the memory contract changes.
 [ ] Update `$CODEX_HOME/index/pack/docs.md` related links in the manifest.
 [ ] Remove hardcoded workstation paths and stale routing references in the touched docs.
-
-## Testing and validation
 
 ## Security checkpoints
 - Confirm trust boundaries, credentials, and least-privilege assumptions before execution.
@@ -57,7 +57,6 @@ Use this plan when updating docs, workflows, or doc indexes.
 - Missing documentation for new surfaces.
 
 ## Examples
-
 - Example objective: "Refresh runtime docs and workflow links after a routing or contract change."
 - Example validation: "python3 -m unittest tests.test_runtime_pack_docs_contract tests.test_runtime_pack_structure_contract"
 

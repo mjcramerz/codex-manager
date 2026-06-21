@@ -63,11 +63,11 @@ interface:
 - Validation transcript covering verify output, runtime behavior, and timer execution evidence.
 
 ## Local resources
-- `infra-systemd/references/latest-sources.md`
-- `infra-systemd/references/operations-checklist.md`
-- `infra-systemd/references/risk-register.md`
-- `infra-systemd/assets/rollback-checklist.md`
-- `infra-systemd/scripts/skill_helper.py`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-systemd/references/latest-sources.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-systemd/references/operations-checklist.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-systemd/references/risk-register.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-systemd/assets/rollback-checklist.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-systemd/scripts/skill_helper.py`
 
 ## References
 - `$CODEX_HOME/docs/systemd/overview.md`

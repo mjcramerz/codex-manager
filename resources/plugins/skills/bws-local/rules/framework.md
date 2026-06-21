@@ -16,6 +16,6 @@ updated: '2026-02-20'
 # BWS-Local Framework
 
 - Skill: `bws-local`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Source of truth: `$CODEX_HOME/plugins/cache/codex-local/security-controls/local/skills/bws-local/SKILL.md`
+- Runtime agent config: `$CODEX_HOME/plugins/cache/codex-local/security-controls/local/skills/bws-local/agents/openai.yaml`
+- Supporting docs: `$CODEX_HOME/plugins/cache/codex-local/security-controls/local/skills/bws-local/references/`

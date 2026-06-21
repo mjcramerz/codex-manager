@@ -182,4 +182,4 @@ wrangler dev     # Uses workerd internally
 wrangler types   # Generate TypeScript types from wrangler.toml
 ```
 
-See [patterns.md](./patterns.md) for usage examples, [configuration.md](./configuration.md) for config details.
+See [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workerd/patterns.md) for usage examples, [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workerd/configuration.md) for config details.

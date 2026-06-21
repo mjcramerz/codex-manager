@@ -54,15 +54,15 @@ interface:
 - Post-boot validation checklist including networking, guest agent, and backup readiness evidence.
 
 ## Local resources
-- `infra-proxmox/references/latest-sources.md`
-- `infra-proxmox/references/operations-checklist.md`
-- `infra-proxmox/references/risk-register.md`
-- `infra-proxmox/assets/rollback-checklist.md`
-- `infra-proxmox/scripts/skill_helper.py`
-- `infra-proxmox/references/cloud-init-golden-image.md`
-- `infra-proxmox/references/proxmox-cluster-ops.md`
-- `infra-proxmox/assets/cloud-init-user-data.template.yaml`
-- `infra-proxmox/assets/vm-spec.template.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-proxmox/references/latest-sources.md`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-proxmox/references/operations-checklist.md`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-proxmox/references/risk-register.md`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-proxmox/assets/rollback-checklist.md`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-proxmox/scripts/skill_helper.py`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-proxmox/references/cloud-init-golden-image.md`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-proxmox/references/proxmox-cluster-ops.md`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-proxmox/assets/cloud-init-user-data.template.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-proxmox/assets/vm-spec.template.yaml`
 
 ## References
 - `$CODEX_HOME/docs/workflows/proxmox.md`

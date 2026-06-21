@@ -30,8 +30,8 @@ Configure USBGuard rules and policies.
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/security-controls/local/skills/secops-usbguard/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/security-controls/local/skills/secops-usbguard/agents/openai.yaml`
 
 ## External references
 - [USBGuard docs](https://usbguard.github.io/) - Policy and device allowlist guidance.

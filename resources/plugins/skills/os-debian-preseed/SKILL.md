@@ -53,11 +53,11 @@ interface:
 - Clear installation instructions and validation steps
 
 ## Local resources
-- `os-debian-preseed/references/latest-sources.md`
-- `os-debian-preseed/references/operations-checklist.md`
-- `os-debian-preseed/references/risk-register.md`
-- `os-debian-preseed/assets/rollback-checklist.md`
-- `os-debian-preseed/scripts/skill_helper.py`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/os-debian-preseed/references/latest-sources.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/os-debian-preseed/references/operations-checklist.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/os-debian-preseed/references/risk-register.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/os-debian-preseed/assets/rollback-checklist.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/os-debian-preseed/scripts/skill_helper.py`
 
 ## References
 - `$CODEX_HOME/index/domains/system/debian-preseed.md`

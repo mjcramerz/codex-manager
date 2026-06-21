@@ -64,11 +64,11 @@ interface:
 - A rollback checklist.
 
 ## Local resources
-- `storage-filesystems/references/latest-sources.md`
-- `storage-filesystems/references/operations-checklist.md`
-- `storage-filesystems/references/risk-register.md`
-- `storage-filesystems/assets/rollback-checklist.md`
-- `storage-filesystems/scripts/skill_helper.py`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/storage-filesystems/references/latest-sources.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/storage-filesystems/references/operations-checklist.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/storage-filesystems/references/risk-register.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/storage-filesystems/assets/rollback-checklist.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/storage-filesystems/scripts/skill_helper.py`
 
 ## References
 - `$CODEX_HOME/docs/filesystems/overview.md`

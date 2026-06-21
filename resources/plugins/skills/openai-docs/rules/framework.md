@@ -16,6 +16,6 @@ updated: '2026-02-20'
 # OpenAI Docs Framework
 
 - Skill: `openai-docs`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Source of truth: `$CODEX_HOME/plugins/cache/codex-local/openai-apps/local/skills/openai-docs/SKILL.md`
+- Runtime agent config: `$CODEX_HOME/plugins/cache/codex-local/openai-apps/local/skills/openai-docs/agents/openai.yaml`
+- Supporting docs: `$CODEX_HOME/plugins/cache/codex-local/openai-apps/local/skills/openai-docs/references/`

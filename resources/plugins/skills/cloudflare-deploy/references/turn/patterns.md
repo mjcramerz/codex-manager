@@ -5,8 +5,8 @@ Production-ready patterns for implementing Cloudflare TURN in WebRTC application
 ## Prerequisites
 
 Before implementing these patterns, ensure you have:
-- TURN key created: see [api.md#create-turn-key](./api.md#create-turn-key)
-- Worker configured: see [configuration.md#cloudflare-worker-integration](./configuration.md#cloudflare-worker-integration)
+- TURN key created: see [api.md#create-turn-key]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/turn/api.md#create-turn-key)
+- Worker configured: see [configuration.md#cloudflare-worker-integration]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/turn/configuration.md#cloudflare-worker-integration)
 
 ## Basic TURN Configuration (Browser)
 
@@ -207,6 +207,6 @@ stats.forEach(report => {
 
 ## See Also
 
-- [api.md](./api.md) - Credential generation API, types
-- [configuration.md](./configuration.md) - Worker setup, environment variables
-- [gotchas.md](./gotchas.md) - Common mistakes, troubleshooting
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/turn/api.md) - Credential generation API, types
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/turn/configuration.md) - Worker setup, environment variables
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/turn/gotchas.md) - Common mistakes, troubleshooting

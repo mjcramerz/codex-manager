@@ -191,7 +191,7 @@ const worker = await startWorker({
 
 ## See Also
 
-- [README.md](./README.md) - Commands
-- [configuration.md](./configuration.md) - Config
-- [api.md](./api.md) - Programmatic API
-- [patterns.md](./patterns.md) - Workflows
+- [README.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/wrangler/README.md) - Commands
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/wrangler/configuration.md) - Config
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/wrangler/api.md) - Programmatic API
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/wrangler/patterns.md) - Workflows

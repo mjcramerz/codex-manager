@@ -16,6 +16,6 @@ updated: '2026-02-20'
 # Lang Typescript Framework
 
 - Skill: `lang-typescript`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Source of truth: `$CODEX_SKILLS/common/lang-typescript/SKILL.md`
+- Runtime agent config: `$CODEX_SKILLS/common/lang-typescript/agents/openai.yaml`
+- Supporting docs: `$CODEX_SKILLS/common/lang-typescript/references/`

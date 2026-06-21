@@ -9,7 +9,7 @@ Purpose: define how runtime prompt files under `$CODEX_HOME/.prompt/` should be 
 <!-- END:nav -->
 
 ## Scope
-- This is the only documentation file under `resources/home/user/*` that should directly reference prompt files in `$CODEX_HOME/.prompt/`.
+- This is the only documentation file under `$CODEX_HOME/*` that should directly reference prompt files in `$CODEX_HOME/.prompt/`.
 - Use it when creating, revising, or reviewing reusable prompt assets intended for Codex requests.
 
 ## Current prompt files
@@ -37,5 +37,5 @@ Purpose: define how runtime prompt files under `$CODEX_HOME/.prompt/` should be 
 
 ## Maintenance notes
 - Keep prompt file names lower-case and hyphenated.
-- When adding a new prompt file, update this document and nowhere else in `resources/home/user/*`.
+- When adding a new prompt file, update this document and nowhere else in `$CODEX_HOME/*`.
 - Do not reference runtime-only state or local credentials from prompt assets.

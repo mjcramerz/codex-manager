@@ -35,4 +35,4 @@
 - Repeat critical constraints on each iteration ("keep pacing steady").
 
 ## Where to find copy/paste recipes
-For copy/paste instruction templates, see `./sample-prompts.md`. This file focuses on principles, structure, and iteration patterns.
+For copy/paste instruction templates, see `$CODEX_HOME/plugins/cache/codex-local/ai-media/local/skills/speech/references/sample-prompts.md`. This file focuses on principles, structure, and iteration patterns.

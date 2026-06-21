@@ -12,5 +12,5 @@ updated: '2026-03-12'
 
 - Skill: `dependency-risk-review`
 - Category: `AUDIT`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
+- Source of truth: `$CODEX_SKILLS/audit/dependency-risk-review/SKILL.md`
+- Runtime agent config: `$CODEX_SKILLS/audit/dependency-risk-review/agents/openai.yaml`

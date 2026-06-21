@@ -34,9 +34,9 @@ VM-based virtualization workflows: QEMU/KVM/libvirt, Vagrant, networking modes, 
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
-- `../scripts/skill_helper.py`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-virtualization/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-virtualization/agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-virtualization/scripts/skill_helper.py`
 
 ## Reference files in this directory
 - `latest-sources.md`

@@ -128,7 +128,7 @@ Use focused searches before fetching:
 
 ## Starter Scaffold Script
 
-- Use `node ../scripts/scaffold_node_ext_apps.mjs <output-dir> --app-name <name>` only when the user wants a greenfield Node + `@modelcontextprotocol/ext-apps` starter and no upstream example is the better fit.
+- Use `node $CODEX_HOME/plugins/cache/codex-local/openai-apps/local/skills/chatgpt-apps/scripts/scaffold_node_ext_apps.mjs <output-dir> --app-name <name>` only when the user wants a greenfield Node + `@modelcontextprotocol/ext-apps` starter and no upstream example is the better fit.
 - If the file is not executable in the current environment, run it explicitly with Node as shown above.
 - The script generates `package.json`, `tsconfig.json`, `public/widget.html`, and `src/server.ts`.
 - It intentionally uses the MCP Apps bridge by default, keeps follow-up messaging on `ui/message`, and limits `window.openai` to optional host signals/extensions.

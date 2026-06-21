@@ -113,7 +113,7 @@ const app = new Hono();
 app.use('*', async (c, next) => { /* middleware */ await next(); });
 ```
 
-See [frameworks.md](./frameworks.md) for full patterns
+See [frameworks.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workers/frameworks.md) for full patterns
 
 ## Limits
 
@@ -130,7 +130,7 @@ See [frameworks.md](./frameworks.md) for full patterns
 
 ## See Also
 
-- [Patterns](./patterns.md) - Best practices
-- [API](./api.md) - Runtime APIs
-- [Configuration](./configuration.md) - Setup
-- [Frameworks](./frameworks.md) - Hono, routing, validation
+- [Patterns]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workers/patterns.md) - Best practices
+- [API]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workers/api.md) - Runtime APIs
+- [Configuration]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workers/configuration.md) - Setup
+- [Frameworks]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workers/frameworks.md) - Hono, routing, validation

@@ -25,6 +25,7 @@ Purpose: provide the top-level map for runtime-pack documentation and help the a
 
 ## Repo-aligned workflow shortcuts
 - Codex installer/runtime repo -> `$CODEX_HOME/docs/workflows/codex-manager.md`
+- Repo-aware memory routing -> `$CODEX_HOME/memories/MEMORY.md`
 - Podman MCP stack repo -> `$CODEX_HOME/docs/workflows/codex-mcp.md`
 - Cloudflare + GitLab delivery repos -> `$CODEX_HOME/docs/workflows/cloudflare-delivery.md`
 - Debian installer repo -> `$CODEX_HOME/docs/workflows/debian-preseed.md`
@@ -32,6 +33,6 @@ Purpose: provide the top-level map for runtime-pack documentation and help the a
 
 ## Maintenance rules
 - Keep docs operational, concrete, and path-correct.
-- Use `$CODEX_HOME` / `$CODEX_SKILLS` style runtime paths instead of installer-repo paths unless the repo itself is the subject.
+- Use `$CODEX_HOME`, `$CODEX_AGENTS`, and `$CODEX_SKILLS` runtime paths instead of repository-source paths unless the repo itself is the subject.
 - Keep prompt-file references centralized in `$CODEX_HOME/docs/create-prompts.md`.
-- Treat runtime-only state as out of scope for documentation source.
+- Treat runtime-only state as out of scope for documentation source, but keep the memory router and memory instruction assets in scope when that contract changes.

@@ -93,17 +93,17 @@ Need raw WebRTC control?
 
 ## In This Reference
 
-- [Configuration](./configuration.md) - Setup, installation, wrangler config
-- [API](./api.md) - Meeting object, REST API, SDK methods
-- [Patterns](./patterns.md) - Common workflows, code examples
-- [Gotchas](./gotchas.md) - Common issues, troubleshooting
+- [Configuration]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/realtimekit/configuration.md) - Setup, installation, wrangler config
+- [API]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/realtimekit/api.md) - Meeting object, REST API, SDK methods
+- [Patterns]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/realtimekit/patterns.md) - Common workflows, code examples
+- [Gotchas]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/realtimekit/gotchas.md) - Common issues, troubleshooting
 
 ## See Also
 
-- [Workers](../workers/) - Backend integration
-- [D1](../d1/) - Meeting metadata storage
-- [R2](../r2/) - Recording storage
-- [KV](../kv/) - Session management
+- [Workers]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers/) - Backend integration
+- [D1]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/d1/) - Meeting metadata storage
+- [R2]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/r2/) - Recording storage
+- [KV]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/kv/) - Session management
 
 ## Reference Links
 

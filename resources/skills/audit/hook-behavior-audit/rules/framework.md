@@ -12,5 +12,5 @@ updated: '2026-03-12'
 
 - Skill: `hook-behavior-audit`
 - Category: `AUDIT`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
+- Source of truth: `$CODEX_SKILLS/audit/hook-behavior-audit/SKILL.md`
+- Runtime agent config: `$CODEX_SKILLS/audit/hook-behavior-audit/agents/openai.yaml`

@@ -119,4 +119,4 @@ npx wrangler pages deploy ./dist --branch preview
 npx wrangler pages download config my-project
 ```
 
-**See also:** [api.md](./api.md) for binding usage examples
+**See also:** [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/pages-functions/api.md) for binding usage examples

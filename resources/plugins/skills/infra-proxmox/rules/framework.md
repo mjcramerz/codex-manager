@@ -16,6 +16,6 @@ updated: '2026-02-20'
 # Infra Proxmox Framework
 
 - Skill: `infra-proxmox`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Source of truth: `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-proxmox/SKILL.md`
+- Runtime agent config: `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-proxmox/agents/openai.yaml`
+- Supporting docs: `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-proxmox/references/`

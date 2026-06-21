@@ -31,7 +31,7 @@ trainer = SFTTrainer(
 trainer.train()
 ```
 
-**Note:** For production training with evaluation monitoring, see `../scripts/train_sft_example.py`
+**Note:** For production training with evaluation monitoring, see `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-model-trainer/scripts/train_sft_example.py`
 
 **Documentation:** `hf_doc_fetch("https://huggingface.co/docs/trl/sft_trainer")`
 
@@ -63,7 +63,7 @@ trainer = DPOTrainer(
 trainer.train()
 ```
 
-**Note:** For production training with evaluation monitoring, see `../scripts/train_dpo_example.py`
+**Note:** For production training with evaluation monitoring, see `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-model-trainer/scripts/train_dpo_example.py`
 
 **Documentation:** `hf_doc_fetch("https://huggingface.co/docs/trl/dpo_trainer")`
 
@@ -144,7 +144,7 @@ uv run https://huggingface.co/datasets/mcp-tools/skills/raw/main/dataset_inspect
 
 ## See Also
 
-- `./training_patterns.md` - Common training patterns and examples
-- `../scripts/train_sft_example.py` - Complete SFT template
-- `../scripts/train_dpo_example.py` - Complete DPO template
+- `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-model-trainer/references/training_patterns.md` - Common training patterns and examples
+- `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-model-trainer/scripts/train_sft_example.py` - Complete SFT template
+- `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-model-trainer/scripts/train_dpo_example.py` - Complete DPO template
 - [Dataset Inspector](https://huggingface.co/datasets/mcp-tools/skills/raw/main/dataset_inspector.py) - Dataset format validation tool

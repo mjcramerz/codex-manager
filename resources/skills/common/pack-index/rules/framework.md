@@ -16,6 +16,6 @@ updated: '2026-02-20'
 # PACK-Index Framework
 
 - Skill: `pack-index`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Source of truth: `$CODEX_SKILLS/common/pack-index/SKILL.md`
+- Runtime agent config: `$CODEX_SKILLS/common/pack-index/agents/openai.yaml`
+- Supporting docs: `$CODEX_SKILLS/common/pack-index/references/`

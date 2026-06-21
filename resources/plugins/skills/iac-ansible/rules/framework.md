@@ -16,6 +16,6 @@ updated: '2026-02-20'
 # Iac Ansible Framework
 
 - Skill: `iac-ansible`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Source of truth: `$CODEX_HOME/plugins/cache/codex-local/iac/local/skills/iac-ansible/SKILL.md`
+- Runtime agent config: `$CODEX_HOME/plugins/cache/codex-local/iac/local/skills/iac-ansible/agents/openai.yaml`
+- Supporting docs: `$CODEX_HOME/plugins/cache/codex-local/iac/local/skills/iac-ansible/references/`

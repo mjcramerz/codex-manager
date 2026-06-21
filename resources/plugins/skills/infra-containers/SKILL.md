@@ -114,15 +114,15 @@ interface:
 - Security validation: capture any required elevated flags (`NET_ADMIN`, privileged mode, host mounts) with justification and compensating controls.
 
 ## Local resources
-- `infra-containers/references/latest-sources.md`
-- `infra-containers/references/operations-checklist.md`
-- `infra-containers/references/risk-register.md`
-- `infra-containers/assets/rollback-checklist.md`
-- `infra-containers/scripts/skill_helper.py`
-- `infra-containers/references/build-reproducibility.md`
-- `infra-containers/references/runtime-security-matrix.md`
-- `infra-containers/assets/docker-bake.hcl`
-- `infra-containers/assets/security-baseline.compose.override.yml`
+- `$CODEX_HOME/plugins/cache/codex-local/containers/local/skills/infra-containers/references/latest-sources.md`
+- `$CODEX_HOME/plugins/cache/codex-local/containers/local/skills/infra-containers/references/operations-checklist.md`
+- `$CODEX_HOME/plugins/cache/codex-local/containers/local/skills/infra-containers/references/risk-register.md`
+- `$CODEX_HOME/plugins/cache/codex-local/containers/local/skills/infra-containers/assets/rollback-checklist.md`
+- `$CODEX_HOME/plugins/cache/codex-local/containers/local/skills/infra-containers/scripts/skill_helper.py`
+- `$CODEX_HOME/plugins/cache/codex-local/containers/local/skills/infra-containers/references/build-reproducibility.md`
+- `$CODEX_HOME/plugins/cache/codex-local/containers/local/skills/infra-containers/references/runtime-security-matrix.md`
+- `$CODEX_HOME/plugins/cache/codex-local/containers/local/skills/infra-containers/assets/docker-bake.hcl`
+- `$CODEX_HOME/plugins/cache/codex-local/containers/local/skills/infra-containers/assets/security-baseline.compose.override.yml`
 
 ## References
 - infra-containers skill reference `references/engine-selection.md`

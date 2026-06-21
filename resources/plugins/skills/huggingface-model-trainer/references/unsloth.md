@@ -279,7 +279,7 @@ presence_penalty = 0.0
 
 ## Example: Full VLM Training Script
 
-See `../scripts/unsloth_sft_example.py` for a complete production-ready example that includes:
+See `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-model-trainer/scripts/unsloth_sft_example.py` for a complete production-ready example that includes:
 - Unsloth VLM setup
 - Streaming dataset support
 - Trackio monitoring
@@ -288,7 +288,7 @@ See `../scripts/unsloth_sft_example.py` for a complete production-ready example 
 
 Run locally:
 ```bash
-uv run ../scripts/unsloth_sft_example.py \
+uv run $CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-model-trainer/scripts/unsloth_sft_example.py \
     --dataset trl-lib/Capybara \
     --max-steps 500 \
     --output-repo username/my-model
@@ -306,7 +306,7 @@ hf_jobs("uv", {
 
 ## See Also
 
-- `../scripts/unsloth_sft_example.py` - Complete text LLM training example
+- `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-model-trainer/scripts/unsloth_sft_example.py` - Complete text LLM training example
 - [Unsloth Documentation](https://unsloth.ai/docs)
 - [LFM2.5 Guide](https://unsloth.ai/docs/models/tutorials/lfm2.5)
 - [Qwen3-VL Guide](https://unsloth.ai/docs/models/qwen3-vl-how-to-run-and-fine-tune)

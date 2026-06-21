@@ -16,6 +16,6 @@ updated: '2026-02-20'
 # Shell sh Framework
 
 - Skill: `shell-sh`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Source of truth: `$CODEX_SKILLS/common/shell-sh/SKILL.md`
+- Runtime agent config: `$CODEX_SKILLS/common/shell-sh/agents/openai.yaml`
+- Supporting docs: `$CODEX_SKILLS/common/shell-sh/references/`

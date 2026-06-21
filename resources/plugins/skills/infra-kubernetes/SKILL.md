@@ -56,15 +56,15 @@ interface:
 - Validation evidence including rollout status, key events/log findings, and unresolved risks.
 
 ## Local resources
-- `infra-kubernetes/references/latest-sources.md`
-- `infra-kubernetes/references/operations-checklist.md`
-- `infra-kubernetes/references/risk-register.md`
-- `infra-kubernetes/assets/rollback-checklist.md`
-- `infra-kubernetes/scripts/skill_helper.py`
-- `infra-kubernetes/references/rollout-runbook.md`
-- `infra-kubernetes/references/workload-security-baseline.md`
-- `infra-kubernetes/assets/deployment-baseline.yaml`
-- `infra-kubernetes/assets/networkpolicy-default-deny.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/kubernetes/local/skills/infra-kubernetes/references/latest-sources.md`
+- `$CODEX_HOME/plugins/cache/codex-local/kubernetes/local/skills/infra-kubernetes/references/operations-checklist.md`
+- `$CODEX_HOME/plugins/cache/codex-local/kubernetes/local/skills/infra-kubernetes/references/risk-register.md`
+- `$CODEX_HOME/plugins/cache/codex-local/kubernetes/local/skills/infra-kubernetes/assets/rollback-checklist.md`
+- `$CODEX_HOME/plugins/cache/codex-local/kubernetes/local/skills/infra-kubernetes/scripts/skill_helper.py`
+- `$CODEX_HOME/plugins/cache/codex-local/kubernetes/local/skills/infra-kubernetes/references/rollout-runbook.md`
+- `$CODEX_HOME/plugins/cache/codex-local/kubernetes/local/skills/infra-kubernetes/references/workload-security-baseline.md`
+- `$CODEX_HOME/plugins/cache/codex-local/kubernetes/local/skills/infra-kubernetes/assets/deployment-baseline.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/kubernetes/local/skills/infra-kubernetes/assets/networkpolicy-default-deny.yaml`
 
 ## References
 - `$CODEX_HOME/docs/workflows/kubernetes.md`

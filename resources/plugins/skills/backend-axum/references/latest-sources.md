@@ -31,8 +31,8 @@ Axum API production patterns: routing, extractors, typed errors, tracing, timeou
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/backend/local/skills/backend-axum/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/backend/local/skills/backend-axum/agents/openai.yaml`
 
 ## External references
 - [Axum crate docs](https://docs.rs/axum/latest/axum/) - Router, extractor, and middleware behavior.

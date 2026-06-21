@@ -178,4 +178,4 @@ const deployment = new cloudflare.WorkersDeployment("prod", {
 - **Workers Docs:** https://developers.cloudflare.com/workers/
 
 ---
-See: [README.md](./README.md), [configuration.md](./configuration.md), [api.md](./api.md), [patterns.md](./patterns.md)
+See: [README.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pulumi/README.md), [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pulumi/configuration.md), [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pulumi/api.md), [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pulumi/patterns.md)

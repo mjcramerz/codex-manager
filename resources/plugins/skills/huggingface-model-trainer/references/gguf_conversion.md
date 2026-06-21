@@ -90,7 +90,7 @@ hub_repo_details([BASE_MODEL], repo_type="model")
 
 ## Complete Conversion Script
 
-See `../scripts/convert_to_gguf.py` for the complete, production-ready script.
+See `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-model-trainer/scripts/convert_to_gguf.py` for the complete, production-ready script.
 
 **Key features:**
 - ✅ All dependencies in PEP 723 header
@@ -272,7 +272,7 @@ hub_repo_details(["trl-lib/argilla-dpo-mix-7k"], repo_type="dataset")  # Would c
 ## References
 
 **In this skill:**
-- `../scripts/convert_to_gguf.py` - Complete, production-ready script
+- `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-model-trainer/scripts/convert_to_gguf.py` - Complete, production-ready script
 
 **External:**
 - [llama.cpp Repository](https://github.com/ggerganov/llama.cpp)
@@ -284,7 +284,7 @@ hub_repo_details(["trl-lib/argilla-dpo-mix-7k"], repo_type="dataset")  # Would c
 
 **Critical checklist for GGUF conversion:**
 - [ ] Verify adapter and base models exist on Hub
-- [ ] Use production script from `../scripts/convert_to_gguf.py`
+- [ ] Use production script from `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-model-trainer/scripts/convert_to_gguf.py`
 - [ ] All dependencies in PEP 723 header (including sentencepiece, protobuf)
 - [ ] Build tools installed before cloning llama.cpp
 - [ ] CMake used for building quantize tool (not make)
@@ -293,4 +293,4 @@ hub_repo_details(["trl-lib/argilla-dpo-mix-7k"], repo_type="dataset")  # Would c
 - [ ] Timeout set to 45m minimum
 - [ ] HF_TOKEN in secrets for Hub upload
 
-**The script in `../scripts/convert_to_gguf.py` incorporates all these lessons and has been tested successfully in production.**
+**The script in `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-model-trainer/scripts/convert_to_gguf.py` incorporates all these lessons and has been tested successfully in production.**

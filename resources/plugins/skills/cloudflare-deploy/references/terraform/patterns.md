@@ -168,7 +168,7 @@ output "zone_id" { value = cloudflare_zone.main.id }
 
 ## See Also
 
-- [README](./README.md) - Provider setup
-- [Configuration Reference](./configuration.md) - All resource types
-- [API Reference](./api.md) - Data sources
-- [Troubleshooting](./gotchas.md) - Best practices, common issues
+- [README]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/terraform/README.md) - Provider setup
+- [Configuration Reference]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/terraform/configuration.md) - All resource types
+- [API Reference]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/terraform/api.md) - Data sources
+- [Troubleshooting]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/terraform/gotchas.md) - Best practices, common issues

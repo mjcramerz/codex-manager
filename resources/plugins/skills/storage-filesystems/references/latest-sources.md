@@ -31,9 +31,9 @@ Safe filesystem planning: partitioning, mkfs, mounting, and fstab with explicit 
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
-- `../scripts/skill_helper.py`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/storage-filesystems/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/storage-filesystems/agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/storage-filesystems/scripts/skill_helper.py`
 
 ## Reference files in this directory
 - `latest-sources.md`

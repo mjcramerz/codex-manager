@@ -31,9 +31,9 @@ Plan and review Terraform changes with safe defaults.
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
-- `../scripts/skill_helper.py`
+- `$CODEX_HOME/plugins/cache/codex-local/iac/local/skills/iac-terraform/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/iac/local/skills/iac-terraform/agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/iac/local/skills/iac-terraform/scripts/skill_helper.py`
 
 ## Reference files in this directory
 - `latest-sources.md`

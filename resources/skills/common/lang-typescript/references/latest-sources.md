@@ -30,8 +30,8 @@ Configure TypeScript projects with strict defaults.
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
+- `$CODEX_SKILLS/common/lang-typescript/SKILL.md`
+- `$CODEX_SKILLS/common/lang-typescript/agents/openai.yaml`
 
 ## External references
 - [TypeScript handbook](https://www.typescriptlang.org/docs/) - Type-system and project configuration guidance.

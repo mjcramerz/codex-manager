@@ -30,8 +30,8 @@ Develop VS Code extensions with secure defaults, packaging, and tests.
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/backend/local/skills/devtools-vscode-extension/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/backend/local/skills/devtools-vscode-extension/agents/openai.yaml`
 
 ## External references
 - [FastAPI documentation](https://fastapi.tiangolo.com/) - API scaffolding and validation patterns.

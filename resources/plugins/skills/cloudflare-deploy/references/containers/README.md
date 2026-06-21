@@ -79,7 +79,7 @@ export default {
 
 ## See Also
 
-- [Durable Objects](../durable-objects/) - Containers extend Durable Objects
-- [Workflows](../workflows/) - Orchestrate container operations
-- [Queues](../queues/) - Trigger containers from queue messages
+- [Durable Objects]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/durable-objects/) - Containers extend Durable Objects
+- [Workflows]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workflows/) - Orchestrate container operations
+- [Queues]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/queues/) - Trigger containers from queue messages
 - [Cloudflare Docs](https://developers.cloudflare.com/containers/)

@@ -15,7 +15,7 @@ interface EventContext<Env = any> {
 }
 ```
 
-**TypeScript:** See [configuration.md](./configuration.md) for `wrangler types` setup
+**TypeScript:** See [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pages-functions/configuration.md) for `wrangler types` setup
 
 ## Handlers
 
@@ -51,7 +51,7 @@ export async function onRequestPost(ctx: EventContext): Promise<Response> {
 | Analytics Engine | `AnalyticsEngineDataset` | `analytics_engine_datasets` | Event logging, metrics |
 | Environment Vars | `string` | `vars` | Non-sensitive config |
 
-See [configuration.md](./configuration.md) for wrangler.jsonc examples.
+See [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pages-functions/configuration.md) for wrangler.jsonc examples.
 
 ## Bindings
 
@@ -140,4 +140,4 @@ export default {
 } satisfies ExportedHandler<Env>;
 ```
 
-**See also:** [configuration.md](./configuration.md) for TypeScript setup and wrangler.jsonc | [patterns.md](./patterns.md) for middleware and auth patterns
+**See also:** [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pages-functions/configuration.md) for TypeScript setup and wrangler.jsonc | [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pages-functions/patterns.md) for middleware and auth patterns

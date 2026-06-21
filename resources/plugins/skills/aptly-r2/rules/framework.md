@@ -1,11 +1,11 @@
 ---
-title: Ci Gitlab Cicd Framework
+title: Aptly R2 Framework
 status: active
 owner: Matthew Cramer
 tags:
 - skills
 - all
-- ci-gitlab-cicd
+- aptly-r2
 - rules
 - framework-md
 - framework
@@ -13,9 +13,9 @@ tags:
 - web
 updated: '2026-02-20'
 ---
-# Ci Gitlab Cicd Framework
+# Aptly R2 Framework
 
-- Skill: `ci-gitlab-cicd`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Skill: `aptly-r2`
+- Source of truth: `$CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/aptly-r2/SKILL.md`
+- Runtime agent config: `$CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/aptly-r2/agents/openai.yaml`
+- Supporting docs: `$CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/aptly-r2/references/`

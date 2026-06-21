@@ -180,7 +180,7 @@ export default {
 };
 ```
 
-See [patterns.md](./patterns.md) for multi-chunk reading, error handling, and protocol implementations.
+See [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers-vpc/patterns.md) for multi-chunk reading, error handling, and protocol implementations.
 
 ## Quick Reference
 
@@ -197,6 +197,6 @@ See [patterns.md](./patterns.md) for multi-chunk reading, error handling, and pr
 
 ## See Also
 
-- [patterns.md](./patterns.md) - Real-world protocol implementations
-- [configuration.md](./configuration.md) - Wrangler setup and environment variables
-- [gotchas.md](./gotchas.md) - Limits and error handling
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers-vpc/patterns.md) - Real-world protocol implementations
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers-vpc/configuration.md) - Wrangler setup and environment variables
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers-vpc/gotchas.md) - Limits and error handling

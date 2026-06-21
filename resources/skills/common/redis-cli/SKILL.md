@@ -61,5 +61,5 @@ interface:
 
 ## References
 - `$CODEX_HOME/UNIX.md`
-- `./references/latest-sources.md`
-- `./references/command-catalog.md`
+- `$CODEX_SKILLS/common/redis-cli/references/latest-sources.md`
+- `$CODEX_SKILLS/common/redis-cli/references/command-catalog.md`

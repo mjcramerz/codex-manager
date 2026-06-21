@@ -92,7 +92,7 @@ Default shape:
 
 Best starting point:
 
-- Official OpenAI examples plus `./interactive-state-sync-patterns.md`
+- Official OpenAI examples plus `$CODEX_HOME/plugins/cache/codex-local/openai-apps/local/skills/chatgpt-apps/references/interactive-state-sync-patterns.md`
 
 Validation emphasis:
 

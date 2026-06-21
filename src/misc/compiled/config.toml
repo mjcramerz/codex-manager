@@ -91,7 +91,7 @@ hide_world_writable_warning = true
 #version = 1
 
 # Global MCP server definitions only. Bundle-scoped endpoints belong in `resources/plugins/manifest.json`.
-# Per-user enabled defaults belong in `config/usr/apps.toml`; installer rendering writes `$CODEX_HOME`
+# Per-user enabled defaults belong in `config/usr/apps.toml`; installer rendering writes `/data/codex/usr/home`
 # `mcp_servers` as inline entries sorted with `url` transports first, then `command` transports.
 
 #[mcp_servers.shell-tool]

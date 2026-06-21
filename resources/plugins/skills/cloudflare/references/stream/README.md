@@ -93,22 +93,22 @@ curl -X POST \
 
 | Order | File | Purpose | When to Use |
 |-------|------|---------|-------------|
-| 1 | [configuration.md](./configuration.md) | Setup SDKs, env vars, signing keys | Starting new project |
-| 2 | [api.md](./api.md) | On-demand video APIs | Implementing uploads/playback |
-| 3 | [api-live.md](./api-live.md) | Live streaming APIs | Building live streaming |
-| 4 | [patterns.md](./patterns.md) | Full-stack flows, TUS, JWT signing | Implementing workflows |
-| 5 | [gotchas.md](./gotchas.md) | Errors, limits, troubleshooting | Debugging issues |
+| 1 | [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/stream/configuration.md) | Setup SDKs, env vars, signing keys | Starting new project |
+| 2 | [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/stream/api.md) | On-demand video APIs | Implementing uploads/playback |
+| 3 | [api-live.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/stream/api-live.md) | Live streaming APIs | Building live streaming |
+| 4 | [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/stream/patterns.md) | Full-stack flows, TUS, JWT signing | Implementing workflows |
+| 5 | [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/stream/gotchas.md) | Errors, limits, troubleshooting | Debugging issues |
 
 ## In This Reference
 
-- [configuration.md](./configuration.md) - Setup, environment variables, wrangler config
-- [api.md](./api.md) - On-demand video upload, playback, management APIs
-- [api-live.md](./api-live.md) - Live streaming (RTMPS/SRT/WebRTC), simulcast
-- [patterns.md](./patterns.md) - Full-stack flows, state management, best practices
-- [gotchas.md](./gotchas.md) - Error codes, troubleshooting, limits
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/stream/configuration.md) - Setup, environment variables, wrangler config
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/stream/api.md) - On-demand video upload, playback, management APIs
+- [api-live.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/stream/api-live.md) - Live streaming (RTMPS/SRT/WebRTC), simulcast
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/stream/patterns.md) - Full-stack flows, state management, best practices
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/stream/gotchas.md) - Error codes, troubleshooting, limits
 
 ## See Also
 
-- [workers](../workers/) - Deploy Stream APIs in Workers
-- [pages](../pages/) - Integrate Stream with Pages
-- [workers-ai](../workers-ai/) - AI-generate captions
+- [workers]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workers/) - Deploy Stream APIs in Workers
+- [pages]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pages/) - Integrate Stream with Pages
+- [workers-ai]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workers-ai/) - AI-generate captions

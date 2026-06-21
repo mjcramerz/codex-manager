@@ -100,7 +100,7 @@ hf_jobs("uv", {
 
 ## Trackio Configuration
 
-**Use sensible defaults for trackio setup.** See `./trackio_guide.md` for complete documentation including grouping runs for experiments.
+**Use sensible defaults for trackio setup.** See `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-model-trainer/references/trackio_guide.md` for complete documentation including grouping runs for experiments.
 
 ### Basic Pattern
 
@@ -138,7 +138,7 @@ trackio.init(project="hyperparam-sweep", run_name="lr-0.01", group="lr_0.01")
 
 | Use Case | Pattern | Hardware | Time |
 |----------|---------|----------|------|
-| SFT training | `../scripts/train_sft_example.py` | a10g-large | 2-6 hours |
+| SFT training | `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-model-trainer/scripts/train_sft_example.py` | a10g-large | 2-6 hours |
 | Large dataset (>10K) | Multi-GPU | a10g-largex2 | 4-12 hours |
 | Preference learning | DPO Training | a10g-large | 2-4 hours |
 | Online RL | GRPO Training | a10g-large | 3-6 hours |
@@ -195,9 +195,9 @@ trainer = SFTTrainer(
 
 ## See Also
 
-- `../scripts/train_sft_example.py` - Complete SFT template with Trackio and eval split
-- `../scripts/train_dpo_example.py` - Complete DPO template
-- `../scripts/train_grpo_example.py` - Complete GRPO template
-- `./hardware_guide.md` - Detailed hardware specifications
-- `./training_methods.md` - Overview of all TRL training methods
-- `./troubleshooting.md` - Common issues and solutions
+- `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-model-trainer/scripts/train_sft_example.py` - Complete SFT template with Trackio and eval split
+- `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-model-trainer/scripts/train_dpo_example.py` - Complete DPO template
+- `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-model-trainer/scripts/train_grpo_example.py` - Complete GRPO template
+- `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-model-trainer/references/hardware_guide.md` - Detailed hardware specifications
+- `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-model-trainer/references/training_methods.md` - Overview of all TRL training methods
+- `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-model-trainer/references/troubleshooting.md` - Common issues and solutions

@@ -23,7 +23,7 @@ Need analytics data from Cloudflare?
 ├─ Storage (R2, KV, D1, DO) → r2OperationsAdaptiveGroups / kvOperationsAdaptiveGroups / etc. (account)
 ├─ AI (Workers AI, AI Gateway) → aiInferenceAdaptive / aiGatewayRequestsAdaptiveGroups (account)
 ├─ Load Balancing → loadBalancingRequestsAdaptiveGroups (zone)
-├─ Custom high-cardinality metrics → Workers Analytics Engine (see ../analytics-engine/)
+├─ Custom high-cardinality metrics → Workers Analytics Engine (see $CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/analytics-engine/)
 └─ Need raw logs, not aggregates → Logpush (see Cloudflare docs)
 ```
 
@@ -141,7 +141,7 @@ Dataset names follow a consistent pattern visible in the schema:
 
 - [GraphQL Analytics API Docs](https://developers.cloudflare.com/analytics/graphql-api/)
 - [GraphQL API Explorer](https://graphql.cloudflare.com/)
-- [Observability Reference](../observability/) - Workers Logs, Tail Workers, console logging
-- [Analytics Engine Reference](../analytics-engine/) - Custom high-cardinality analytics via Workers
-- [Web Analytics Reference](../web-analytics/) - Client-side (RUM) analytics
-- [API Reference](../api/) - REST API, SDKs, authentication basics
+- [Observability Reference]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/observability/) - Workers Logs, Tail Workers, console logging
+- [Analytics Engine Reference]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/analytics-engine/) - Custom high-cardinality analytics via Workers
+- [Web Analytics Reference]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/web-analytics/) - Client-side (RUM) analytics
+- [API Reference]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/api/) - REST API, SDKs, authentication basics

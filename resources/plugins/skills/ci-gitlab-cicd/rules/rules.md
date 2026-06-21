@@ -15,6 +15,6 @@ updated: '2026-02-20'
 # Ci Gitlab Cicd Rules
 
 ## Required checks
-- Follow the workflow in `../SKILL.md`.
-- Prefer deterministic scripts in `../scripts/`.
-- Use references in `../references/` for factual guidance.
+- Follow the workflow in `$CODEX_HOME/plugins/cache/codex-local/gitlab/local/skills/ci-gitlab-cicd/SKILL.md`.
+- Prefer deterministic scripts in `$CODEX_HOME/plugins/cache/codex-local/gitlab/local/skills/ci-gitlab-cicd/scripts/`.
+- Use references in `$CODEX_HOME/plugins/cache/codex-local/gitlab/local/skills/ci-gitlab-cicd/references/` for factual guidance.

@@ -188,7 +188,7 @@ query CacheReserveAnalytics($zoneTag: string, $since: string, $until: string) {
 
 ## See Also
 
-- [README](./README.md) - Overview and core concepts
-- [Configuration](./configuration.md) - Setup and Cache Rules
-- [Patterns](./patterns.md) - Best practices and optimization
-- [Gotchas](./gotchas.md) - Common issues and troubleshooting
+- [README]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/cache-reserve/README.md) - Overview and core concepts
+- [Configuration]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/cache-reserve/configuration.md) - Setup and Cache Rules
+- [Patterns]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/cache-reserve/patterns.md) - Best practices and optimization
+- [Gotchas]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/cache-reserve/gotchas.md) - Common issues and troubleshooting

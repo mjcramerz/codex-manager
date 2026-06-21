@@ -15,6 +15,6 @@ updated: '2026-02-20'
 # Devtools App Scaffolder Rules
 
 ## Required checks
-- Follow the workflow in `../SKILL.md`.
-- Prefer deterministic scripts in `../scripts/`.
-- Use references in `../references/` for factual guidance.
+- Follow the workflow in `$CODEX_HOME/plugins/cache/codex-local/backend/local/skills/devtools-app-scaffolder/SKILL.md`.
+- Prefer deterministic scripts in `$CODEX_HOME/plugins/cache/codex-local/backend/local/skills/devtools-app-scaffolder/scripts/`.
+- Use references in `$CODEX_HOME/plugins/cache/codex-local/backend/local/skills/devtools-app-scaffolder/references/` for factual guidance.

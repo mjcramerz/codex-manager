@@ -42,8 +42,8 @@ Guide for creating effective skills. This skill should be used when users want t
 - Skill Naming
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
+- `$CODEX_SKILLS/common/pack-skills/SKILL.md`
+- `$CODEX_SKILLS/common/pack-skills/agents/openai.yaml`
 
 ## External references
 - [YAML 1.2 specification](https://yaml.org/spec/1.2.2/) - Manifest syntax and deterministic formatting rules.

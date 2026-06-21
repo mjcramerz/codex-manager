@@ -30,8 +30,8 @@ Maintain and update the pack routing index, including $CODEX_HOME/index/manifest
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
+- `$CODEX_SKILLS/common/pack-index/SKILL.md`
+- `$CODEX_SKILLS/common/pack-index/agents/openai.yaml`
 
 ## External references
 - [YAML 1.2 specification](https://yaml.org/spec/1.2.2/) - Manifest syntax and deterministic formatting rules.

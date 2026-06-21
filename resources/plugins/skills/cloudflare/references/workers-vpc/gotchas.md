@@ -95,7 +95,7 @@ await Promise.race([socket.opened, timeout]);
 
 **Problem:** New connection overhead per request
 
-**Solution:** Use [Hyperdrive](../hyperdrive/) for databases (built-in pooling)
+**Solution:** Use [Hyperdrive]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/hyperdrive/) for databases (built-in pooling)
 
 ### Not Using Smart Placement
 
@@ -150,7 +150,7 @@ if (!host || !ALLOWED.includes(host)) return new Response('Forbidden', { status:
 
 | Use Case | Alternative | Reason |
 |----------|-------------|--------|
-| PostgreSQL/MySQL | [Hyperdrive](../hyperdrive/) | Connection pooling, caching |
+| PostgreSQL/MySQL | [Hyperdrive]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/hyperdrive/) | Connection pooling, caching |
 | HTTP/HTTPS | `fetch()` | Simpler, built-in |
 | HTTP with SSRF protection | VPC Services (beta 2025+) | Declarative bindings |
 
@@ -162,6 +162,6 @@ if (!host || !ALLOWED.includes(host)) return new Response('Forbidden', { status:
 
 ## Related
 
-- [Hyperdrive](../hyperdrive/) - Database connections
-- [Smart Placement](../smart-placement/) - Latency optimization
-- [Tunnel Troubleshooting](../tunnel/gotchas.md)
+- [Hyperdrive]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/hyperdrive/) - Database connections
+- [Smart Placement]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/smart-placement/) - Latency optimization
+- [Tunnel Troubleshooting]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/tunnel/gotchas.md)

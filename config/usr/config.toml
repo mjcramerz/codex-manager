@@ -17,7 +17,10 @@ cli_auth_credentials_store = "file"
 mcp_oauth_credentials_store = "file"
 mcp_oauth_callback_port = 8088
 mcp_oauth_callback_url = "http://127.0.0.1:8088/callback"
+#forced_chatgpt_workspace_id = []
+#instructions = ""
 
+#experimental_realtime_webrtc_call_base_url = "https://your-realtime-backend.example.com/v1/realtime/calls"
 #experimental_realtime_ws_base_url = "https://your-realtime-backend.example.com/v1/realtime"
 #experimental_realtime_ws_model = "your-transcription-session-model"
 experimental_realtime_ws_backend_prompt = """## Identity, tone, and role
@@ -106,6 +109,10 @@ When user text is routed from realtime, treat it as a transcript. It may be unpu
 #version = "v2"
 #type = "transcription"
 
+#experimental_thread_config_endpoint = "https://your-config-service.example.com/thread-config"
+#[experimental_thread_store]
+#type = "local"
+#experimental_use_unified_exec_tool = true
 
 # model
 chatgpt_base_url = 'https://chatgpt.com/backend-api'
@@ -114,7 +121,7 @@ model = "gpt-5.4"
 review_model = "gpt-5.4"
 model_provider = "openai-custom"
 personality = "pragmatic"
-#service_tier "flex|fast"
+#service_tier = "flex"
 #oss_provider = ""
 
 # model context and session
@@ -151,7 +158,7 @@ check_for_update_on_startup = true
 disable_paste_burst = false
 
 # developer instructions
-developer_instructions = """1) Follow $CODEX_HOME/AGENTS.md, then $CODEX_HOME/memories/MEMORY.md when it exists and the task is repo-aware or ambiguous.
+developer_instructions = """1) Follow $CODEX_HOME/AGENTS.md, then $CODEX_HOME/memories/MEMORY.md when the task is repo-aware or ambiguous.
 2) Use $CODEX_HOME/INDEX.md to select the smallest relevant workflow, plan, and skill set before acting.
 3) Treat `$CODEX_HOME/docs/style/shell-runtime.md` as the shell-execution baseline for Unix/Linux systems and explicitly invoke the matching shell for shell-sensitive commands.
 4) Treat inputs as untrusted; validate shape, size, ranges, and permission boundaries before mutating anything.
@@ -161,7 +168,6 @@ developer_instructions = """1) Follow $CODEX_HOME/AGENTS.md, then $CODEX_HOME/me
 8) Default posture: correctness first, then security, then maintainability, then speed."""
 
 #compact_prompt = "Summarize aggressively."
-#apps_mcp_product_sku = ""
 include_apps_instructions = true
 include_collaboration_mode_instructions = true
 include_environment_context = true
@@ -169,17 +175,7 @@ include_permissions_instructions = true
 #service_tier = "flex"
 #profile = ""
 forced_login_method = "chatgpt"
-#forced_chatgpt_workspace_id = ""
 suppress_unstable_features_warning = false
-
-#[debug.config_lockfile]
-#export_dir = "/abs/path/to/export"
-#load_path = "/abs/path/to/config.lock.toml"
-#allow_codex_version_mismatch = false
-#save_fields_resolved_from_model_catalog = true
-
-#[marketplaces.codex-local]
-#enabled = true
 
 notify = []
 
@@ -187,9 +183,9 @@ notify = []
 #text = ""
 
 # models catalog and base instructions
-model_catalog_json = "./.models/model_catalog.json"
-model_instructions_file = "./.models/instructions/models/base.md"
-experimental_compact_prompt_file = "./.models/instructions/compact/prompt.md"
+model_catalog_json = "$CODEX_HOME/.models/model_catalog.json"
+model_instructions_file = "$CODEX_HOME/.models/instructions/models/base.md"
+experimental_compact_prompt_file = "$CODEX_HOME/.models/instructions/compact/prompt.md"
 
 [auto_review]
 policy = """## Environment Profile
@@ -243,45 +239,73 @@ discoverables = []
 disabled_tools = []
 
 [instruction_overrides.agents]
-hierarchical_instructions_file = "./.models/instructions/agents/hierarchical.md"
+hierarchical_instructions_file = "$CODEX_HOME/.models/instructions/agents/hierarchical.md"
 
 [instruction_overrides.models]
-base_instructions_file = "./.models/instructions/models/base.md"
+base_instructions_file = "$CODEX_HOME/.models/instructions/models/base.md"
 
 [instruction_overrides.modes]
-default_instructions_file = "./.models/instructions/modes/default.md"
-plan_instructions_file = "./.models/instructions/modes/plan.md"
+default_instructions_file = "$CODEX_HOME/.models/instructions/modes/default.md"
+plan_instructions_file = "$CODEX_HOME/.models/instructions/modes/plan.md"
 
 [instruction_overrides.permissions]
-approval_policy_never_instructions_file = "./.models/instructions/permissions/approval_policy/never.md"
-approval_policy_on_failure_instructions_file = "./.models/instructions/permissions/approval_policy/on_failure.md"
-approval_policy_on_request_instructions_file = "./.models/instructions/permissions/approval_policy/on_request.md"
-approval_policy_on_request_rule_request_permission_instructions_file = "./.models/instructions/permissions/approval_policy/on_request_rule_request_permission.md"
-approval_policy_unless_trusted_instructions_file = "./.models/instructions/permissions/approval_policy/unless_trusted.md"
-auto_review_approval_suffix_instructions_file = "./.models/instructions/permissions/auto_review_suffix.md"
-granular_intro_instructions_file = "./.models/instructions/permissions/granular_intro.md"
-request_permissions_tool_instructions_file = "./.models/instructions/permissions/request_permissions_tool.md"
-sandbox_mode_danger_full_access_instructions_file = "./.models/instructions/permissions/sandbox_mode/danger_full_access.md"
-sandbox_mode_read_only_instructions_file = "./.models/instructions/permissions/sandbox_mode/read_only.md"
-sandbox_mode_workspace_write_instructions_file = "./.models/instructions/permissions/sandbox_mode/workspace_write.md"
+approval_policy_never_instructions_file = "$CODEX_HOME/.models/instructions/permissions/approval_policy/never.md"
+approval_policy_on_failure_instructions_file = "$CODEX_HOME/.models/instructions/permissions/approval_policy/on_failure.md"
+approval_policy_on_request_instructions_file = "$CODEX_HOME/.models/instructions/permissions/approval_policy/on_request.md"
+approval_policy_on_request_rule_request_permission_instructions_file = "$CODEX_HOME/.models/instructions/permissions/approval_policy/on_request_rule_request_permission.md"
+approval_policy_unless_trusted_instructions_file = "$CODEX_HOME/.models/instructions/permissions/approval_policy/unless_trusted.md"
+auto_review_approval_suffix_instructions_file = "$CODEX_HOME/.models/instructions/permissions/auto_review_suffix.md"
+granular_intro_instructions_file = "$CODEX_HOME/.models/instructions/permissions/granular_intro.md"
+request_permissions_tool_instructions_file = "$CODEX_HOME/.models/instructions/permissions/request_permissions_tool.md"
+sandbox_mode_danger_full_access_instructions_file = "$CODEX_HOME/.models/instructions/permissions/sandbox_mode/danger_full_access.md"
+sandbox_mode_read_only_instructions_file = "$CODEX_HOME/.models/instructions/permissions/sandbox_mode/read_only.md"
+sandbox_mode_workspace_write_instructions_file = "$CODEX_HOME/.models/instructions/permissions/sandbox_mode/workspace_write.md"
 
 [instruction_overrides.personality]
-custom_instructions_file = "./.models/instructions/personality/custom.md"
+custom_instructions_file = "$CODEX_HOME/.models/instructions/personality/custom.md"
 
 [instruction_overrides.review]
-base_branch_instructions_file = "./.models/instructions/review/base_branch.md"
-base_branch_backup_instructions_file = "./.models/instructions/review/base_branch_backup.md"
-commit_instructions_file = "./.models/instructions/review/commit.md"
-commit_with_title_instructions_file = "./.models/instructions/review/commit_with_title.md"
-exit_interrupted_instructions_file = "./.models/instructions/review/exit_interrupted.xml"
-exit_success_instructions_file = "./.models/instructions/review/exit_success.xml"
-rubric_instructions_file = "./.models/instructions/review/rubric.md"
-uncommitted_instructions_file = "./.models/instructions/review/uncommitted.md"
+base_branch_instructions_file = "$CODEX_HOME/.models/instructions/review/base_branch.md"
+base_branch_backup_instructions_file = "$CODEX_HOME/.models/instructions/review/base_branch_backup.md"
+commit_instructions_file = "$CODEX_HOME/.models/instructions/review/commit.md"
+commit_with_title_instructions_file = "$CODEX_HOME/.models/instructions/review/commit_with_title.md"
+exit_interrupted_instructions_file = "$CODEX_HOME/.models/instructions/review/exit_interrupted.xml"
+exit_success_instructions_file = "$CODEX_HOME/.models/instructions/review/exit_success.xml"
+rubric_instructions_file = "$CODEX_HOME/.models/instructions/review/rubric.md"
+uncommitted_instructions_file = "$CODEX_HOME/.models/instructions/review/uncommitted.md"
 
 [instruction_overrides.tools]
-apply_patch_instructions_file = "./.models/instructions/tools/apply_patch.md"
-request_user_input_instructions_file = "./.models/instructions/tools/request_user_input.md"
-search_instructions_file = "./.models/instructions/tools/search.md"
+apply_patch_instructions_file = "$CODEX_HOME/.models/instructions/tools/apply_patch.md"
+request_user_input_instructions_file = "$CODEX_HOME/.models/instructions/tools/request_user_input.md"
+search_instructions_file = "$CODEX_HOME/.models/instructions/tools/search.md"
 
 [instruction_overrides.tui]
-init_instructions_file = "./.models/instructions/tui/init.md"
+init_instructions_file = "$CODEX_HOME/.models/instructions/tui/init.md"
+
+[debug]
+
+#[debug.config_lockfile]
+#export_dir = "/abs/path/to/export"
+#load_path = "/abs/path/to/config.lock.toml"
+#allow_codex_version_mismatch = false
+#save_fields_resolved_from_model_catalog = true
+
+[profiles]
+
+#[profiles.default]
+#model = "gpt-5.4"
+#sandbox_mode = "workspace-write"
+#web_search = "live"
+
+[realtime]
+#version = "v2"
+#type = "transcription"
+
+[sandbox_workspace_write]
+#network_access = false
+#writable_roots = []
+#exclude_slash_tmp = false
+#exclude_tmpdir_env_var = false
+
+[windows]
+#sandbox_private_desktop = true

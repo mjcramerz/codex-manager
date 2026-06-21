@@ -197,4 +197,4 @@ const deployment = new cloudflare.WorkersDeployment("prod", {
 **Use:** Advanced deployments (canary, blue-green). Most apps should use `WorkerScript` (auto-versioning).
 
 ---
-See: [README.md](./README.md), [configuration.md](./configuration.md), [patterns.md](./patterns.md), [gotchas.md](./gotchas.md)
+See: [README.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pulumi/README.md), [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pulumi/configuration.md), [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pulumi/patterns.md), [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pulumi/gotchas.md)

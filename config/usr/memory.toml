@@ -1,6 +1,4 @@
 [memories]
-# legacy alias, replaced by disable_on_external_context
-#no_memories_if_mcp_or_web_search = false
 disable_on_external_context = false
 generate_memories = true
 use_memories = true
@@ -22,9 +20,11 @@ phase4_workspace_entry_limit = 128
 phase5_enabled = true
 phase5_workspace_rollup_limit = 128
 
-# instruction file overrides
-consolidation_instructions_file = "./.models/instructions/memories/consolidation.md"
-extraction_instructions_file = "./.models/instructions/memories/extraction.md"
-phase4_instructions_file = "./.models/instructions/memories/phase4_selection_ledger.md"
-phase5_instructions_file = "./.models/instructions/memories/phase5_phase1_rollups.md"
-read_path_instructions_file = "./.models/instructions/memories/read_path.md"
+# mirrored disable-path instruction overrides
+# keep these aligned with $CODEX_USER_DIR/instructions/memories/** and
+# $CODEX_HOME/.models/instructions/memories/**
+consolidation_instructions_file = "$CODEX_HOME/.models/instructions/memories/consolidation.md"
+extraction_instructions_file = "$CODEX_HOME/.models/instructions/memories/extraction.md"
+phase4_instructions_file = "$CODEX_HOME/.models/instructions/memories/phase4_selection_ledger.md"
+phase5_instructions_file = "$CODEX_HOME/.models/instructions/memories/phase5_phase1_rollups.md"
+read_path_instructions_file = "$CODEX_HOME/.models/instructions/memories/read_path.md"

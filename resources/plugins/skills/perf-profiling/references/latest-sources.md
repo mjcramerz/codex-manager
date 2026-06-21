@@ -31,9 +31,9 @@ Performance engineering playbook: profiling, benchmarking, hot path analysis, sa
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
-- `../scripts/skill_helper.py`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/perf-profiling/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/perf-profiling/agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/perf-profiling/scripts/skill_helper.py`
 
 ## Reference files in this directory
 - `latest-sources.md`

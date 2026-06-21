@@ -6,10 +6,10 @@ Guide for working with Cloudflare's REST API - authentication, SDK usage, common
 
 ```
 How are you calling the Cloudflare API?
-├─ From Workers runtime → Use bindings, not REST API (see ../bindings/)
+├─ From Workers runtime → Use bindings, not REST API (see $CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/bindings/)
 ├─ Server-side (Node/Python/Go) → Official SDK (see api.md)
 ├─ CLI/scripts → Wrangler or curl (see configuration.md)
-├─ Infrastructure-as-code → See ../pulumi/ or ../terraform/
+├─ Infrastructure-as-code → See $CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pulumi/ or $CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/terraform/
 └─ One-off requests → curl examples (see api.md)
 ```
 
@@ -49,7 +49,7 @@ All SDKs are Stainless-generated from OpenAPI spec (consistent APIs).
 | Configure auth/timeout/retry | configuration.md |
 | Find usage patterns | patterns.md |
 | Debug errors/rate limits | gotchas.md |
-| Product-specific APIs | ../workers/, ../r2/, ../kv/, etc. |
+| Product-specific APIs | $CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workers/, $CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/r2/, $CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/kv/, etc. |
 
 ## In This Reference
 
@@ -61,6 +61,6 @@ All SDKs are Stainless-generated from OpenAPI spec (consistent APIs).
 ## See Also
 
 - [Cloudflare API Docs](https://developers.cloudflare.com/api/)
-- [Bindings Reference](../bindings/) - Workers runtime bindings (preferred over REST API)
-- [Wrangler Reference](../wrangler/) - CLI tool for Cloudflare development
-- [GraphQL Analytics API Reference](../graphql-api/) - Analytics data via GraphQL (separate endpoint from REST API)
+- [Bindings Reference]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/bindings/) - Workers runtime bindings (preferred over REST API)
+- [Wrangler Reference]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/wrangler/) - CLI tool for Cloudflare development
+- [GraphQL Analytics API Reference]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/graphql-api/) - Analytics data via GraphQL (separate endpoint from REST API)

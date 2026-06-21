@@ -1,5 +1,4 @@
 # Memory runtime workflow (retired)
-
 Purpose: record that the standalone memory-transfer workflow was removed from this repo and route current memory work to the maintained entrypoints.
 
 ## Navigation
@@ -16,6 +15,7 @@ Purpose: record that the standalone memory-transfer workflow was removed from th
 
 ## Current guidance
 - For repo-aware memory context, use `$CODEX_HOME/memories/MEMORY.md`.
+- For memory instruction-source changes, update both `$CODEX_USER_DIR/instructions/memories/` and `$CODEX_HOME/.models/instructions/memories/` together and keep the rendered `$CODEX_HOME/config.toml` memory overrides aligned.
 - For installer-owned memory/state handling, use `$CODEX_HOME/docs/workflows/codex-manager.md`.
 - For runtime-pack cleanup or catalog updates, use `$CODEX_HOME/docs/workflows/runtime-pack-maintenance.md`.
 

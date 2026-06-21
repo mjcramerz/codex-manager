@@ -198,6 +198,6 @@ setLocale('es');  // Switch to Spanish
 
 ## See Also
 
-- [API](./api.md) - Meeting APIs, REST endpoints
-- [Patterns](./patterns.md) - Backend integration examples
-- [README](./README.md) - Overview and quick start
+- [API]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/realtimekit/api.md) - Meeting APIs, REST endpoints
+- [Patterns]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/realtimekit/patterns.md) - Backend integration examples
+- [README]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/realtimekit/README.md) - Overview and quick start

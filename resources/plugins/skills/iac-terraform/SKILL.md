@@ -56,11 +56,11 @@ interface:
 - State and rollback notes covering backend location, locking strategy, and how to recover from a partial apply.
 
 ## Local resources
-- `iac-terraform/references/latest-sources.md`
-- `iac-terraform/references/operations-checklist.md`
-- `iac-terraform/references/risk-register.md`
-- `iac-terraform/assets/rollback-checklist.md`
-- `iac-terraform/scripts/skill_helper.py`
+- `$CODEX_HOME/plugins/cache/codex-local/iac/local/skills/iac-terraform/references/latest-sources.md`
+- `$CODEX_HOME/plugins/cache/codex-local/iac/local/skills/iac-terraform/references/operations-checklist.md`
+- `$CODEX_HOME/plugins/cache/codex-local/iac/local/skills/iac-terraform/references/risk-register.md`
+- `$CODEX_HOME/plugins/cache/codex-local/iac/local/skills/iac-terraform/assets/rollback-checklist.md`
+- `$CODEX_HOME/plugins/cache/codex-local/iac/local/skills/iac-terraform/scripts/skill_helper.py`
 
 ## References
 - `$CODEX_HOME/docs/workflows/terraform.md`

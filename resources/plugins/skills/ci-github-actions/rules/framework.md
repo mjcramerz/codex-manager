@@ -16,6 +16,6 @@ updated: '2026-02-20'
 # Ci Github Actions Framework
 
 - Skill: `ci-github-actions`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Source of truth: `$CODEX_HOME/plugins/cache/codex-local/github/local/skills/ci-github-actions/SKILL.md`
+- Runtime agent config: `$CODEX_HOME/plugins/cache/codex-local/github/local/skills/ci-github-actions/agents/openai.yaml`
+- Supporting docs: `$CODEX_HOME/plugins/cache/codex-local/github/local/skills/ci-github-actions/references/`

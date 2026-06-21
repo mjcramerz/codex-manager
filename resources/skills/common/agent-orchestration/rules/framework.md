@@ -12,5 +12,5 @@ updated: '2026-03-12'
 
 - Skill: `agent-orchestration`
 - Category: `COMMON`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
+- Source of truth: `$CODEX_SKILLS/common/agent-orchestration/SKILL.md`
+- Runtime agent config: `$CODEX_SKILLS/common/agent-orchestration/agents/openai.yaml`

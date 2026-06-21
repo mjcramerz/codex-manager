@@ -193,10 +193,10 @@ Wait a moment and retry - arXiv has rate limits
 
 ## File Locations
 
-- Scripts: `../scripts/paper_manager.py`
-- Templates: `../templates/`
-- Examples: `../examples/example_usage.md`
-- This guide: `./quick_reference.md`
+- Scripts: `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-paper-publisher/scripts/paper_manager.py`
+- Templates: `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-paper-publisher/templates/`
+- Examples: `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-paper-publisher/examples/example_usage.md`
+- This guide: `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-paper-publisher/references/quick_reference.md`
 
 ## Getting Help
 
@@ -210,7 +210,7 @@ python scripts/paper_manager.py link --help
 
 ## Additional Resources
 
-- [Full documentation](../SKILL.md)
-- [Usage examples](../examples/example_usage.md)
+- [Full documentation]($CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-paper-publisher/SKILL.md)
+- [Usage examples]($CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-paper-publisher/examples/example_usage.md)
 - [HF Paper Pages](https://huggingface.co/papers)
 - [tfrere's template](https://huggingface.co/spaces/tfrere/research-article-template)

@@ -16,6 +16,6 @@ updated: '2026-02-20'
 # Obs Kibana Framework
 
 - Skill: `obs-kibana`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Source of truth: `$CODEX_HOME/plugins/cache/codex-local/observability/local/skills/obs-kibana/SKILL.md`
+- Runtime agent config: `$CODEX_HOME/plugins/cache/codex-local/observability/local/skills/obs-kibana/agents/openai.yaml`
+- Supporting docs: `$CODEX_HOME/plugins/cache/codex-local/observability/local/skills/obs-kibana/references/`

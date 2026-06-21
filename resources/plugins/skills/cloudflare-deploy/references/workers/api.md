@@ -190,6 +190,6 @@ export class ServiceWorker {
 
 ## See Also
 
-- [Configuration](./configuration.md) - Binding setup
-- [Patterns](./patterns.md) - Common workflows
-- [KV](../kv/README.md), [D1](../d1/README.md), [R2](../r2/README.md), [Durable Objects](../durable-objects/README.md), [Queues](../queues/README.md)
+- [Configuration]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers/configuration.md) - Binding setup
+- [Patterns]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers/patterns.md) - Common workflows
+- [KV]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/kv/README.md), [D1]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/d1/README.md), [R2]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/r2/README.md), [Durable Objects]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/durable-objects/README.md), [Queues]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/queues/README.md)

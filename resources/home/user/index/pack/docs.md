@@ -25,4 +25,5 @@ Canonical content: `$CODEX_HOME/docs/OVERVIEW.md`
 - `$CODEX_HOME/index/pack/skills.md`
 - `$CODEX_HOME/index/pack/prompts.md`
 - `$CODEX_HOME/index/pack/style.md`
+- `$CODEX_HOME/memories/MEMORY.md`
 <!-- END:related -->

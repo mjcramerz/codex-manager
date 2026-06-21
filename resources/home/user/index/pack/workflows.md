@@ -19,6 +19,7 @@ Canonical content: `$CODEX_HOME/docs/workflows/overview.md`
 <!-- BEGIN:related -->
 - `$CODEX_HOME/docs/workflows/overview.md`
 - `$CODEX_HOME/docs/workflows`
+- `$CODEX_HOME/docs/workflows/memory-runtime.md`
 - `$CODEX_HOME/docs/workflows/prompts-library.md`
 - `$CODEX_HOME/index/pack/templates.md`
 - `$CODEX_HOME/index/pack/plans.md`

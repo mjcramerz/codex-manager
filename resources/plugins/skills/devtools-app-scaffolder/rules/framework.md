@@ -16,6 +16,6 @@ updated: '2026-02-20'
 # Devtools App Scaffolder Framework
 
 - Skill: `devtools-app-scaffolder`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Source of truth: `$CODEX_HOME/plugins/cache/codex-local/backend/local/skills/devtools-app-scaffolder/SKILL.md`
+- Runtime agent config: `$CODEX_HOME/plugins/cache/codex-local/backend/local/skills/devtools-app-scaffolder/agents/openai.yaml`
+- Supporting docs: `$CODEX_HOME/plugins/cache/codex-local/backend/local/skills/devtools-app-scaffolder/references/`

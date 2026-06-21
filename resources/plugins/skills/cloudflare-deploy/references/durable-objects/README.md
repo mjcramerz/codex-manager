@@ -5,10 +5,10 @@ Expert guidance for building stateful applications with Cloudflare Durable Objec
 ## Reading Order
 
 1. **First time?** Read this overview + Quick Start
-2. **Setting up?** See [Configuration](./configuration.md)
-3. **Building features?** Use decision trees below → [Patterns](./patterns.md)
-4. **Debugging issues?** Check [Gotchas](./gotchas.md)
-5. **Deep dive?** [API](./api.md) and [DO Storage](../do-storage/README.md)
+2. **Setting up?** See [Configuration]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/durable-objects/configuration.md)
+3. **Building features?** Use decision trees below → [Patterns]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/durable-objects/patterns.md)
+4. **Debugging issues?** Check [Gotchas]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/durable-objects/gotchas.md)
+5. **Deep dive?** [API]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/durable-objects/api.md) and [DO Storage]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/do-storage/README.md)
 
 ## Overview
 
@@ -60,7 +60,7 @@ Workers use bindings to get stubs, then call RPC methods directly (recommended) 
 └─ Legacy compatibility → fetch()
 ```
 
-See [Patterns: RPC vs fetch()](./patterns.md) for examples.
+See [Patterns: RPC vs fetch()]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/durable-objects/patterns.md) for examples.
 
 ### ID Generation
 - `idFromName()`: Deterministic, named coordination (rate limiting, locks)
@@ -81,7 +81,7 @@ See [Patterns: RPC vs fetch()](./patterns.md) for examples.
 - **Synchronous KV API**: Simple key-value on SQLite objects
 - **Asynchronous KV API**: Legacy/advanced use cases
 
-See [DO Storage](../do-storage/README.md) for deep dive.
+See [DO Storage]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/do-storage/README.md) for deep dive.
 
 ### Special Features
 - **Alarms**: Schedule future execution per-DO (1 per DO - use queue pattern for multiple)
@@ -121,19 +121,19 @@ export default {
 
 ```
 ├─ Coordinate requests (rate limit, lock, session)
-│   → idFromName(identifier) → [Patterns: Rate Limiting/Locks](./patterns.md)
+│   → idFromName(identifier) → [Patterns: Rate Limiting/Locks]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/durable-objects/patterns.md)
 │
 ├─ High throughput (>1K req/s)
-│   → Sharding with newUniqueId() or hash → [Patterns: Sharding](./patterns.md)
+│   → Sharding with newUniqueId() or hash → [Patterns: Sharding]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/durable-objects/patterns.md)
 │
 ├─ Real-time updates (WebSocket, chat, collab)
-│   → WebSocket hibernation + room pattern → [Patterns: Real-time](./patterns.md)
+│   → WebSocket hibernation + room pattern → [Patterns: Real-time]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/durable-objects/patterns.md)
 │
 ├─ Background work (cleanup, notifications, scheduled tasks)
-│   → Alarms + queue pattern (1 alarm/DO) → [Patterns: Multiple Events](./patterns.md)
+│   → Alarms + queue pattern (1 alarm/DO) → [Patterns: Multiple Events]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/durable-objects/patterns.md)
 │
 └─ User sessions with expiration
-    → Session pattern + alarm cleanup → [Patterns: Session Management](./patterns.md)
+    → Session pattern + alarm cleanup → [Patterns: Session Management]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/durable-objects/patterns.md)
 ```
 
 ### Which access pattern?
@@ -145,7 +145,7 @@ export default {
 └─ Legacy compat → fetch()
 ```
 
-See [Patterns: RPC vs fetch()](./patterns.md) for examples.
+See [Patterns: RPC vs fetch()]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/durable-objects/patterns.md) for examples.
 
 ### Which storage?
 
@@ -155,7 +155,7 @@ See [Patterns: RPC vs fetch()](./patterns.md) for examples.
 └─ Legacy KV-only DO → ctx.storage (async API)
 ```
 
-See [DO Storage](../do-storage/README.md) for complete guide.
+See [DO Storage]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/do-storage/README.md) for complete guide.
 
 ## Essential Commands
 
@@ -173,13 +173,13 @@ npx wrangler deploy           # Deploy + auto-apply migrations
 
 ## In This Reference
 
-- **[Configuration](./configuration.md)** - wrangler.jsonc setup, migrations, bindings, environments
-- **[API](./api.md)** - Class structure, ctx methods, alarms, WebSocket hibernation
-- **[Patterns](./patterns.md)** - Sharding, rate limiting, locks, real-time, sessions
-- **[Gotchas](./gotchas.md)** - Limits, hibernation caveats, common errors
+- **[Configuration]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/durable-objects/configuration.md)** - wrangler.jsonc setup, migrations, bindings, environments
+- **[API]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/durable-objects/api.md)** - Class structure, ctx methods, alarms, WebSocket hibernation
+- **[Patterns]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/durable-objects/patterns.md)** - Sharding, rate limiting, locks, real-time, sessions
+- **[Gotchas]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/durable-objects/gotchas.md)** - Limits, hibernation caveats, common errors
 
 ## See Also
 
-- **[DO Storage](../do-storage/README.md)** - SQLite, KV, transactions (detailed storage guide)
-- **[Workers](../workers/README.md)** - Core Workers runtime features
+- **[DO Storage]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/do-storage/README.md)** - SQLite, KV, transactions (detailed storage guide)
+- **[Workers]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers/README.md)** - Core Workers runtime features
 - **[WebSockets](../websockets/README.md)** - WebSocket APIs and patterns

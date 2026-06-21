@@ -172,12 +172,12 @@ render deploys create <service-id> --wait
 ```
 
 ### Templates by Framework
-- Node.js Express: [../assets/node-express.yaml](../assets/node-express.yaml)
-- Next.js + Postgres: [../assets/nextjs-postgres.yaml](../assets/nextjs-postgres.yaml)
-- Django + Worker: [../assets/python-django.yaml](../assets/python-django.yaml)
-- Static Site: [../assets/static-site.yaml](../assets/static-site.yaml)
-- Go API: [../assets/go-api.yaml](../assets/go-api.yaml)
-- Docker: [../assets/docker.yaml](../assets/docker.yaml)
+- Node.js Express: [$CODEX_HOME/plugins/cache/codex-local/render/local/skills/render-deploy/assets/node-express.yaml]($CODEX_HOME/plugins/cache/codex-local/render/local/skills/render-deploy/assets/node-express.yaml)
+- Next.js + Postgres: [$CODEX_HOME/plugins/cache/codex-local/render/local/skills/render-deploy/assets/nextjs-postgres.yaml]($CODEX_HOME/plugins/cache/codex-local/render/local/skills/render-deploy/assets/nextjs-postgres.yaml)
+- Django + Worker: [$CODEX_HOME/plugins/cache/codex-local/render/local/skills/render-deploy/assets/python-django.yaml]($CODEX_HOME/plugins/cache/codex-local/render/local/skills/render-deploy/assets/python-django.yaml)
+- Static Site: [$CODEX_HOME/plugins/cache/codex-local/render/local/skills/render-deploy/assets/static-site.yaml]($CODEX_HOME/plugins/cache/codex-local/render/local/skills/render-deploy/assets/static-site.yaml)
+- Go API: [$CODEX_HOME/plugins/cache/codex-local/render/local/skills/render-deploy/assets/go-api.yaml]($CODEX_HOME/plugins/cache/codex-local/render/local/skills/render-deploy/assets/go-api.yaml)
+- Docker: [$CODEX_HOME/plugins/cache/codex-local/render/local/skills/render-deploy/assets/docker.yaml]($CODEX_HOME/plugins/cache/codex-local/render/local/skills/render-deploy/assets/docker.yaml)
 
 ### Documentation
 - Full Blueprint specification: [blueprint-spec.md](blueprint-spec.md)

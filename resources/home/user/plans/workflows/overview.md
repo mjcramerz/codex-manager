@@ -10,6 +10,9 @@ Purpose: choose one workflow-specific plan template that mirrors an execution pl
 
 ## Catalog additions for current repo family
 <!-- BEGIN:contents -->
+- `$CODEX_HOME/plans/workflows/workflow-agent-orchestration.md` — Plan
+- `$CODEX_HOME/plans/workflows/workflow-planning.md` — Plan
+- `$CODEX_HOME/plans/workflows/workflow-memory-runtime.md` — Plan
 - `$CODEX_HOME/plans/workflows/workflow-runtime-pack-maintenance.md` — Plan
 - `$CODEX_HOME/plans/workflows/workflow-codex-manager.md` — Plan
 - `$CODEX_HOME/plans/workflows/workflow-codex-mcp.md` — Plan

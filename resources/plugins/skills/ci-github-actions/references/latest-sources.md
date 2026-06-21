@@ -36,8 +36,8 @@ Build robust GitHub Actions pipelines with security gates, reproducible builds, 
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/github/local/skills/ci-github-actions/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/github/local/skills/ci-github-actions/agents/openai.yaml`
 
 ## External references
 - [Git documentation](https://git-scm.com/doc) - Core git behavior and safe workflows.

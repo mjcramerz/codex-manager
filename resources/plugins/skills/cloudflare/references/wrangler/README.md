@@ -26,11 +26,11 @@ Run commands: `npx wrangler <command>` (or `pnpm`/`yarn wrangler`)
 
 | If you want to... | Start here |
 |-------------------|------------|
-| Create/deploy Worker quickly | Essential Commands below → [patterns.md](./patterns.md) §New Worker |
-| Configure bindings (KV, D1, R2) | [configuration.md](./configuration.md) §Bindings |
-| Write integration tests | [api.md](./api.md) §startWorker |
-| Debug production issues | [gotchas.md](./gotchas.md) + Essential Commands §Monitoring |
-| Set up multi-environment workflow | [configuration.md](./configuration.md) §Environments |
+| Create/deploy Worker quickly | Essential Commands below → [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/wrangler/patterns.md) §New Worker |
+| Configure bindings (KV, D1, R2) | [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/wrangler/configuration.md) §Bindings |
+| Write integration tests | [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/wrangler/api.md) §startWorker |
+| Debug production issues | [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/wrangler/gotchas.md) + Essential Commands §Monitoring |
+| Set up multi-environment workflow | [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/wrangler/configuration.md) §Environments |
 
 ## Essential Commands
 
@@ -103,10 +103,10 @@ wrangler tail --status error      # Filter by status
 
 ## In This Reference
 
-- [configuration.md](./configuration.md) - wrangler.jsonc setup, environments, bindings
-- [api.md](./api.md) - Programmatic API (`startWorker`, `getPlatformProxy`, events)
-- [patterns.md](./patterns.md) - Common workflows and development patterns
-- [gotchas.md](./gotchas.md) - Common pitfalls, limits, and troubleshooting
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/wrangler/configuration.md) - wrangler.jsonc setup, environments, bindings
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/wrangler/api.md) - Programmatic API (`startWorker`, `getPlatformProxy`, events)
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/wrangler/patterns.md) - Common workflows and development patterns
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/wrangler/gotchas.md) - Common pitfalls, limits, and troubleshooting
 
 ## Quick Decision Tree
 
@@ -130,6 +130,6 @@ Development not working?
 
 ## See Also
 
-- [workers](../workers/) - Workers runtime API reference
-- [miniflare](../miniflare/) - Local testing with Miniflare
-- [workerd](../workerd/) - Runtime that powers `wrangler dev`
+- [workers]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workers/) - Workers runtime API reference
+- [miniflare]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/miniflare/) - Local testing with Miniflare
+- [workerd]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workerd/) - Runtime that powers `wrangler dev`

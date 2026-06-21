@@ -31,8 +31,8 @@ Strengthen dependency hygiene: pinning, lockfiles, audits, SBOMs, CI enforcement
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/security-controls/local/skills/secops-supply-chain/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/security-controls/local/skills/secops-supply-chain/agents/openai.yaml`
 
 ## External references
 - [SLSA framework](https://slsa.dev/spec/v1.0/levels) - Supply-chain integrity maturity controls.

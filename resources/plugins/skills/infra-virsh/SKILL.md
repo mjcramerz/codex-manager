@@ -55,15 +55,15 @@ interface:
 - Post-provision verification checklist and rollback path for failed boots or misconfigured networking.
 
 ## Local resources
-- `infra-virsh/references/latest-sources.md`
-- `infra-virsh/references/operations-checklist.md`
-- `infra-virsh/references/risk-register.md`
-- `infra-virsh/assets/rollback-checklist.md`
-- `infra-virsh/scripts/skill_helper.py`
-- `infra-virsh/references/domain-xml-guardrails.md`
-- `infra-virsh/references/storage-network-playbook.md`
-- `infra-virsh/assets/domain-template.xml`
-- `infra-virsh/assets/network-template.xml`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-virsh/references/latest-sources.md`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-virsh/references/operations-checklist.md`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-virsh/references/risk-register.md`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-virsh/assets/rollback-checklist.md`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-virsh/scripts/skill_helper.py`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-virsh/references/domain-xml-guardrails.md`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-virsh/references/storage-network-playbook.md`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-virsh/assets/domain-template.xml`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-virsh/assets/network-template.xml`
 
 ## References
 - `$CODEX_HOME/docs/workflows/virsh.md`

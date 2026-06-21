@@ -11,6 +11,6 @@ metadata:
 
 Use this skill when the active task maps cleanly to the `runtime-config` bundle.
 
-- Start with `config/usr/*.toml`, `resources/instructions/metadata.json`, and `src/install/codex_install.py`.
+- Start with the installed runtime surfaces `$CODEX_HOME/config.toml`, `$CODEX_USER_DIR/instructions/metadata.json`, and the active runtime hook/config compiler behavior.
 - Reconcile checked-in intent against rendered runtime paths before suggesting changes.
 - Call out placeholder expansion, overlay append order, and config drift explicitly.

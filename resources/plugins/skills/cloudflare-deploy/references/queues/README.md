@@ -46,7 +46,7 @@ export default {
 1. **Uncaught errors retry ENTIRE batch** (not just failed message). Always use per-message try/catch.
 2. **Messages not ack'd/retry'd will auto-retry forever** until max_retries. Always explicitly handle each message.
 
-See [gotchas.md](./gotchas.md) for detailed solutions.
+See [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/queues/gotchas.md) for detailed solutions.
 
 ## Core Operations
 
@@ -71,26 +71,26 @@ See [gotchas.md](./gotchas.md) for detailed solutions.
 ## Reading Order
 
 **New to Queues?** Start here:
-1. [configuration.md](./configuration.md) - Set up queues, bindings, consumers
-2. [api.md](./api.md) - Send messages, handle batches, ack/retry patterns
-3. [patterns.md](./patterns.md) - Real-world examples and integrations
-4. [gotchas.md](./gotchas.md) - Critical warnings and troubleshooting
+1. [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/queues/configuration.md) - Set up queues, bindings, consumers
+2. [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/queues/api.md) - Send messages, handle batches, ack/retry patterns
+3. [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/queues/patterns.md) - Real-world examples and integrations
+4. [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/queues/gotchas.md) - Critical warnings and troubleshooting
 
 **Task-based routing:**
-- Setup queue → [configuration.md](./configuration.md)
-- Send/receive messages → [api.md](./api.md)
-- Implement specific pattern → [patterns.md](./patterns.md)
-- Debug/troubleshoot → [gotchas.md](./gotchas.md)
+- Setup queue → [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/queues/configuration.md)
+- Send/receive messages → [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/queues/api.md)
+- Implement specific pattern → [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/queues/patterns.md)
+- Debug/troubleshoot → [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/queues/gotchas.md)
 
 ## In This Reference
 
-- [configuration.md](./configuration.md) - wrangler.jsonc setup, producer/consumer config, DLQ, content types
-- [api.md](./api.md) - Send/batch methods, queue handler, ack/retry rules, type-safe patterns
-- [patterns.md](./patterns.md) - Async tasks, buffering, rate limiting, D1/Workflows/DO integrations
-- [gotchas.md](./gotchas.md) - Critical batch error handling, idempotency, error classification
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/queues/configuration.md) - wrangler.jsonc setup, producer/consumer config, DLQ, content types
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/queues/api.md) - Send/batch methods, queue handler, ack/retry rules, type-safe patterns
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/queues/patterns.md) - Async tasks, buffering, rate limiting, D1/Workflows/DO integrations
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/queues/gotchas.md) - Critical batch error handling, idempotency, error classification
 
 ## See Also
 
-- [workers](../workers/) - Worker runtime for producers/consumers
-- [r2](../r2/) - Process R2 event notifications via queues
-- [d1](../d1/) - Batch write to D1 from queue consumers
+- [workers]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers/) - Worker runtime for producers/consumers
+- [r2]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/r2/) - Process R2 event notifications via queues
+- [d1]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/d1/) - Batch write to D1 from queue consumers

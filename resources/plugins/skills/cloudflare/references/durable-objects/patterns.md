@@ -196,6 +196,6 @@ async myMethod() {
 
 ## See Also
 
-- **[API](./api.md)** - ctx methods, WebSocket handlers
-- **[Gotchas](./gotchas.md)** - Hibernation caveats, common errors
-- **[DO Storage](../do-storage/README.md)** - Storage patterns and transactions
+- **[API]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/durable-objects/api.md)** - ctx methods, WebSocket handlers
+- **[Gotchas]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/durable-objects/gotchas.md)** - Hibernation caveats, common errors
+- **[DO Storage]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/do-storage/README.md)** - Storage patterns and transactions

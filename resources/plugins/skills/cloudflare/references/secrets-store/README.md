@@ -64,11 +64,11 @@ API Token permissions: `Account Secrets Store Edit/Read`
 
 ### Files
 
-- [configuration.md](./configuration.md) - Wrangler commands, binding config
-- [api.md](./api.md) - Binding API, get/put/delete operations
-- [patterns.md](./patterns.md) - Rotation, encryption, access control
-- [gotchas.md](./gotchas.md) - Security issues, limits, best practices
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/secrets-store/configuration.md) - Wrangler commands, binding config
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/secrets-store/api.md) - Binding API, get/put/delete operations
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/secrets-store/patterns.md) - Rotation, encryption, access control
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/secrets-store/gotchas.md) - Security issues, limits, best practices
 
 ## See Also
-- [workers](../workers/) - Worker bindings integration
-- [wrangler](../wrangler/) - CLI secret management commands
+- [workers]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workers/) - Worker bindings integration
+- [wrangler]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/wrangler/) - CLI secret management commands

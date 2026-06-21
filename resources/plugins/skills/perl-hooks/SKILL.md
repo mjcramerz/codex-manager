@@ -39,8 +39,8 @@ interface:
 - Reviewable changes with explicit validation evidence.
 
 ## Local resources
-- `perl-hooks/references/latest-sources.md`
-- `perl-hooks/scripts/skill_helper.py`
+- `$CODEX_HOME/plugins/cache/codex-local/codex-runtime/local/skills/perl-hooks/references/latest-sources.md`
+- `$CODEX_HOME/plugins/cache/codex-local/codex-runtime/local/skills/perl-hooks/scripts/skill_helper.py`
 
 ## References
 - `$CODEX_HOME/docs/workflows/codex-manager.md`

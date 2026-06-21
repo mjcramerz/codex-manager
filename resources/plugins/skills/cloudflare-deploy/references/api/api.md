@@ -199,6 +199,6 @@ client.dns.records.create(
 
 ## See Also
 
-- [configuration.md](./configuration.md) - SDK configuration, environment variables
-- [patterns.md](./patterns.md) - Real-world patterns and workflows
-- [gotchas.md](./gotchas.md) - Rate limits, troubleshooting
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/api/configuration.md) - SDK configuration, environment variables
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/api/patterns.md) - Real-world patterns and workflows
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/api/gotchas.md) - Rate limits, troubleshooting

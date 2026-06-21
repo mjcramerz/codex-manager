@@ -74,15 +74,15 @@ interface:
 - Verification matrix for host readiness, guest health, networking behavior, and rollback readiness.
 
 ## Local resources
-- `infra-virtualization/references/latest-sources.md`
-- `infra-virtualization/references/operations-checklist.md`
-- `infra-virtualization/references/risk-register.md`
-- `infra-virtualization/assets/rollback-checklist.md`
-- `infra-virtualization/scripts/skill_helper.py`
-- `infra-virtualization/references/networking-modes.md`
-- `infra-virtualization/references/provider-decision-matrix.md`
-- `infra-virtualization/assets/Vagrantfile.template`
-- `infra-virtualization/assets/topology.template.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-virtualization/references/latest-sources.md`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-virtualization/references/operations-checklist.md`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-virtualization/references/risk-register.md`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-virtualization/assets/rollback-checklist.md`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-virtualization/scripts/skill_helper.py`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-virtualization/references/networking-modes.md`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-virtualization/references/provider-decision-matrix.md`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-virtualization/assets/Vagrantfile.template`
+- `$CODEX_HOME/plugins/cache/codex-local/virtualization/local/skills/infra-virtualization/assets/topology.template.yaml`
 
 ## References
 - `$CODEX_HOME/docs/virtualization/overview.md`

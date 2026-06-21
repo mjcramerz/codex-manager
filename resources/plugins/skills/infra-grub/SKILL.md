@@ -55,11 +55,11 @@ interface:
 - Rollback instructions referencing backup paths and commands to restore a known-good boot config.
 
 ## Local resources
-- `infra-grub/references/latest-sources.md`
-- `infra-grub/references/operations-checklist.md`
-- `infra-grub/references/risk-register.md`
-- `infra-grub/assets/rollback-checklist.md`
-- `infra-grub/scripts/skill_helper.py`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-grub/references/latest-sources.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-grub/references/operations-checklist.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-grub/references/risk-register.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-grub/assets/rollback-checklist.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-grub/scripts/skill_helper.py`
 
 ## References
 - `$CODEX_HOME/index/domains/system/grub.md`

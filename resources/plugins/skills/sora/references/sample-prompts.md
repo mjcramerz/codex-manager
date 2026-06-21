@@ -2,7 +2,7 @@
 
 Use these as starting points. Keep user-provided requirements and constraints; do not invent new creative elements.
 
-For prompting principles (structure, invariants, iteration), see `./prompting.md`.
+For prompting principles (structure, invariants, iteration), see `$CODEX_HOME/plugins/cache/codex-local/ai-media/local/skills/sora/references/prompting.md`.
 
 ## Contents
 - [Product teaser (single shot)](#product-teaser-single-shot)

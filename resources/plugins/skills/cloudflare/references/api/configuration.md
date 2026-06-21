@@ -155,6 +155,6 @@ account_id = "your-account-id"
 
 ## See Also
 
-- [api.md](./api.md) - Client initialization, authentication
-- [gotchas.md](./gotchas.md) - Rate limits, timeout errors
-- [Wrangler Reference](../wrangler/) - CLI tool details
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/api/api.md) - Client initialization, authentication
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/api/gotchas.md) - Rate limits, timeout errors
+- [Wrangler Reference]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/wrangler/) - CLI tool details

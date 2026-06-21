@@ -19,7 +19,7 @@ updated: '2026-02-20'
 Discover exposed services in documented ranges, then prioritize remediation.
 
 ## Procedure
-1) Validate target scope with `../scripts/scope_guard.py`.
+1) Validate target scope with `$CODEX_HOME/plugins/cache/codex-local/security-labs/local/skills/offsec-defense/scripts/scope_guard.py`.
 2) Run bounded discovery (time-limited scans, explicit targets).
 3) Normalize findings by service, version, and exposure path.
 4) Correlate with known CVEs and patch levels.

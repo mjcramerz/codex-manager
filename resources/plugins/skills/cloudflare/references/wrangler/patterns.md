@@ -203,7 +203,7 @@ export default {
 
 ## See Also
 
-- [README.md](./README.md) - Commands
-- [configuration.md](./configuration.md) - Config
-- [api.md](./api.md) - Programmatic API
-- [gotchas.md](./gotchas.md) - Issues
+- [README.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/wrangler/README.md) - Commands
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/wrangler/configuration.md) - Config
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/wrangler/api.md) - Programmatic API
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/wrangler/gotchas.md) - Issues

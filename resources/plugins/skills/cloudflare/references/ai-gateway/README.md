@@ -16,11 +16,11 @@ Expert guidance for implementing Cloudflare AI Gateway - a universal gateway for
 
 **What's your setup?**
 
-- **Using Vercel AI SDK** → Pattern 1 (recommended) - see [sdk-integration.md](./sdk-integration.md)
-- **Using OpenAI SDK** → Pattern 2 - see [sdk-integration.md](./sdk-integration.md)
-- **Cloudflare Worker + Workers AI** → Pattern 3 - see [sdk-integration.md](./sdk-integration.md)
-- **Direct HTTP (any language)** → Pattern 4 - see [configuration.md](./configuration.md)
-- **Framework (LangChain, etc.)** → See [sdk-integration.md](./sdk-integration.md)
+- **Using Vercel AI SDK** → Pattern 1 (recommended) - see [sdk-integration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/ai-gateway/sdk-integration.md)
+- **Using OpenAI SDK** → Pattern 2 - see [sdk-integration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/ai-gateway/sdk-integration.md)
+- **Cloudflare Worker + Workers AI** → Pattern 3 - see [sdk-integration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/ai-gateway/sdk-integration.md)
+- **Direct HTTP (any language)** → Pattern 4 - see [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/ai-gateway/configuration.md)
+- **Framework (LangChain, etc.)** → See [sdk-integration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/ai-gateway/sdk-integration.md)
 
 ## Pattern 1: Vercel AI SDK (Recommended)
 
@@ -119,21 +119,21 @@ export default {
 
 | File | Purpose |
 |------|---------|
-| [sdk-integration.md](./sdk-integration.md) | Vercel AI SDK, OpenAI SDK, Workers binding patterns |
-| [configuration.md](./configuration.md) | Dashboard setup, wrangler, API tokens |
-| [features.md](./features.md) | Caching, rate limits, guardrails, DLP, BYOK, unified billing |
-| [dynamic-routing.md](./dynamic-routing.md) | Fallbacks, A/B testing, conditional routing |
-| [troubleshooting.md](./troubleshooting.md) | Debugging, errors, observability, gotchas |
+| [sdk-integration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/ai-gateway/sdk-integration.md) | Vercel AI SDK, OpenAI SDK, Workers binding patterns |
+| [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/ai-gateway/configuration.md) | Dashboard setup, wrangler, API tokens |
+| [features.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/ai-gateway/features.md) | Caching, rate limits, guardrails, DLP, BYOK, unified billing |
+| [dynamic-routing.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/ai-gateway/dynamic-routing.md) | Fallbacks, A/B testing, conditional routing |
+| [troubleshooting.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/ai-gateway/troubleshooting.md) | Debugging, errors, observability, gotchas |
 
 ## Reading Order
 
 | Task | Files |
 |------|-------|
-| First-time setup | README + [configuration.md](./configuration.md) |
-| SDK integration | README + [sdk-integration.md](./sdk-integration.md) |
-| Enable caching | README + [features.md](./features.md) |
-| Setup fallbacks | README + [dynamic-routing.md](./dynamic-routing.md) |
-| Debug errors | README + [troubleshooting.md](./troubleshooting.md) |
+| First-time setup | README + [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/ai-gateway/configuration.md) |
+| SDK integration | README + [sdk-integration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/ai-gateway/sdk-integration.md) |
+| Enable caching | README + [features.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/ai-gateway/features.md) |
+| Setup fallbacks | README + [dynamic-routing.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/ai-gateway/dynamic-routing.md) |
+| Debug errors | README + [troubleshooting.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/ai-gateway/troubleshooting.md) |
 
 ## Architecture
 
@@ -163,9 +163,9 @@ Your App → AI Gateway → AI Provider (OpenAI, Anthropic, etc.)
 
 ## Related Skills
 
-- [Workers AI](../workers-ai/README.md) - For `env.AI.run()` details
-- [Agents SDK](../agents-sdk/README.md) - For stateful AI patterns
-- [Vectorize](../vectorize/README.md) - For RAG patterns with embeddings
+- [Workers AI]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workers-ai/README.md) - For `env.AI.run()` details
+- [Agents SDK]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/agents-sdk/README.md) - For stateful AI patterns
+- [Vectorize]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/vectorize/README.md) - For RAG patterns with embeddings
 
 ## Resources
 

@@ -85,12 +85,12 @@ EXPOSE 8080 3000  # Required for wrangler dev
 - Retry on `CONTAINER_NOT_READY`
 
 ## In This Reference
-- [configuration.md](./configuration.md) - Config, CLI, environment setup
-- [api.md](./api.md) - Programmatic API, testing patterns
-- [patterns.md](./patterns.md) - Common workflows, CI/CD integration
-- [gotchas.md](./gotchas.md) - Issues, limits, best practices
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/sandbox/configuration.md) - Config, CLI, environment setup
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/sandbox/api.md) - Programmatic API, testing patterns
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/sandbox/patterns.md) - Common workflows, CI/CD integration
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/sandbox/gotchas.md) - Issues, limits, best practices
 
 ## See Also
-- [durable-objects](../durable-objects/) - Sandbox runs on DO infrastructure
-- [containers](../containers/) - Container runtime fundamentals
-- [workers](../workers/) - Entry point for sandbox requests
+- [durable-objects]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/durable-objects/) - Sandbox runs on DO infrastructure
+- [containers]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/containers/) - Container runtime fundamentals
+- [workers]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers/) - Entry point for sandbox requests

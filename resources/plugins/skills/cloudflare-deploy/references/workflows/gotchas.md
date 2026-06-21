@@ -94,4 +94,4 @@
 - [Limits](https://developers.cloudflare.com/workflows/reference/limits/)
 - [Pricing](https://developers.cloudflare.com/workflows/reference/pricing/)
 
-See: [README.md](./README.md), [configuration.md](./configuration.md), [api.md](./api.md), [patterns.md](./patterns.md)
+See: [README.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workflows/README.md), [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workflows/configuration.md), [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workflows/api.md), [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workflows/patterns.md)

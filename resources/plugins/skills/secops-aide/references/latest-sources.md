@@ -30,8 +30,8 @@ Configure AIDE file integrity monitoring.
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/security-controls/local/skills/secops-aide/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/security-controls/local/skills/secops-aide/agents/openai.yaml`
 
 ## External references
 - [AIDE man page](https://manpages.debian.org/stable/aide/aide.1.en.html) - AIDE rule and check semantics.

@@ -11,6 +11,7 @@ CONFIG_FRAGMENT_PLACEHOLDERS = frozenset(
         "CODEX_MCP_DIR",
         "CODEX_SQLITE_HOME",
         "CODEX_LOG_DIR",
+        "CODEX_HOME",
         "CODEX_TMPDIR",
         "CODEX_AGENTS",
         "CODEX_SKILLS",

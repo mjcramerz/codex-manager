@@ -180,4 +180,4 @@ logging = (structuredLogging = true, stdoutPrefix = "OUT: ", stderrPrefix = "ERR
 v8Flags = ["--expose-gc", "--max-old-space-size=2048"]  # ⚠️ Unsupported in production
 ```
 
-See [patterns.md](./patterns.md) for multi-service examples, [gotchas.md](./gotchas.md) for config errors.
+See [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workerd/patterns.md) for multi-service examples, [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workerd/gotchas.md) for config errors.

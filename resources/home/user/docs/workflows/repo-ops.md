@@ -62,7 +62,7 @@ Purpose: provide a repository operations playbook (git hygiene, releases, automa
 - Automation scripts must be safe-by-default: refuse ambiguous state, validate inputs, and avoid destructive defaults.
 
 ## Pack implementation notes
-- Keep runtime module layout explicit: `src/python/`, `src/install/`, `src/misc/`, and `$CODEX_HOME/`.
+- Keep runtime module layout explicit: the active repository runtime modules, plus the installed runtime roots under `$CODEX_HOME/`, `$CODEX_AGENTS/`, and `$CODEX_SKILLS/`.
 - Do not reintroduce previous flat loader fallback scripts under `lib/`.
 - The legacy `codex-db-fetch` / `$CODEX_ROOT/mem/*` memory-runtime flow has been removed; keep related guidance retired.
 - Path-constrain helper operations to repo/runtime roots; reject traversal or ambiguous paths.

@@ -16,6 +16,6 @@ updated: '2026-02-20'
 # Os Debian Preseed Framework
 
 - Skill: `os-debian-preseed`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Source of truth: `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/os-debian-preseed/SKILL.md`
+- Runtime agent config: `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/os-debian-preseed/agents/openai.yaml`
+- Supporting docs: `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/os-debian-preseed/references/`

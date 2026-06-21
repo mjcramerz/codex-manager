@@ -35,8 +35,8 @@ Use when the user asks how to build with OpenAI products or APIs and needs up-to
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/openai-apps/local/skills/openai-docs/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/openai-apps/local/skills/openai-docs/agents/openai.yaml`
 
 ## External references
 - [OpenAI docs home](https://developers.openai.com/docs) - Official OpenAI platform documentation.

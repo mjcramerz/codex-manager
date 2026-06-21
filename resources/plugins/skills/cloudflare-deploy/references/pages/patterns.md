@@ -189,7 +189,7 @@ export default defineEventHandler(async (event) => {
 - ✅ **Supported**: SvelteKit, Astro, Nuxt, Qwik, Solid Start
 - ❌ **Deprecated**: Next.js (`@cloudflare/next-on-pages`), Remix (`@remix-run/cloudflare-pages`)
 
-For deprecated frameworks, see [gotchas.md](./gotchas.md#framework-specific) for migration options.
+For deprecated frameworks, see [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/pages/gotchas.md#framework-specific) for migration options.
 
 [Framework Guides](https://developers.cloudflare.com/pages/framework-guides/)
 

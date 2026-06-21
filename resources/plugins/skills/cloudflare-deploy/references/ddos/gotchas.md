@@ -104,4 +104,4 @@ const config = {
 - Combine with WAF for layered defense
 - Avoid over-tuning (keep config simple)
 
-See [patterns.md](./patterns.md) for progressive rollout examples.
+See [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/ddos/patterns.md) for progressive rollout examples.

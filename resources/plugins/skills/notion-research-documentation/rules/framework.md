@@ -16,6 +16,6 @@ updated: '2026-02-20'
 # NOTION-Research Docs Framework
 
 - Skill: `notion-research-documentation`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Source of truth: `$CODEX_HOME/plugins/cache/codex-local/notion/local/skills/notion-research-documentation/SKILL.md`
+- Runtime agent config: `$CODEX_HOME/plugins/cache/codex-local/notion/local/skills/notion-research-documentation/agents/openai.yaml`
+- Supporting docs: `$CODEX_HOME/plugins/cache/codex-local/notion/local/skills/notion-research-documentation/references/`

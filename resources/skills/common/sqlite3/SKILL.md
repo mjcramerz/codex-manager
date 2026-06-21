@@ -61,5 +61,5 @@ interface:
 
 ## References
 - `$CODEX_HOME/UNIX.md`
-- `./references/latest-sources.md`
-- `./references/command-catalog.md`
+- `$CODEX_SKILLS/common/sqlite3/references/latest-sources.md`
+- `$CODEX_SKILLS/common/sqlite3/references/command-catalog.md`

@@ -15,9 +15,9 @@ updated: '2026-02-20'
 # ADHD + CBT template fields
 
 ## Source
-- Canonical PDF reference: `../assets/source/Concise_ADHD_CBT_Daily_Templates_A4_FINAL_COMPLETE_v2.pdf`
-- HTML templates: `../assets/templates/`
-- CSS: `../assets/styles/pdf.css`
+- Canonical PDF reference: `$CODEX_HOME/plugins/cache/codex-local/health-planning/local/skills/health-adhd-cbt/assets/source/Concise_ADHD_CBT_Daily_Templates_A4_FINAL_COMPLETE_v2.pdf`
+- HTML templates: `$CODEX_HOME/plugins/cache/codex-local/health-planning/local/skills/health-adhd-cbt/assets/templates/`
+- CSS: `$CODEX_HOME/plugins/cache/codex-local/health-planning/local/skills/health-adhd-cbt/assets/styles/pdf.css`
 
 ## Rendering safety notes
 - Placeholder keys must use identifier-style names (`[A-Za-z_][A-Za-z0-9_]*`).

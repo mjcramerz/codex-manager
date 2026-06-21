@@ -1,6 +1,6 @@
 # Patterns
 
-See [README.md](./README.md), [configuration.md](./configuration.md), [api.md](./api.md).
+See [README.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/hyperdrive/README.md), [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/hyperdrive/configuration.md), [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/hyperdrive/api.md).
 
 ## High-Traffic Read-Heavy
 
@@ -187,4 +187,4 @@ const ts = Date.now();
 await sql`SELECT * FROM logs WHERE created_at > ${ts}`;
 ```
 
-See [gotchas.md](./gotchas.md) for limits, troubleshooting.
+See [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/hyperdrive/gotchas.md) for limits, troubleshooting.

@@ -38,16 +38,16 @@ Composable utility (stdin → NDJSON):
 
 Composability through piping (shell-friendly JSON output):
 ```bash
-./references/baseline_hf_api.sh 25 \
+$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-tool-builder/references/baseline_hf_api.sh 25 \
   | jq -r '.[].id' \
-  | ./references/hf_enrich_models.sh \
+  | $CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-tool-builder/references/hf_enrich_models.sh \
   | jq -s 'sort_by(.downloads) | reverse | .[:10]'
 
-./references/baseline_hf_api.sh 50 \
+$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-tool-builder/references/baseline_hf_api.sh 50 \
   | jq '[.[] | {id, downloads}] | sort_by(.downloads) | reverse | .[:10]'
 
 printf '%s\n' openai/gpt-oss-120b meta-llama/Meta-Llama-3.1-8B \
-  | ./references/hf_model_card_frontmatter.sh \
+  | $CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-tool-builder/references/hf_model_card_frontmatter.sh \
   | jq -s 'map({id, license, has_extra_gated_prompt})'
 ```
 

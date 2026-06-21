@@ -30,8 +30,8 @@ Research across sources and synthesize into structured Obsidian documentation. U
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/obsidian/local/skills/obsidian-research-documentation/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/obsidian/local/skills/obsidian-research-documentation/agents/openai.yaml`
 
 ## External references
 - [Obsidian help](https://help.obsidian.md/) - Obsidian Markdown and vault workflow references.

@@ -1,4 +1,6 @@
 # Style routing (overview)
+Purpose: route shell-sensitive and language-specific work to one style entrypoint.
+
 Use this when you need language or shell conventions.
 
 ## Navigation
@@ -10,7 +12,7 @@ Use this when you need language or shell conventions.
 
 ## Load order reminder
 1) `$CODEX_HOME/AGENTS.md`
-2) `$CODEX_HOME/memories/MEMORY.md` when it exists and is needed
+2) `$CODEX_HOME/memories/MEMORY.md` when it is needed
 3) `$CODEX_HOME/INDEX.md`
 4) `$CODEX_HOME/index/pack/plans.md` + `$CODEX_HOME/index/pack/workflows.md`
 5) `$CODEX_HOME/index/pack/skills.md`

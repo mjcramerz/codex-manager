@@ -79,26 +79,26 @@ Using external tools (Spark/Athena)?
 ## Reading Order
 
 **New to Pipelines?** Start here:
-1. [configuration.md](./configuration.md) - Setup streams, sinks, pipelines
-2. [api.md](./api.md) - Send events, TypeScript types, SQL functions
-3. [patterns.md](./patterns.md) - Best practices, integrations, complete example
-4. [gotchas.md](./gotchas.md) - Critical warnings, troubleshooting
+1. [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pipelines/configuration.md) - Setup streams, sinks, pipelines
+2. [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pipelines/api.md) - Send events, TypeScript types, SQL functions
+3. [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pipelines/patterns.md) - Best practices, integrations, complete example
+4. [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pipelines/gotchas.md) - Critical warnings, troubleshooting
 
 **Task-based routing:**
-- Setup pipeline → [configuration.md](./configuration.md)
-- Send/query data → [api.md](./api.md)
-- Implement pattern → [patterns.md](./patterns.md)
-- Debug issue → [gotchas.md](./gotchas.md)
+- Setup pipeline → [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pipelines/configuration.md)
+- Send/query data → [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pipelines/api.md)
+- Implement pattern → [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pipelines/patterns.md)
+- Debug issue → [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pipelines/gotchas.md)
 
 ## In This Reference
 
-- [configuration.md](./configuration.md) - wrangler.jsonc bindings, schema definition, sink options, CLI commands
-- [api.md](./api.md) - Pipeline binding interface, send() method, HTTP ingest, SQL function reference
-- [patterns.md](./patterns.md) - Fire-and-forget, schema validation with Zod, integrations, performance tuning
-- [gotchas.md](./gotchas.md) - Silent validation failures, immutable pipelines, latency expectations, limits
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pipelines/configuration.md) - wrangler.jsonc bindings, schema definition, sink options, CLI commands
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pipelines/api.md) - Pipeline binding interface, send() method, HTTP ingest, SQL function reference
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pipelines/patterns.md) - Fire-and-forget, schema validation with Zod, integrations, performance tuning
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pipelines/gotchas.md) - Silent validation failures, immutable pipelines, latency expectations, limits
 
 ## See Also
 
-- [r2](../r2/) - R2 storage backend for sinks
-- [queues](../queues/) - Compare with Queues for async processing
-- [workers](../workers/) - Worker runtime for event ingestion
+- [r2]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/r2/) - R2 storage backend for sinks
+- [queues]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/queues/) - Compare with Queues for async processing
+- [workers]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workers/) - Worker runtime for event ingestion

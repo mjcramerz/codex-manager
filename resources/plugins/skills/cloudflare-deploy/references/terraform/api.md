@@ -172,7 +172,7 @@ output "name_servers" {
 
 ## See Also
 
-- [README](./README.md) - Provider setup
-- [Configuration Reference](./configuration.md) - All resource types
-- [Patterns](./patterns.md) - Architecture patterns
-- [Troubleshooting](./gotchas.md) - Common issues
+- [README]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/terraform/README.md) - Provider setup
+- [Configuration Reference]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/terraform/configuration.md) - All resource types
+- [Patterns]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/terraform/patterns.md) - Architecture patterns
+- [Troubleshooting]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/terraform/gotchas.md) - Common issues

@@ -30,8 +30,8 @@ Configure CrowdSec collections, log sources, and bouncers safely.
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/security-controls/local/skills/secops-crowdsec/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/security-controls/local/skills/secops-crowdsec/agents/openai.yaml`
 
 ## External references
 - [CrowdSec docs](https://docs.crowdsec.net/docs/next/getting_started/intro/) - CrowdSec engine and parser setup.

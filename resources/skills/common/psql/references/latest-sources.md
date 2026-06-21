@@ -31,9 +31,9 @@ Inspect, query, and maintain PostgreSQL databases safely with the psql CLI.
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
-- `./command-catalog.md`
+- `$CODEX_SKILLS/common/psql/SKILL.md`
+- `$CODEX_SKILLS/common/psql/agents/openai.yaml`
+- `$CODEX_SKILLS/common/psql/references/command-catalog.md`
 
 ## External references
 - [psql documentation](https://www.postgresql.org/docs/current/app-psql.html) - Authoritative flags, variables, and meta-command behavior.

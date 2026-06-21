@@ -77,10 +77,10 @@ export class MyAgent extends Agent<Env> {
 | `agents/ai-react` | `useAgentChat()` hook for AI chat UIs |
 
 ## In This Reference
-- [configuration.md](./configuration.md) - SDK setup, wrangler config, routing
-- [api.md](./api.md) - Agent classes, lifecycle, client hooks
-- [patterns.md](./patterns.md) - Common workflows, best practices
-- [gotchas.md](./gotchas.md) - Common issues, limits
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/agents-sdk/configuration.md) - SDK setup, wrangler config, routing
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/agents-sdk/api.md) - Agent classes, lifecycle, client hooks
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/agents-sdk/patterns.md) - Common workflows, best practices
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/agents-sdk/gotchas.md) - Common issues, limits
 
 ## See Also
 - durable-objects - Agent infrastructure

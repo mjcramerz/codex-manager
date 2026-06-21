@@ -15,6 +15,6 @@ updated: '2026-02-20'
 # PACK-Docs Rules
 
 ## Required checks
-- Follow the workflow in `../SKILL.md`.
-- Prefer deterministic scripts in `../scripts/`.
-- Use references in `../references/` for factual guidance.
+- Follow the workflow in `$CODEX_SKILLS/common/pack-docs/SKILL.md`.
+- Prefer deterministic scripts in `$CODEX_SKILLS/common/pack-docs/scripts/`.
+- Use references in `$CODEX_SKILLS/common/pack-docs/references/` for factual guidance.

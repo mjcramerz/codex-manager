@@ -98,3 +98,32 @@ class RuntimePackDocsContractTests(unittest.TestCase):
         self.assertIn("$CODEX_HOME/.models/model_catalog.json", manifest)
         self.assertIn("$CODEX_HOME/.models/instructions/models/base.md", manifest)
         self.assertIn("$CODEX_HOME/.models/instructions/compact/prompt.md", manifest)
+
+    def test_key_runtime_docs_avoid_repo_source_paths(self) -> None:
+        files = [
+            HOME_ROOT / "AGENTS.md",
+            HOME_ROOT / "INDEX.md",
+            HOME_ROOT / "docs" / "OVERVIEW.md",
+            HOME_ROOT / "docs" / "architecture.md",
+            HOME_ROOT / "docs" / "workflows" / "codex-manager.md",
+            HOME_ROOT / "docs" / "workflows" / "runtime-pack-maintenance.md",
+            HOME_ROOT / "index" / "OVERVIEW.md",
+            HOME_ROOT / "index" / "pack" / "overview.md",
+            HOME_ROOT / "index" / "pack" / "skills.md",
+            HOME_ROOT / "memories" / "MEMORY.md",
+        ]
+        banned = (
+            "resources/home/user",
+            "resources/skills",
+            "resources/plugins",
+            "resources/hooks",
+            "config/usr",
+            "config/vendor",
+            "config/agents",
+            "src/install",
+            "./.models/",
+        )
+        for path in files:
+            text = path.read_text(encoding="utf-8")
+            for needle in banned:
+                self.assertNotIn(needle, text, f"{path} still contains repo-source path {needle!r}")

@@ -157,4 +157,4 @@ new Miniflare({
 | Memory | System dependent | No artificial limits |
 | Request.cf | Cached/mocked | Not live edge data |
 
-See [patterns.md](./patterns.md) for testing examples.
+See [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/miniflare/patterns.md) for testing examples.

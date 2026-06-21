@@ -1,4 +1,5 @@
 # apps
+#apps_mcp_product_sku = ""
 [apps._default]
 enabled = true
 destructive_enabled = true
@@ -68,6 +69,14 @@ enabled = true
 max_depth = 4
 job_max_runtime_seconds = 5000
 interrupt_message = true
+
+[orchestrator]
+
+[orchestrator.mcp]
+#enabled = true
+
+[orchestrator.skills]
+#enabled = true
 
 # default agents
 [agents.default]
@@ -457,3 +466,8 @@ enabled = true
 required = false
 startup_timeout_sec = 30
 tool_timeout_sec = 180
+
+[marketplaces]
+
+#[marketplaces.codex-local]
+#enabled = true

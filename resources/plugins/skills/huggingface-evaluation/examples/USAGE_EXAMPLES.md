@@ -377,6 +377,6 @@ python3 scripts/evaluation_manager.py import-aa --help
 ```
 
 For issues or questions, consult:
-- `../SKILL.md` - Complete documentation
-- `../SKILL.md` - Main workflow and troubleshooting guide
+- `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-evaluation/SKILL.md` - Complete documentation
+- `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-evaluation/SKILL.md` - Main workflow and troubleshooting guide
 - `example_readme_tables.md` - Example markdown tables for extraction tests

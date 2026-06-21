@@ -12,5 +12,5 @@ updated: '2026-03-12'
 
 - Skill: `config-audit`
 - Category: `AUDIT`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
+- Source of truth: `$CODEX_SKILLS/audit/config-audit/SKILL.md`
+- Runtime agent config: `$CODEX_SKILLS/audit/config-audit/agents/openai.yaml`

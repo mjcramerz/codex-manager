@@ -16,6 +16,6 @@ updated: '2026-02-20'
 # Infra Kernel Framework
 
 - Skill: `infra-kernel`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Source of truth: `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-kernel/SKILL.md`
+- Runtime agent config: `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-kernel/agents/openai.yaml`
+- Supporting docs: `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-kernel/references/`

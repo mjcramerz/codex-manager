@@ -2,7 +2,7 @@
 
 Use these as starting points (recipes only). Keep user-provided requirements; do not invent new creative elements.
 
-For prompting principles (structure, invariants, iteration), see `./prompting.md`.
+For prompting principles (structure, invariants, iteration), see `$CODEX_HOME/plugins/cache/codex-local/ai-media/local/skills/imagegen/references/prompting.md`.
 
 ## Generate
 

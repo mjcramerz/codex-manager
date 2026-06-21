@@ -188,12 +188,12 @@ await client.stream.videos.delete(videoId, {
 
 ## In This Reference
 
-- [README.md](./README.md) - Overview and quick start
-- [configuration.md](./configuration.md) - Setup and config
-- [api-live.md](./api-live.md) - Live streaming APIs (RTMPS/SRT/WebRTC)
-- [patterns.md](./patterns.md) - Full-stack flows, best practices
-- [gotchas.md](./gotchas.md) - Error codes, troubleshooting
+- [README.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/stream/README.md) - Overview and quick start
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/stream/configuration.md) - Setup and config
+- [api-live.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/stream/api-live.md) - Live streaming APIs (RTMPS/SRT/WebRTC)
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/stream/patterns.md) - Full-stack flows, best practices
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/stream/gotchas.md) - Error codes, troubleshooting
 
 ## See Also
 
-- [workers](../workers/) - Deploy Stream APIs in Workers
+- [workers]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workers/) - Deploy Stream APIs in Workers

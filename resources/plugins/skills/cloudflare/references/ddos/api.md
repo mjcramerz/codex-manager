@@ -161,4 +161,4 @@ const adaptiveOverride: RuleOverride = {
 };
 ```
 
-See [patterns.md](./patterns.md) for complete implementation patterns.
+See [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/ddos/patterns.md) for complete implementation patterns.

@@ -1,4 +1,4 @@
-# CLI reference (`../scripts/text_to_speech.py`)
+# CLI reference (`$CODEX_HOME/plugins/cache/codex-local/ai-media/local/skills/speech/scripts/text_to_speech.py`)
 
 This file contains the "command catalog" for the bundled speech generation CLI. Keep `SKILL.md` as overview-first; put verbose CLI details here.
 
@@ -42,7 +42,7 @@ python "$TTS_GEN" speak --input "Hello" --voice cedar --out speech.mp3
 ## Guardrails (important)
 - Use `python "$TTS_GEN" ...` (or equivalent full path) for all TTS work.
 - Do **not** create one-off runners (e.g., `gen_audio.py`) unless the user explicitly asks.
-- **Never modify** `../scripts/text_to_speech.py`. If something is missing, ask the user before doing anything else.
+- **Never modify** `$CODEX_HOME/plugins/cache/codex-local/ai-media/local/skills/speech/scripts/text_to_speech.py`. If something is missing, ask the user before doing anything else.
 
 ## Defaults (unless overridden by flags)
 - Model: `gpt-4o-mini-tts-2025-12-15`
@@ -94,5 +94,5 @@ Notes:
 - Treat the JSONL file as temporary: write it under `tmp/` and delete it after the run (do not commit it).
 
 ## See also
-- API parameter quick reference: `./audio-api.md`
-- Instruction patterns and examples: `./voice-directions.md`
+- API parameter quick reference: `$CODEX_HOME/plugins/cache/codex-local/ai-media/local/skills/speech/references/audio-api.md`
+- Instruction patterns and examples: `$CODEX_HOME/plugins/cache/codex-local/ai-media/local/skills/speech/references/voice-directions.md`

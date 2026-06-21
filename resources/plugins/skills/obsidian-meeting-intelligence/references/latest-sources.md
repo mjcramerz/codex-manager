@@ -31,8 +31,8 @@ Prepare meeting materials and capture outcomes in Obsidian. Use when drafting ag
 - Resources
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/obsidian/local/skills/obsidian-meeting-intelligence/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/obsidian/local/skills/obsidian-meeting-intelligence/agents/openai.yaml`
 
 ## External references
 - [Obsidian help](https://help.obsidian.md/) - Obsidian Markdown and vault workflow references.

@@ -175,6 +175,6 @@ For complex schedules, use multiple workers:
 
 ## See Also
 
-- [README.md](./README.md) - Overview, quick start
-- [api.md](./api.md) - Handler implementation
-- [patterns.md](./patterns.md) - Multi-cron routing examples
+- [README.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/cron-triggers/README.md) - Overview, quick start
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/cron-triggers/api.md) - Handler implementation
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/cron-triggers/patterns.md) - Multi-cron routing examples

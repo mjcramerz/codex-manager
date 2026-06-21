@@ -15,6 +15,6 @@ updated: '2026-02-20'
 # Ci Github Actions Rules
 
 ## Required checks
-- Follow the workflow in `../SKILL.md`.
-- Prefer deterministic scripts in `../scripts/`.
-- Use references in `../references/` for factual guidance.
+- Follow the workflow in `$CODEX_HOME/plugins/cache/codex-local/github/local/skills/ci-github-actions/SKILL.md`.
+- Prefer deterministic scripts in `$CODEX_HOME/plugins/cache/codex-local/github/local/skills/ci-github-actions/scripts/`.
+- Use references in `$CODEX_HOME/plugins/cache/codex-local/github/local/skills/ci-github-actions/references/` for factual guidance.

@@ -178,4 +178,4 @@ new Miniflare({ kvNamespaces: ["TEST"] }); // No persist = in-memory
 await mf.dispatchFetch("http://localhost/");
 ```
 
-See [gotchas.md](./gotchas.md) for troubleshooting.
+See [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/miniflare/gotchas.md) for troubleshooting.

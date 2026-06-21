@@ -82,13 +82,13 @@ export default {
 
 ## In This Reference
 
-- [configuration.md](./configuration.md) - Product tiers, WAF rule setup, JavaScript Detections, ML auto-updates
-- [api.md](./api.md) - Workers BotManagement interface, WAF fields, JA4 Signals
-- [patterns.md](./patterns.md) - E-commerce, API protection, mobile app allowlisting, SEO-friendly handling
-- [gotchas.md](./gotchas.md) - False positives/negatives, score=0 issues, JSD limitations, CSP requirements
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/bot-management/configuration.md) - Product tiers, WAF rule setup, JavaScript Detections, ML auto-updates
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/bot-management/api.md) - Workers BotManagement interface, WAF fields, JA4 Signals
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/bot-management/patterns.md) - E-commerce, API protection, mobile app allowlisting, SEO-friendly handling
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/bot-management/gotchas.md) - False positives/negatives, score=0 issues, JSD limitations, CSP requirements
 
 ## See Also
 
-- [waf](../waf/) - WAF custom rules for bot enforcement
-- [workers](../workers/) - Workers request.cf.botManagement API
-- [api-shield](../api-shield/) - API-specific bot protection
+- [waf]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/waf/) - WAF custom rules for bot enforcement
+- [workers]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers/) - Workers request.cf.botManagement API
+- [api-shield]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/api-shield/) - API-specific bot protection

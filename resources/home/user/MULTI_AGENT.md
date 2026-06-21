@@ -1,11 +1,12 @@
 # Multi-Agent Guide
+Purpose: route multi-agent work through the current role catalog, current handoff expectations, and current shell/runtime guardrails.
 
 Use this guide when the task is large enough to justify multiple spawned agents.
 Role definitions live in `$CODEX_HOME/config.toml` under `[agents.*]`, and each role-specific config layer is rendered into `$CODEX_AGENTS/*.toml`.
 
 ## Routing Order
 - Follow `$CODEX_HOME/AGENTS.md`.
-- Load `$CODEX_HOME/memories/MEMORY.md` when it exists and the task is repo-aware or depends on prior decisions.
+- Load `$CODEX_HOME/memories/MEMORY.md` when the task is repo-aware or depends on prior decisions.
 - Route through `$CODEX_HOME/INDEX.md`.
 - Read `$CODEX_HOME/index/pack/plans.md` and `$CODEX_HOME/index/pack/workflows.md`.
 - Load the minimum required skills.
@@ -16,7 +17,7 @@ Role definitions live in `$CODEX_HOME/config.toml` under `[agents.*]`, and each 
 - `manager` — planning and gating role; owns task lists, acceptance criteria, artifact checks, and role handoffs.
 - `orchestrator` — runtime control role for active fan-out, sequencing, wait/resume decisions, and child-thread reconciliation.
 - `planner` — decomposition role for turning ambiguous asks into owned slices, acceptance criteria, and validation gates before fan-out.
-- `delegator` — handoff-control role for selecting child roles, packaging prompts, and managing spawn/send_input/resume/wait/close flow.
+- `delegator` — handoff-control role for selecting child roles, packaging prompts, and managing spawn/follow-up/wait/interrupt flow.
 - `worker` — bounded execution role for narrow tasks with explicit stop conditions.
 - `coder` — main implementation role for code changes, refactors, and root-cause fixes.
 - `analyst` — comparison role for resolving conflicts across child findings and exposing evidence gaps.
@@ -46,7 +47,7 @@ Role definitions live in `$CODEX_HOME/config.toml` under `[agents.*]`, and each 
 - `manager` must not hand off implementation until requirements and acceptance criteria are explicit.
 - `orchestrator` must maintain a live thread ledger so every child has a named owner, dependency, and close condition.
 - `planner` must not recommend fan-out until owned slices, validation commands, and stop conditions are explicit.
-- `delegator` should prefer `send_input` or `resume_agent` for existing children and reserve `spawn_agent` for net-new owned slices.
+- `delegator` should prefer `send_message` or `followup_task` for existing children and reserve `spawn_agent` for net-new owned slices.
 - `explorer` and `hunter` should stay read-first; they produce evidence and route guidance before mutation-heavy work begins.
 - `coder` and `worker` should stay inside their owned slice and avoid stealing review or test ownership.
 - `analyst` should separate confirmed evidence from open questions and avoid turning missing proof into assumed truth.

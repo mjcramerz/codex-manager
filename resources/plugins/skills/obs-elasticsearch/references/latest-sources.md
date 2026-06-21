@@ -30,8 +30,8 @@ Configure Elasticsearch safely with retention and access controls.
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/observability/local/skills/obs-elasticsearch/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/observability/local/skills/obs-elasticsearch/agents/openai.yaml`
 
 ## External references
 - [Elastic docs](https://www.elastic.co/docs) - Elasticsearch, Logstash, and Kibana platform docs.

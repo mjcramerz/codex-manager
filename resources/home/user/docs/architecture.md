@@ -2,11 +2,11 @@
 Purpose: explain how the codex-manager source tree, the runtime-home pack, hook runtime, and adjacent repos fit together.
 
 ## Primary surfaces
-- **Installer and runtime compiler**: `src/install/**`, `config/usr/**`, `config/vendor/**`
-- **Runtime-home pack source**: `resources/home/user/**`
-- **Hook runtime source of truth**: `resources/hooks/scripts/lib/Codex/Hook/**`
-- **Runtime skill catalog**: `resources/skills/**` plus `resources/skills/metadata.json`
-- **Plugin skill catalog and marketplace**: `resources/plugins/skills/**` plus `resources/plugins/manifest.json`
+- **Compiled runtime configuration**: `$CODEX_HOME/config.toml`, `$CODEX_AGENTS/*.toml`, `/etc/codex/config.toml`, `/etc/codex/requirements.toml`
+- **Runtime-home pack**: `$CODEX_HOME/**`
+- **Hook runtime source of truth**: `$CODEX_HOME/hooks/scripts/lib/Codex/Hook/**`
+- **Runtime skill catalog**: `$CODEX_SKILLS/**`
+- **Plugin bundles and marketplace**: `$CODEX_HOME/plugins/cache/**` plus `$CODEX_HOME/.agents/plugins/marketplace.json`
 
 ## Adjacent repository map
 - `debian-preseed-di` — unattended Debian install tree, storage/profile/rendering contract
@@ -19,15 +19,16 @@ Purpose: explain how the codex-manager source tree, the runtime-home pack, hook 
 ## Sync boundary
 - The repo is the source of truth for installable pack content.
 - Runtime state stays on the installed target and never syncs back into source control.
-- The following are runtime-only and must never sync back into `resources/home/user`:
+- Repo-managed carry-forward is limited to operator-facing state that intentionally seeds or documents the runtime:
   - `$CODEX_HOME/memories/`
-  - `$CODEX_HOME/sessions/`
-  - `$CODEX_HOME/shell_snapshots/`
-  - `$CODEX_HOME/.credentials.json`
   - `$CODEX_HOME/history.jsonl`
   - `$CODEX_HOME/session_index.jsonl`
   - `$CODEX_HOME/version.json`
   - `$CODEX_HOME/.personality_migration`
+- The following are runtime-only and must never be treated as source-managed pack content:
+  - `$CODEX_HOME/sessions/`
+  - `$CODEX_HOME/shell_snapshots/`
+  - `$CODEX_HOME/.credentials.json`
 
 ## Why the boundary matters
 - Session transcripts and shell snapshots are high-churn runtime artifacts, not reusable pack guidance.
@@ -36,6 +37,6 @@ Purpose: explain how the codex-manager source tree, the runtime-home pack, hook 
 
 ## Source-pack operating shape
 1. Route through `INDEX.md` and the `index/**` entrypoints.
-2. Use `$CODEX_HOME/memories/MEMORY.md` only when it exists and prior decisions actually matter.
+2. Use `$CODEX_HOME/memories/MEMORY.md` when prior decisions actually matter.
 3. Update docs, plans, templates, skills, and manifest links together when entrypoints change.
 4. Validate syntax and contract tests before handoff.

@@ -12,5 +12,5 @@ updated: '2026-03-12'
 
 - Skill: `parser-design`
 - Category: `COMMON`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
+- Source of truth: `$CODEX_SKILLS/common/parser-design/SKILL.md`
+- Runtime agent config: `$CODEX_SKILLS/common/parser-design/agents/openai.yaml`

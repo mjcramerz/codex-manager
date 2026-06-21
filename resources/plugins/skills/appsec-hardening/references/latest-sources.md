@@ -33,8 +33,8 @@ Practical application security hardening: input validation, auth, safe subproces
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/security-controls/local/skills/appsec-hardening/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/security-controls/local/skills/appsec-hardening/agents/openai.yaml`
 
 ## External references
 - [OWASP Cheat Sheet Series](https://cheatsheetseries.owasp.org/) - Secure defaults and implementation guidance.

@@ -15,6 +15,6 @@ updated: '2026-02-20'
 # GITHUB-PR Comments Framework
 
 - Skill: `github-pr-comments`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Source of truth: `$CODEX_HOME/plugins/cache/codex-local/github/local/skills/github-pr-comments/SKILL.md`
+- Runtime agent config: `$CODEX_HOME/plugins/cache/codex-local/github/local/skills/github-pr-comments/agents/openai.yaml`
+- Supporting docs: `$CODEX_HOME/plugins/cache/codex-local/github/local/skills/github-pr-comments/references/`

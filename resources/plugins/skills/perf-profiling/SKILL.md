@@ -57,11 +57,11 @@ interface:
 - A reproducible measurement plan and a minimal set of optimizations.
 
 ## Local resources
-- `perf-profiling/references/latest-sources.md`
-- `perf-profiling/references/operations-checklist.md`
-- `perf-profiling/references/risk-register.md`
-- `perf-profiling/assets/rollback-checklist.md`
-- `perf-profiling/scripts/skill_helper.py`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/perf-profiling/references/latest-sources.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/perf-profiling/references/operations-checklist.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/perf-profiling/references/risk-register.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/perf-profiling/assets/rollback-checklist.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/perf-profiling/scripts/skill_helper.py`
 
 ## References
 - `$CODEX_HOME/docs/perf/overview.md`

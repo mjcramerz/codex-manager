@@ -27,15 +27,15 @@ Inspect GitHub PR checks with gh, pull failing GitHub Actions logs, summarize fa
 - Quick start
 - Workflow
 - Bundled Resources
-- `../scripts/inspect_pr_checks.py`
+- `$CODEX_HOME/plugins/cache/codex-local/github/local/skills/ci-github-actions-fix/scripts/inspect_pr_checks.py`
 - Agent orchestration
 - Validation and testing
 - Outputs
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/github/local/skills/ci-github-actions-fix/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/github/local/skills/ci-github-actions-fix/agents/openai.yaml`
 
 ## External references
 - [Git documentation](https://git-scm.com/doc) - Core git behavior and safe workflows.

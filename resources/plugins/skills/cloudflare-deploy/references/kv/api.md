@@ -157,4 +157,4 @@ const [user, settings, cache] = await Promise.all([
 - **Rate limit (429):** Retry with exponential backoff (see gotchas.md)
 - **Response too large (413):** Values >25MB fail with 413 error
 
-See [gotchas.md](./gotchas.md) for detailed error patterns and solutions.
+See [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/kv/gotchas.md) for detailed error patterns and solutions.

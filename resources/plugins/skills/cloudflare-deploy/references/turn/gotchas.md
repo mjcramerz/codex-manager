@@ -110,7 +110,7 @@ const response = await fetch('/api/turn-credentials');
 
 ## ICE Restart Required Scenarios
 
-These events require ICE restart (see [patterns.md](./patterns.md#ice-restart-pattern)):
+These events require ICE restart (see [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/turn/patterns.md#ice-restart-pattern)):
 
 1. **TURN server maintenance** (occasional on Cloudflare's network)
 2. **Network topology changes** (anycast routing changes)
@@ -226,6 +226,6 @@ const filtered = urls.filter(url => !url.includes(':53'));
 
 ## See Also
 
-- [api.md](./api.md) - Credential generation API, revocation
-- [configuration.md](./configuration.md) - IP allowlisting, monitoring
-- [patterns.md](./patterns.md) - ICE restart, credential refresh patterns
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/turn/api.md) - Credential generation API, revocation
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/turn/configuration.md) - IP allowlisting, monitoring
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/turn/patterns.md) - ICE restart, credential refresh patterns

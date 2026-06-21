@@ -10,6 +10,9 @@ Purpose: map recurring task types to operational playbooks and help the agent ch
 
 ## Workflow catalog
 <!-- BEGIN:contents -->
+- `$CODEX_HOME/docs/workflows/agent-orchestration.md` — Agent orchestration workflow
+- `$CODEX_HOME/docs/workflows/planning.md` — Planning workflow
+- `$CODEX_HOME/docs/workflows/memory-runtime.md` — Memory routing and retired-flow cleanup workflow
 - `$CODEX_HOME/docs/workflows/runtime-pack-maintenance.md` — Runtime-pack maintenance workflow
 - `$CODEX_HOME/docs/workflows/codex-manager.md` — codex-manager installer/runtime workflow
 - `$CODEX_HOME/docs/workflows/codex-mcp.md` — codex-mcp stack workflow
@@ -23,6 +26,9 @@ Purpose: map recurring task types to operational playbooks and help the agent ch
 <!-- END:contents -->
 
 ## Selection guide
+- Multi-agent routing and handoff design -> `agent-orchestration.md`
+- Plan creation, validation ladders, and rollout shape -> `planning.md`
+- Repo-aware memory routing or retired memory-flow cleanup -> `memory-runtime.md`
 - Runtime-pack source changes -> `runtime-pack-maintenance.md`
 - Installer/home-sync/hooks/config work -> `codex-manager.md`
 - Podman MCP stack generation/launch -> `codex-mcp.md`

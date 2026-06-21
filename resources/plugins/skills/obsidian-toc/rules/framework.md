@@ -16,6 +16,6 @@ updated: '2026-02-20'
 # OBSIDIAN-TOC Framework
 
 - Skill: `obsidian-toc`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Source of truth: `$CODEX_HOME/plugins/cache/codex-local/obsidian/local/skills/obsidian-toc/SKILL.md`
+- Runtime agent config: `$CODEX_HOME/plugins/cache/codex-local/obsidian/local/skills/obsidian-toc/agents/openai.yaml`
+- Supporting docs: `$CODEX_HOME/plugins/cache/codex-local/obsidian/local/skills/obsidian-toc/references/`

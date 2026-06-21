@@ -51,8 +51,8 @@ Purpose: keep the Codex source repo and this config pack aligned across tooling,
   - `experimental_realtime_ws_backend_prompt`
   - `experimental_realtime_ws_base_url`
 - Keep layer expectations explicit:
-  - `config/vendor/*` compiles only into `/etc/codex/config.toml` and `/etc/codex/requirements.toml`
-  - `config/usr/*` compiles only into `$CODEX_HOME/config.toml`
+  - system-level compiled config lives in `/etc/codex/config.toml` and `/etc/codex/requirements.toml`
+  - user-level compiled config lives in `$CODEX_HOME/config.toml`
   - `$CODEX_HOME/config.toml` keeps structured inline profile maps under `[permissions]`
   - `/etc/codex/config.toml` keeps structured inline vendor maps under `[permissions]` without normalizing them into another shape
 - Treat `$CODEX_HOME/.credentials.json` as runtime-local OAuth state; document its runtime role, but do not treat it as repo-synced pack source.

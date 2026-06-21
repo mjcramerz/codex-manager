@@ -1,6 +1,6 @@
 # Gotchas
 
-See [README.md](./README.md), [configuration.md](./configuration.md), [api.md](./api.md), [patterns.md](./patterns.md).
+See [README.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/hyperdrive/README.md), [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/hyperdrive/configuration.md), [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/hyperdrive/api.md), [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/hyperdrive/patterns.md).
 
 ## Common Errors
 
@@ -42,7 +42,7 @@ See [README.md](./README.md), [configuration.md](./configuration.md), [api.md](.
 ### "Slow multi-query Workers despite Hyperdrive"
 
 **Cause:** Worker executing at edge, each query round-trips to DB region  
-**Solution:** Enable Smart Placement (`"placement": {"mode": "smart"}` in wrangler.jsonc) to execute Worker near DB. See [patterns.md](./patterns.md) Multi-Query pattern.
+**Solution:** Enable Smart Placement (`"placement": {"mode": "smart"}` in wrangler.jsonc) to execute Worker near DB. See [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/hyperdrive/patterns.md) Multi-Query pattern.
 
 ### "Local database connection failed"
 

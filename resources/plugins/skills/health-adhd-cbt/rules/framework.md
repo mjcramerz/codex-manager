@@ -15,6 +15,6 @@ updated: '2026-02-20'
 # HEALTH-ADHD & CBT Framework
 
 - Skill: `health-adhd-cbt`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Source of truth: `$CODEX_HOME/plugins/cache/codex-local/health-planning/local/skills/health-adhd-cbt/SKILL.md`
+- Runtime agent config: `$CODEX_HOME/plugins/cache/codex-local/health-planning/local/skills/health-adhd-cbt/agents/openai.yaml`
+- Supporting docs: `$CODEX_HOME/plugins/cache/codex-local/health-planning/local/skills/health-adhd-cbt/references/`

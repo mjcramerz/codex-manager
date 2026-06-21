@@ -195,4 +195,4 @@ const deployment = new cloudflare.WorkersDeployment("prod", {
 **When NOT to use:** Simple single-version deployments (use WorkerScript)
 
 ---
-See: [README.md](./README.md), [api.md](./api.md), [patterns.md](./patterns.md), [gotchas.md](./gotchas.md)
+See: [README.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/pulumi/README.md), [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/pulumi/api.md), [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/pulumi/patterns.md), [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/pulumi/gotchas.md)

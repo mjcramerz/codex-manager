@@ -2,7 +2,7 @@
 Purpose: guide Perl work in Codex hook/runtime modules, installer helpers, and safe text/config transforms.
 
 ## Use this guide when
-- editing `resources/hooks/scripts/lib/Codex/Hook/**`
+- editing `$CODEX_HOME/hooks/scripts/lib/Codex/Hook/**`
 - writing small deterministic Perl helpers for install or runtime tasks
 - reviewing Perl code that touches hooks, JSON payloads, or config rendering
 

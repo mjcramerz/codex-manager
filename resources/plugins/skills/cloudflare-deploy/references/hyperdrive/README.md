@@ -66,17 +66,17 @@ export default {
 
 | New to Hyperdrive | Implementing | Troubleshooting |
 |-------------------|--------------|-----------------|
-| 1. README (this) | 1. [configuration.md](./configuration.md) | 1. [gotchas.md](./gotchas.md) |
-| 2. [configuration.md](./configuration.md) | 2. [api.md](./api.md) | 2. [patterns.md](./patterns.md) |
-| 3. [api.md](./api.md) | 3. [patterns.md](./patterns.md) | 3. [api.md](./api.md) |
+| 1. README (this) | 1. [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/hyperdrive/configuration.md) | 1. [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/hyperdrive/gotchas.md) |
+| 2. [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/hyperdrive/configuration.md) | 2. [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/hyperdrive/api.md) | 2. [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/hyperdrive/patterns.md) |
+| 3. [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/hyperdrive/api.md) | 3. [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/hyperdrive/patterns.md) | 3. [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/hyperdrive/api.md) |
 
 ## In This Reference
-- [configuration.md](./configuration.md) - Setup, wrangler config, Smart Placement
-- [api.md](./api.md) - Binding APIs, query patterns, driver usage
-- [patterns.md](./patterns.md) - Use cases, ORMs, multi-query optimization
-- [gotchas.md](./gotchas.md) - Limits, troubleshooting, connection management
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/hyperdrive/configuration.md) - Setup, wrangler config, Smart Placement
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/hyperdrive/api.md) - Binding APIs, query patterns, driver usage
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/hyperdrive/patterns.md) - Use cases, ORMs, multi-query optimization
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/hyperdrive/gotchas.md) - Limits, troubleshooting, connection management
 
 ## See Also
-- [smart-placement](../smart-placement/) - Optimize multi-query Workers near databases
-- [d1](../d1/) - Serverless SQLite alternative for edge-native apps
-- [workers](../workers/) - Worker runtime with database bindings
+- [smart-placement]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/smart-placement/) - Optimize multi-query Workers near databases
+- [d1]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/d1/) - Serverless SQLite alternative for edge-native apps
+- [workers]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers/) - Worker runtime with database bindings

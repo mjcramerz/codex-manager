@@ -1,20 +1,20 @@
 ---
-title: Lang Go Rules
+title: LANG-Perl Rules
 status: active
 owner: Matthew Cramer
 tags:
 - skills
 - all
-- lang-go
+- lang-perl
 - rules
 - rules-md
 - user
 - default
 updated: '2026-02-20'
 ---
-# Lang Go Rules
+# LANG-Perl Rules
 
 ## Required checks
-- Follow the workflow in `../SKILL.md`.
-- Prefer deterministic scripts in `../scripts/`.
-- Use references in `../references/` for factual guidance.
+- Follow the workflow in `$CODEX_SKILLS/common/lang-perl/SKILL.md`.
+- Prefer deterministic scripts in `$CODEX_SKILLS/common/lang-perl/scripts/`.
+- Use references in `$CODEX_SKILLS/common/lang-perl/references/` for factual guidance.

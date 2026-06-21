@@ -1,7 +1,7 @@
 # Plan
+Purpose: coordinate multi-surface runtime-pack changes while keeping docs, config, and instruction assets synchronized.
 
 Use this plan for multi-surface changes to the Codex pack.
-
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -10,10 +10,10 @@ Use this plan for multi-surface changes to the Codex pack.
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-
 ## Requirements
 - Clear statement of scope and affected pack surfaces.
 - Updated routing and discovery links.
+- Instruction assets, memory routing, and config fragments stay synchronized when one of those contracts changes.
 
 ## Scope
 - In: coordinated updates within `$CODEX_HOME/`.
@@ -24,12 +24,12 @@ Use this plan for multi-surface changes to the Codex pack.
 - `$CODEX_HOME/INDEX.md`
 - `$CODEX_HOME/docs/OVERVIEW.md`
 - `$CODEX_HOME/index/pack/skills.md`
+- `$CODEX_HOME/memories/MEMORY.md`
 
 ## Action items
 [ ] Review entrypoints and overviews for the affected surfaces.
 [ ] Update `$CODEX_HOME/index/manifest.yml` metadata and related links.
-
-## Testing and validation
+[ ] Update paired instruction/config/doc surfaces together when the change crosses runtime-pack boundaries.
 
 ## Security checkpoints
 - Confirm trust boundaries, credentials, and least-privilege assumptions before execution.
@@ -56,7 +56,6 @@ Use this plan for multi-surface changes to the Codex pack.
 - Missing metadata on new files.
 
 ## Examples
-
 - Example objective: "Coordinate a multi-surface runtime-pack update across docs, plans, and routing."
 - Example validation: "make preflight && make verify"
 

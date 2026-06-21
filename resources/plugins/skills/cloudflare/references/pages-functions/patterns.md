@@ -134,4 +134,4 @@ export default {
 
 **When:** Existing Worker, framework-generated (Next.js/SvelteKit), custom routing logic
 
-**See also:** [api.md](./api.md) for `env.ASSETS.fetch()` | [gotchas.md](./gotchas.md) for debugging
+**See also:** [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pages-functions/api.md) for `env.ASSETS.fetch()` | [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pages-functions/gotchas.md) for debugging

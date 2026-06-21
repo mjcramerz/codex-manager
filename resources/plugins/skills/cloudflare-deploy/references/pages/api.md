@@ -201,4 +201,4 @@ const data = await event.locals.runtime.env.DB.prepare('SELECT * FROM users').al
 - **Next.js**: Official adapter (`@cloudflare/next-on-pages`) deprecated. Use Vercel or self-host on Workers.
 - **Remix**: Official adapter (`@remix-run/cloudflare-pages`) deprecated. Migrate to supported frameworks.
 
-See [gotchas.md](./gotchas.md#framework-specific) for migration guidance.
+See [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/pages/gotchas.md#framework-specific) for migration guidance.

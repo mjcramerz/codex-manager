@@ -6,16 +6,16 @@ tags:
 - home
 - agents-md
 - agents
-updated: 2026-06-20
+updated: 2026-06-21
 ---
 # Runtime pack operating contract
-Purpose: define the operating contract for the runtime-home source pack under `resources/home/user/**`.
+Purpose: define the operating contract for the installed runtime-home pack under `$CODEX_HOME/**`.
 
-This contract applies to `resources/home/user` and every child path unless a deeper `AGENTS.md` overrides it.
+This contract applies to `$CODEX_HOME` and every child path unless a deeper `AGENTS.md` overrides it.
 
 ## Mission
 - Keep the runtime-home source pack coherent, fast to route, and correct for the installed Codex layout.
-- Treat `resources/home/user/**` as pack source material, not as a scratch area or a runtime dump.
+- Treat `$CODEX_HOME/**` as runtime pack material, not as a scratch area or a runtime dump.
 - Prefer short, high-signal routing and operational guidance over encyclopedic overviews.
 
 ## Priorities
@@ -33,7 +33,7 @@ This contract applies to `resources/home/user` and every child path unless a dee
 
 ## Required operating order
 1) Read the active `AGENTS.md`.
-2) Load `$CODEX_HOME/memories/MEMORY.md` only when it exists and the task is repo-aware, ambiguous, or depends on prior decisions.
+2) Load `$CODEX_HOME/memories/MEMORY.md` only when the task is repo-aware, ambiguous, or depends on prior decisions.
 3) Route through `$CODEX_HOME/INDEX.md`.
 4) Read `$CODEX_HOME/index/pack/plans.md` and `$CODEX_HOME/index/pack/workflows.md`.
 5) Load only the minimum skills required.
@@ -41,25 +41,27 @@ This contract applies to `resources/home/user` and every child path unless a dee
 7) Open one concrete entrypoint, then stop broad browsing.
 
 ## Runtime-state boundary
-- Runtime state is target-only and must never sync back into this repo.
-- Runtime-only artifacts must never be treated as pack source:
-  - `$CODEX_HOME/memories/`
+- Source-managed memory router: `$CODEX_HOME/memories/MEMORY.md`.
+- Runtime-only artifacts must never be treated as pack source and must never sync back into this repo:
   - `$CODEX_HOME/sessions/`
   - `$CODEX_HOME/shell_snapshots/`
   - `$CODEX_HOME/.credentials.json`
+- Repo-managed runtime carry-forward is limited to operator-facing state that intentionally seeds or documents the runtime:
+  - `memories/**`
   - `history.jsonl`
   - `session_index.jsonl`
   - `version.json`
   - `.personality_migration`
 
 ## Source-of-truth map
-- `resources/home/user/INDEX.md` is the top router for the runtime pack.
-- `resources/home/user/index/manifest.yml` is the routing metadata source for index entrypoints and related-link intent.
-- `resources/home/user/docs/**` contains runtime documentation source.
-- `resources/home/user/plans/**` contains plan-template source.
-- `resources/home/user/templates/**` contains reusable scaffolds.
-- `resources/home/user/.models/**` contains model catalog and instruction-source assets referenced by runtime config.
-- `resources/home/user/docs/create-prompts.md` owns the prompt-file catalog and direct prompt-file references for this tree.
+- `$CODEX_HOME/INDEX.md` is the top router for the runtime pack.
+- `$CODEX_HOME/index/manifest.yml` is the routing metadata source for pack entrypoints and related-link intent.
+- `$CODEX_HOME/memories/MEMORY.md` is the memory-entry router for repo-aware work.
+- `$CODEX_HOME/docs/**` contains runtime documentation source.
+- `$CODEX_HOME/plans/**` contains plan-template source.
+- `$CODEX_HOME/templates/**` contains reusable scaffolds.
+- `$CODEX_HOME/.models/**` contains model catalog and instruction-source assets referenced by runtime config.
+- `$CODEX_HOME/docs/create-prompts.md` owns the prompt-file catalog and direct prompt-file references for this tree.
 
 ## Documentation and routing rules
 - Keep top-level routing docs concise. Route first, dive deeper only when needed.
@@ -69,7 +71,7 @@ This contract applies to `resources/home/user` and every child path unless a dee
 - Do not hardcode workstation-specific repository paths in docs, plans, or instruction assets.
 - Do not leave unresolved placeholders in non-template docs, plans, or workflow guides.
 - Prefer one canonical explanation for a concept instead of repeating it across multiple overview files.
-- Keep shell guidance routed directly through `docs/style/shell-runtime.md` and the language-specific style guides.
+- Keep `docs/style/shell-runtime.md` as the shell compatibility entrypoint and route language-specific detail into the deeper style guides.
 
 ## Structured-format rules
 - Validate shape, size, and ranges for untrusted inputs.
@@ -85,7 +87,7 @@ This contract applies to `resources/home/user` and every child path unless a dee
 
 ## Validation requirements
 - Run the narrowest checks that prove the change.
-- When touching governing pack files (`AGENTS.md`, `INDEX.md`, `docs/**`, `index/**`, `plans/**`, `templates/**`, `resources/skills/**`), also run focused contract checks for stale links or structural drift.
+- When touching governing pack files (`$CODEX_HOME/AGENTS.md`, `$CODEX_HOME/INDEX.md`, `$CODEX_HOME/docs/**`, `$CODEX_HOME/index/**`, `$CODEX_HOME/plans/**`, `$CODEX_HOME/templates/**`, `$CODEX_SKILLS/**`), also run focused contract checks for stale links or structural drift.
 - If you skip a check, say exactly why and name the next command that should run.
 
 ## Output contract

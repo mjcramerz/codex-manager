@@ -16,6 +16,6 @@ updated: '2026-02-20'
 # Desktop Entries Framework
 
 - Skill: `desktop-entries`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Source of truth: `$CODEX_HOME/plugins/cache/codex-local/web-browser-linux/local/skills/desktop-entries/SKILL.md`
+- Runtime agent config: `$CODEX_HOME/plugins/cache/codex-local/web-browser-linux/local/skills/desktop-entries/agents/openai.yaml`
+- Supporting docs: `$CODEX_HOME/plugins/cache/codex-local/web-browser-linux/local/skills/desktop-entries/references/`

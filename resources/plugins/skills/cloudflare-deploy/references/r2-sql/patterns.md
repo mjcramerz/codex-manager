@@ -73,7 +73,7 @@ npx wrangler r2 sql query "my-bucket" "
 "
 ```
 
-See [pipelines/patterns.md](../pipelines/patterns.md) for detailed setup.
+See [pipelines/patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/pipelines/patterns.md) for detailed setup.
 
 ## PyIceberg Integration
 
@@ -120,7 +120,7 @@ npx wrangler r2 sql query "my-bucket" "
 "
 ```
 
-See [r2-data-catalog/patterns.md](../r2-data-catalog/patterns.md) for advanced PyIceberg patterns.
+See [r2-data-catalog/patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/r2-data-catalog/patterns.md) for advanced PyIceberg patterns.
 
 ## Use Cases
 
@@ -183,7 +183,7 @@ val spark = SparkSession.builder()
 spark.sql("SELECT * FROM my_catalog.default.my_table LIMIT 10").show()
 ```
 
-See [r2-data-catalog/patterns.md](../r2-data-catalog/patterns.md) for more engines.
+See [r2-data-catalog/patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/r2-data-catalog/patterns.md) for more engines.
 
 ## Performance Optimization
 
@@ -218,5 +218,5 @@ WHERE timestamp >= '2025-01-15T00:00:00Z' AND status = 404 AND method = 'GET' LI
 
 - [api.md](api.md) - SQL syntax reference
 - [gotchas.md](gotchas.md) - Limitations and troubleshooting
-- [r2-data-catalog/patterns.md](../r2-data-catalog/patterns.md) - PyIceberg advanced patterns
-- [pipelines/patterns.md](../pipelines/patterns.md) - Streaming ingestion patterns
+- [r2-data-catalog/patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/r2-data-catalog/patterns.md) - PyIceberg advanced patterns
+- [pipelines/patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/pipelines/patterns.md) - Streaming ingestion patterns

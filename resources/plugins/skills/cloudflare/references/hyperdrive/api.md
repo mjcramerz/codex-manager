@@ -1,6 +1,6 @@
 # API Reference
 
-See [README.md](./README.md) for overview, [configuration.md](./configuration.md) for setup.
+See [README.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/hyperdrive/README.md) for overview, [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/hyperdrive/configuration.md) for setup.
 
 ## Binding Interface
 
@@ -140,4 +140,4 @@ const db = new Kysely({
 const users = await db.selectFrom("users").selectAll().where("active", "=", true).execute();
 ```
 
-See [patterns.md](./patterns.md) for use cases, [gotchas.md](./gotchas.md) for limits.
+See [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/hyperdrive/patterns.md) for use cases, [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/hyperdrive/gotchas.md) for limits.

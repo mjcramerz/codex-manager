@@ -62,14 +62,14 @@ export class Counter extends DurableObject {
 
 ## In This Reference
 
-- [configuration.md](./configuration.md) - wrangler.jsonc migrations, SQLite vs KV setup, RPC binding
-- [api.md](./api.md) - SQL exec/cursors, KV methods, storage options, transactions, alarms, PITR
-- [patterns.md](./patterns.md) - Schema migrations, caching, rate limiting, batch processing, parent-child coordination
-- [gotchas.md](./gotchas.md) - Concurrency gates, INTEGER precision, transaction rules, SQL limits
-- [testing.md](./testing.md) - vitest-pool-workers setup, testing DOs with SQL/alarms/PITR
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/do-storage/configuration.md) - wrangler.jsonc migrations, SQLite vs KV setup, RPC binding
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/do-storage/api.md) - SQL exec/cursors, KV methods, storage options, transactions, alarms, PITR
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/do-storage/patterns.md) - Schema migrations, caching, rate limiting, batch processing, parent-child coordination
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/do-storage/gotchas.md) - Concurrency gates, INTEGER precision, transaction rules, SQL limits
+- [testing.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/do-storage/testing.md) - vitest-pool-workers setup, testing DOs with SQL/alarms/PITR
 
 ## See Also
 
-- [durable-objects](../durable-objects/) - DO fundamentals and coordination patterns
-- [workers](../workers/) - Worker runtime for DO stubs
-- [d1](../d1/) - Shared database alternative to per-DO storage
+- [durable-objects]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/durable-objects/) - DO fundamentals and coordination patterns
+- [workers]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers/) - Worker runtime for DO stubs
+- [d1]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/d1/) - Shared database alternative to per-DO storage

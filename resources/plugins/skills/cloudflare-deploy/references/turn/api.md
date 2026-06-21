@@ -97,7 +97,7 @@ Content-Type: application/json
 }
 ```
 
-**Port 53 Warning**: Filter port 53 URLs for browser clients—blocked by Chrome/Firefox. See [gotchas.md](./gotchas.md#using-port-53-in-browsers).
+**Port 53 Warning**: Filter port 53 URLs for browser clients—blocked by Chrome/Firefox. See [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/turn/gotchas.md#using-port-53-in-browsers).
 
 ## Revoke Credentials
 
@@ -234,6 +234,6 @@ async function fetchTURNServers(
 
 ## See Also
 
-- [configuration.md](./configuration.md) - Worker setup, environment variables
-- [patterns.md](./patterns.md) - Implementation examples using these APIs
-- [gotchas.md](./gotchas.md) - Security best practices, common mistakes
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/turn/configuration.md) - Worker setup, environment variables
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/turn/patterns.md) - Implementation examples using these APIs
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/turn/gotchas.md) - Security best practices, common mistakes

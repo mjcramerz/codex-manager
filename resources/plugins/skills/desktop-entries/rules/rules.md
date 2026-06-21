@@ -15,6 +15,6 @@ updated: '2026-02-20'
 # Desktop Entries Rules
 
 ## Required checks
-- Follow the workflow in `../SKILL.md`.
-- Prefer deterministic scripts in `../scripts/`.
-- Use references in `../references/` for factual guidance.
+- Follow the workflow in `$CODEX_HOME/plugins/cache/codex-local/web-browser-linux/local/skills/desktop-entries/SKILL.md`.
+- Prefer deterministic scripts in `$CODEX_HOME/plugins/cache/codex-local/web-browser-linux/local/skills/desktop-entries/scripts/`.
+- Use references in `$CODEX_HOME/plugins/cache/codex-local/web-browser-linux/local/skills/desktop-entries/references/` for factual guidance.

@@ -1,20 +1,20 @@
 ---
-title: Ci Gitlab Cicd Rules
+title: Aptly R2 Rules
 status: active
 owner: Matthew Cramer
 tags:
 - skills
 - all
-- ci-gitlab-cicd
+- aptly-r2
 - rules
 - rules-md
 - user
 - web
 updated: '2026-02-20'
 ---
-# Ci Gitlab Cicd Rules
+# Aptly R2 Rules
 
 ## Required checks
-- Follow the workflow in `../SKILL.md`.
-- Prefer deterministic scripts in `../scripts/`.
-- Use references in `../references/` for factual guidance.
+- Follow the workflow in `$CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/aptly-r2/SKILL.md`.
+- Prefer deterministic scripts in `$CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/aptly-r2/scripts/`.
+- Use references in `$CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/aptly-r2/references/` for factual guidance.

@@ -15,9 +15,9 @@ Use this file when you know the task but need to identify the best canonical sou
 
 | Task | First source | Backup source |
 | --- | --- | --- |
-| Check whether a PC can build WinUI apps | `../SKILL.md` | `foundation-environment-audit-and-remediation.md` |
-| Install missing prerequisites | `../SKILL.md` | `foundation-environment-audit-and-remediation.md` |
-| Start a new packaged or unpackaged app | `../SKILL.md` | `foundation-setup-and-project-selection.md` |
+| Check whether a PC can build WinUI apps | `$CODEX_HOME/plugins/cache/codex-local/winui/local/skills/winui-app/SKILL.md` | `foundation-environment-audit-and-remediation.md` |
+| Install missing prerequisites | `$CODEX_HOME/plugins/cache/codex-local/winui/local/skills/winui-app/SKILL.md` | `foundation-environment-audit-and-remediation.md` |
+| Start a new packaged or unpackaged app | `$CODEX_HOME/plugins/cache/codex-local/winui/local/skills/winui-app/SKILL.md` | `foundation-setup-and-project-selection.md` |
 | Choose packaged vs unpackaged | Learn Windows App SDK deployment docs | WindowsAppSDK-Samples `Samples/Unpackaged` |
 | Build a shell with navigation | WinUI Gallery navigation pages | Learn navigation basics |
 | Design a custom title bar | Learn title bar guidance | WinUI Gallery title bar samples |

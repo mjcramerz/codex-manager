@@ -22,7 +22,7 @@ updated: '2026-02-20'
 Maintain runtime prompt assets and supporting maintenance surfaces.
 
 ## Local implementation anchors
-- `../SKILL.md`
+- `$CODEX_SKILLS/common/pack-prompts/SKILL.md`
 - `$CODEX_HOME/docs/create-prompts.md`
 
 ## External references

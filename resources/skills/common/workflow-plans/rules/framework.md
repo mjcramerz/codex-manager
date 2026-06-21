@@ -16,6 +16,6 @@ updated: '2026-02-20'
 # WORKFLOW-Plans Framework
 
 - Skill: `workflow-plans`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Source of truth: `$CODEX_SKILLS/common/workflow-plans/SKILL.md`
+- Runtime agent config: `$CODEX_SKILLS/common/workflow-plans/agents/openai.yaml`
+- Supporting docs: `$CODEX_SKILLS/common/workflow-plans/references/`

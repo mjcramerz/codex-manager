@@ -37,9 +37,9 @@ Turn Notion specs into implementation plans, tasks, and progress tracking; use w
 - References and examples
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
-- `../reference/` (previous notes retained by this skill)
+- `$CODEX_HOME/plugins/cache/codex-local/notion/local/skills/notion-spec-to-implementation/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/notion/local/skills/notion-spec-to-implementation/agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/notion/local/skills/notion-spec-to-implementation/reference/` (previous notes retained by this skill)
 
 ## External references
 - [Notion API intro](https://developers.notion.com/reference/intro) - Notion integration behavior and limits.

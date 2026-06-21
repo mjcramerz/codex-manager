@@ -39,8 +39,8 @@ interface:
 - Reviewable changes with explicit validation evidence.
 
 ## Local resources
-- `codex-mcp/references/latest-sources.md`
-- `codex-mcp/scripts/skill_helper.py`
+- `$CODEX_HOME/plugins/cache/codex-local/codex-runtime/local/skills/codex-mcp/references/latest-sources.md`
+- `$CODEX_HOME/plugins/cache/codex-local/codex-runtime/local/skills/codex-mcp/scripts/skill_helper.py`
 
 ## References
 - `$CODEX_HOME/docs/workflows/codex-manager.md`

@@ -30,8 +30,8 @@ Configure Mullvad Browser safely.
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/web-browser-linux/local/skills/desktop-mullvad-browser/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/web-browser-linux/local/skills/desktop-mullvad-browser/agents/openai.yaml`
 
 ## External references
 - [Freedesktop Desktop Entry Specification](https://specifications.freedesktop.org/desktop-entry-spec/latest/) - Desktop launcher schema and semantics.

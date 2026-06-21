@@ -41,8 +41,8 @@ Manage issues, projects, and team workflows in Linear. Use when the user wants t
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/linear/local/skills/linear/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/linear/local/skills/linear/agents/openai.yaml`
 
 ## External references
 - [Linear API docs](https://developers.linear.app/docs/graphql/working-with-the-graphql-api) - Linear GraphQL workflow reference.

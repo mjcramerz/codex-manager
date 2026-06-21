@@ -1,11 +1,11 @@
 ---
-title: Ci Gitlab Cicd Framework
+title: Codex MCP Framework
 status: active
 owner: Matthew Cramer
 tags:
 - skills
 - all
-- ci-gitlab-cicd
+- codex-mcp
 - rules
 - framework-md
 - framework
@@ -13,9 +13,9 @@ tags:
 - web
 updated: '2026-02-20'
 ---
-# Ci Gitlab Cicd Framework
+# Codex MCP Framework
 
-- Skill: `ci-gitlab-cicd`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Skill: `codex-mcp`
+- Source of truth: `$CODEX_HOME/plugins/cache/codex-local/codex-runtime/local/skills/codex-mcp/SKILL.md`
+- Runtime agent config: `$CODEX_HOME/plugins/cache/codex-local/codex-runtime/local/skills/codex-mcp/agents/openai.yaml`
+- Supporting docs: `$CODEX_HOME/plugins/cache/codex-local/codex-runtime/local/skills/codex-mcp/references/`

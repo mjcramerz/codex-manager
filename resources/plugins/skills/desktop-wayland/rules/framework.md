@@ -16,6 +16,6 @@ updated: '2026-02-20'
 # Desktop Wayland Framework
 
 - Skill: `desktop-wayland`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Source of truth: `$CODEX_HOME/plugins/cache/codex-local/web-browser-linux/local/skills/desktop-wayland/SKILL.md`
+- Runtime agent config: `$CODEX_HOME/plugins/cache/codex-local/web-browser-linux/local/skills/desktop-wayland/agents/openai.yaml`
+- Supporting docs: `$CODEX_HOME/plugins/cache/codex-local/web-browser-linux/local/skills/desktop-wayland/references/`

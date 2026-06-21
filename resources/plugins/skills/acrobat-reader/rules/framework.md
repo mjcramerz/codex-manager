@@ -15,6 +15,6 @@ updated: '2026-03-12'
 # Acrobat Reader Framework
 
 - Skill: `acrobat-reader`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Source of truth: `$CODEX_HOME/plugins/cache/codex-local/adobe-acrobat/local/skills/acrobat-reader/SKILL.md`
+- Runtime agent config: `$CODEX_HOME/plugins/cache/codex-local/adobe-acrobat/local/skills/acrobat-reader/agents/openai.yaml`
+- Supporting docs: `$CODEX_HOME/plugins/cache/codex-local/adobe-acrobat/local/skills/acrobat-reader/references/`

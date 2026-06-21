@@ -30,8 +30,8 @@ Configure auditd rules and logging safely.
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/security-controls/local/skills/secops-auditd/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/security-controls/local/skills/secops-auditd/agents/openai.yaml`
 
 ## External references
 - [auditd man page](https://man7.org/linux/man-pages/man8/auditd.8.html) - Audit daemon behavior and lifecycle controls.

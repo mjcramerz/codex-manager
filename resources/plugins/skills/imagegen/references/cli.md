@@ -1,4 +1,4 @@
-# CLI reference (`../scripts/image_gen.py`)
+# CLI reference (`$CODEX_HOME/plugins/cache/codex-local/ai-media/local/skills/imagegen/scripts/image_gen.py`)
 
 This file contains the “command catalog” for the bundled image generation CLI. Keep `SKILL.md` as overview-first; put verbose CLI details here.
 
@@ -37,7 +37,7 @@ python "$IMAGE_GEN" generate --prompt "A cozy alpine cabin at dawn" --size 1024x
 ## Guardrails (important)
 - Use `python "$IMAGE_GEN" ...` (or equivalent full path) for generations/edits/batch work.
 - Do **not** create one-off runners (e.g. `gen_images.py`) unless the user explicitly asks for a custom wrapper.
-- **Never modify** `../scripts/image_gen.py`. If something is missing, ask the user before doing anything else.
+- **Never modify** `$CODEX_HOME/plugins/cache/codex-local/ai-media/local/skills/imagegen/scripts/image_gen.py`. If something is missing, ask the user before doing anything else.
 
 ## Defaults (unless overridden by flags)
 - Model: `gpt-image-1.5`
@@ -127,5 +127,5 @@ python "$IMAGE_GEN" edit --image input.png --mask mask.png --prompt "Replace the
 - Use `--no-augment` to skip prompt augmentation.
 
 ## See also
-- API parameter quick reference: `./image-api.md`
-- Prompt examples: `./sample-prompts.md`
+- API parameter quick reference: `$CODEX_HOME/plugins/cache/codex-local/ai-media/local/skills/imagegen/references/image-api.md`
+- Prompt examples: `$CODEX_HOME/plugins/cache/codex-local/ai-media/local/skills/imagegen/references/sample-prompts.md`

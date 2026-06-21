@@ -57,15 +57,15 @@ interface:
 - Deployment sequence for staged rollout and monitoring hooks to watch after change.
 
 ## Local resources
-- `infra-optimizations/references/latest-sources.md`
-- `infra-optimizations/references/operations-checklist.md`
-- `infra-optimizations/references/risk-register.md`
-- `infra-optimizations/assets/rollback-checklist.md`
-- `infra-optimizations/scripts/skill_helper.py`
-- `infra-optimizations/references/perf-experiment-template.md`
-- `infra-optimizations/references/tuning-rollback-matrix.md`
-- `infra-optimizations/assets/experiment-sheet.md`
-- `infra-optimizations/assets/sysctl-rollback.conf`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-optimizations/references/latest-sources.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-optimizations/references/operations-checklist.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-optimizations/references/risk-register.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-optimizations/assets/rollback-checklist.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-optimizations/scripts/skill_helper.py`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-optimizations/references/perf-experiment-template.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-optimizations/references/tuning-rollback-matrix.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-optimizations/assets/experiment-sheet.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-optimizations/assets/sysctl-rollback.conf`
 
 ## References
 - `$CODEX_HOME/index/domains/system/optimizations.md`

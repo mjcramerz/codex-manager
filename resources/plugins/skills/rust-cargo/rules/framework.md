@@ -1,11 +1,11 @@
 ---
-title: Ci Gitlab Cicd Framework
+title: Rust Cargo Framework
 status: active
 owner: Matthew Cramer
 tags:
 - skills
 - all
-- ci-gitlab-cicd
+- rust-cargo
 - rules
 - framework-md
 - framework
@@ -13,9 +13,9 @@ tags:
 - web
 updated: '2026-02-20'
 ---
-# Ci Gitlab Cicd Framework
+# Rust Cargo Framework
 
-- Skill: `ci-gitlab-cicd`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Skill: `rust-cargo`
+- Source of truth: `$CODEX_HOME/plugins/cache/codex-local/codex-repo/local/skills/rust-cargo/SKILL.md`
+- Runtime agent config: `$CODEX_HOME/plugins/cache/codex-local/codex-repo/local/skills/rust-cargo/agents/openai.yaml`
+- Supporting docs: `$CODEX_HOME/plugins/cache/codex-local/codex-repo/local/skills/rust-cargo/references/`

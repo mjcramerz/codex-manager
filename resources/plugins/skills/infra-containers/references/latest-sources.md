@@ -37,9 +37,9 @@ Container and virtualization workflows: rootless Docker/Podman, Docker Compose, 
 - Outputs
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
-- `../scripts/skill_helper.py`
+- `$CODEX_HOME/plugins/cache/codex-local/containers/local/skills/infra-containers/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/containers/local/skills/infra-containers/agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/containers/local/skills/infra-containers/scripts/skill_helper.py`
 
 ## Reference files in this directory
 - `build-reproducibility.md`

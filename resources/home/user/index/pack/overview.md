@@ -10,17 +10,18 @@ Use this router when maintaining the runtime pack itself: docs, plans, skills, t
 <!-- END:nav -->
 
 ## Required source files for pack work
-- `resources/home/user/index/manifest.yml` for routing metadata
-- `resources/home/user/docs/**` for runtime docs and workflows
-- `resources/home/user/plans/**` for plan templates
-- `resources/home/user/templates/**` for reusable scaffolds
-- `resources/skills/metadata.json` plus `resources/skills/**` for runtime skill catalog and skill assets
-- `resources/plugins/skills/**` plus `resources/plugins/manifest.json` for plugin skills and marketplace wiring
+- `$CODEX_HOME/index/manifest.yml` for routing metadata
+- `$CODEX_HOME/memories/MEMORY.md` for repo-aware memory routing
+- `$CODEX_HOME/docs/**` for runtime docs and workflows
+- `$CODEX_HOME/plans/**` for plan templates
+- `$CODEX_HOME/templates/**` for reusable scaffolds
+- `$CODEX_SKILLS/**` for the runtime skill catalog and skill assets
+- `$CODEX_HOME/plugins/cache/**` plus `$CODEX_HOME/.agents/plugins/marketplace.json` for plugin bundles and marketplace wiring
 
 ## Runtime-state boundary
-- Source-managed pack content stops at docs, plans, templates, skills, rules, snippets, and routing metadata.
+- Source-managed pack content stops at docs, plans, templates, skills, rules, snippets, routing metadata, and the memory router.
 - Do not reintroduce runtime-only sync for sessions, shell snapshots, or credential store files.
-- Treat `$CODEX_HOME/memories/` as runtime state even when docs mention it as an optional repo-aware input.
+- Treat `$CODEX_HOME/memories/MEMORY.md` and the mirrored memory instruction assets as pack source when the task is memory-related.
 
 ## Choose one hub
 <!-- BEGIN:contents -->

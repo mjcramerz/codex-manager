@@ -82,18 +82,18 @@ curl "http://localhost:8787/__scheduled?cron=*/5+*+*+*+*"
 
 **New to cron triggers?** Start here:
 1. This README - Overview and quick start
-2. [configuration.md](./configuration.md) - Set up your first cron trigger
-3. [api.md](./api.md) - Understand the handler API
-4. [patterns.md](./patterns.md) - Common use cases and examples
+2. [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/cron-triggers/configuration.md) - Set up your first cron trigger
+3. [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/cron-triggers/api.md) - Understand the handler API
+4. [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/cron-triggers/patterns.md) - Common use cases and examples
 
-**Troubleshooting?** Jump to [gotchas.md](./gotchas.md)
+**Troubleshooting?** Jump to [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/cron-triggers/gotchas.md)
 
 ## In This Reference
-- [configuration.md](./configuration.md) - wrangler config, env-specific schedules, Green Compute
-- [api.md](./api.md) - ScheduledController, noRetry(), waitUntil, testing patterns
-- [patterns.md](./patterns.md) - Use cases, monitoring, queue integration, Durable Objects
-- [gotchas.md](./gotchas.md) - Timezone issues, idempotency, security, testing
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/cron-triggers/configuration.md) - wrangler config, env-specific schedules, Green Compute
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/cron-triggers/api.md) - ScheduledController, noRetry(), waitUntil, testing patterns
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/cron-triggers/patterns.md) - Use cases, monitoring, queue integration, Durable Objects
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/cron-triggers/gotchas.md) - Timezone issues, idempotency, security, testing
 
 ## See Also
-- [workflows](../workflows/) - Alternative for long-running scheduled tasks
-- [workers](../workers/) - Worker runtime documentation
+- [workflows]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workflows/) - Alternative for long-running scheduled tasks
+- [workers]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers/) - Worker runtime documentation

@@ -122,12 +122,12 @@ wrangler dev --persist-to=./.wrangler/state
 
 ## In This Reference
 
-- [configuration.md](./configuration.md) - wrangler.jsonc setup, migrations, TypeScript types, ORMs, local dev
-- [api.md](./api.md) - Query methods (.all/.first/.run/.raw), batch, sessions, read replicas, error handling
-- [patterns.md](./patterns.md) - Pagination, bulk operations, caching, multi-tenant, sessions, analytics
-- [gotchas.md](./gotchas.md) - SQL injection, limits by plan tier, performance, common errors
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/d1/configuration.md) - wrangler.jsonc setup, migrations, TypeScript types, ORMs, local dev
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/d1/api.md) - Query methods (.all/.first/.run/.raw), batch, sessions, read replicas, error handling
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/d1/patterns.md) - Pagination, bulk operations, caching, multi-tenant, sessions, analytics
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/d1/gotchas.md) - SQL injection, limits by plan tier, performance, common errors
 
 ## See Also
 
-- [workers](../workers/) - Worker runtime and fetch handler patterns
-- [hyperdrive](../hyperdrive/) - Connection pooling for external databases
+- [workers]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workers/) - Worker runtime and fetch handler patterns
+- [hyperdrive]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/hyperdrive/) - Connection pooling for external databases

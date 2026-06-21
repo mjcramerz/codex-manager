@@ -16,6 +16,6 @@ updated: '2026-02-25'
 # Web Sveltekit Framework
 
 - Skill: `web-sveltekit`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Source of truth: `$CODEX_HOME/plugins/cache/codex-local/frontend/local/skills/web-sveltekit/SKILL.md`
+- Runtime agent config: `$CODEX_HOME/plugins/cache/codex-local/frontend/local/skills/web-sveltekit/agents/openai.yaml`
+- Supporting docs: `$CODEX_HOME/plugins/cache/codex-local/frontend/local/skills/web-sveltekit/references/`

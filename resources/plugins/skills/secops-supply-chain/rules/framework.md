@@ -15,6 +15,6 @@ updated: '2026-02-20'
 # Secops Supply Chain Framework
 
 - Skill: `secops-supply-chain`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Source of truth: `$CODEX_HOME/plugins/cache/codex-local/security-controls/local/skills/secops-supply-chain/SKILL.md`
+- Runtime agent config: `$CODEX_HOME/plugins/cache/codex-local/security-controls/local/skills/secops-supply-chain/agents/openai.yaml`
+- Supporting docs: `$CODEX_HOME/plugins/cache/codex-local/security-controls/local/skills/secops-supply-chain/references/`

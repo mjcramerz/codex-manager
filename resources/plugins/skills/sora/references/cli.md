@@ -1,4 +1,4 @@
-# CLI reference (`../scripts/sora.py`)
+# CLI reference (`$CODEX_HOME/plugins/cache/codex-local/ai-media/local/skills/sora/scripts/sora.py`)
 
 This file contains the command catalog for the bundled video generation CLI. Keep `SKILL.md` overview-first; put verbose CLI details here.
 
@@ -127,7 +127,7 @@ uv run --with openai python "$SORA_CLI" download --id video_abc123 --variant spr
 - Use `python "$SORA_CLI" ...` (or equivalent full path) for all video work.
 - For API calls, prefer `uv run --with openai ...` to avoid missing SDK errors.
 - Do **not** create one-off runners unless the user explicitly asks.
-- **Never modify** `../scripts/sora.py` unless the user asks.
+- **Never modify** `$CODEX_HOME/plugins/cache/codex-local/ai-media/local/skills/sora/scripts/sora.py` unless the user asks.
 
 ## Defaults (unless overridden by flags)
 - Model: `sora-2`
@@ -235,13 +235,13 @@ Notes:
 - Treat the JSONL file as temporary: write it under `tmp/` and delete it after the run (do not commit it). If `rm` is blocked in your sandbox, skip cleanup or truncate the file.
 
 ## CLI notes
-- Supported sizes depend on model (see `./video-api.md`).
+- Supported sizes depend on model (see `$CODEX_HOME/plugins/cache/codex-local/ai-media/local/skills/sora/references/video-api.md`).
 - Seconds are limited to 4, 8, or 12.
 - Download URLs expire after about 1 hour; copy assets to your own storage.
 - In CI/sandboxes where long-running commands time out, prefer `create` + `poll` (or add `--timeout`).
 
 ## See also
-- API parameter quick reference: `./video-api.md`
-- Prompt structure and examples: `./prompting.md`
-- Sample prompts: `./sample-prompts.md`
-- Troubleshooting: `./troubleshooting.md`
+- API parameter quick reference: `$CODEX_HOME/plugins/cache/codex-local/ai-media/local/skills/sora/references/video-api.md`
+- Prompt structure and examples: `$CODEX_HOME/plugins/cache/codex-local/ai-media/local/skills/sora/references/prompting.md`
+- Sample prompts: `$CODEX_HOME/plugins/cache/codex-local/ai-media/local/skills/sora/references/sample-prompts.md`
+- Troubleshooting: `$CODEX_HOME/plugins/cache/codex-local/ai-media/local/skills/sora/references/troubleshooting.md`

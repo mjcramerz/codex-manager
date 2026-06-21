@@ -55,10 +55,10 @@ For comprehensive understanding, read files in this order:
 
 | File | Description | Key Topics |
 |------|-------------|------------|
-| [api.md](./api.md) | Complete API reference | ForwardableEmailMessage, SendEmail bindings, reply() method, postal-mime/mimetext APIs |
-| [configuration.md](./configuration.md) | Setup and configuration | wrangler.jsonc, bindings, deployment, dependencies |
-| [patterns.md](./patterns.md) | Real-world examples | Allowlists from KV, auto-reply with threading, attachment extraction, webhook notifications |
-| [gotchas.md](./gotchas.md) | Pitfalls and debugging | Stream consumption, ctx.waitUntil errors, security, limits |
+| [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/email-workers/api.md) | Complete API reference | ForwardableEmailMessage, SendEmail bindings, reply() method, postal-mime/mimetext APIs |
+| [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/email-workers/configuration.md) | Setup and configuration | wrangler.jsonc, bindings, deployment, dependencies |
+| [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/email-workers/patterns.md) | Real-world examples | Allowlists from KV, auto-reply with threading, attachment extraction, webhook notifications |
+| [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/email-workers/gotchas.md) | Pitfalls and debugging | Stream consumption, ctx.waitUntil errors, security, limits |
 
 ## Architecture
 
@@ -98,7 +98,7 @@ const buffer = await new Response(message.raw).arrayBuffer();
 const email = await PostalMime.parse(buffer);
 ```
 
-See [gotchas.md](./gotchas.md#readablestream-can-only-be-consumed-once) for details.
+See [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/email-workers/gotchas.md#readablestream-can-only-be-consumed-once) for details.
 
 ### Verified Destinations
 
@@ -125,7 +125,7 @@ See [gotchas.md](./gotchas.md#readablestream-can-only-be-consumed-once) for deta
 | CPU time (free tier) | 10ms |
 | CPU time (paid tier) | 50ms |
 
-See [gotchas.md](./gotchas.md#limits-reference) for complete limits table.
+See [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/email-workers/gotchas.md#limits-reference) for complete limits table.
 
 ## Prerequisites
 
@@ -136,7 +136,7 @@ Before deploying Email Workers:
 3. **Configure DMARC/SPF** for sending domains (required for replies)
 4. **Set up wrangler.jsonc** with SendEmail binding
 
-See [configuration.md](./configuration.md) for detailed setup.
+See [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/email-workers/configuration.md) for detailed setup.
 
 ## Service Worker Syntax (Deprecated)
 

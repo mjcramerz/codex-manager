@@ -49,10 +49,10 @@ zaraz.set('userId', 'user_123');
 
 | File | Purpose | When to Read |
 |------|---------|--------------|
-| [api.md](./api.md) | Web API, zaraz object, consent methods | Implementing tracking calls |
-| [configuration.md](./configuration.md) | Dashboard setup, triggers, tools | Initial setup, adding tools |
-| [patterns.md](./patterns.md) | SPA, e-commerce, Worker integration | Best practices, common scenarios |
-| [gotchas.md](./gotchas.md) | Troubleshooting, limits, pitfalls | Debugging issues |
+| [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/zaraz/api.md) | Web API, zaraz object, consent methods | Implementing tracking calls |
+| [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/zaraz/configuration.md) | Dashboard setup, triggers, tools | Initial setup, adding tools |
+| [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/zaraz/patterns.md) | SPA, e-commerce, Worker integration | Best practices, common scenarios |
+| [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/zaraz/gotchas.md) | Troubleshooting, limits, pitfalls | Debugging issues |
 
 ## Reading Order by Task
 

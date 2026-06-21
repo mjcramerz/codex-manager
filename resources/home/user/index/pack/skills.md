@@ -8,7 +8,7 @@ Purpose: route to reusable skill playbooks and the runtime skill catalog.
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-Canonical content: runtime skill roots under `$CODEX_SKILLS`, plugin skills under the managed runtime plugin root, and `resources/plugins/manifest.json` for marketplace mapping.
+Canonical content: runtime skill roots under `$CODEX_SKILLS`, plugin skills under the managed runtime plugin root, and `$CODEX_HOME/.agents/plugins/marketplace.json` for marketplace mapping.
 
 ## Use when
 - the task maps directly to a reusable skill
@@ -30,5 +30,5 @@ Canonical content: runtime skill roots under `$CODEX_SKILLS`, plugin skills unde
 - `$CODEX_HOME/snippets/OVERVIEW.md`
 - `$CODEX_SKILLS`
 - the managed admin skill root
-- `resources/plugins/manifest.json`
+- `$CODEX_HOME/.agents/plugins/marketplace.json`
 <!-- END:related -->

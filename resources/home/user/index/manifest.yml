@@ -212,6 +212,7 @@ pack:
     entrypoint: $CODEX_HOME/index/pack/docs.md
     canonical: $CODEX_HOME/docs/OVERVIEW.md
     related:
+      - $CODEX_HOME/memories/MEMORY.md
       - $CODEX_HOME/index/pack/config.md
       - $CODEX_HOME/index/pack/plans.md
       - $CODEX_HOME/index/pack/workflows.md
@@ -404,8 +405,10 @@ pack:
     entrypoint: $CODEX_HOME/index/pack/workflows.md
     canonical: $CODEX_HOME/docs/workflows/overview.md
     related:
+      - $CODEX_HOME/memories/MEMORY.md
       - $CODEX_HOME/docs/workflows/overview.md
       - $CODEX_HOME/docs/workflows/
+      - $CODEX_HOME/docs/workflows/memory-runtime.md
       - $CODEX_HOME/docs/workflows/runtime-pack-maintenance.md
       - $CODEX_HOME/docs/workflows/codex-manager.md
       - $CODEX_HOME/docs/workflows/codex-mcp.md

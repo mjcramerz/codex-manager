@@ -121,8 +121,8 @@ npx wrangler r2 sql query "my-bucket" "SELECT * FROM default.my_table LIMIT 10"
 
 ## See Also
 
-- [r2-data-catalog](../r2-data-catalog/) - PyIceberg, REST API, external engines
-- [pipelines](../pipelines/) - Streaming ingestion to Iceberg tables
-- [r2](../r2/) - R2 object storage fundamentals
+- [r2-data-catalog]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/r2-data-catalog/) - PyIceberg, REST API, external engines
+- [pipelines]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/pipelines/) - Streaming ingestion to Iceberg tables
+- [r2]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/r2/) - R2 object storage fundamentals
 - [Cloudflare R2 SQL Docs](https://developers.cloudflare.com/r2-sql/)
 - [R2 SQL Deep Dive Blog](https://blog.cloudflare.com/r2-sql-deep-dive/)

@@ -16,6 +16,6 @@ updated: '2026-02-20'
 # Desktop Thorium Framework
 
 - Skill: `desktop-thorium`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Source of truth: `$CODEX_HOME/plugins/cache/codex-local/web-browser-linux/local/skills/desktop-thorium/SKILL.md`
+- Runtime agent config: `$CODEX_HOME/plugins/cache/codex-local/web-browser-linux/local/skills/desktop-thorium/agents/openai.yaml`
+- Supporting docs: `$CODEX_HOME/plugins/cache/codex-local/web-browser-linux/local/skills/desktop-thorium/references/`

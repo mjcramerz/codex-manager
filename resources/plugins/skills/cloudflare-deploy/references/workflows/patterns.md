@@ -172,4 +172,4 @@ export class DailyWorkflow extends WorkflowEntrypoint<Env, Params> {
 }
 ```
 
-See: [configuration.md](./configuration.md), [api.md](./api.md), [gotchas.md](./gotchas.md)
+See: [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workflows/configuration.md), [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workflows/api.md), [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workflows/gotchas.md)

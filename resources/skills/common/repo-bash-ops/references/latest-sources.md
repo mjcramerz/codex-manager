@@ -31,8 +31,8 @@ Repo operations automation in Bash: safe git workflows, CI scripting, release hy
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
+- `$CODEX_SKILLS/common/repo-bash-ops/SKILL.md`
+- `$CODEX_SKILLS/common/repo-bash-ops/agents/openai.yaml`
 
 ## External references
 - [Git documentation](https://git-scm.com/doc) - Core git behavior and safe workflows.

@@ -33,9 +33,9 @@ Build and validate Kubernetes manifests with safe defaults.
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
-- `../scripts/skill_helper.py`
+- `$CODEX_HOME/plugins/cache/codex-local/kubernetes/local/skills/infra-kubernetes/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/kubernetes/local/skills/infra-kubernetes/agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/kubernetes/local/skills/infra-kubernetes/scripts/skill_helper.py`
 
 ## Reference files in this directory
 - `latest-sources.md`

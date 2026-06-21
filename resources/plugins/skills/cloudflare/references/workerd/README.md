@@ -65,14 +65,14 @@ workerd is in **active development**. Breaking changes possible. Pin versions in
 
 **Start here:**
 1. This README (overview, decision tree)
-2. [patterns.md](./patterns.md) - Common workflows, framework examples
+2. [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workerd/patterns.md) - Common workflows, framework examples
 
 **When you need details:**
-3. [configuration.md](./configuration.md) - Config format, services, bindings
-4. [api.md](./api.md) - Runtime APIs, TypeScript types
-5. [gotchas.md](./gotchas.md) - Common errors, debugging
+3. [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workerd/configuration.md) - Config format, services, bindings
+4. [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workerd/api.md) - Runtime APIs, TypeScript types
+5. [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workerd/gotchas.md) - Common errors, debugging
 
 ## Related References
-- [workers](../workers/) - Workers runtime API documentation
-- [miniflare](../miniflare/) - Testing tool built on workerd
-- [wrangler](../wrangler/) - CLI that uses workerd for local dev
+- [workers]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workers/) - Workers runtime API documentation
+- [miniflare]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/miniflare/) - Testing tool built on workerd
+- [wrangler]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/wrangler/) - CLI that uses workerd for local dev

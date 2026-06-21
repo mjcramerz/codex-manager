@@ -191,7 +191,7 @@ resource "cloudflare_access_identity_provider" "github" {
 
 ## See Also
 
-- [README](./README.md) - Provider setup
-- [API](./api.md) - Data sources
-- [Patterns](./patterns.md) - Use cases
-- [Troubleshooting](./gotchas.md) - Issues
+- [README]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/terraform/README.md) - Provider setup
+- [API]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/terraform/api.md) - Data sources
+- [Patterns]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/terraform/patterns.md) - Use cases
+- [Troubleshooting]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/terraform/gotchas.md) - Issues

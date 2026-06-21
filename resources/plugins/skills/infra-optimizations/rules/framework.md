@@ -16,6 +16,6 @@ updated: '2026-02-20'
 # Infra Optimizations Framework
 
 - Skill: `infra-optimizations`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Source of truth: `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-optimizations/SKILL.md`
+- Runtime agent config: `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-optimizations/agents/openai.yaml`
+- Supporting docs: `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-optimizations/references/`

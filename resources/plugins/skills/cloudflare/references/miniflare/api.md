@@ -184,4 +184,4 @@ console.log(`Server running at ${url}`); // http://127.0.0.1:8787
 const res = await mf.dispatchFetch("http://localhost/"); // Works immediately
 ```
 
-See [configuration.md](./configuration.md) for all constructor options.
+See [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/miniflare/configuration.md) for all constructor options.

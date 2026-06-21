@@ -9,14 +9,14 @@ Purpose: route an agent to one correct runtime-pack entrypoint with minimal cont
 
 ## Required load order
 1. `$CODEX_HOME/AGENTS.md`
-2. `$CODEX_HOME/memories/MEMORY.md` when it exists and the task is repo-aware or ambiguous
+2. `$CODEX_HOME/memories/MEMORY.md` when the task is repo-aware or ambiguous
 3. `$CODEX_HOME/INDEX.md`
 4. `$CODEX_HOME/index/pack/plans.md` and `$CODEX_HOME/index/pack/workflows.md`
 5. `$CODEX_HOME/index/pack/skills.md`
 6. `$CODEX_HOME/docs/style/shell-runtime.md` before shell-sensitive execution
 
 ## Fast catalogs
-- Memory router: `$CODEX_HOME/memories/MEMORY.md` when present
+- Memory router: `$CODEX_HOME/memories/MEMORY.md`
 - Runtime docs hub: `$CODEX_HOME/docs/OVERVIEW.md`
 - Runtime workflow hub: `$CODEX_HOME/docs/workflows/overview.md`
 - Runtime templates hub: `$CODEX_HOME/templates/OVERVIEW.md`
@@ -31,17 +31,18 @@ Purpose: route an agent to one correct runtime-pack entrypoint with minimal cont
 - Language or shell conventions only -> `$CODEX_HOME/index/style/overview.md`
 
 ## Current pack defaults
-- Treat `resources/home/user/index/manifest.yml` as routing metadata for pack entrypoints.
+- Treat `$CODEX_HOME/index/manifest.yml` as routing metadata for pack entrypoints.
 - Keep top-level routing docs short and deterministic.
-- Prefer repo-aware memory routing through `$CODEX_HOME/memories/MEMORY.md` when available, not raw runtime dumps.
+- Prefer repo-aware memory routing through `$CODEX_HOME/memories/MEMORY.md`, not raw runtime dumps.
+- Repo-managed carry-forward is limited to `$CODEX_HOME/memories/`, `$CODEX_HOME/history.jsonl`, `$CODEX_HOME/session_index.jsonl`, `$CODEX_HOME/version.json`, and `$CODEX_HOME/.personality_migration`.
 - Runtime-only state never syncs back into this repo:
-  - `$CODEX_HOME/memories/`
   - `$CODEX_HOME/sessions/`
   - `$CODEX_HOME/shell_snapshots/`
   - `$CODEX_HOME/.credentials.json`
 
 ## High-value workflow entrypoints
 - Codex installer/runtime source work -> `$CODEX_HOME/docs/workflows/codex-manager.md`
+- Repo-aware memory routing -> `$CODEX_HOME/memories/MEMORY.md`
 - MCP stack repo work -> `$CODEX_HOME/docs/workflows/codex-mcp.md`
 - Cloudflare + GitLab delivery work -> `$CODEX_HOME/docs/workflows/cloudflare-delivery.md`
 - Runtime-pack catalog maintenance -> `$CODEX_HOME/docs/workflows/runtime-pack-maintenance.md`
@@ -52,4 +53,4 @@ Purpose: route an agent to one correct runtime-pack entrypoint with minimal cont
 - Choose one entrypoint from that router.
 - Stop broad discovery once the entrypoint is clear.
 
-This file is aligned with `resources/home/user/index/manifest.yml`.
+This file is aligned with `$CODEX_HOME/index/manifest.yml`.

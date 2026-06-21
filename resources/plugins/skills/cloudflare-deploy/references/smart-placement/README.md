@@ -112,27 +112,27 @@ wrangler tail your-worker-name --header cf-placement
 
 **First time?** Start here:
 1. This README - understand core concepts and when to use Smart Placement
-2. [configuration.md](./configuration.md) - set up wrangler.jsonc and understand limitations
-3. [patterns.md](./patterns.md) - see practical examples for your use case
-4. [api.md](./api.md) - monitor and verify Smart Placement is working
-5. [gotchas.md](./gotchas.md) - troubleshoot common issues
+2. [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/smart-placement/configuration.md) - set up wrangler.jsonc and understand limitations
+3. [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/smart-placement/patterns.md) - see practical examples for your use case
+4. [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/smart-placement/api.md) - monitor and verify Smart Placement is working
+5. [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/smart-placement/gotchas.md) - troubleshoot common issues
 
 **Quick lookup:**
 - "Should I enable Smart Placement?" → See "When to Use" above
-- "How do I configure it?" → [configuration.md](./configuration.md)
-- "How do I split frontend/backend?" → [patterns.md](./patterns.md)
-- "Why isn't it working?" → [gotchas.md](./gotchas.md)
+- "How do I configure it?" → [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/smart-placement/configuration.md)
+- "How do I split frontend/backend?" → [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/smart-placement/patterns.md)
+- "Why isn't it working?" → [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/smart-placement/gotchas.md)
 
 ## In This Reference
 
-- [configuration.md](./configuration.md) - wrangler.jsonc setup, mode values, validation rules
-- [api.md](./api.md) - Placement Status API, cf-placement header, monitoring
-- [patterns.md](./patterns.md) - Frontend/backend split, database workers, SSR patterns
-- [gotchas.md](./gotchas.md) - Troubleshooting INSUFFICIENT_INVOCATIONS, performance issues
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/smart-placement/configuration.md) - wrangler.jsonc setup, mode values, validation rules
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/smart-placement/api.md) - Placement Status API, cf-placement header, monitoring
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/smart-placement/patterns.md) - Frontend/backend split, database workers, SSR patterns
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/smart-placement/gotchas.md) - Troubleshooting INSUFFICIENT_INVOCATIONS, performance issues
 
 ## See Also
 
-- [workers](../workers/) - Worker runtime and fetch handlers
-- [d1](../d1/) - D1 database that benefits from Smart Placement
-- [durable-objects](../durable-objects/) - Durable Objects with backend logic
-- [bindings](../bindings/) - Service bindings for frontend/backend split
+- [workers]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers/) - Worker runtime and fetch handlers
+- [d1]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/d1/) - D1 database that benefits from Smart Placement
+- [durable-objects]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/durable-objects/) - Durable Objects with backend logic
+- [bindings]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/bindings/) - Service bindings for frontend/backend split

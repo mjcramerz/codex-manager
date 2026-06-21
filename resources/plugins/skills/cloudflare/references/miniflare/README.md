@@ -17,7 +17,7 @@ Local simulator for Cloudflare Workers development/testing. Runs Workers in work
 Need to test Workers?
 │
 ├─ Unit tests for business logic only?
-│  └─ getPlatformProxy (Vitest/Jest) → [patterns.md](./patterns.md#getplatformproxy)
+│  └─ getPlatformProxy (Vitest/Jest) → [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/miniflare/patterns.md#getplatformproxy)
 │     Fast, no HTTP, direct binding access
 │
 ├─ Integration tests with full runtime?
@@ -26,11 +26,11 @@ Need to test Workers?
 │  │     Full control, programmatic access
 │  │
 │  ├─ Multiple Workers + service bindings?
-│  │  └─ Miniflare workers array → [configuration.md](./configuration.md#multiple-workers)
+│  │  └─ Miniflare workers array → [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/miniflare/configuration.md#multiple-workers)
 │  │     Shared storage, inter-worker calls
 │  │
 │  └─ Vitest test runner integration?
-│     └─ vitest-pool-workers → [patterns.md](./patterns.md#vitest-pool-workers)
+│     └─ vitest-pool-workers → [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/miniflare/patterns.md#vitest-pool-workers)
 │        Full Workers env in Vitest
 │
 └─ Local dev server?
@@ -90,16 +90,16 @@ await mf.dispose();
 **New to Miniflare?** Start here:
 1. [Quick Start](#quick-start) - Running in 2 minutes
 2. [When to Use](#when-to-use) - Choose your testing approach
-3. [patterns.md](./patterns.md) - Testing patterns (getPlatformProxy, Vitest, node:test)
-4. [configuration.md](./configuration.md) - Configure bindings, storage, multiple workers
+3. [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/miniflare/patterns.md) - Testing patterns (getPlatformProxy, Vitest, node:test)
+4. [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/miniflare/configuration.md) - Configure bindings, storage, multiple workers
 
 **Troubleshooting:**
-- [gotchas.md](./gotchas.md) - Common errors and debugging
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/miniflare/gotchas.md) - Common errors and debugging
 
 **API reference:**
-- [api.md](./api.md) - Complete method reference
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/miniflare/api.md) - Complete method reference
 
 ## See Also
-- [wrangler](../wrangler/) - CLI tool that embeds Miniflare for `wrangler dev`
-- [workerd](../workerd/) - Runtime that powers Miniflare
-- [workers](../workers/) - Workers runtime API documentation
+- [wrangler]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/wrangler/) - CLI tool that embeds Miniflare for `wrangler dev`
+- [workerd]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workerd/) - Runtime that powers Miniflare
+- [workers]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workers/) - Workers runtime API documentation

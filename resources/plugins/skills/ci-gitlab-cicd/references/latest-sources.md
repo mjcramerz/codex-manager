@@ -31,8 +31,8 @@ Build GitLab CI/CD pipelines with security gates, pinned images, and determinist
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/gitlab/local/skills/ci-gitlab-cicd/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/gitlab/local/skills/ci-gitlab-cicd/agents/openai.yaml`
 
 ## External references
 - [Git documentation](https://git-scm.com/doc) - Core git behavior and safe workflows.

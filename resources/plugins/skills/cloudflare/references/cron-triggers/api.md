@@ -131,7 +131,7 @@ curl "http://localhost:8787/__scheduled?cron=0+2+*+*+*&scheduledTime=17040672000
 - `cron` - Required. URL-encoded cron expression (use `+` for spaces)
 - `scheduledTime` - Optional. Unix timestamp in milliseconds (defaults to current time)
 
-**Production security:** The `/__scheduled` endpoint is available in production and can be triggered by anyone. Block it or implement authentication - see [gotchas.md](./gotchas.md#security-concerns)
+**Production security:** The `/__scheduled` endpoint is available in production and can be triggered by anyone. Block it or implement authentication - see [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/cron-triggers/gotchas.md#security-concerns)
 
 **Unit testing (Vitest):**
 ```typescript
@@ -191,6 +191,6 @@ export default {
 
 ## See Also
 
-- [README.md](./README.md) - Overview
-- [patterns.md](./patterns.md) - Use cases, examples
-- [gotchas.md](./gotchas.md) - Common errors, testing issues
+- [README.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/cron-triggers/README.md) - Overview
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/cron-triggers/patterns.md) - Use cases, examples
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/cron-triggers/gotchas.md) - Common errors, testing issues

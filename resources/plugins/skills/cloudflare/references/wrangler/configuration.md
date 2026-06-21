@@ -191,7 +191,7 @@ After deploy, ID is added to config automatically.
 
 ## See Also
 
-- [README.md](./README.md) - Overview and commands
-- [api.md](./api.md) - Programmatic API
-- [patterns.md](./patterns.md) - Workflows
-- [gotchas.md](./gotchas.md) - Common issues
+- [README.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/wrangler/README.md) - Overview and commands
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/wrangler/api.md) - Programmatic API
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/wrangler/patterns.md) - Workflows
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/wrangler/gotchas.md) - Common issues

@@ -33,9 +33,9 @@ Design and harden systemd services and timers with safe defaults, validation, an
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
-- `../scripts/skill_helper.py`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-systemd/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-systemd/agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/infra-systemd/scripts/skill_helper.py`
 
 ## Reference files in this directory
 - `latest-sources.md`

@@ -70,7 +70,7 @@ await writer.write(new TextEncoder().encode(`*2\r\n$3\r\nGET\r\n$3\r\nkey\r\n`))
 
 ### PostgreSQL
 
-**Use [Hyperdrive](../hyperdrive/) for production.** Raw Postgres protocol is complex (startup, auth, query messages).
+**Use [Hyperdrive]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/hyperdrive/) for production.** Raw Postgres protocol is complex (startup, auth, query messages).
 
 ### MQTT
 

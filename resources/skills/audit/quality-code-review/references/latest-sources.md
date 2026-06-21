@@ -32,8 +32,8 @@ High-rigor code review skill: intent alignment, correctness, security, performan
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
+- `$CODEX_SKILLS/audit/quality-code-review/SKILL.md`
+- `$CODEX_SKILLS/audit/quality-code-review/agents/openai.yaml`
 
 ## External references
 - [OWASP Cheat Sheet Series](https://cheatsheetseries.owasp.org/) - Secure defaults and implementation guidance.

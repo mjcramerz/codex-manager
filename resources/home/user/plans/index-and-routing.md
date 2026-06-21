@@ -1,7 +1,7 @@
 # Plan
+Purpose: change entrypoints, related links, or index routing while keeping fast catalogs and memory-router paths consistent.
 
 Use this plan when changing entrypoints, related links, or index routing.
-
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -10,10 +10,10 @@ Use this plan when changing entrypoints, related links, or index routing.
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-
 ## Requirements
 - Updated manifest entries with consistent metadata.
 - Regenerated index artifacts and related blocks.
+- Fast catalogs and memory-router links stay aligned with the manifest.
 
 ## Scope
 - In: `$CODEX_HOME/index/manifest.yml`, `$CODEX_HOME/index/` entrypoints, `$CODEX_HOME/INDEX.md`.
@@ -25,13 +25,13 @@ Use this plan when changing entrypoints, related links, or index routing.
 - `$CODEX_HOME/index/core/*.md`
 - `$CODEX_HOME/index/domains/*/*.md`
 - `$CODEX_HOME/INDEX.md`
+- `$CODEX_HOME/memories/MEMORY.md`
 
 ## Action items
 [ ] Update `$CODEX_HOME/index/manifest.yml` entries and related links.
 [ ] Add or adjust entrypoint files under `$CODEX_HOME/index/`.
+[ ] Keep `$CODEX_HOME/INDEX.md` and `$CODEX_HOME/memories/MEMORY.md` aligned with the touched routes.
 [ ] Spot-check key entrypoints for link accuracy.
-
-## Testing and validation
 
 ## Security checkpoints
 - Confirm trust boundaries, credentials, and least-privilege assumptions before execution.
@@ -58,7 +58,6 @@ Use this plan when changing entrypoints, related links, or index routing.
 - Invalid canonical/entrypoint paths.
 
 ## Examples
-
 - Example objective: "Update a router, entrypoint, or related-link contract in the runtime pack."
 - Example validation: "python3 -m unittest tests.test_runtime_pack_docs_contract tests.test_runtime_pack_structure_contract"
 

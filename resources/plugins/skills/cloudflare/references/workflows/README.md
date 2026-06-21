@@ -58,12 +58,12 @@ export class MyWorkflow extends WorkflowEntrypoint<Env, Params> {
 **Troubleshooting:** gotchas.md
 
 ## In This Reference
-- [configuration.md](./configuration.md) - wrangler.jsonc setup, step config, bindings
-- [api.md](./api.md) - Step APIs, instance management, sleep/parameters
-- [patterns.md](./patterns.md) - Common workflows, testing, orchestration
-- [gotchas.md](./gotchas.md) - Timeouts, limits, debugging strategies
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workflows/configuration.md) - wrangler.jsonc setup, step config, bindings
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workflows/api.md) - Step APIs, instance management, sleep/parameters
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workflows/patterns.md) - Common workflows, testing, orchestration
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workflows/gotchas.md) - Timeouts, limits, debugging strategies
 
 ## See Also
-- [durable-objects](../durable-objects/) - Alternative stateful approach
-- [queues](../queues/) - Message-driven workflows
-- [workers](../workers/) - Entry point for workflow instances
+- [durable-objects]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/durable-objects/) - Alternative stateful approach
+- [queues]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/queues/) - Message-driven workflows
+- [workers]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workers/) - Entry point for workflow instances

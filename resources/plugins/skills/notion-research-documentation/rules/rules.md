@@ -15,6 +15,6 @@ updated: '2026-02-20'
 # NOTION-Research Docs Rules
 
 ## Required checks
-- Follow the workflow in `../SKILL.md`.
-- Prefer deterministic scripts in `../scripts/`.
-- Use references in `../references/` for factual guidance.
+- Follow the workflow in `$CODEX_HOME/plugins/cache/codex-local/notion/local/skills/notion-research-documentation/SKILL.md`.
+- Prefer deterministic scripts in `$CODEX_HOME/plugins/cache/codex-local/notion/local/skills/notion-research-documentation/scripts/`.
+- Use references in `$CODEX_HOME/plugins/cache/codex-local/notion/local/skills/notion-research-documentation/references/` for factual guidance.

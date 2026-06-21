@@ -16,6 +16,6 @@ updated: '2026-02-20'
 # Obs Elasticsearch Framework
 
 - Skill: `obs-elasticsearch`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Source of truth: `$CODEX_HOME/plugins/cache/codex-local/observability/local/skills/obs-elasticsearch/SKILL.md`
+- Runtime agent config: `$CODEX_HOME/plugins/cache/codex-local/observability/local/skills/obs-elasticsearch/agents/openai.yaml`
+- Supporting docs: `$CODEX_HOME/plugins/cache/codex-local/observability/local/skills/obs-elasticsearch/references/`

@@ -14,8 +14,8 @@ updated: '2026-03-06'
 # Repo Ops Rules
 
 ## Required checks
-- Follow the workflow in `../SKILL.md`.
-- Prefer deterministic helpers in `../scripts/`.
+- Follow the workflow in `$CODEX_SKILLS/common/repo-ops/SKILL.md`.
+- Prefer deterministic helpers in `$CODEX_SKILLS/common/repo-ops/scripts/`.
 - Enforce repo-root, branch, remote, and worktree preconditions before mutating refs.
 - Require explicit dry-run or equivalent inspection path before risky repo operations.
 - Preserve protected branch, promotion-order, and release-tag controls.

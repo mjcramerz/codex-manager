@@ -1,11 +1,11 @@
 ---
-title: PM-Linear Issues Framework
+title: Linear Framework
 status: active
 owner: Matthew Cramer
 tags:
 - skills
 - all
-- pm-linear-issues
+- linear
 - rules
 - framework-md
 - framework
@@ -13,9 +13,9 @@ tags:
 - default
 updated: '2026-02-20'
 ---
-# PM-Linear Issues Framework
+# Linear Framework
 
-- Skill: `pm-linear-issues`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Skill: `linear`
+- Source of truth: `$CODEX_HOME/plugins/cache/codex-local/linear/local/skills/linear/SKILL.md`
+- Runtime agent config: `$CODEX_HOME/plugins/cache/codex-local/linear/local/skills/linear/agents/openai.yaml`
+- Supporting docs: `$CODEX_HOME/plugins/cache/codex-local/linear/local/skills/linear/references/`

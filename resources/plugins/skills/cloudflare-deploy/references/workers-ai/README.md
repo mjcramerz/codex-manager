@@ -185,13 +185,13 @@ wrangler deploy
 
 ## In This Reference
 
-- [configuration.md](./configuration.md) - wrangler.jsonc setup, TypeScript types, bindings, environment variables
-- [api.md](./api.md) - env.AI.run(), streaming, function calling, REST API, response types
-- [patterns.md](./patterns.md) - RAG with Vectorize, prompt engineering, batching, error handling, caching
-- [gotchas.md](./gotchas.md) - Deprecated @cloudflare/ai package, rate limits, pricing, common errors
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers-ai/configuration.md) - wrangler.jsonc setup, TypeScript types, bindings, environment variables
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers-ai/api.md) - env.AI.run(), streaming, function calling, REST API, response types
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers-ai/patterns.md) - RAG with Vectorize, prompt engineering, batching, error handling, caching
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers-ai/gotchas.md) - Deprecated @cloudflare/ai package, rate limits, pricing, common errors
 
 ## See Also
 
-- [vectorize](../vectorize/) - Vector database for RAG patterns
-- [ai-gateway](../ai-gateway/) - Caching, rate limiting, analytics for AI requests
-- [workers](../workers/) - Worker runtime and fetch handler patterns
+- [vectorize]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/vectorize/) - Vector database for RAG patterns
+- [ai-gateway]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/ai-gateway/) - Caching, rate limiting, analytics for AI requests
+- [workers]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers/) - Worker runtime and fetch handler patterns

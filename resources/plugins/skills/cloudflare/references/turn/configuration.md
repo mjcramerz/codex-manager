@@ -174,6 +174,6 @@ Clients can connect via IPv6, but relayed traffic uses IPv4 addresses.
 
 ## See Also
 
-- [api.md](./api.md) - TURN key creation, credential generation API
-- [patterns.md](./patterns.md) - Full Worker implementation patterns
-- [gotchas.md](./gotchas.md) - Security best practices, troubleshooting
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/turn/api.md) - TURN key creation, credential generation API
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/turn/patterns.md) - Full Worker implementation patterns
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/turn/gotchas.md) - Security best practices, troubleshooting

@@ -31,8 +31,8 @@ FastAPI production patterns: configuration, routing, validation, auth hooks, err
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/backend/local/skills/backend-fastapi/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/backend/local/skills/backend-fastapi/agents/openai.yaml`
 
 ## External references
 - [FastAPI docs](https://fastapi.tiangolo.com/) - Framework patterns and API wiring.

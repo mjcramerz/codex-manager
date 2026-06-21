@@ -16,6 +16,6 @@ updated: '2026-03-11'
 # DB SQLite3 Framework
 
 - Skill: `sqlite3`
-- Source of truth: `../SKILL.md`
-- Runtime agent config: `../agents/openai.yaml`
-- Supporting docs: `../references/`
+- Source of truth: `$CODEX_SKILLS/common/sqlite3/SKILL.md`
+- Runtime agent config: `$CODEX_SKILLS/common/sqlite3/agents/openai.yaml`
+- Supporting docs: `$CODEX_SKILLS/common/sqlite3/references/`

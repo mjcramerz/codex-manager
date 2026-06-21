@@ -163,7 +163,7 @@ Cache Reserve works automatically with Workers deployed via Wrangler. No special
 
 ## See Also
 
-- [README](./README.md) - Overview and core concepts
-- [API Reference](./api.md) - Purging and monitoring APIs
-- [Patterns](./patterns.md) - Best practices and optimization
-- [Gotchas](./gotchas.md) - Common issues and troubleshooting
+- [README]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/cache-reserve/README.md) - Overview and core concepts
+- [API Reference]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/cache-reserve/api.md) - Purging and monitoring APIs
+- [Patterns]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/cache-reserve/patterns.md) - Best practices and optimization
+- [Gotchas]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/cache-reserve/gotchas.md) - Common issues and troubleshooting

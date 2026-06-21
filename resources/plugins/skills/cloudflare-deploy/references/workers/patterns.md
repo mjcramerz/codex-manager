@@ -39,7 +39,7 @@ const handler = router[`${request.method} ${url.pathname}`];
 return handler ? handler(request, env) : new Response('Not Found', { status: 404 });
 ```
 
-**Production**: Use Hono, itty-router, or Worktop (see [frameworks.md](./frameworks.md))
+**Production**: Use Hono, itty-router, or Worktop (see [frameworks.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers/frameworks.md))
 
 ## Request Validation (Zod)
 
@@ -69,7 +69,7 @@ async function handleCreateUser(request: Request) {
 }
 ```
 
-**With Hono**: Use `@hono/zod-validator` for automatic validation (see [frameworks.md](./frameworks.md))
+**With Hono**: Use `@hono/zod-validator` for automatic validation (see [frameworks.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers/frameworks.md))
 
 ## Performance
 
@@ -154,7 +154,7 @@ const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(user
 if (new Uint8Array(hash)[0] % 100 < rolloutPercent) return newFeature(request);
 ```
 
-Rate limiting: See [Durable Objects](../durable-objects/README.md)
+Rate limiting: See [Durable Objects]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/durable-objects/README.md)
 
 ## R2 Multipart Upload
 
@@ -192,7 +192,7 @@ Multi-step jobs with automatic retries, state persistence, resume from failure
 
 ## See Also
 
-- [API](./api.md) - Runtime APIs
-- [Gotchas](./gotchas.md) - Common issues
-- [Configuration](./configuration.md) - Setup
-- [Frameworks](./frameworks.md) - Hono, routing, validation
+- [API]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers/api.md) - Runtime APIs
+- [Gotchas]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers/gotchas.md) - Common issues
+- [Configuration]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers/configuration.md) - Setup
+- [Frameworks]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers/frameworks.md) - Hono, routing, validation

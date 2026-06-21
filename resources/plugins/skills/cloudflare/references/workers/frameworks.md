@@ -192,6 +192,6 @@ router.listen();
 
 ## See Also
 
-- [Patterns](./patterns.md) - Common workflows
-- [API](./api.md) - Runtime APIs
-- [Gotchas](./gotchas.md) - Framework-specific issues
+- [Patterns]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workers/patterns.md) - Common workflows
+- [API]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workers/api.md) - Runtime APIs
+- [Gotchas]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/workers/gotchas.md) - Framework-specific issues

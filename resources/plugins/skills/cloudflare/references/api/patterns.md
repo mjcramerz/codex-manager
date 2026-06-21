@@ -199,6 +199,6 @@ results.forEach((result, i) => {
 
 ## See Also
 
-- [api.md](./api.md) - SDK client initialization, basic operations
-- [gotchas.md](./gotchas.md) - Rate limits, common errors
-- [configuration.md](./configuration.md) - SDK configuration options
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/api/api.md) - SDK client initialization, basic operations
+- [gotchas.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/api/gotchas.md) - Rate limits, common errors
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/api/configuration.md) - SDK configuration options

@@ -1,13 +1,14 @@
 # codex-manager workflow
-Start with `$CODEX_HOME/plans/workflows/workflow-codex-manager.md` before executing this workflow.
 Purpose: guide work in the Codex installer/runtime-pack source repo that owns install flow, home sync, hooks, runtime config, skills, and plugin marketplace content.
 
+Start with `$CODEX_HOME/plans/workflows/workflow-codex-manager.md` before executing this workflow.
+
 ## Primary surfaces
-- Installer: `src/install/**`
-- Runtime config source: `config/usr/**`, `config/vendor/**`, `config/agents/**`
-- Runtime-home source pack: `resources/home/user/**`
-- Hook runtime source: `resources/hooks/scripts/lib/Codex/Hook/**`
-- Skills and plugin marketplace: `resources/skills/**`, `resources/plugins/**`
+- Compiled runtime home config: `$CODEX_HOME/config.toml`
+- Compiled agent and system config: `$CODEX_AGENTS/*.toml`, `/etc/codex/config.toml`, `/etc/codex/requirements.toml`
+- Runtime-home pack: `$CODEX_HOME/**`
+- Hook runtime source: `$CODEX_HOME/hooks/scripts/lib/Codex/Hook/**`
+- Skills and plugin marketplace: `$CODEX_SKILLS/**`, `$CODEX_HOME/plugins/cache/**`, `$CODEX_HOME/.agents/plugins/marketplace.json`
 
 ## Cross-repo alignment
 - Check `codex-mcp` when MCP launcher/runtime expectations change.
@@ -16,7 +17,8 @@ Purpose: guide work in the Codex installer/runtime-pack source repo that owns in
 
 ## State boundary
 - Runtime home is source-to-target only; runtime state never syncs back into this repo.
-- Runtime-only examples: `$CODEX_HOME/memories/`, `$CODEX_HOME/sessions/`, `$CODEX_HOME/shell_snapshots/`, `$CODEX_HOME/.credentials.json`, `$CODEX_HOME/history.jsonl`, `$CODEX_HOME/session_index.jsonl`, `$CODEX_HOME/version.json`, and `$CODEX_HOME/.personality_migration`.
+- Repo-managed carry-forward may intentionally include `$CODEX_HOME/memories/`, `$CODEX_HOME/history.jsonl`, `$CODEX_HOME/session_index.jsonl`, `$CODEX_HOME/version.json`, and `$CODEX_HOME/.personality_migration` when those artifacts are seeded from source.
+- Runtime-only examples stay limited to `$CODEX_HOME/sessions/`, `$CODEX_HOME/shell_snapshots/`, and `$CODEX_HOME/.credentials.json`.
 
 ## Install and nuke checkpoints
 - Keep `install`, `update`, `nuke`, and `uninstall` idempotent for already-applied or already-removed runtime state.

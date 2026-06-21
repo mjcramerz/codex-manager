@@ -119,12 +119,12 @@ async function uploadWithErrorHandling(url: string, file: File) {
 
 ## In This Reference
 
-- [README.md](./README.md) - Overview and quick start
-- [configuration.md](./configuration.md) - Setup and config
-- [api.md](./api.md) - On-demand video APIs
-- [api-live.md](./api-live.md) - Live streaming APIs
-- [patterns.md](./patterns.md) - Full-stack flows, best practices
+- [README.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/stream/README.md) - Overview and quick start
+- [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/stream/configuration.md) - Setup and config
+- [api.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/stream/api.md) - On-demand video APIs
+- [api-live.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/stream/api-live.md) - Live streaming APIs
+- [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/stream/patterns.md) - Full-stack flows, best practices
 
 ## See Also
 
-- [workers](../workers/) - Deploy Stream APIs securely
+- [workers]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workers/) - Deploy Stream APIs securely

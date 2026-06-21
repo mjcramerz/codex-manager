@@ -43,7 +43,7 @@ trainer = SFTTrainer(
 **Prevention:**
 - Always create train/eval split for better monitoring
 - Use `dataset.train_test_split(test_size=0.1, seed=42)`
-- Check example scripts: `../scripts/train_sft_example.py` includes proper eval setup
+- Check example scripts: `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-model-trainer/scripts/train_sft_example.py` includes proper eval setup
 
 ## Job Times Out
 
@@ -57,7 +57,7 @@ trainer = SFTTrainer(
 
 **Prevention:**
 - Always start with a quick demo run to estimate timing
-- Use `../scripts/estimate_cost.py` to get time estimates
+- Use `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-model-trainer/scripts/estimate_cost.py` to get time estimates
 - Monitor first runs closely via Trackio or logs
 
 ## Model Not Saved to Hub
@@ -72,7 +72,7 @@ trainer = SFTTrainer(
 - [ ] Token has write permissions (check at https://huggingface.co/settings/tokens)
 - [ ] Training script calls `trainer.push_to_hub()` at the end
 
-**See:** `./hub_saving.md` for detailed Hub authentication troubleshooting
+**See:** `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-model-trainer/references/hub_saving.md` for detailed Hub authentication troubleshooting
 
 ## Out of Memory (OOM)
 
@@ -229,7 +229,7 @@ SFTConfig(max_seq_length=512)
    ```python
    hf_jobs("logs", {"job_id": "your-job-id"})
    ```
-3. **Use Trackio for real-time monitoring:** See `./trackio_guide.md`
+3. **Use Trackio for real-time monitoring:** See `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-model-trainer/references/trackio_guide.md`
 4. **Verify job is actually running:**
    ```python
    hf_jobs("inspect", {"job_id": "your-job-id"})
@@ -274,9 +274,9 @@ If issues persist:
    ```
 
 3. **Review related guides:**
-   - `./hub_saving.md` - Hub authentication issues
-   - `./hardware_guide.md` - Hardware selection and specs
-   - `./training_patterns.md` - Eval dataset requirements
+   - `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-model-trainer/references/hub_saving.md` - Hub authentication issues
+   - `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-model-trainer/references/hardware_guide.md` - Hardware selection and specs
+   - `$CODEX_HOME/plugins/cache/codex-local/huggingface/local/skills/huggingface-model-trainer/references/training_patterns.md` - Eval dataset requirements
    - SKILL.md "Working with Scripts" section - Script format and URL issues
 
 4. **Ask in HF forums:** https://discuss.huggingface.co/

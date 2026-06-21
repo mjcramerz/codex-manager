@@ -30,8 +30,8 @@ Design logrotate policies with safe defaults.
 - References
 
 ## Local implementation anchors
-- `../SKILL.md`
-- `../agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/ops-logrotate/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/system-infra/local/skills/ops-logrotate/agents/openai.yaml`
 
 ## External references
 - [Logrotate man page](https://man7.org/linux/man-pages/man8/logrotate.8.html) - Log retention and rotation semantics.

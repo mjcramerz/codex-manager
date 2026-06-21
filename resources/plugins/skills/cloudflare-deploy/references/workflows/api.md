@@ -182,4 +182,4 @@ curl "https://api.cloudflare.com/client/v4/accounts/{account_id}/workflows/{work
 curl -X POST "https://api.cloudflare.com/client/v4/accounts/{account_id}/workflows/{workflow_name}/instances/{instance_id}/events" -H "Authorization: Bearer {token}" -d '{"type":"approval","payload":{"approved":true}}'
 ```
 
-See: [configuration.md](./configuration.md), [patterns.md](./patterns.md)
+See: [configuration.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workflows/configuration.md), [patterns.md]($CODEX_HOME/plugins/cache/codex-local/wrangler/local/skills/cloudflare-deploy/references/workflows/patterns.md)

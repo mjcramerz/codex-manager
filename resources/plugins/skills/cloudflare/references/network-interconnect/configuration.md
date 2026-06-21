@@ -111,4 +111,4 @@ Use first 3 letters: "gru"
 - Enable maintenance notifications immediately after activation
 - Monitor status programmatically via API
 
-For design patterns, HA architecture, and security best practices, see [patterns.md](./patterns.md).
+For design patterns, HA architecture, and security best practices, see [patterns.md]($CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/cloudflare/references/network-interconnect/patterns.md).
