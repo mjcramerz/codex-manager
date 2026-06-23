@@ -252,6 +252,44 @@ class InstallConfigToleranceTests(unittest.TestCase):
         assert_expected_inline_hooks(self, hooks)
         self.assertNotIn("hooks", installer.plugins_payload)
 
+    def test_home_config_render_includes_local_runtime_marketplace(self) -> None:
+        installer = codex_install.Installer.__new__(codex_install.Installer)
+        installer.repo_root = REPO_ROOT
+        installer.repo_layout = codex_install.RepoLayout.from_repo_root(REPO_ROOT)
+        installer._warnings_emitted = set()
+        installer._warn_once = lambda _message: None
+        installer.plugins_payload = codex_install.parse_toml_file(installer.repo_layout.user_apps_path)
+        installer.hooks_payload = codex_install.parse_toml_file(installer.repo_layout.user_hooks_path)
+        installer.effective_plugins_metadata_payload = codex_install.effective_plugins_inventory_payload(
+            codex_install.parse_json_file(installer.repo_layout.plugins_inventory_path),
+            installer.repo_layout.plugins_inventory_path,
+        )
+
+        env = codex_install.parse_env_file(REPO_ROOT / ".env")
+        vars_payload = codex_install.parse_toml_file(REPO_ROOT / "vars.toml")
+        global_vars = codex_install.parse_variable_table(
+            vars_payload,
+            path_label="vars.toml",
+            table_name="global_variables",
+            item_label="global variable",
+        )
+        runtime_vars = codex_install.derive_runtime_globals_from_env(env)
+        sqlite_home = global_vars.get("CODEX_SQLITE_HOME", "").strip()
+        if sqlite_home:
+            runtime_vars["CODEX_SQLITE_HOME"] = sqlite_home
+        installer.runtime_vars = runtime_vars
+        installer.variables = dict(env)
+        installer.variables.update(runtime_vars)
+
+        with patch.object(installer, "_instruction_file_overrides", return_value={}):
+            rendered = installer._render_user_config_toml("", Path(runtime_vars["CODEX_HOME"]) / "config.toml")
+
+        payload = tomllib.loads(rendered)
+        marketplaces = payload.get("marketplaces", {})
+        self.assertIsInstance(marketplaces, dict)
+        self.assertEqual(marketplaces["codex-local"]["source_type"], "local")
+        self.assertEqual(marketplaces["codex-local"]["source"], runtime_vars["CODEX_HOME"])
+
     def test_instruction_override_missing_key_warns_without_blocking(self) -> None:
         installer = codex_install.Installer.__new__(codex_install.Installer)
         installer._warnings_emitted = set()

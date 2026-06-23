@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from pathlib import PurePosixPath
 from typing import Any
 
 
@@ -53,7 +52,7 @@ def runtime_marketplace_source_path(
     marketplace_name: str,
     plugin_name: str,
 ) -> str:
-    return PurePosixPath("..", "..", "plugins", "cache", marketplace_name, plugin_name, "local").as_posix()
+    return f"./plugins/cache/{marketplace_name}/{plugin_name}/local"
 
 
 def render_runtime_plugin_marketplace(

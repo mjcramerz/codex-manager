@@ -113,6 +113,16 @@ class PluginRuntimeContractsTests(unittest.TestCase):
         inventory = load_effective_plugins_inventory()
         self.assertTrue(REQUIRED_GLOBAL_MCP.issubset(set(inventory["shared_mcp"]["refs"])))
 
+    def test_apps_payload_declares_local_runtime_marketplace_for_manifest_name(self) -> None:
+        apps_payload = load_apps_payload()
+        inventory = load_effective_plugins_inventory()
+        marketplaces = apps_payload.get("marketplaces", {})
+        self.assertIsInstance(marketplaces, dict)
+        marketplace = marketplaces.get(inventory["marketplace_name"])
+        self.assertIsInstance(marketplace, dict)
+        self.assertEqual(marketplace.get("source_type"), "local")
+        self.assertEqual(marketplace.get("source"), "${CODEX_HOME}")
+
     def test_effective_plugins_inventory_warns_when_required_global_shared_mcp_refs_missing(self) -> None:
         inventory = parse_json_file(PLUGINS_MANIFEST_PATH)
         inventory["shared_mcp"]["refs"] = ["filesystem", "git"]
@@ -457,14 +467,15 @@ class PluginRuntimeContractsTests(unittest.TestCase):
         bundles = load_plugin_bundles()
         marketplace_name = load_effective_plugins_inventory()["marketplace_name"]
         payload = json.loads(render_runtime_plugin_marketplace(marketplace_name, bundles))
-        runtime_marketplace_dir = Path("/data/codex/usr/home/.agents/plugins")
+        runtime_marketplace_root = Path("/data/codex/usr/home")
         runtime_plugins_dir = Path("/data/codex/usr/home/plugins/cache")
 
         for entry in payload["plugins"]:
             plugin_name = entry["name"]
             expected_relative = runtime_marketplace_source_path(marketplace_name, plugin_name)
             self.assertEqual(entry["source"]["path"], expected_relative)
-            resolved = (runtime_marketplace_dir / expected_relative).resolve()
+            self.assertTrue(expected_relative.startswith("./plugins/cache/"))
+            resolved = (runtime_marketplace_root / expected_relative).resolve()
             self.assertEqual(
                 resolved,
                 runtime_plugins_dir / marketplace_name / plugin_name / "local",

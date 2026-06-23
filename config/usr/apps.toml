@@ -469,5 +469,6 @@ tool_timeout_sec = 180
 
 [marketplaces]
 
-#[marketplaces.codex-local]
-#enabled = true
+[marketplaces.codex-local]
+source_type = "local"
+source = "${CODEX_HOME}"

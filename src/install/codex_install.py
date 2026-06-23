@@ -2341,9 +2341,21 @@ class Installer:
         return local_plugin_bundle_dirs(source_root)
 
     def _plugin_manifest_marketplace_name(self) -> str:
-        if not self.plugins_metadata_payload:
+        inventory_path = getattr(self, "plugins_json_path", None)
+        if inventory_path is None:
+            repo_layout = getattr(self, "repo_layout", None)
+            inventory_path = repo_layout.plugins_inventory_path if repo_layout is not None else None
+        if inventory_path is None:
             return ""
-        return plugin_manifest_marketplace_name(self.effective_plugins_metadata_payload, self.plugins_json_path)
+
+        effective_payload = getattr(self, "effective_plugins_metadata_payload", {})
+        if effective_payload:
+            return plugin_manifest_marketplace_name(effective_payload, inventory_path)
+
+        raw_payload = getattr(self, "plugins_metadata_payload", {})
+        if not raw_payload:
+            return ""
+        return plugin_manifest_marketplace_name(raw_payload, inventory_path)
 
     def _plugin_skill_source_path(self, skill_source: str) -> Path:
         return plugin_skill_source_path(self.repo_root, self.plugins_json_path, skill_source)
@@ -2515,11 +2527,39 @@ class Installer:
         return rendered
 
     def _resolved_user_apps_payload(self) -> dict[str, Any]:
-        return resolve_object_placeholders(
+        payload = resolve_object_placeholders(
             copy.deepcopy(self.plugins_payload),
             self.variables,
             "config/usr/apps.toml",
         )
+        return self._ensure_runtime_local_marketplace(payload)
+
+    def _ensure_runtime_local_marketplace(self, payload: dict[str, Any]) -> dict[str, Any]:
+        if not isinstance(payload, dict):
+            fail("config/usr/apps.toml must render to an object")
+
+        marketplaces = payload.get("marketplaces", {})
+        if marketplaces in (None, {}):
+            marketplaces = {}
+        if not isinstance(marketplaces, dict):
+            fail("config/usr/apps.toml marketplaces must be an object")
+
+        marketplace_name = self._plugin_manifest_marketplace_name()
+        entry = marketplaces.get(marketplace_name, {})
+        if entry in (None, {}):
+            entry = {}
+        if not isinstance(entry, dict):
+            fail(f"config/usr/apps.toml marketplaces.{marketplace_name} must be an object")
+
+        runtime_home = getattr(self, "runtime_vars", {}).get("CODEX_HOME") or getattr(self, "variables", {}).get("CODEX_HOME")
+        if not isinstance(runtime_home, str) or not runtime_home:
+            fail("CODEX_HOME must be available before rendering marketplaces")
+
+        entry["source_type"] = "local"
+        entry["source"] = runtime_home
+        marketplaces[marketplace_name] = entry
+        payload["marketplaces"] = marketplaces
+        return payload
 
     def _resolved_user_hooks_payload(self) -> dict[str, Any]:
         return resolve_object_placeholders(
@@ -3033,6 +3073,20 @@ class Installer:
             fail(f"plugin config/manifest drift detected: {'; '.join(details)}")
 
         marketplace_name = self._plugin_manifest_marketplace_name()
+        marketplaces = home_payload.get("marketplaces")
+        if not isinstance(marketplaces, dict):
+            fail("compiled home config missing [marketplaces] section")
+        marketplace_entry = marketplaces.get(marketplace_name)
+        if not isinstance(marketplace_entry, dict):
+            fail(f"compiled home config missing [marketplaces.{marketplace_name}] section")
+        if marketplace_entry.get("source_type") != "local":
+            fail(f"compiled home config marketplaces.{marketplace_name}.source_type must be local")
+        if marketplace_entry.get("source") != self.runtime_vars["CODEX_HOME"]:
+            fail(
+                f"compiled home config marketplaces.{marketplace_name}.source must equal "
+                f"{self.runtime_vars['CODEX_HOME']}"
+            )
+
         runtime_plugins_root = output_root / "plugins" / "cache" / marketplace_name
         marketplace_path = output_root / ".agents" / "plugins" / "marketplace.json"
         self._mkdir_path(runtime_plugins_root)
