@@ -215,6 +215,7 @@ class ManagedSecretsHelperTests(unittest.TestCase):
         self.assertIn('--host-config "/data/codex/home/config.toml"', rendered)
         self.assertIn('if [ -n "${CODEX_INJECT_SECRETS:-}" ]; then', rendered)
         self.assertIn("codex-secret-tool-env.py", rendered)
+        self.assertNotIn("codex-ensure-tmpfs", rendered)
         self.assertNotIn("--lookup-file", rendered)
         self.assertNotIn("--secret-service", rendered)
         self.assertNotIn('if [ "${codex_arg}" = "--k" ]; then', rendered)
@@ -225,6 +226,7 @@ class ManagedSecretsHelperTests(unittest.TestCase):
             share_dir=Path("/data/codex/share"),
             wrapper_dir=Path("/data/bin"),
         )
+        self.assertNotIn("codex-ensure-tmpfs", rendered)
         self.assertNotIn("--secrets-file", rendered)
         self.assertNotIn("--lookup-file", rendered)
 

@@ -87,12 +87,9 @@ from lib.managed_secrets import store_managed_secret
 from lib.release_assets import ReleaseAssetError, discover_release_binaries
 from lib.runtime import (
     RuntimeRenderError,
-    TMPFS_HELPER_FILENAME,
     derive_runtime_globals_from_env,
     render_codex_shim,
-    render_codex_tmpfs_helper,
     render_shell_export_block,
-    render_shell_exec_block,
     render_shell_path_profile,
     render_wrapper_aliases,
 )
@@ -145,7 +142,6 @@ RUNTIME_REQUIRED = (
     "CODEX_SKILLS",
     "CODEX_LOG_DIR",
     "CODEX_SQLITE_HOME",
-    "CODEX_TMPDIR",
 )
 GLOBAL_EXPORT_REQUIRED = (
     "CODEX_HOME",
@@ -153,14 +149,9 @@ GLOBAL_EXPORT_REQUIRED = (
     "CODEX_SKILLS",
     "CODEX_SQLITE_HOME",
     "CODEX_LOG_DIR",
-    "CODEX_TMPDIR",
 )
 GLOBAL_EXPORT_PATH_KEYS = GLOBAL_EXPORT_REQUIRED
-
-PROCESS_TEMP_ENV_KEYS = ("TMPDIR", "TEMP", "TMP")
-SAFE_PROCESS_TMPDIR = "/tmp"
 WRAPPER_ALIASES_FILENAME = "codex-wrapper-aliases.sh"
-TMPFS_MOUNT_OPTIONS = "size=36%,mode=1777,nodev,nosuid"
 
 SCHEMA_TOOL_SOURCE_FILENAME = "codex_schema_tool.py"
 SCHEMA_HELPER_COMMANDS = {
@@ -322,12 +313,10 @@ class Installer:
             STAGE_SOURCE_CHECKOUT_DIR_KEY: str(root / "checkout"),
         }
 
-    def _configure_stage_process_tmpdir(self) -> None:
+    def _configure_stage_process_home(self) -> None:
         stage_root = self._resolved_stage_root()
-        tmpdir = Path(self.runtime_vars["CODEX_TMPDIR"])
         process_home = stage_root / "process-home"
         for path in (
-            tmpdir,
             process_home,
             process_home / ".cargo",
             process_home / ".rustup",
@@ -336,16 +325,12 @@ class Installer:
             process_home / ".local" / "state",
         ):
             self._mkdir_path(path)
-        rendered = str(tmpdir)
-        for key in PROCESS_TEMP_ENV_KEYS:
-            os.environ[key] = rendered
         os.environ["HOME"] = str(process_home)
         os.environ["CARGO_HOME"] = str(process_home / ".cargo")
         os.environ["RUSTUP_HOME"] = str(process_home / ".rustup")
         os.environ["XDG_CACHE_HOME"] = str(process_home / ".cache")
         os.environ["XDG_CONFIG_HOME"] = str(process_home / ".config")
         os.environ["XDG_STATE_HOME"] = str(process_home / ".local" / "state")
-        tempfile.tempdir = rendered
 
     def load(self) -> None:
         self.env = parse_env_file(self.env_path)
@@ -390,8 +375,7 @@ class Installer:
 
         self.runtime_layout = RuntimeLayout.from_env(self.env, self.runtime_vars)
         if self._stage_mode():
-            self._configure_stage_process_tmpdir()
-        self._sanitize_process_tmpdir()
+            self._configure_stage_process_home()
         self.variables = dict(self.env)
         self.variables.update(self.runtime_vars)
         self.effective_plugins_metadata_payload = effective_plugins_inventory_payload(
@@ -602,28 +586,6 @@ class Installer:
                     f"{server_name} must declare bearer_token_env_var = {expected[server_name]!r}"
                 )
 
-    def _sanitize_process_tmpdir(self) -> None:
-        if self._stage_mode():
-            return
-        tmpdir_value = self.runtime_vars.get("CODEX_TMPDIR", "").strip()
-        if not tmpdir_value:
-            return
-        codex_tmpdir = ensure_safe_absolute_path("CODEX_TMPDIR", tmpdir_value)
-        updated = False
-        for key in PROCESS_TEMP_ENV_KEYS:
-            raw_value = os.environ.get(key, "").strip()
-            if not raw_value:
-                continue
-            try:
-                env_path = ensure_safe_absolute_path(key, raw_value)
-            except InstallError:
-                continue
-            if env_path == codex_tmpdir or is_within(env_path, codex_tmpdir):
-                os.environ[key] = SAFE_PROCESS_TMPDIR
-                updated = True
-        if updated:
-            tempfile.tempdir = None
-
     def compile(self, output_dir: Path) -> CompiledArtifacts:
         target_output_dir = output_dir
         if self.dry_run:
@@ -661,9 +623,6 @@ class Installer:
 
     def _helpers_dir(self) -> Path:
         return self._share_dir() / "helpers"
-
-    def _tmpfs_helper_target(self) -> Path:
-        return self._helpers_dir() / TMPFS_HELPER_FILENAME
 
     def _wrapper_aliases_target(self) -> Path:
         return self._helpers_dir() / WRAPPER_ALIASES_FILENAME
@@ -1045,7 +1004,6 @@ class Installer:
         try:
             effective_launch_env = self.launch_env if launch_env is None else launch_env
             export_block = render_shell_export_block(effective_launch_env)
-            tmpfs_block = render_shell_exec_block("codex tmpfs helper", self._tmpfs_helper_target())
         except RuntimeRenderError as exc:
             fail(str(exc))
         if command == "newest":
@@ -1053,7 +1011,6 @@ class Installer:
                 "#!/usr/bin/env bash\n"
                 "set -euo pipefail\n"
                 f"{export_block}"
-                f"{tmpfs_block}"
                 "if (($# != 0)); then\n"
                 "  echo \"usage: codex-schema-newest\" >&2\n"
                 "  exit 2\n"
@@ -1067,7 +1024,6 @@ class Installer:
             "#!/usr/bin/env bash\n"
             "set -euo pipefail\n"
             f"{export_block}"
-            f"{tmpfs_block}"
             "if (($# > 1)); then\n"
             "  echo \"usage: codex-schema-diff [--output]\" >&2\n"
             "  exit 2\n"
@@ -1084,8 +1040,6 @@ class Installer:
     def _ensure_runtime_directories(self) -> None:
         path_values: set[str] = {self.env[key] for key in ENV_ROOT_KEYS}
         for key, value in self.runtime_vars.items():
-            if key == "CODEX_TMPDIR":
-                continue
             path_values.add(value)
         path_values.add(str(self._default_sqlite_home()))
         path_values.add(str(Path(self.env["CODEX_SYSTEM_DIR"]) / "skills"))
@@ -1591,17 +1545,6 @@ class Installer:
             wrapper_content = self._render_schema_wrapper(command, launch_env=launch_env)
             self._write_file(helpers_dir / name, wrapper_content, mode=0o755)
 
-    def _sync_tmpfs_helper(self, launch_env: dict[str, str] | None = None) -> None:
-        try:
-            effective_launch_env = self.launch_env if launch_env is None else launch_env
-            content = render_codex_tmpfs_helper(
-                launch_env=effective_launch_env,
-                mount_enabled=not self._stage_mode(),
-            )
-        except RuntimeRenderError as exc:
-            fail(str(exc))
-        self._write_file(self._tmpfs_helper_target(), content, mode=0o755)
-
     def _sync_managed_secret_env_helper(self) -> None:
         self._copy_file(
             self._managed_secret_env_helper_source_path(),
@@ -1849,7 +1792,6 @@ class Installer:
         if not helpers_dir.is_dir():
             return
 
-        self._sync_tmpfs_helper(launch_env=launch_env)
         schema_targets_present = (helpers_dir / SCHEMA_TOOL_SOURCE_FILENAME).is_file() or any(
             (helpers_dir / name).is_file() for name in SCHEMA_HELPER_NAMES
         )
@@ -2085,139 +2027,6 @@ class Installer:
         self.apply_home_bundle()
         self.apply_admin(artifacts)
         self.setup_environment()
-        self._log("installing tmpfs helper")
-        self._sync_tmpfs_helper()
-        if self._stage_mode():
-            self._log("skipping tmpfs mount for staged dry-run install")
-        else:
-            self._log("ensuring runtime tmpfs mount")
-            self.mount_runtime_tmpfs()
-
-    def _managed_tmpfs_targets(self) -> list[Path]:
-        raw_targets: list[tuple[str, str]] = []
-        session_tmpdir = self.launch_env.get("TMPDIR", "").strip()
-        if session_tmpdir:
-            raw_targets.append(("TMPDIR", session_tmpdir))
-        codex_tmpdir = self.runtime_vars.get("CODEX_TMPDIR", "").strip()
-        if codex_tmpdir:
-            raw_targets.append(("CODEX_TMPDIR", codex_tmpdir))
-        if not raw_targets:
-            fail("missing TMPDIR/CODEX_TMPDIR mount target")
-
-        targets: list[Path] = []
-        seen: set[str] = set()
-        for label, value in raw_targets:
-            target = ensure_safe_absolute_path(label, value)
-            rendered = str(target)
-            if rendered in seen:
-                continue
-            seen.add(rendered)
-            targets.append(target)
-        return targets
-
-    def _primary_tmpfs_target(self) -> Path:
-        return self._managed_tmpfs_targets()[0]
-
-    def _decode_mountinfo_path(self, encoded: str) -> str:
-        if "\\" not in encoded:
-            return encoded
-        chars: list[str] = []
-        index = 0
-        while index < len(encoded):
-            current = encoded[index]
-            if current == "\\" and index + 3 < len(encoded):
-                octal = encoded[index + 1 : index + 4]
-                if all(ch in "01234567" for ch in octal):
-                    chars.append(chr(int(octal, 8)))
-                    index += 4
-                    continue
-            chars.append(current)
-            index += 1
-        return "".join(chars)
-
-    def _mount_fstype(self, path: Path) -> str | None:
-        target = str(path.resolve(strict=False))
-        mountinfo = Path("/proc/self/mountinfo")
-        if not mountinfo.is_file():
-            return "mounted" if os.path.ismount(target) else None
-
-        try:
-            lines = mountinfo.read_text(encoding="utf-8").splitlines()
-        except OSError:
-            return "mounted" if os.path.ismount(target) else None
-
-        for raw_line in lines:
-            fields = raw_line.split()
-            if len(fields) < 5:
-                continue
-            mount_point = self._decode_mountinfo_path(fields[4])
-            if mount_point == target:
-                try:
-                    separator = fields.index("-")
-                except ValueError:
-                    return "mounted"
-                if separator + 1 >= len(fields):
-                    return "mounted"
-                return fields[separator + 1]
-        return None
-
-    def _is_mount_point(self, path: Path) -> bool:
-        return self._mount_fstype(path) is not None
-
-    def _mount_tmpfs_target(self, target: Path) -> None:
-        rendered = str(target.resolve(strict=False))
-        current_fstype = self._mount_fstype(target)
-        if current_fstype not in (None, "tmpfs", "mounted"):
-            fail(f"TMPDIR target is already mounted with unsupported filesystem {current_fstype}: {rendered}")
-
-        if current_fstype in ("tmpfs", "mounted"):
-            return
-
-        if self.dry_run:
-            print(f"[dry-run] sudo mkdir -p {rendered}")
-            print(f"[dry-run] sudo mount -t tmpfs -o {TMPFS_MOUNT_OPTIONS} tmpfs {rendered}")
-            print(f"[dry-run] sudo chmod 1777 -- {rendered}")
-            return
-
-        self._run_with_sudo(["mkdir", "-p", rendered])
-        try:
-            self._run_with_sudo(["mount", "-t", "tmpfs", "-o", TMPFS_MOUNT_OPTIONS, "tmpfs", rendered])
-        except InstallError:
-            current_fstype = self._mount_fstype(target)
-            if current_fstype not in ("tmpfs", "mounted"):
-                raise
-
-        current_fstype = self._mount_fstype(target)
-        if current_fstype not in ("tmpfs", "mounted"):
-            fail(f"failed to mount TMPDIR target as tmpfs: {rendered}")
-        self._run_with_sudo(["chmod", "1777", "--", rendered])
-
-    def mount_runtime_tmpfs(self) -> None:
-        self._mount_tmpfs_target(self._primary_tmpfs_target())
-
-    def _unmount_tmpfs_target_if_mounted(self, target: Path) -> None:
-        rendered = str(target.resolve(strict=False))
-        if not self._is_mount_point(target):
-            return
-        if self.dry_run:
-            print(f"[dry-run] sudo umount -- {rendered}")
-            return
-
-        try:
-            self._run_with_sudo(["umount", "--", rendered])
-        except InstallError:
-            # Busy tmpfs mounts can require lazy detach before deletion.
-            self._run_with_sudo(["umount", "-l", "--", rendered])
-
-        if self._is_mount_point(target):
-            fail(f"failed to unmount TMPDIR mountpoint before cleanup: {rendered}")
-
-    def _unmount_codex_tmpdir_if_mounted(self) -> None:
-        for target in self._managed_tmpfs_targets():
-            self._unmount_tmpfs_target_if_mounted(target)
-
-    def unmount_runtime_tmpfs(self) -> None:
-        self._unmount_codex_tmpdir_if_mounted()
 
     def _purge_codex_environment(self) -> None:
         env_script = self._env_script_path()
@@ -2256,7 +2065,6 @@ class Installer:
             "CODEX_SKILLS",
             "CODEX_LOG_DIR",
             "CODEX_SQLITE_HOME",
-            "CODEX_TMPDIR",
         )
 
         for key in required_env:
@@ -2292,7 +2100,6 @@ class Installer:
             ensure_safe_absolute_path("CODEX_SKILLS", self.runtime_vars["CODEX_SKILLS"]),
             ensure_safe_absolute_path("CODEX_LOG_DIR", self.runtime_vars["CODEX_LOG_DIR"]),
             ensure_safe_absolute_path("CODEX_SQLITE_HOME", self.runtime_vars["CODEX_SQLITE_HOME"]),
-            ensure_safe_absolute_path("CODEX_TMPDIR", self.runtime_vars["CODEX_TMPDIR"]),
         }
         candidate_paths.add(self._mcp_ssh_key_path())
         candidate_paths.add(self._mcp_known_hosts_path())
@@ -2308,9 +2115,6 @@ class Installer:
 
         target_paths.update(self._managed_wrapper_targets_for_uninstall())
         target_paths.add(self._path_profile_target())
-
-        self._log("unmounting CODEX_TMPDIR when mounted")
-        self._unmount_codex_tmpdir_if_mounted()
 
         if self._stage_mode():
             self._log("skipping managed secret-tool cleanup for staged dry-run uninstall")
@@ -3202,8 +3006,6 @@ def parse_args() -> argparse.Namespace:
             "skills",
             "admin",
             "upgrade",
-            "tmpfs-mnt",
-            "tmpfs-umt",
             "vars-init",
             "vars-reset",
             "uninstall",
@@ -3315,25 +3117,6 @@ def run() -> int:
             print("[ok] dry-run complete")
             return 0
         print("[ok] vars-init complete")
-        return 0
-
-    if args.command == "tmpfs-mnt":
-        installer.validate()
-        installer._sync_tmpfs_helper()
-        installer.mount_runtime_tmpfs()
-        if args.dry_run:
-            print("[ok] dry-run complete")
-            return 0
-        print("[ok] tmpfs-mnt complete")
-        return 0
-
-    if args.command == "tmpfs-umt":
-        installer.validate()
-        installer.unmount_runtime_tmpfs()
-        if args.dry_run:
-            print("[ok] dry-run complete")
-            return 0
-        print("[ok] tmpfs-umt complete")
         return 0
 
     if args.command == "build-install":

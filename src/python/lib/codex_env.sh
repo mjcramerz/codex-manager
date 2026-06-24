@@ -24,11 +24,6 @@ contains_control_chars() {
 }
 
 safe_tmp_base() {
-  local candidate=${TMPDIR:-/tmp}
-  if [[ -n "${candidate}" && -d "${candidate}" && -w "${candidate}" && -x "${candidate}" ]]; then
-    printf '%s\n' "${candidate}"
-    return 0
-  fi
   printf '%s\n' "/tmp"
 }
 

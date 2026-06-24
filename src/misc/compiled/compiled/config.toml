@@ -47,10 +47,9 @@ writable_roots = [
   "/data/workspace",
   "/data/codex/usr",
   "/tmp",
-  "/data/codex/tmp",
 ]
 network_access = true
-exclude_tmpdir_env_var = false
+exclude_tmpdir_env_var = true
 exclude_slash_tmp = false
 
 #instructions = """..."""

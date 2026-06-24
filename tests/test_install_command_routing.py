@@ -341,7 +341,7 @@ class InstallConfigToleranceTests(unittest.TestCase):
         installer = codex_install.Installer.__new__(codex_install.Installer)
         installer.stage_root = Path("/data/dryrun/codex")
         installer.global_vars = {"CODEX_HOME": "/data/dryrun/codex/usr/home"}
-        installer.launch_env = {"TMPDIR": "/data/dryrun/codex/tmp"}
+        installer.launch_env = {"PATH": "/data/dryrun/codex/bin:/usr/bin"}
         installer._log = lambda _message: None
         installer._install_stage_environment_exports = Mock()
         installer._sync_global_environment = Mock()

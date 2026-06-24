@@ -26,7 +26,7 @@ export PYTHONPATH := $(CURDIR)/src/python
 
 PYTHON_ENV := LC_ALL=C TZ=UTC PYTHONPATH=$(CURDIR)/src/python PYTHONDONTWRITEBYTECODE=1 PYTHONHASHSEED=0 PYTHONPYCACHEPREFIX=$(PYTHON_PYCACHE_PREFIX)
 
-.PHONY: preflight verify build-src build-install install update home admin upgrade export tmpfs-mnt tmpfs-umt vars-init vars-reset uninstall nuke --dry-run
+.PHONY: preflight verify build-src build-install install update home admin upgrade export vars-init vars-reset uninstall nuke --dry-run
 
 preflight:
 	@printf "[make] preflight -> validating installer inputs and runtime contracts\n"
@@ -68,12 +68,6 @@ upgrade:
 
 export:
 	$(PYTHON_ENV) $(PYTHON) -m lib.keyring_env shell --env-file $(CURDIR)/.env
-
-tmpfs-mnt:
-	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) tmpfs-mnt --compiled-dir $(COMPILED_DIR)
-
-tmpfs-umt:
-	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) tmpfs-umt --compiled-dir $(COMPILED_DIR)
 
 # Standalone env refresh/reset targets. Install, upgrade, and nuke manage their
 # own environment flows directly and do not route through these targets.

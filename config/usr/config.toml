@@ -305,7 +305,7 @@ init_instructions_file = "$CODEX_HOME/.models/instructions/tui/init.md"
 #network_access = false
 #writable_roots = []
 #exclude_slash_tmp = false
-#exclude_tmpdir_env_var = false
+exclude_tmpdir_env_var = true
 
 [windows]
 #sandbox_private_desktop = true

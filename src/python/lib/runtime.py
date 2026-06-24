@@ -28,11 +28,8 @@ def _validate_shell_path(label: str, value: Path) -> str:
 
 EXPORT_KEY_PATTERN = re.compile(r"^[A-Z][A-Z0-9_]*$")
 SHELL_ALIAS_NAME_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
-TMPFS_SIZE_PATTERN = re.compile(r"^[0-9]+%$")
-TMPFS_HELPER_FILENAME = "codex-ensure-tmpfs"
 WRAPPER_ALIASES_FILENAME = "codex-wrapper-aliases.sh"
 WRAPPER_SECRET_ENV_FLAG = "CODEX_INJECT_SECRETS"
-TMPFS_DEFAULT_SIZE = "36%"
 
 
 def _validate_shell_export_value(label: str, value: str) -> str:
@@ -72,209 +69,6 @@ def render_shell_export_block(*variable_sets: dict[str, str] | None) -> str:
     return "\n".join(exports) + "\n"
 
 
-def render_shell_exec_block(label: str, script_path: Path | None) -> str:
-    if script_path is None:
-        return ""
-    rendered = _validate_shell_path(label, script_path)
-    return (
-        f'if [ ! -x "{rendered}" ]; then\n'
-        f'  echo "missing {label}: {rendered}" >&2\n'
-        "  exit 1\n"
-        "fi\n"
-        f'"{rendered}"\n'
-        "codex_helper_status=$?\n"
-        'if [ "${codex_helper_status}" -ne 0 ]; then\n'
-        '  exit "${codex_helper_status}"\n'
-        "fi\n"
-        "unset codex_helper_status\n"
-    )
-
-
-def render_codex_tmpfs_helper(
-    size: str = TMPFS_DEFAULT_SIZE,
-    launch_env: dict[str, str] | None = None,
-    *,
-    mount_enabled: bool = True,
-) -> str:
-    tmpfs_size = _validate_tmpfs_size("tmpfs size", size)
-    mount_opts = _validate_shell_export_value(
-        "tmpfs mount options",
-        f"size={tmpfs_size},mode=1777,nodev,nosuid",
-    )
-    export_block = render_shell_export_block(launch_env)
-
-    if not mount_enabled:
-        return (
-            "#!/usr/bin/env bash\n"
-            "set -euo pipefail\n"
-            "IFS=$'\\n\\t'\n"
-            "\n"
-            f"{export_block}"
-            'codex_tmpdir=""\n'
-            "\n"
-            "log_error() {\n"
-            "  printf 'ERROR: %s\\n' \"$*\" >&2\n"
-            "}\n"
-            "\n"
-            "resolve_tmpdir() {\n"
-            "  local candidate=\"${TMPDIR:-}\"\n"
-            "  if [[ -z \"${candidate}\" ]]; then\n"
-            "    candidate=\"${CODEX_TMPDIR:-}\"\n"
-            "  fi\n"
-            "  if [[ -z \"${candidate}\" ]]; then\n"
-            "    log_error \"TMPDIR or CODEX_TMPDIR must be set before starting codex\"\n"
-            "    return 1\n"
-            "  fi\n"
-            "  if [[ \"${candidate}\" != /* ]]; then\n"
-            "    log_error \"tmpdir target must be an absolute path: ${candidate}\"\n"
-            "    return 1\n"
-            "  fi\n"
-            "  if [[ \"${candidate}\" == \"/\" ]]; then\n"
-            "    log_error \"tmpdir target cannot be /\"\n"
-            "    return 1\n"
-            "  fi\n"
-            "  if [[ \"${candidate}\" =~ [[:space:]] ]]; then\n"
-            "    log_error \"tmpdir target cannot contain whitespace: ${candidate}\"\n"
-            "    return 1\n"
-            "  fi\n"
-            "  codex_tmpdir=\"${candidate}\"\n"
-            "}\n"
-            "\n"
-            "main() {\n"
-            "  if (($# != 0)); then\n"
-            "    echo \"usage: codex-ensure-tmpfs\" >&2\n"
-            "    return 2\n"
-            "  fi\n"
-            "  resolve_tmpdir\n"
-            "  mkdir -p -- \"${codex_tmpdir}\"\n"
-            "}\n"
-            "\n"
-            "main \"$@\"\n"
-        )
-
-    return (
-        "#!/usr/bin/env bash\n"
-        "set -euo pipefail\n"
-        "IFS=$'\\n\\t'\n"
-        "\n"
-        f"{export_block}"
-        'codex_tmpdir=""\n'
-        f'codex_mount_opts="{mount_opts}"\n'
-        "\n"
-        "log_error() {\n"
-        "  printf 'ERROR: %s\\n' \"$*\" >&2\n"
-        "}\n"
-        "\n"
-        "resolve_tmpdir() {\n"
-        "  local candidate=\"${TMPDIR:-}\"\n"
-        "  if [[ -z \"${candidate}\" ]]; then\n"
-        "    candidate=\"${CODEX_TMPDIR:-}\"\n"
-        "  fi\n"
-        "  if [[ -z \"${candidate}\" ]]; then\n"
-        "    log_error \"TMPDIR or CODEX_TMPDIR must be set before starting codex\"\n"
-        "    return 1\n"
-        "  fi\n"
-        "  if [[ \"${candidate}\" != /* ]]; then\n"
-        "    log_error \"tmpfs target must be an absolute path: ${candidate}\"\n"
-        "    return 1\n"
-        "  fi\n"
-        "  if [[ \"${candidate}\" == \"/\" ]]; then\n"
-        "    log_error \"tmpfs target cannot be /\"\n"
-        "    return 1\n"
-        "  fi\n"
-        "  if [[ \"${candidate}\" =~ [[:space:]] ]]; then\n"
-        "    log_error \"tmpfs target cannot contain whitespace: ${candidate}\"\n"
-        "    return 1\n"
-        "  fi\n"
-        "  codex_tmpdir=\"${candidate}\"\n"
-        "}\n"
-        "\n"
-        "current_mount_state() {\n"
-        "  local fstype=\"\"\n"
-        "  if command -v findmnt >/dev/null 2>&1; then\n"
-        "    fstype=\"$(findmnt -M \"${codex_tmpdir}\" -n -o FSTYPE 2>/dev/null || true)\"\n"
-        "    if [[ -n \"${fstype}\" ]]; then\n"
-        "      printf '%s\\n' \"${fstype}\"\n"
-        "      return 0\n"
-        "    fi\n"
-        "  fi\n"
-        "  if command -v mountpoint >/dev/null 2>&1 && mountpoint -q -- \"${codex_tmpdir}\"; then\n"
-        "    printf '%s\\n' \"mounted\"\n"
-        "  fi\n"
-        "}\n"
-        "\n"
-        "run_with_optional_sudo() {\n"
-        "  local -a cmd=(\"$@\")\n"
-        "  if \"${cmd[@]}\" 2>/dev/null; then\n"
-        "    return 0\n"
-        "  fi\n"
-        "  if ! command -v sudo >/dev/null 2>&1; then\n"
-        "    return 1\n"
-        "  fi\n"
-        "  local -a sudo_cmd=(sudo)\n"
-        "  if [[ ! -t 0 ]]; then\n"
-        "    sudo_cmd+=(-n)\n"
-        "  fi\n"
-        "  sudo_cmd+=(\"${cmd[@]}\")\n"
-        "  \"${sudo_cmd[@]}\"\n"
-        "}\n"
-        "\n"
-        "ensure_tmpdir() {\n"
-        "  if run_with_optional_sudo mkdir -p -- \"${codex_tmpdir}\"; then\n"
-        "    return 0\n"
-        "  fi\n"
-        "  log_error \"failed to create CODEX_TMPDIR: ${codex_tmpdir}\"\n"
-        "  return 1\n"
-        "}\n"
-        "\n"
-        "mount_tmpfs() {\n"
-        "  if run_with_optional_sudo mount -t tmpfs -o \"${codex_mount_opts}\" tmpfs \"${codex_tmpdir}\"; then\n"
-        "    return 0\n"
-        "  fi\n"
-        "  case \"$(current_mount_state)\" in\n"
-        "    tmpfs|mounted)\n"
-        "      return 0\n"
-        "      ;;\n"
-        "  esac\n"
-        "  log_error \"failed to mount CODEX_TMPDIR as tmpfs: ${codex_tmpdir}\"\n"
-        "  return 1\n"
-        "}\n"
-        "\n"
-        "main() {\n"
-        "  local mount_state=\"\"\n"
-        "  if (($# != 0)); then\n"
-        "    echo \"usage: codex-ensure-tmpfs\" >&2\n"
-        "    return 2\n"
-        "  fi\n"
-        "  resolve_tmpdir\n"
-        "  ensure_tmpdir\n"
-        "  mount_state=\"$(current_mount_state)\"\n"
-        "  case \"${mount_state}\" in\n"
-        "    tmpfs|mounted)\n"
-        "      return 0\n"
-        "      ;;\n"
-        "    \"\")\n"
-        "      ;;\n"
-        "    *)\n"
-        "      log_error \"CODEX_TMPDIR is already mounted with unsupported filesystem ${mount_state}: ${codex_tmpdir}\"\n"
-        "      return 1\n"
-        "      ;;\n"
-        "  esac\n"
-        "  mount_tmpfs\n"
-        "  mount_state=\"$(current_mount_state)\"\n"
-        "  case \"${mount_state}\" in\n"
-        "    tmpfs|mounted)\n"
-        "      return 0\n"
-        "      ;;\n"
-        "  esac\n"
-        "  log_error \"failed to verify CODEX_TMPDIR mount state: ${codex_tmpdir}\"\n"
-        "  return 1\n"
-        "}\n"
-        "\n"
-        "main \"$@\"\n"
-    )
-
-
 def derive_runtime_globals_from_env(env: dict[str, str]) -> dict[str, str]:
     user_dir = _sanitize_env_path("CODEX_USER_DIR", env.get("CODEX_USER_DIR", ""))
     root_dir = _sanitize_env_path("CODEX_ROOT_DIR", env.get("CODEX_ROOT_DIR", ""))
@@ -289,7 +83,6 @@ def derive_runtime_globals_from_env(env: dict[str, str]) -> dict[str, str]:
         "CODEX_AGENTS": join_path(user_dir, "agents"),
         "CODEX_SKILLS": join_path(user_dir, "skills"),
         "CODEX_LOG_DIR": join_path(root_dir, "log"),
-        "CODEX_TMPDIR": join_path(root_dir, "tmp"),
     }
 
 
@@ -369,13 +162,6 @@ def render_codex_shim(
 ) -> str:
     binary = _validate_shell_path("shim binary path", binary_path)
     export_block = render_shell_export_block(launch_env)
-    tmpfs_block = ""
-    if share_dir is not None:
-        tmpfs_block = render_shell_exec_block(
-            "codex tmpfs helper",
-            share_dir / "helpers" / TMPFS_HELPER_FILENAME,
-        )
-
     path_block = ""
     if share_dir is not None:
         if wrapper_dir is None:
@@ -428,7 +214,6 @@ def render_codex_shim(
         "#!/bin/sh\n"
         "# managed by codex installer\n"
         f"{export_block}"
-        f"{tmpfs_block}"
         f"{path_block}"
         f"{keyring_block}"
         f'exec "{binary}" "$@"\n'

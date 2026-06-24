@@ -10,6 +10,7 @@ PYTHON_SRC = REPO_ROOT / "src" / "python"
 if str(PYTHON_SRC) not in sys.path:
     sys.path.insert(0, str(PYTHON_SRC))
 
+from lib.runtime import derive_runtime_globals_from_env  # noqa: E402
 from lib.runtime import render_shell_path_profile  # noqa: E402
 
 
@@ -17,6 +18,24 @@ ENV_SCRIPT = REPO_ROOT / "src" / "python" / "lib" / "codex_env.sh"
 
 
 class ShellPathProfileRenderTests(unittest.TestCase):
+    def test_derive_runtime_globals_omits_codex_tmpdir(self) -> None:
+        rendered = derive_runtime_globals_from_env(
+            {
+                "CODEX_ROOT_DIR": "/data/codex",
+                "CODEX_USER_DIR": "/data/codex/usr",
+            }
+        )
+
+        self.assertEqual(
+            rendered,
+            {
+                "CODEX_HOME": "/data/codex/usr/home",
+                "CODEX_AGENTS": "/data/codex/usr/agents",
+                "CODEX_SKILLS": "/data/codex/usr/skills",
+                "CODEX_LOG_DIR": "/data/codex/log",
+            },
+        )
+
     def test_render_shell_path_profile_exports_globals_and_path_entries(self) -> None:
         rendered = render_shell_path_profile(
             Path("/data/codex/share"),
