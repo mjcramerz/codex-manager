@@ -1,18 +1,39 @@
 # Bitwarden Secrets Manager (BWS)
-Purpose: tell you to use `/data/codex/docs/security/bitwarden-secrets.md` for detailed host, installation, or administrative steps while keeping this runtime-pack route concise.
+Guidance for using Bitwarden Secrets Manager in repos and CI.
+
 
 ## Navigation
 <!-- BEGIN:nav -->
-- Detailed docs: `/data/codex/docs/security/bitwarden-secrets.md`
+- Parent: `$CODEX_HOME/docs/security/overview.md`
 - Pack index: `$CODEX_HOME/INDEX.md`
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-## Use this file when
-- you need the topic name and the detailed docs path quickly
-- you need the exact host, installation, or administrative steps from `/data/codex/docs/security/bitwarden-secrets.md`
 
-## Guidance
-- Keep your response short and operationally scoped.
-- Use `/data/codex/docs/security/bitwarden-secrets.md` when you need the full procedure.
-- Treat this file as the route, not the full procedure.
+For local-host operation guidance, use `$CODEX_HOME/docs/security/bitwarden-secrets-local.md`.
+
+
+## Baseline
+- Store the access token as a masked/protected secret.
+- Map the CI secret to the environment variable expected by your BWS tooling.
+- Fetch secrets by ID and keep them in memory; avoid writing to disk.
+- Never log secret values or full JSON payloads.
+
+## CI usage pattern
+1) Add masked/protected secrets named `BWS_ACCESS_TOKEN` and `BWS_PROJECT_ID`.
+2) Validate both variables are present before running BWS commands.
+3) Fetch required secrets at runtime and pass them to the process that needs them.
+
+## Hardening checklist
+- Scope tokens to read-only and to the minimal project/collection.
+- Rotate tokens regularly and after suspected exposure.
+- Use separate tokens for prod vs non-prod.
+- Avoid passing secrets through command arguments when possible.
+
+See also:
+- `bitwarden-secrets-local.md`
+- `secrets.md`
+- `key-management.md`
+- `overview.md`
+- `$CODEX_HOME/snippets/ci/bitwarden_bws_env.sh`
+- `$CODEX_HOME/index/core/security.md`

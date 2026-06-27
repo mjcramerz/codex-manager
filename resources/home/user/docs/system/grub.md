@@ -1,18 +1,35 @@
 # GRUB configuration
-Purpose: tell you to use `/data/codex/docs/system/grub.md` for detailed host, installation, or administrative steps while keeping this runtime-pack route concise.
+Guidance for editing GRUB defaults and kernel command line safely.
+
 
 ## Navigation
 <!-- BEGIN:nav -->
-- Detailed docs: `/data/codex/docs/system/grub.md`
+- Parent: `$CODEX_HOME/docs/system/overview.md`
 - Pack index: `$CODEX_HOME/INDEX.md`
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-## Use this file when
-- you need the topic name and the detailed docs path quickly
-- you need the exact host, installation, or administrative steps from `/data/codex/docs/system/grub.md`
 
-## Guidance
-- Keep your response short and operationally scoped.
-- Use `/data/codex/docs/system/grub.md` when you need the full procedure.
-- Treat this file as the route, not the full procedure.
+## Baseline practices
+- Edit `/etc/default/grub` and regenerate configs; do not edit `grub.cfg` directly.
+- Keep a known‑good kernel entry for rollback.
+- Document any custom kernel parameters.
+
+## Safe workflow
+1) Edit `/etc/default/grub`.
+2) Validate syntax.
+3) Regenerate GRUB config (`update-grub` or `grub-mkconfig`).
+4) Reboot and verify.
+
+## Kernel command line
+- Keep flags minimal; each flag is an operational contract.
+- Avoid disabling security protections without explicit approval.
+
+See also:
+- `overview.md`
+- `../workflows/grub.md`
+- `$CODEX_HOME/templates/system/grub-baseline/`
+- `$CODEX_HOME/snippets/system/grub-default`
+- Use skill infra-grub.
+- `$CODEX_HOME/index/domains/system/hardening.md`
+- `$CODEX_HOME/index/domains/system/grub.md`

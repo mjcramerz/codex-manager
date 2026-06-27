@@ -1,18 +1,35 @@
 # Terraform
-Purpose: tell you to use `/data/codex/docs/infra/terraform.md` for detailed host, installation, or administrative steps while keeping this runtime-pack route concise.
+Terraform guidance for safe, deterministic infrastructure changes.
+
 
 ## Navigation
 <!-- BEGIN:nav -->
-- Detailed docs: `/data/codex/docs/infra/terraform.md`
+- Parent: `$CODEX_HOME/docs/infra/overview.md`
 - Pack index: `$CODEX_HOME/INDEX.md`
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-## Use this file when
-- you need the topic name and the detailed docs path quickly
-- you need the exact host, installation, or administrative steps from `/data/codex/docs/infra/terraform.md`
 
-## Guidance
-- Keep your response short and operationally scoped.
-- Use `/data/codex/docs/infra/terraform.md` when you need the full procedure.
-- Treat this file as the route, not the full procedure.
+## Baseline practices
+- Keep state remote and encrypted; restrict access by least privilege.
+- Use `terraform fmt`, `validate`, and `plan` in CI before apply.
+- Avoid `local-exec` and `null_resource` unless necessary and reviewed.
+- Pin provider versions and commit lockfiles.
+
+## Structure
+- Prefer small, composable modules with clear inputs/outputs.
+- Keep sensitive values out of logs and plan output.
+
+## Safety
+- Require review on `apply`.
+- Use `-lock-timeout` and state locking in shared environments.
+
+See also:
+- `overview.md`
+- `../workflows/terraform.md`
+- `$CODEX_HOME/templates/infra/terraform-module-skeleton/`
+- `$CODEX_HOME/snippets/terraform/versions.tf`
+- `$CODEX_HOME/snippets/terraform/backend_remote.tf`
+- Use skill iac-terraform.
+- `$CODEX_HOME/index/domains/infra/tooling.md`
+- `$CODEX_HOME/index/domains/infra/terraform.md`

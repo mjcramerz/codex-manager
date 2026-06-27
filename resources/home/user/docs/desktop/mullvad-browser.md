@@ -1,18 +1,27 @@
 # Mullvad Browser
-Purpose: tell you to use `/data/codex/docs/desktop/mullvad-browser.md` for detailed host, installation, or administrative steps while keeping this runtime-pack route concise.
+Guidance for Mullvad Browser setup and integration.
+
 
 ## Navigation
 <!-- BEGIN:nav -->
-- Detailed docs: `/data/codex/docs/desktop/mullvad-browser.md`
+- Parent: `$CODEX_HOME/docs/desktop/overview.md`
 - Pack index: `$CODEX_HOME/INDEX.md`
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-## Use this file when
-- you need the topic name and the detailed docs path quickly
-- you need the exact host, installation, or administrative steps from `/data/codex/docs/desktop/mullvad-browser.md`
 
-## Guidance
-- Keep your response short and operationally scoped.
-- Use `/data/codex/docs/desktop/mullvad-browser.md` when you need the full procedure.
-- Treat this file as the route, not the full procedure.
+## Baseline practices
+- Use official builds and verify signatures.
+- Keep browser user-data storage in a dedicated, locked‑down directory.
+- Avoid unnecessary extensions or plugins.
+
+## Wayland notes
+- Prefer Wayland‑native launch flags when supported.
+- Test rendering and font settings for readability.
+
+See also:
+- `browsers.md`
+- `$CODEX_HOME/snippets/desktop/desktop-entry.desktop`
+- `../workflows/browsers.md`
+- Use skill desktop-mullvad-browser.
+- `$CODEX_HOME/index/domains/desktop/mullvad-browser.md`

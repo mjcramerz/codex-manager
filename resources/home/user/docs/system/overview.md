@@ -1,18 +1,28 @@
 # Host hardening overview
-Purpose: tell you to use `/data/codex/docs/system/overview.md` for detailed host, installation, or administrative steps while keeping this runtime-pack route concise.
+Purpose: route OS-level boot, kernel, sysctl, optimization, and device-control work to the correct guide.
 
 ## Navigation
 <!-- BEGIN:nav -->
-- Detailed docs: `/data/codex/docs/system/overview.md`
+- Parent: `$CODEX_HOME/docs/OVERVIEW.md`
 - Pack index: `$CODEX_HOME/INDEX.md`
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-## Use this file when
-- you need the topic name and the detailed docs path quickly
-- you need the exact host, installation, or administrative steps from `/data/codex/docs/system/overview.md`
+## Scope
+- Bootloader and kernel command-line changes
+- Kernel build/config and module policy
+- Sysctl tuning
+- Performance/security tuning
+- USB device control
 
-## Guidance
-- Keep your response short and operationally scoped.
-- Use `/data/codex/docs/system/overview.md` when you need the full procedure.
-- Treat this file as the route, not the full procedure.
+## Guardrails
+- Treat host changes as high-risk and rollback-sensitive.
+- Validate in a VM or equivalent lab when feasible.
+- Make one class of change at a time and verify it before layering more.
+
+## Quick map
+- GRUB: `grub.md`
+- Kernel build/config: `kernel.md`
+- sysctl tuning: `sysctl.md`
+- Optimizations: `optimizations.md`
+- USBGuard: `usbguard.md`

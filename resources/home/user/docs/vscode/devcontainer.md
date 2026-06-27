@@ -1,18 +1,29 @@
 # VS Code devcontainers
-Purpose: tell you to use `/data/codex/docs/vscode/devcontainer.md` for detailed host, installation, or administrative steps while keeping this runtime-pack route concise.
+Purpose: document safe, reproducible `.devcontainer/` layouts and how they relate to the pack's container templates.
 
 ## Navigation
 <!-- BEGIN:nav -->
-- Detailed docs: `/data/codex/docs/vscode/devcontainer.md`
+- Parent: `$CODEX_HOME/docs/vscode/overview.md`
 - Pack index: `$CODEX_HOME/INDEX.md`
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-## Use this file when
-- you need the topic name and the detailed docs path quickly
-- you need the exact host, installation, or administrative steps from `/data/codex/docs/vscode/devcontainer.md`
+## Core files
+- `.devcontainer/devcontainer.json`
+- `.devcontainer/Dockerfile` or image reference
+- optional Compose integration when the repo needs multiple services
 
-## Guidance
-- Keep your response short and operationally scoped.
-- Use `/data/codex/docs/vscode/devcontainer.md` when you need the full procedure.
-- Treat this file as the route, not the full procedure.
+## Defaults
+- Pin base images and toolchains.
+- Prefer non-root `remoteUser`.
+- Keep secrets out of images and tracked config.
+- Make network and bind-mount behavior explicit.
+
+## Pack alignment
+- Use `$CODEX_HOME/templates/containers/devlab-codelab-skeleton/` when the devcontainer should mirror the broader local container workflow.
+- Keep Podman/Docker expectations aligned with `$CODEX_HOME/docs/containers/dev-containers.md`.
+
+## Related
+- `$CODEX_HOME/docs/containers/overview.md`
+- `$CODEX_HOME/docs/containers/dev-containers.md`
+- `$CODEX_HOME/snippets/vscode/devcontainer.json`

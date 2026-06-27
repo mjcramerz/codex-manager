@@ -16,11 +16,8 @@
 
 
 ## Navigation
-<!-- BEGIN:nav -->
-- Parent: `$CODEX_HOME/docs/security/overview.md`
-- Pack index: `$CODEX_HOME/INDEX.md`
-- Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
-<!-- END:nav -->
+- Parent: `overview.md`
+- Operator docs hub: `../OVERVIEW.md`
 
 
 ## Operator workflows

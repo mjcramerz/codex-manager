@@ -1,18 +1,28 @@
 # Proxmox filesystem guidance
-Purpose: tell you to use `/data/codex/docs/filesystems/proxmox.md` for detailed host, installation, or administrative steps while keeping this runtime-pack route concise.
+Notes for Proxmox-compatible storage layouts.
+
 
 ## Navigation
 <!-- BEGIN:nav -->
-- Detailed docs: `/data/codex/docs/filesystems/proxmox.md`
+- Parent: `$CODEX_HOME/docs/filesystems/overview.md`
 - Pack index: `$CODEX_HOME/INDEX.md`
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-## Use this file when
-- you need the topic name and the detailed docs path quickly
-- you need the exact host, installation, or administrative steps from `/data/codex/docs/filesystems/proxmox.md`
 
-## Guidance
-- Keep your response short and operationally scoped.
-- Use `/data/codex/docs/filesystems/proxmox.md` when you need the full procedure.
-- Treat this file as the route, not the full procedure.
+## Common backends
+- **ZFS**: snapshots, compression, integrity checks.
+- **LVM-thin**: efficient thin provisioning for VM disks.
+- **Directory storage**: simple, flexible (less snapshot capability).
+
+## Safety baseline
+- Plan storage before creating VMs; migrations are disruptive.
+- Keep backups and test restore paths.
+- Document `storage.cfg` changes and keep UUIDs stable.
+
+See also:
+- `overview.md`
+- `filesystem-types.md`
+- `../virtualization/proxmox.md`
+- `$CODEX_HOME/snippets/proxmox/storage.cfg`
+- `$CODEX_HOME/index/domains/system/filesystems.md`

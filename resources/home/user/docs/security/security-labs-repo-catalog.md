@@ -1,18 +1,30 @@
 # Security source catalog
-Purpose: tell you to use `/data/codex/docs/security/security-labs-repo-catalog.md` for detailed host, installation, or administrative steps while keeping this runtime-pack route concise.
+Purpose: list the primary-source retrieval set for security-labs work so repo-local notes do not drift from upstream standards and official docs.
 
 ## Navigation
 <!-- BEGIN:nav -->
-- Detailed docs: `/data/codex/docs/security/security-labs-repo-catalog.md`
+- Parent: `$CODEX_HOME/docs/security/overview.md`
 - Pack index: `$CODEX_HOME/INDEX.md`
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
 ## Use this file when
-- you need the topic name and the detailed docs path quickly
-- you need the exact host, installation, or administrative steps from `/data/codex/docs/security/security-labs-repo-catalog.md`
+- preparing NetHunter, mobile rooting, wireless, or defensive simulation work
+- updating security-labs skills or workflows
+- checking which sources are acceptable before writing new runbooks
 
-## Guidance
-- Keep your response short and operationally scoped.
-- Use `/data/codex/docs/security/security-labs-repo-catalog.md` when you need the full procedure.
-- Treat this file as the route, not the full procedure.
+## Preferred source order
+1. Official vendor/platform docs
+2. Official upstream source repos
+3. Standards and control frameworks
+4. Internal pack workflows and skills
+
+## Current source groups
+- Kali NetHunter official docs and build-scripts repos
+- Android platform and platform-tools docs
+- MITRE ATT&CK, NIST, and CISA references
+
+## Notes
+- Record exact retrieval date and commit/tag when using build guidance.
+- Keep workspace-local clone paths out of published runbooks.
+- Do not promote uncontrolled PoC material as the primary source of truth.

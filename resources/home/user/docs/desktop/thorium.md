@@ -1,18 +1,33 @@
 # Thorium Browser
-Purpose: tell you to use `/data/codex/docs/desktop/thorium.md` for detailed host, installation, or administrative steps while keeping this runtime-pack route concise.
+Guidance for building and configuring Thorium.
+
 
 ## Navigation
 <!-- BEGIN:nav -->
-- Detailed docs: `/data/codex/docs/desktop/thorium.md`
+- Parent: `$CODEX_HOME/docs/desktop/overview.md`
 - Pack index: `$CODEX_HOME/INDEX.md`
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-## Use this file when
-- you need the topic name and the detailed docs path quickly
-- you need the exact host, installation, or administrative steps from `/data/codex/docs/desktop/thorium.md`
 
-## Guidance
-- Keep your response short and operationally scoped.
-- Use `/data/codex/docs/desktop/thorium.md` when you need the full procedure.
-- Treat this file as the route, not the full procedure.
+## Baseline practices
+- Follow upstream build instructions; pin toolchains and dependencies.
+- Build in a clean environment (VM or container) to ensure reproducibility.
+- Verify build outputs and record hashes.
+
+## Build workflow (high‑level)
+1) Clone the repository and submodules.
+2) Install pinned toolchain dependencies.
+3) Configure build flags (release, target, symbols).
+4) Build and package.
+5) Create a `.desktop` entry and verify runtime flags.
+
+## Safety notes
+- Avoid running build steps as root.
+- Keep build artifacts isolated from browser user-data directories.
+
+See also:
+- `browsers.md`
+- `../workflows/browsers.md`
+- Use skill desktop-thorium.
+- `$CODEX_HOME/index/domains/desktop/thorium.md`

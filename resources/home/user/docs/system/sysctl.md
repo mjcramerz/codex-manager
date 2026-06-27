@@ -1,18 +1,35 @@
 # sysctl tuning
-Purpose: tell you to use `/data/codex/docs/system/sysctl.md` for detailed host, installation, or administrative steps while keeping this runtime-pack route concise.
+Guidance for safe kernel parameter tuning.
+
 
 ## Navigation
 <!-- BEGIN:nav -->
-- Detailed docs: `/data/codex/docs/system/sysctl.md`
+- Parent: `$CODEX_HOME/docs/system/overview.md`
 - Pack index: `$CODEX_HOME/INDEX.md`
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-## Use this file when
-- you need the topic name and the detailed docs path quickly
-- you need the exact host, installation, or administrative steps from `/data/codex/docs/system/sysctl.md`
 
-## Guidance
-- Keep your response short and operationally scoped.
-- Use `/data/codex/docs/system/sysctl.md` when you need the full procedure.
-- Treat this file as the route, not the full procedure.
+## Baseline practices
+- Use drop‑in files under `/etc/sysctl.d/` instead of editing `/etc/sysctl.conf`.
+- Keep changes minimal and documented; measure impact.
+- Avoid “one‑size‑fits‑all” performance tweaks.
+
+## Safe workflow
+1) Draft a config file in `/etc/sysctl.d/`.
+2) Apply with `sysctl --system`.
+3) Validate current values with `sysctl -a | grep`.
+4) Roll back by removing the drop‑in and re‑applying.
+
+## Security vs performance
+- Prefer security‑first defaults unless a measured perf regression exists.
+- For servers, ensure network hardening flags align with role (router vs host).
+
+See also:
+- `overview.md`
+- `../workflows/sysctl.md`
+- `$CODEX_HOME/templates/system/sysctl-baseline/`
+- `$CODEX_HOME/snippets/system/sysctl.conf`
+- Use skill infra-sysctl.
+- `$CODEX_HOME/index/domains/system/hardening.md`
+- `$CODEX_HOME/index/domains/system/sysctl.md`

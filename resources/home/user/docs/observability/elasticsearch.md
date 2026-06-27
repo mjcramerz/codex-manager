@@ -1,18 +1,32 @@
 # Elasticsearch
-Purpose: tell you to use `/data/codex/docs/observability/elasticsearch.md` for detailed host, installation, or administrative steps while keeping this runtime-pack route concise.
+Guidance for secure, reliable Elasticsearch setups.
+
 
 ## Navigation
 <!-- BEGIN:nav -->
-- Detailed docs: `/data/codex/docs/observability/elasticsearch.md`
+- Parent: `$CODEX_HOME/docs/observability/overview.md`
 - Pack index: `$CODEX_HOME/INDEX.md`
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-## Use this file when
-- you need the topic name and the detailed docs path quickly
-- you need the exact host, installation, or administrative steps from `/data/codex/docs/observability/elasticsearch.md`
 
-## Guidance
-- Keep your response short and operationally scoped.
-- Use `/data/codex/docs/observability/elasticsearch.md` when you need the full procedure.
-- Treat this file as the route, not the full procedure.
+## Baseline practices
+- Enable security features and TLS where available.
+- Restrict network exposure; avoid public endpoints.
+- Use index templates and ILM policies for retention.
+- Monitor shard counts and disk usage.
+
+## Operations
+- Prefer snapshots for backup/restore.
+- Limit query complexity and unbounded aggregations.
+
+See also:
+- `overview.md`
+- `kibana.md`
+- `logstash.md`
+- `../workflows/elastic-stack.md`
+- `$CODEX_HOME/snippets/elastic/elasticsearch.yml`
+- `$CODEX_HOME/templates/observability/elastic-stack-compose/`
+- Use skill obs-elasticsearch.
+- `$CODEX_HOME/index/domains/observability/stack.md`
+- `$CODEX_HOME/index/domains/observability/elasticsearch.md`

@@ -19,7 +19,6 @@ Start with `$CODEX_HOME/plans/workflows/workflow-codex-manager.md` before execut
 - Runtime home is source-to-target only; runtime state never syncs back into this repo.
 - Keep guidance centered on installed config, docs, plans, skills, templates, snippets, and plugin marketplace surfaces.
 - Route memory-specific guidance through `$CODEX_HOME/memories/MEMORY.md` and the matching workflow entrypoints.
-- Keep host and installation procedures in `/data/codex/docs/**`; use `$CODEX_HOME/docs/**` for concise runtime-pack routing and pack-local guidance.
 
 ## Install and nuke checkpoints
 - Keep `install`, `runtime`, `runtime-home`, `runtime-skills`, `runtime-instructions`, and `nuke` idempotent for already-applied or already-removed runtime state.

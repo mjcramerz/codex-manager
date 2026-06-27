@@ -44,8 +44,8 @@ Examples of target-only runtime state:
 - Runtime memory guidance: consult `$CODEX_HOME/memories/MEMORY.md` only when it exists and the task is repo-aware
 - Human/operator docs source: `docs/`
 - Installer workflow: `docs/workflows/codex-manager.md`
-- MCP stack workflow: `docs/workflows/codex-mcp.md`
-- Cloudflare delivery workflow: `docs/workflows/cloudflare-delivery.md`
+- Wrapper commands: `docs/wrappers.md`
+- Secrets and auth: `docs/security/secrets.md`
 
 ## Validation
 For installer/runtime changes, start with the narrowest checks and then run the repo gates:

@@ -1,39 +1,39 @@
-# codex-manager workflow
-Purpose: guide work in the Codex installer/runtime-pack source repo that owns install flow, home sync, hooks, runtime config, skills, and plugin marketplace content.
+# Codex Install And Runtime Workflow
+Purpose: document the host-side commands for installing and maintaining the managed Codex environment.
 
-Start with `$CODEX_HOME/plans/workflows/workflow-codex-manager.md` before executing this workflow.
+## Install roots
+- Runtime root: `/data/codex`
+- Runtime home: `/data/codex/usr/home`
+- Lookup files: `/data/codex/lookup/`
+- Installed operator docs: `/data/codex/docs/`
+- Wrappers: `/data/bin/`
 
-## Primary surfaces
-- Compiled runtime home config: `$CODEX_HOME/config.toml`
-- Compiled agent and system config: `$CODEX_AGENTS/*.toml`, `/etc/codex/config.toml`, `/etc/codex/requirements.toml`
-- Runtime-home pack: `$CODEX_HOME/**`
-- Hook runtime source: `$CODEX_HOME/hooks/scripts/lib/Codex/Hook/**`
-- Skills and plugin marketplace: `$CODEX_SKILLS/**`, `$CODEX_HOME/plugins/cache/**`, `$CODEX_HOME/.agents/plugins/marketplace.json`
+## Main commands
+1. `make install`
+Installs Debian package dependencies from `.env`, refreshes runtime assets, downloads or installs Codex, rewrites managed config, wrappers, skills, instructions, and docs, and works as both fresh install and in-place upgrade.
 
-## Cross-repo alignment
-- Check `codex-mcp` when MCP launcher/runtime expectations change.
-- Check `delivery` when CI templates or Cloudflare deploy expectations change.
-- Check `cf-git-cicd-worker` and `cf-aptly-r2` when Cloudflare-oriented skills or workflows are refreshed.
+2. `make runtime`
+Refreshes managed runtime assets without reinstalling Debian package dependencies.
 
-## State boundary
-- Runtime home is source-to-target only; runtime state never syncs back into this repo.
-- Keep guidance centered on installed config, docs, plans, skills, templates, snippets, and plugin marketplace surfaces.
-- Route memory-specific guidance through `$CODEX_HOME/memories/MEMORY.md` and the matching workflow entrypoints.
+3. `make runtime-home`
+Refreshes the runtime-home tree, agents, instructions, system config, and the installed docs copy.
 
-## Install and nuke checkpoints
-- Keep `install`, `runtime`, `runtime-home`, `runtime-skills`, `runtime-instructions`, and `nuke` idempotent for already-applied or already-removed runtime state.
-- `make install` must act as both fresh install and in-place upgrade, without requiring a separate upgrade command.
-- `nuke` must remove managed shell/profile exports for future sessions and clearly note that the current shell keeps already-exported `CODEX_*` values until refresh.
-- Managed `secret-tool` cleanup during `nuke` is best-effort; missing keyring entries must not block filesystem cleanup.
-- `bearer_token_env_var` is URL-only MCP config. Stdio / `command` servers must use `env_vars` instead.
+4. `make runtime-skills`
+Refreshes skills, plugins, marketplace content, and system skill bundles.
 
-## Validation ladder
-1) syntax/parse checks for touched files
-2) focused unit tests for changed installer logic
-3) runtime-pack docs/skill contract tests when catalogs changed
-4) broader repo validation only when scope crosses installer/runtime surfaces
+5. `make runtime-instructions`
+Refreshes instruction assets and rewrites instruction-file paths into the rendered config.
 
-## Related
-- `$CODEX_HOME/plans/workflows/workflow-codex-manager.md`
-- `$CODEX_HOME/docs/workflows/runtime-pack-maintenance.md`
-- `$CODEX_HOME/docs/architecture.md`
+6. `make vars-init`
+Writes the managed shell/profile exports and wrapper launch environment.
+
+7. `make vars-reset`
+Removes the managed shell/profile exports and clears the wrapper launch environment from rendered outputs.
+
+8. `make nuke`
+Backs up managed state, preserves backup/MCP/sqlite roots, clears managed shell hooks and best-effort keyring entries, and removes managed runtime paths.
+
+## Validation
+- `make preflight`
+- `python3 -m compileall src tests`
+- `python3 -m unittest discover -s tests`

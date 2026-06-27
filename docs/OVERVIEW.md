@@ -1,38 +1,14 @@
-# Documentation hub
-Purpose: provide the top-level map for runtime-pack documentation and help the agent stop browsing quickly.
+# Codex Operator Docs
+Purpose: provide the installed operator-doc source that is synced into `/data/codex/docs`.
 
-## Navigation
-<!-- BEGIN:nav -->
-- Pack index: `$CODEX_HOME/INDEX.md`
-- Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
-<!-- END:nav -->
+## Use this directory when
+- you need wrapper, login, token, or installation commands
+- you need the host-side procedure for `make install`, `make runtime`, or `make nuke`
+- you need the exact lookup-file locations under `/data/codex/lookup/`
 
-## Use this file when
-- you need a map of the documentation tree
-- you are deciding which documentation area to open next
-- you are maintaining docs and need to confirm the top-level structure
-
-## Primary documentation areas
-<!-- BEGIN:contents -->
-- `$CODEX_HOME/docs/workflows/overview.md` — Operational workflows
-- `$CODEX_HOME/docs/style/overview.md` — Shell and language conventions
-- `$CODEX_HOME/docs/lang/overview.md` — Language-focused guidance
-- `$CODEX_HOME/docs/templates/overview.md` — Template guidance
-- `$CODEX_HOME/docs/architecture.md` — Runtime-pack architecture
-- `$CODEX_HOME/docs/create-prompts.md` — Prompt-file design guide
-- `$CODEX_HOME/docs/plugins.md` — Runtime plugins and marketplace guidance
-<!-- END:contents -->
-
-## Repo-aligned workflow shortcuts
-- Codex installer/runtime repo -> `$CODEX_HOME/docs/workflows/codex-manager.md`
-- Repo-aware memory routing -> `$CODEX_HOME/memories/MEMORY.md`
-- Podman MCP stack repo -> `$CODEX_HOME/docs/workflows/codex-mcp.md`
-- Cloudflare + GitLab delivery repos -> `$CODEX_HOME/docs/workflows/cloudflare-delivery.md`
-- Debian installer repo -> `$CODEX_HOME/docs/workflows/debian-preseed.md`
-- Runtime-pack maintenance -> `$CODEX_HOME/docs/workflows/runtime-pack-maintenance.md`
-
-## Maintenance rules
-- Keep docs operational, concrete, and path-correct.
-- Use `$CODEX_HOME`, `$CODEX_AGENTS`, and `$CODEX_SKILLS` runtime paths instead of repository-source paths unless the repo itself is the subject.
-- Keep prompt-file references centralized in `$CODEX_HOME/docs/create-prompts.md`.
-- Keep documentation focused on stable pack surfaces; route memory-specific work through `$CODEX_HOME/memories/MEMORY.md` when needed.
+## Primary docs
+- `wrappers.md` — wrapper commands and when to use them
+- `security/overview.md` — secrets, auth, and token rotation
+- `security/secrets.md` — `secrets.toml`, `auth.toml`, `codex-login`, and `codex-mcp-token`
+- `workflows/overview.md` — install/runtime workflow index
+- `workflows/codex-manager.md` — install, runtime refresh, vars, and nuke commands

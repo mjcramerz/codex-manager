@@ -1,18 +1,34 @@
 # Debian preseed (deep dive)
-Purpose: tell you to use `/data/codex/docs/virtualization/debian-preseed.md` for detailed host, installation, or administrative steps while keeping this runtime-pack route concise.
+Purpose: explain the split-file preseed layout and the operational boundaries behind the higher-level Debian preseed workflow.
 
 ## Navigation
 <!-- BEGIN:nav -->
-- Detailed docs: `/data/codex/docs/virtualization/debian-preseed.md`
+- Parent: `$CODEX_HOME/docs/virtualization/overview.md`
 - Pack index: `$CODEX_HOME/INDEX.md`
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
 ## Use this file when
-- you need the topic name and the detailed docs path quickly
-- you need the exact host, installation, or administrative steps from `/data/codex/docs/virtualization/debian-preseed.md`
+- you already chose the Debian preseed route and need the split-file structure
+- you are reviewing what belongs in top-level vs included seed files
+- you are validating late-command scope before changing the installer repo
 
-## Guidance
-- Keep your response short and operationally scoped.
-- Use `/data/codex/docs/virtualization/debian-preseed.md` when you need the full procedure.
-- Treat this file as the route, not the full procedure.
+## Current split-file pattern
+- `preseed.cfg`
+- `preseed/account.preseed.cfg`
+- `preseed/network.preseed.cfg`
+- `preseed/apt.preseed.cfg`
+- `preseed/partman.preseed.cfg`
+- `preseed/packages.preseed.cfg`
+- `preseed/finish.preseed.cfg`
+
+## Guardrails
+- Never commit plaintext secrets.
+- Keep destructive disk targets explicit and reviewable.
+- Keep `late_command` minimal and prefer deterministic target-side scripts.
+- Test the exact BIOS/UEFI + storage path you intend to ship.
+
+## Related
+- `$CODEX_HOME/docs/workflows/debian-preseed.md`
+- `$CODEX_HOME/templates/virtualization/debian-preseed/`
+- `$CODEX_HOME/snippets/preseed/include.preseed.cfg`

@@ -1,18 +1,30 @@
 # VS Code theming
-Purpose: tell you to use `/data/codex/docs/vscode/theming.md` for detailed host, installation, or administrative steps while keeping this runtime-pack route concise.
+Guidance for consistent and accessible editor theming.
+
 
 ## Navigation
 <!-- BEGIN:nav -->
-- Detailed docs: `/data/codex/docs/vscode/theming.md`
+- Parent: `$CODEX_HOME/docs/vscode/overview.md`
 - Pack index: `$CODEX_HOME/INDEX.md`
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-## Use this file when
-- you need the topic name and the detailed docs path quickly
-- you need the exact host, installation, or administrative steps from `/data/codex/docs/vscode/theming.md`
 
-## Guidance
-- Keep your response short and operationally scoped.
-- Use `/data/codex/docs/vscode/theming.md` when you need the full procedure.
-- Treat this file as the route, not the full procedure.
+## Recommended approach
+- Choose a theme and icon theme that meet contrast requirements.
+- Keep UI motion and animations minimal for accessibility.
+- Prefer built-in theming over custom CSS/JS injection.
+
+## Customization tips
+- Use `editor.tokenColorCustomizations` for code tokens.
+- Use `workbench.colorCustomizations` for UI accents.
+- Avoid theme drift across machines or workspaces unless intentional.
+
+## Safety note
+Custom CSS/JS loaders expand the attack surface; use only when required and
+document the enable/disable steps for each update.
+
+See also:
+- `overview.md`
+- `settings.md`
+- `$CODEX_HOME/index/domains/vscode/guidance.md`
