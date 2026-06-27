@@ -15,10 +15,22 @@ def catalog_contexts(path: Path) -> dict[str, int]:
     return {model["slug"]: model["context_window"] for model in payload["models"]}
 
 
+def catalog_models(path: Path) -> dict[str, dict]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    return {model["slug"]: model for model in payload["models"]}
+
+
 class ModelContextConfigTests(unittest.TestCase):
-    def test_runtime_catalog_uses_current_large_context_windows(self) -> None:
+    def test_runtime_catalog_clamps_gpt_5_5_to_chatgpt_backed_limit(self) -> None:
+        models = catalog_models(RUNTIME_CATALOG_PATH)
+
+        self.assertEqual(models["gpt-5.5"]["context_window"], 385_000)
+        self.assertEqual(models["gpt-5.5"]["max_context_window"], 385_000)
+        self.assertEqual(models["gpt-5.5"]["auto_compact_token_limit"], 340_000)
+        self.assertLess(models["gpt-5.5"]["auto_compact_token_limit"], models["gpt-5.5"]["context_window"])
+
+    def test_runtime_catalog_keeps_gpt_5_4_large_window(self) -> None:
         contexts = catalog_contexts(RUNTIME_CATALOG_PATH)
-        self.assertEqual(contexts["gpt-5.5"], 1_050_000)
         self.assertEqual(contexts["gpt-5.4"], 1_050_000)
 
     def test_example_catalog_does_not_downsize_gpt_5_4_models(self) -> None:

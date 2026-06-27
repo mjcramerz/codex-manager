@@ -232,11 +232,11 @@ policy = """## Environment Profile
 - User-requested deletion of a specific local path with `rm -rf` is usually `low` or `medium` risk if a read-only check shows the target is a regular file or normal directory and is missing, empty, or narrowly scoped."""
 
 [history]
-persistence = "save-all"
+persistence = "none"
 
-[tool_suggest]
-discoverables = []
-disabled_tools = []
+#[tool_suggest]
+#discoverables = []
+#disabled_tools = []
 
 [instruction_overrides.agents]
 hierarchical_instructions_file = "$CODEX_HOME/.models/instructions/agents/hierarchical.md"
