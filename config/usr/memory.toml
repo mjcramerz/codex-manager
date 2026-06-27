@@ -2,11 +2,11 @@
 disable_on_external_context = false
 generate_memories = true
 use_memories = true
-dedicated_tools = false
+dedicated_tools = true
 workspace_isolation = false
-max_raw_memories_for_consolidation = 256
-max_unused_days = 30
-max_rollout_age_days = 30
+max_raw_memories_for_consolidation = 30
+max_unused_days = 4
+max_rollout_age_days = 14
 max_rollouts_per_startup = 20
 min_rollout_idle_hours = 6
 min_rate_limit_remaining_percent = 25
@@ -20,9 +20,6 @@ phase4_workspace_entry_limit = 128
 phase5_enabled = true
 phase5_workspace_rollup_limit = 128
 
-# mirrored disable-path instruction overrides
-# keep these aligned with $CODEX_USER_DIR/instructions/memories/** and
-# $CODEX_HOME/.models/instructions/memories/**
 consolidation_instructions_file = "$CODEX_HOME/.models/instructions/memories/consolidation.md"
 extraction_instructions_file = "$CODEX_HOME/.models/instructions/memories/extraction.md"
 phase4_instructions_file = "$CODEX_HOME/.models/instructions/memories/phase4_selection_ledger.md"

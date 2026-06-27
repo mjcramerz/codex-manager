@@ -73,10 +73,10 @@ interrupt_message = true
 [orchestrator]
 
 [orchestrator.mcp]
-#enabled = true
+enabled = true
 
 [orchestrator.skills]
-#enabled = true
+enabled = true
 
 # default agents
 [agents.default]

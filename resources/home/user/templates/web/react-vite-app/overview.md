@@ -3,6 +3,7 @@ Purpose: tell the Codex coding agent how to use `templates/web/react-vite-app/ov
 
 ## Quickstart
 ```bash
+# Vite 8 requires Node.js 20.19+ or 22.12+.
 npm ci   # requires package-lock.json
 # or, first run once to generate a lockfile:
 # npm install

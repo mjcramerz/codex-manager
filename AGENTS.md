@@ -28,7 +28,9 @@ and all child paths unless a deeper `AGENTS.md` overrides it.
 - `resources/skills/metadata.json` must drive `dependencies.tools` of each target `agents/openai.yaml`:
   - under `$CODEX_SKILLS/**/agents/openai.yaml`
   - under `$CODEX_SYSTEM_DIR/skills/**/agents/openai.yaml` when group path targets system skills
-- `resources/instructions/metadata.json` is the source for install-time instruction path rewrites into `$CODEX_HOME/config.toml`.
+- `resources/instructions/default/metadata.json` is the source for install-time instruction path rewrites into `$CODEX_HOME/config.toml`.
+- `resources/instructions/agents/metadata.json` is the source for installer-managed instruction overrides rendered into `$CODEX_AGENTS/*.toml`.
+- `resources/instructions/profiles/metadata.json` is the source for installer-managed instruction overrides rendered into `$CODEX_HOME/*.config.toml`.
 - `config/usr/apps.toml` is the source for runtime plugin enablement, agent blocks, shared skill roots, and MCP enablement; `resources/plugins/manifest.json` is the plugin manifest source for runtime marketplace generation.
 - `config/usr/policy.toml` uses a compact source format under one `[permissions]` table; installer rendering must expand it into the upstream runtime `[permissions.<profile>.{filesystem,network}]` shape.
 - During install, `$CODEX_HOME/config.toml` placeholders must be materialized to absolute paths where required.

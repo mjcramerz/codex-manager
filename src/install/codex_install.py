@@ -435,7 +435,9 @@ class Installer:
             self.repo_layout.hooks_dir / "schema" / "generated",
             self._hooks_runtime_config_source_path(),
             self.repo_layout.instructions_dir,
-            self.repo_layout.instructions_metadata_path,
+            self.repo_layout.instructions_default_metadata_path,
+            self.repo_layout.instructions_agents_metadata_path,
+            self.repo_layout.instructions_profiles_metadata_path,
             self.repo_layout.skills_dir,
             self.repo_layout.skills_metadata_path,
             self.repo_layout.plugins_inventory_path,
@@ -799,8 +801,33 @@ class Installer:
     def _runtime_profiles_dir(self) -> Path:
         return self._runtime_home_dir()
 
-    def _instruction_manifest_entries(self) -> list[dict[str, Any]]:
-        manifest_path = self._instructions_manifest_path()
+    def _default_instruction_manifest_path(self) -> Path:
+        repo_layout = getattr(self, "repo_layout", None)
+        if repo_layout is not None:
+            return repo_layout.instructions_default_metadata_path
+        repo_root = Path(getattr(self, "repo_root", Path.cwd()))
+        return repo_root / "resources" / "instructions" / "default" / "metadata.json"
+
+    def _agents_instruction_manifest_path(self) -> Path:
+        repo_layout = getattr(self, "repo_layout", None)
+        if repo_layout is not None:
+            return repo_layout.instructions_agents_metadata_path
+        repo_root = Path(getattr(self, "repo_root", Path.cwd()))
+        return repo_root / "resources" / "instructions" / "agents" / "metadata.json"
+
+    def _profiles_instruction_manifest_path(self) -> Path:
+        repo_layout = getattr(self, "repo_layout", None)
+        if repo_layout is not None:
+            return repo_layout.instructions_profiles_metadata_path
+        repo_root = Path(getattr(self, "repo_root", Path.cwd()))
+        return repo_root / "resources" / "instructions" / "profiles" / "metadata.json"
+
+    def _instruction_manifest_entries(
+        self,
+        manifest_path: Path,
+        *,
+        config_file: str | None = None,
+    ) -> list[dict[str, Any]]:
         if not manifest_path.is_file():
             return []
         manifest = parse_json_file(manifest_path)
@@ -812,7 +839,7 @@ class Installer:
             fail(f"{manifest_path} must declare a groups array")
 
         source_root = self._instructions_source_dir()
-        seen_keys: set[str] = set()
+        seen_keys: set[tuple[str | None, str]] = set()
         entries: list[dict[str, Any]] = []
         for group in groups:
             if not isinstance(group, dict):
@@ -843,9 +870,6 @@ class Installer:
                     config_key = str(key_value).strip()
                     if not INSTRUCTIONS_ENTRY_KEY_PATTERN.fullmatch(config_key):
                         fail(f"{manifest_path} entry key is invalid: {config_key}")
-                    if config_key in seen_keys:
-                        fail(f"{manifest_path} duplicate key mapping: {config_key}")
-                    seen_keys.add(config_key)
 
                 file_name = str(entry.get("file", "")).strip()
                 if not file_name:
@@ -858,6 +882,20 @@ class Installer:
                     allowed = ", ".join(sorted(INSTRUCTIONS_ALLOWED_SUFFIXES))
                     fail(f"{manifest_path} entry file must end with one of ({allowed}) for {entry_name}: {file_name}")
 
+                entry_config_file = str(entry.get("config_file", "")).strip() or None
+                if entry_config_file is not None and not INSTRUCTIONS_ENTRY_FILENAME_PATTERN.fullmatch(entry_config_file):
+                    fail(f"{manifest_path} entry config_file is invalid for {entry_name}: {entry_config_file}")
+                if config_key is not None:
+                    dedupe_key = (entry_config_file, config_key)
+                    if dedupe_key in seen_keys:
+                        fail(
+                            f"{manifest_path} duplicate key mapping"
+                            f"{f' for {entry_config_file}' if entry_config_file else ''}: {config_key}"
+                        )
+                    seen_keys.add(dedupe_key)
+                if config_file is not None and entry_config_file is not None and entry_config_file != config_file:
+                    continue
+
                 source_group = str(entry.get("source_group", group_name)).strip() or group_name
                 source_path = source_root / source_group / file_name
                 if not source_path.is_file():
@@ -866,6 +904,10 @@ class Installer:
                 entry_enabled = entry.get("enabled", group_enabled)
                 if not isinstance(entry_enabled, bool):
                     fail(f"{manifest_path} entry.enabled must be boolean for {entry_name}")
+
+                value_mode = str(entry.get("value_mode", "path")).strip() or "path"
+                if value_mode not in {"inline_text", "path"}:
+                    fail(f"{manifest_path} entry value_mode is invalid for {entry_name}: {value_mode}")
 
                 resolved_targets: dict[str, str | None] = {}
                 for field_name in ("default_enable_path", "default_disable_path"):
@@ -880,12 +922,19 @@ class Installer:
                         self.variables,
                         f"{manifest_path} entry {entry_name}.{field_name}",
                     )
+                source_text: str | None = None
+                if value_mode == "inline_text":
+                    source_text = source_path.read_text(encoding="utf-8").rstrip("\n")
+                    if not source_text:
+                        fail(f"{manifest_path} inline_text entry source must not be empty for {entry_name}")
 
                 entries.append(
                     {
                         "config_key": config_key,
                         "enabled": entry_enabled,
                         "source_path": source_path,
+                        "value_mode": value_mode,
+                        "source_text": source_text,
                         "default_enable_path": resolved_targets["default_enable_path"],
                         "default_disable_path": resolved_targets["default_disable_path"],
                     }
@@ -911,7 +960,7 @@ class Installer:
         return self.repo_layout.plugins_skills_dir
 
     def _instructions_manifest_path(self) -> Path:
-        return self.repo_layout.instructions_metadata_path
+        return self._default_instruction_manifest_path()
 
     def _backup_source_paths(self) -> list[tuple[str, Path]]:
         sources: list[tuple[str, Path]] = []
@@ -1467,7 +1516,13 @@ class Installer:
         for source_path in sorted(path for path in resolved_source_dir.glob("*.toml") if path.is_file()):
             target_path = runtime_profiles_dir / source_path.name
             raw = source_path.read_text(encoding="utf-8")
-            rendered = self._render_home_toml(raw, target_path, apply_instruction_overrides=False)
+            rendered = self._render_home_toml(
+                raw,
+                target_path,
+                apply_instruction_overrides=True,
+                instruction_manifest_path=self._profiles_instruction_manifest_path(),
+                instruction_config_file=source_path.name,
+            )
             mode = stat.S_IMODE(source_path.stat().st_mode) or 0o644
             self._materialize_rendered_text(
                 target_path,
@@ -1498,7 +1553,7 @@ class Installer:
         return target
 
     def _materialize_instruction_default_assets(self) -> None:
-        for entry in self._instruction_manifest_entries():
+        for entry in self._instruction_manifest_entries(self._default_instruction_manifest_path()):
             raw_target = entry.get("default_disable_path")
             if not raw_target:
                 continue
@@ -2397,11 +2452,21 @@ class Installer:
 
         self.reset_environment()
 
-    def _instruction_file_overrides(self) -> dict[str, str]:
+    def _instruction_file_overrides(
+        self,
+        manifest_path: Path,
+        *,
+        config_file: str | None = None,
+    ) -> dict[str, str]:
         overrides: dict[str, str] = {}
-        for entry in self._instruction_manifest_entries():
+        for entry in self._instruction_manifest_entries(manifest_path, config_file=config_file):
             key = entry["config_key"]
             if key is None:
+                continue
+            if entry.get("value_mode") == "inline_text":
+                source_text = entry.get("source_text")
+                if source_text:
+                    overrides[key] = source_text
                 continue
             target_field = "default_enable_path" if entry["enabled"] else "default_disable_path"
             target_value = entry.get(target_field)
@@ -2472,9 +2537,13 @@ class Installer:
         key_path = [part for part in key.split(".") if part]
         table_path = key_path[:-1]
         assignment_key = key_path[-1]
-        line_pattern = re.compile(
+        single_line_pattern = re.compile(
             rf"^(\s*{re.escape(assignment_key)}\s*=\s*)(\"[^\"]*\"|'[^']*')(\s*(?:#.*)?)$"
         )
+        multiline_open_pattern = re.compile(
+            rf"^(\s*{re.escape(assignment_key)}\s*=\s*)\"\"\"(\s*(?:#.*)?)$"
+        )
+        multiline_close_pattern = re.compile(r'^\"\"\"(\s*(?:#.*)?)$')
         current_table: list[str] = []
         for idx, line in enumerate(lines):
             parsed_table = self._parse_toml_table_path(line)
@@ -2483,19 +2552,51 @@ class Installer:
                 continue
             if current_table != table_path:
                 continue
-            match = line_pattern.match(line)
-            if not match:
+            match = single_line_pattern.match(line)
+            if match:
+                lines[idx] = f"{match.group(1)}{json.dumps(value)}{match.group(3)}"
+                rendered = "\n".join(lines)
+                if text.endswith("\n"):
+                    rendered += "\n"
+                return rendered, True
+            multiline_open = multiline_open_pattern.match(line)
+            if not multiline_open:
                 continue
-            lines[idx] = f"{match.group(1)}{json.dumps(value)}{match.group(3)}"
+            if '"""' in value:
+                fail(f"TOML multiline override for {key} contains triple quotes")
+            end_idx: int | None = None
+            closing_suffix = ""
+            for candidate_idx in range(idx + 1, len(lines)):
+                closing_match = multiline_close_pattern.match(lines[candidate_idx])
+                if closing_match is None:
+                    continue
+                end_idx = candidate_idx
+                closing_suffix = closing_match.group(1)
+                break
+            if end_idx is None:
+                fail(f"unterminated TOML multiline string for {key}")
+            replacement = [f'{multiline_open.group(1)}"""']
+            replacement.extend(value.splitlines())
+            replacement.append(f'"""{closing_suffix}')
+            lines[idx : end_idx + 1] = replacement
             rendered = "\n".join(lines)
             if text.endswith("\n"):
                 rendered += "\n"
             return rendered, True
         return text, False
 
-    def _apply_instruction_file_overrides(self, text: str) -> str:
+    def _apply_instruction_file_overrides(
+        self,
+        text: str,
+        *,
+        manifest_path: Path | None = None,
+        config_file: str | None = None,
+    ) -> str:
         rendered = text
-        overrides = self._instruction_file_overrides()
+        overrides = self._instruction_file_overrides(
+            manifest_path or self._default_instruction_manifest_path(),
+            config_file=config_file,
+        )
         missing_keys: list[str] = []
         for key in sorted(overrides.keys()):
             # Config fragments are user-owned. If a key is commented out or removed,
@@ -2517,10 +2618,16 @@ class Installer:
         config_path: Path,
         *,
         apply_instruction_overrides: bool,
+        instruction_manifest_path: Path | None = None,
+        instruction_config_file: str | None = None,
     ) -> str:
         rendered = _replace_known_placeholders_outside_toml_multiline_strings(raw, self.variables)
         if apply_instruction_overrides:
-            rendered = self._apply_instruction_file_overrides(rendered)
+            rendered = self._apply_instruction_file_overrides(
+                rendered,
+                manifest_path=instruction_manifest_path or self._default_instruction_manifest_path(),
+                config_file=instruction_config_file,
+            )
         unresolved = _first_unresolved_codex_placeholder_outside_toml_multiline_strings(rendered)
         if unresolved is not None:
             fail(f"unresolved CODEX_* placeholder remains in {config_path}: {unresolved}")
@@ -2548,7 +2655,10 @@ class Installer:
         )
         if rendered and not rendered.endswith("\n"):
             rendered += "\n"
-        return self._apply_instruction_file_overrides(rendered)
+        return self._apply_instruction_file_overrides(
+            rendered,
+            manifest_path=self._default_instruction_manifest_path(),
+        )
 
     @staticmethod
     def _append_compiled_fragment(document: str, fragment: str) -> str:
@@ -2723,7 +2833,13 @@ class Installer:
         for source_path in source_paths:
             target_path = runtime_agents_dir / source_path.name
             raw = source_path.read_text(encoding="utf-8")
-            rendered = self._render_home_toml(raw, target_path, apply_instruction_overrides=False)
+            rendered = self._render_home_toml(
+                raw,
+                target_path,
+                apply_instruction_overrides=True,
+                instruction_manifest_path=self._agents_instruction_manifest_path(),
+                instruction_config_file=source_path.name,
+            )
             self._materialize_rendered_text(
                 target_path,
                 rendered,

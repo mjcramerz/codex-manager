@@ -7,7 +7,7 @@ elevated_windows_sandbox = false
 experimental_windows_sandbox = false
 default_mode_request_user_input = true
 request_permissions_tool = true
-request_rule = false
+request_rule = true
 exec_permission_approvals = false
 use_linux_sandbox_bwrap = true
 auth_elicitation = false
@@ -22,8 +22,6 @@ memories = true
 personality = true
 child_agents_md = true
 multi_agent = true
-# legacy alias, replaced by enable_fanout
-#spawn_csv = false
 remote_models = true
 goals = true
 browser_use = true
@@ -49,27 +47,21 @@ workspace_owner_usage_nudge = false
 
 # tools
 tool_suggest = true
-# legacy out-of-schema key retained for traceability
-#artifact = true
 plugins = true
 hooks = true
 undo = true
 sqlite = true
 apply_patch_freeform = true
-apply_patch_streaming_events = false
+apply_patch_streaming_events = true
 unified_exec = true
 apps = true
 enable_mcp_apps = true
-# legacy out-of-schema key retained for traceability
-#apps_mcp_gateway = true
 skill_env_var_dependency_prompt = false
 skill_mcp_dependency_install = true
-image_detail_original = false
+image_detail_original = true
 image_generation = true
-imagegenext = false
-search_tool = false
-# legacy out-of-schema key retained for traceability
-#powershell_utf8 = false
+imagegenext = true
+search_tool = true
 
 # shell
 shell_tool = true
@@ -83,18 +75,14 @@ js_repl = false
 js_repl_tools_only = false
 
 # device
-tui_app_server = false
-# legacy out-of-schema key retained for traceability
-#realtime_conversation_v2 = false
+tui_app_server = true
 realtime_conversation = false
-# legacy out-of-schema key retained for traceability
-#voice_transcription = false
 runtime_metrics = false
 enable_request_compression = true
 responses_websocket_response_processed = false
 responses_websockets = false
 responses_websockets_v2 = true
-prevent_idle_sleep = false
+prevent_idle_sleep = true
 
 [features.multi_agent_v2]
 enabled = true
@@ -103,4 +91,4 @@ enabled = true
 enabled = false
 
 [features.apps_mcp_path_override]
-enabled = false
+enabled = true

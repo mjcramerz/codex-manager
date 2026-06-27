@@ -21,8 +21,6 @@ speaker = "default"
 
 # tools and web search
 [tools]
-# legacy out-of-schema key retained for traceability
-#view_image = true
 
 [tools.web_search]
 context_size = "high"
@@ -52,4 +50,4 @@ enabled = false
 [feedback]
 enabled = false
 
-[desktop]
+#[desktop]

@@ -20,7 +20,9 @@ class RepoLayout:
     hooks_dir: Path
     hooks_scripts_dir: Path
     instructions_dir: Path
-    instructions_metadata_path: Path
+    instructions_default_metadata_path: Path
+    instructions_agents_metadata_path: Path
+    instructions_profiles_metadata_path: Path
     skills_dir: Path
     skills_metadata_path: Path
     plugins_dir: Path
@@ -67,7 +69,9 @@ class RepoLayout:
             hooks_dir=hooks_dir,
             hooks_scripts_dir=hooks_dir / "scripts",
             instructions_dir=instructions_dir,
-            instructions_metadata_path=instructions_dir / "metadata.json",
+            instructions_default_metadata_path=instructions_dir / "default" / "metadata.json",
+            instructions_agents_metadata_path=instructions_dir / "agents" / "metadata.json",
+            instructions_profiles_metadata_path=instructions_dir / "profiles" / "metadata.json",
             skills_dir=skills_dir,
             skills_metadata_path=skills_dir / "metadata.json",
             plugins_dir=plugins_dir,

@@ -512,6 +512,33 @@ class PluginRuntimeContractsTests(unittest.TestCase):
                     ref_name = entry["name"]
                 self.assertIn(ref_name, mcp_servers, f"{plugin_name} references unknown MCP server: {ref_name}")
 
+    def test_all_plugin_skill_directories_are_listed_once_in_manifest(self) -> None:
+        inventory = load_effective_plugins_inventory()
+        listed = []
+        for plugin in inventory["plugins"].values():
+            listed.extend(plugin.get("skills", []))
+
+        discovered = sorted(
+            path.name for path in (REPO_ROOT / "resources" / "plugins" / "skills").iterdir() if path.is_dir()
+        )
+        self.assertEqual(sorted(listed), discovered)
+        self.assertEqual(len(listed), len(set(listed)))
+
+    def test_all_manifest_plugin_skills_have_minimum_runtime_files(self) -> None:
+        inventory = load_effective_plugins_inventory()
+        required_rel_paths = [
+            "SKILL.md",
+            "metadata.json",
+            "agents/openai.yaml",
+        ]
+
+        for plugin in inventory["plugins"].values():
+            for skill_name in plugin.get("skills", []):
+                skill_dir = REPO_ROOT / "resources" / "plugins" / "skills" / skill_name
+                self.assertTrue(skill_dir.is_dir(), f"missing plugin skill dir: {skill_dir}")
+                for rel in required_rel_paths:
+                    self.assertTrue((skill_dir / rel).is_file(), f"{skill_dir} missing {rel}")
+
     def test_current_plugin_skill_metadata_is_valid(self) -> None:
         for metadata_path in sorted((REPO_ROOT / "resources" / "plugins" / "skills").glob("*/metadata.json")):
             validate_plugin_skill_metadata(metadata_path.parent)

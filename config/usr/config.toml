@@ -1,10 +1,4 @@
-#profile = ""
-#sandbox_mode = "workspace-write"
-#permissions = ""
 default_permissions = "full"
-# this is set granular instead | approval_policy = "never"
-# legacy typo/comment retained for traceability
-#approval_reviewer = "guardian_subagent" "user"
 approvals_reviewer = "user"
 allow_login_shell = true
 web_search = "live"
@@ -17,8 +11,6 @@ cli_auth_credentials_store = "file"
 mcp_oauth_credentials_store = "file"
 mcp_oauth_callback_port = 8088
 mcp_oauth_callback_url = "http://127.0.0.1:8088/callback"
-#forced_chatgpt_workspace_id = []
-#instructions = ""
 
 #experimental_realtime_webrtc_call_base_url = "https://your-realtime-backend.example.com/v1/realtime/calls"
 #experimental_realtime_ws_base_url = "https://your-realtime-backend.example.com/v1/realtime"
@@ -172,8 +164,6 @@ include_apps_instructions = true
 include_collaboration_mode_instructions = true
 include_environment_context = true
 include_permissions_instructions = true
-#service_tier = "flex"
-#profile = ""
 forced_login_method = "chatgpt"
 suppress_unstable_features_warning = false
 
@@ -283,7 +273,6 @@ search_instructions_file = "$CODEX_HOME/.models/instructions/tools/search.md"
 init_instructions_file = "$CODEX_HOME/.models/instructions/tui/init.md"
 
 [debug]
-
 #[debug.config_lockfile]
 #export_dir = "/abs/path/to/export"
 #load_path = "/abs/path/to/config.lock.toml"
@@ -294,11 +283,5 @@ init_instructions_file = "$CODEX_HOME/.models/instructions/tui/init.md"
 #version = "v2"
 #type = "transcription"
 
-[sandbox_workspace_write]
-#network_access = false
-#writable_roots = []
-#exclude_slash_tmp = false
-exclude_tmpdir_env_var = true
-
-[windows]
+#[windows]
 #sandbox_private_desktop = true

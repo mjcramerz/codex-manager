@@ -10,7 +10,7 @@ cli-app = "cli_app.__main__:main_cli"
 
 [project.optional-dependencies]
 dev = [
-  "pytest>=8,<9",
+  "pytest>=9.0.3,<10",
   "ruff>=0.6,<1",
 ]
 

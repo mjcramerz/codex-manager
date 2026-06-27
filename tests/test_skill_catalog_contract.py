@@ -51,3 +51,19 @@ class SkillCatalogContractTests(unittest.TestCase):
                 skill_dir = SKILLS_ROOT / entry["skill_path"]
                 valid, message = self.quick_validate.validate_skill(skill_dir)
                 self.assertTrue(valid, f"{skill_dir} failed validation: {message}")
+
+    def test_all_skill_directories_are_listed_once_in_metadata(self) -> None:
+        listed = []
+        for entries in self.skills_payload["skills"].values():
+            for entry in entries:
+                listed.append(entry["skill_path"])
+
+        discovered = sorted(
+            f"{group.name}/{skill.name}"
+            for group in SKILLS_ROOT.iterdir()
+            if group.is_dir()
+            for skill in group.iterdir()
+            if skill.is_dir()
+        )
+        self.assertEqual(sorted(listed), discovered)
+        self.assertEqual(len(listed), len(set(listed)))

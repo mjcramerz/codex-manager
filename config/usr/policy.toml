@@ -107,27 +107,3 @@ allow_local_binding = false
 allow_unix_sockets = []
 allowed_domains = []
 denied_domains = []
-
-[projects."/data/workspace/cli/codex"]
-trust_level = "trusted"
-
-[projects."/data/workspace/core/scripts"]
-trust_level = "trusted"
-
-[projects."/data/workspace/apps/codex"]
-trust_level = "trusted"
-
-[projects."/data/workspace/cicd/ci-images"]
-trust_level = "trusted"
-
-[projects."/data/workspace/cicd/actions"]
-trust_level = "trusted"
-
-[projects."/data/workspace/cicd/workers/cf-git-cicd-worker"]
-trust_level = "trusted"
-
-[projects."/data/workspace/core/docker"]
-trust_level = "trusted"
-
-[projects."/data/workspace/core/runners"]
-trust_level = "trusted"
