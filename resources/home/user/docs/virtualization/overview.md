@@ -1,27 +1,18 @@
 # Virtualization overview
-Purpose: route VM-centric work to the right stack: libvirt, virsh, Vagrant, Proxmox, or unattended Debian install flows.
+Purpose: tell you to use `/data/codex/docs/virtualization/overview.md` for detailed host, installation, or administrative steps while keeping this runtime-pack route concise.
 
 ## Navigation
 <!-- BEGIN:nav -->
-- Parent: `$CODEX_HOME/docs/OVERVIEW.md`
+- Detailed docs: `/data/codex/docs/virtualization/overview.md`
 - Pack index: `$CODEX_HOME/INDEX.md`
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-## Choose one path
-- Unattended Debian install flow -> `debian-preseed.md`
-- Local VM stack -> `qemu-kvm-libvirt.md`
-- CLI VM operations -> `virsh.md`
-- Repeatable dev VMs -> `vagrant-libvirt.md`
-- Clustered VM management -> `proxmox.md`
+## Use this file when
+- you need the topic name and the detailed docs path quickly
+- you need the exact host, installation, or administrative steps from `/data/codex/docs/virtualization/overview.md`
 
-## Defaults
-- Prefer read-only inspection before privileged host mutation.
-- Keep network mode explicit: NAT, bridged, or isolated.
-- Treat provisioning scripts and seed files as high-impact inputs.
-
-## Related
-- `$CODEX_HOME/docs/workflows/debian-preseed.md`
-- `$CODEX_HOME/docs/workflows/proxmox.md`
-- `$CODEX_HOME/docs/workflows/virsh.md`
-- `../containers/overview.md`
+## Guidance
+- Keep your response short and operationally scoped.
+- Use `/data/codex/docs/virtualization/overview.md` when you need the full procedure.
+- Treat this file as the route, not the full procedure.

@@ -14,7 +14,7 @@ The install-facing split is:
 4. `resources/hooks/schema/generated/` vendors the current hook input/output
    schemas that the Perl runtime validates against.
 
-The `home` / `install` / `upgrade` flow materializes the hook runtime by:
+The `runtime-home` / `install` / `runtime` flow materializes the hook runtime by:
 
 1. Syncing runtime hook assets from `resources/hooks/scripts/` into
    `$CODEX_HOME/hooks/`

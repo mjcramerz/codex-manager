@@ -1,44 +1,18 @@
 # systemd timers
-Timers schedule service units (like cron, but first-class systemd).
-
+Purpose: tell you to use `/data/codex/docs/systemd/timers.md` for detailed host, installation, or administrative steps while keeping this runtime-pack route concise.
 
 ## Navigation
 <!-- BEGIN:nav -->
-- Parent: `$CODEX_HOME/docs/systemd/overview.md`
+- Detailed docs: `/data/codex/docs/systemd/timers.md`
 - Pack index: `$CODEX_HOME/INDEX.md`
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
+## Use this file when
+- you need the topic name and the detailed docs path quickly
+- you need the exact host, installation, or administrative steps from `/data/codex/docs/systemd/timers.md`
 
-## Minimal timer
-```
-[Unit]
-Description=Run my job daily
-
-[Timer]
-OnCalendar=daily
-Persistent=true
-Unit=myjob.service
-
-[Install]
-WantedBy=timers.target
-```
-
-## Common options
-- `OnCalendar=`: calendar schedules (`daily`, `Mon..Fri 02:00`, etc.).
-- `OnBootSec=` / `OnUnitActiveSec=`: intervals from boot or last run.
-- `Persistent=true`: run missed jobs on next boot.
-
-## Validation & install
-- `systemctl daemon-reload`
-- `systemctl enable --now myjob.timer`
-- `systemctl list-timers --all`
-For user timers, use `systemctl --user` and `WantedBy=default.target`.
-
-## References
-- `overview.md`
-- `service-units.md`
-- `hardening.md`
-- `../workflows/systemd.md`
-- `user-units.md`
-- `$CODEX_HOME/index/domains/system/systemd.md`
+## Guidance
+- Keep your response short and operationally scoped.
+- Use `/data/codex/docs/systemd/timers.md` when you need the full procedure.
+- Treat this file as the route, not the full procedure.

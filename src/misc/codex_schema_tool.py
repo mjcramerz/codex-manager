@@ -22,6 +22,18 @@ import tomllib
 from pathlib import Path
 from typing import Any, Callable
 
+PYCACHE_PREFIX = "/tmp/codex-pycache"
+_pycache_target = Path(os.environ.get("PYTHONPYCACHEPREFIX", "").strip() or PYCACHE_PREFIX)
+if not _pycache_target.is_absolute():
+    _pycache_target = Path(PYCACHE_PREFIX)
+try:
+    _pycache_target.mkdir(parents=True, exist_ok=True)
+except OSError:
+    pass
+else:
+    os.environ["PYTHONPYCACHEPREFIX"] = str(_pycache_target)
+    sys.pycache_prefix = str(_pycache_target)
+
 OPENAI_CODEX_GIT_URL = "https://github.com/openai/codex.git"
 OPENAI_CODEX_SCHEMA_BLOB_URL = (
     "https://github.com/openai/codex/blob/main/codex-rs/core/config.schema.json"

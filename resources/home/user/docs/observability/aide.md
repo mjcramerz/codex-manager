@@ -1,34 +1,18 @@
 # AIDE
-Guidance for AIDE file‑integrity monitoring.
-
+Purpose: tell you to use `/data/codex/docs/observability/aide.md` for detailed host, installation, or administrative steps while keeping this runtime-pack route concise.
 
 ## Navigation
 <!-- BEGIN:nav -->
-- Parent: `$CODEX_HOME/docs/observability/overview.md`
+- Detailed docs: `/data/codex/docs/observability/aide.md`
 - Pack index: `$CODEX_HOME/INDEX.md`
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
+## Use this file when
+- you need the topic name and the detailed docs path quickly
+- you need the exact host, installation, or administrative steps from `/data/codex/docs/observability/aide.md`
 
-## Baseline practices
-- Build a baseline database after clean install.
-- Store the AIDE database offline or on read‑only media when possible.
-- Monitor critical paths (`/etc`, `/usr`, bootloader, kernel modules).
-
-## Operations
-- Run `aide --init` to generate the initial database.
-- Schedule regular checks and alert on diffs.
-- Update the baseline after approved changes.
-
-## Safety notes
-- Restrict access to AIDE config and database files.
-- Avoid monitoring volatile directories (`/var/log`, `/tmp`) unless scoped.
-
-See also:
-- `overview.md`
-- `$CODEX_HOME/templates/observability/aide-skeleton/`
-- `$CODEX_HOME/snippets/aide/aide.conf`
-- `../workflows/aide.md`
-- Use skill secops-aide.
-- `$CODEX_HOME/index/domains/observability/stack.md`
-- `$CODEX_HOME/index/domains/observability/aide.md`
+## Guidance
+- Keep your response short and operationally scoped.
+- Use `/data/codex/docs/observability/aide.md` when you need the full procedure.
+- Treat this file as the route, not the full procedure.

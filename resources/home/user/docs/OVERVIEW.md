@@ -23,6 +23,11 @@ Purpose: provide the top-level map for runtime-pack documentation and help the a
 - `$CODEX_HOME/docs/plugins.md` — Runtime plugins and marketplace guidance
 <!-- END:contents -->
 
+## Split of responsibility
+- You use `$CODEX_HOME/docs/**` for concise runtime-pack routing.
+- You use `/data/codex/docs/**` when you need full host, installation, or administrative procedures.
+- When a runtime-pack doc routes to `/data/codex/docs/**`, follow that path for the detailed steps instead of expanding them here.
+
 ## Repo-aligned workflow shortcuts
 - Codex installer/runtime repo -> `$CODEX_HOME/docs/workflows/codex-manager.md`
 - Repo-aware memory routing -> `$CODEX_HOME/memories/MEMORY.md`

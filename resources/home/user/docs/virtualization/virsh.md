@@ -1,29 +1,18 @@
 # virsh / libvirt
-Guidance for managing KVM/libvirt with `virsh`.
-
+Purpose: tell you to use `/data/codex/docs/virtualization/virsh.md` for detailed host, installation, or administrative steps while keeping this runtime-pack route concise.
 
 ## Navigation
 <!-- BEGIN:nav -->
-- Parent: `$CODEX_HOME/docs/virtualization/overview.md`
+- Detailed docs: `/data/codex/docs/virtualization/virsh.md`
 - Pack index: `$CODEX_HOME/INDEX.md`
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
+## Use this file when
+- you need the topic name and the detailed docs path quickly
+- you need the exact host, installation, or administrative steps from `/data/codex/docs/virtualization/virsh.md`
 
-## Baseline practices
-- Use explicit domain XML checked into version control.
-- Prefer QCOW2 images for snapshots.
-- Restrict host device passthrough.
-
-## Safety
-- Avoid destructive operations without confirmation.
-- Keep network definitions explicit and documented.
-
-See also:
-- `overview.md`
-- `qemu-kvm-libvirt.md`
-- `$CODEX_HOME/templates/virtualization/virsh-vm-skeleton/`
-- `$CODEX_HOME/snippets/virsh/domain.xml`
-- Use skill infra-virsh.
-- `$CODEX_HOME/index/domains/infra/virtualization.md`
-- `$CODEX_HOME/index/domains/infra/virsh.md`
+## Guidance
+- Keep your response short and operationally scoped.
+- Use `/data/codex/docs/virtualization/virsh.md` when you need the full procedure.
+- Treat this file as the route, not the full procedure.

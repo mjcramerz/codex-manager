@@ -1,40 +1,18 @@
 # fstab guidance
-`/etc/fstab` controls persistent mounts. Prefer UUID-based entries and validate before reboot.
-
+Purpose: tell you to use `/data/codex/docs/filesystems/fstab.md` for detailed host, installation, or administrative steps while keeping this runtime-pack route concise.
 
 ## Navigation
 <!-- BEGIN:nav -->
-- Parent: `$CODEX_HOME/docs/filesystems/overview.md`
+- Detailed docs: `/data/codex/docs/filesystems/fstab.md`
 - Pack index: `$CODEX_HOME/INDEX.md`
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
+## Use this file when
+- you need the topic name and the detailed docs path quickly
+- you need the exact host, installation, or administrative steps from `/data/codex/docs/filesystems/fstab.md`
 
-## Format (fields)
-```
-<spec>  <mountpoint>  <fstype>  <options>  <dump>  <pass>
-```
-
-## Best practices
-- Use `UUID=` or `PARTUUID=` from `blkid`.
-- Keep a backup before edits.
-- Validate with `mount -a` (or `findmnt --verify --verbose` when available).
-- For optional data volumes, consider `nofail` and systemd timeouts:
-  - `x-systemd.device-timeout=30s`
-  - `x-systemd.automount` for lazy mounts
-
-## Example
-```
-UUID=1111-2222  /data  ext4  defaults,noatime,nofail,x-systemd.device-timeout=30s  0  2
-```
-
-## Notes by filesystem
-- **btrfs**: add `subvol=<name>` when mounting subvolumes.
-- **vfat/exfat/ntfs**: you may need `uid=`, `gid=`, and `umask=` for permissions.
-- **zfs**: typically managed by ZFS tools, not `/etc/fstab`.
-
-## References
-- `overview.md`
-- `filesystem-types.md`
-- `../systemd/overview.md`
-- `$CODEX_HOME/index/domains/system/filesystems.md`
+## Guidance
+- Keep your response short and operationally scoped.
+- Use `/data/codex/docs/filesystems/fstab.md` when you need the full procedure.
+- Treat this file as the route, not the full procedure.

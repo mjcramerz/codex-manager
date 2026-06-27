@@ -1,31 +1,18 @@
 # Kibana
-Guidance for secure Kibana configuration and dashboard hygiene.
-
+Purpose: tell you to use `/data/codex/docs/observability/kibana.md` for detailed host, installation, or administrative steps while keeping this runtime-pack route concise.
 
 ## Navigation
 <!-- BEGIN:nav -->
-- Parent: `$CODEX_HOME/docs/observability/overview.md`
+- Detailed docs: `/data/codex/docs/observability/kibana.md`
 - Pack index: `$CODEX_HOME/INDEX.md`
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
+## Use this file when
+- you need the topic name and the detailed docs path quickly
+- you need the exact host, installation, or administrative steps from `/data/codex/docs/observability/kibana.md`
 
-## Baseline practices
-- Use spaces to separate environments or teams.
-- Scope access with roles; avoid broad admin access.
-- Keep saved objects under version control when possible.
-
-## Operations
-- Keep dashboards lightweight; avoid unbounded queries.
-- Audit access for sensitive datasets.
-
-See also:
-- `overview.md`
-- `elasticsearch.md`
-- `logstash.md`
-- `../workflows/elastic-stack.md`
-- `$CODEX_HOME/snippets/elastic/kibana.yml`
-- `$CODEX_HOME/templates/observability/elastic-stack-compose/`
-- Use skill obs-kibana.
-- `$CODEX_HOME/index/domains/observability/stack.md`
-- `$CODEX_HOME/index/domains/observability/kibana.md`
+## Guidance
+- Keep your response short and operationally scoped.
+- Use `/data/codex/docs/observability/kibana.md` when you need the full procedure.
+- Treat this file as the route, not the full procedure.

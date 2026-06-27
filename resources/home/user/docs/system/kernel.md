@@ -1,39 +1,18 @@
 # Kernel build & configuration
-Guidance for building and configuring a custom kernel.
-
+Purpose: tell you to use `/data/codex/docs/system/kernel.md` for detailed host, installation, or administrative steps while keeping this runtime-pack route concise.
 
 ## Navigation
 <!-- BEGIN:nav -->
-- Parent: `$CODEX_HOME/docs/system/overview.md`
+- Detailed docs: `/data/codex/docs/system/kernel.md`
 - Pack index: `$CODEX_HOME/INDEX.md`
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
+## Use this file when
+- you need the topic name and the detailed docs path quickly
+- you need the exact host, installation, or administrative steps from `/data/codex/docs/system/kernel.md`
 
-## Baseline practices
-- Start from the distro kernel config (`/boot/config-*`) and change minimally.
-- Use config fragments for small deltas; keep them versioned.
-- Verify build provenance (signatures) when downloading sources.
-- Test new kernels in a VM before deploying to hosts.
-
-## Build workflow (high‑level)
-1) Obtain kernel source (distro or upstream).
-2) Copy baseline config and run `olddefconfig`.
-3) Apply config fragments and re‑run `olddefconfig`.
-4) Build with reproducible settings and a pinned toolchain.
-5) Install packages or modules; update bootloader.
-6) Keep the previous kernel bootable for rollback.
-
-## Config hygiene
-- Disable unused subsystems to reduce attack surface.
-- Enable module signature verification where policy requires it.
-- Prefer LTS kernels for stability.
-
-See also:
-- `overview.md`
-- `../workflows/kernel-build.md`
-- `$CODEX_HOME/templates/system/kernel-build-skeleton/`
-- `$CODEX_HOME/snippets/system/kernel-config.fragment`
-- Use skill infra-kernel.
-- `$CODEX_HOME/index/domains/system/hardening.md`
-- `$CODEX_HOME/index/domains/system/kernel.md`
+## Guidance
+- Keep your response short and operationally scoped.
+- Use `/data/codex/docs/system/kernel.md` when you need the full procedure.
+- Treat this file as the route, not the full procedure.

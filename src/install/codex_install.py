@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import getpass
 import filecmp
 import getpass
 import hashlib
@@ -44,6 +45,10 @@ if str(INSTALL_SRC) not in sys.path:
     sys.path.insert(0, str(INSTALL_SRC))
 if str(PYTHON_SRC) not in sys.path:
     sys.path.insert(0, str(PYTHON_SRC))
+
+from lib.pycache_bootstrap import bootstrap_pycache_prefix
+
+bootstrap_pycache_prefix()
 
 from common import InstallError
 from common import _first_unresolved_codex_placeholder_outside_toml_multiline_strings
@@ -81,9 +86,13 @@ from lib.managed_secrets import SECRETS_FILENAME
 from lib.managed_secrets import clear_managed_secret
 from lib.managed_secrets import lookup_managed_secret
 from lib.managed_secrets import managed_secret_mcp_env_map
+from lib.managed_secrets import managed_secret_supported_mcp_env_map
 from lib.managed_secrets import parse_managed_secrets_file
 from lib.managed_secrets import secret_tool_available
 from lib.managed_secrets import store_managed_secret
+from lib.codex_login_auth import AUTH_FILENAME
+from lib.codex_login_auth import CodexLoginAuthError
+from lib.codex_login_auth import parse_login_auth_file
 from lib.release_assets import ReleaseAssetError, discover_release_binaries
 from lib.runtime import (
     RuntimeRenderError,
@@ -125,6 +134,7 @@ ENV_REQUIRED = (
     "CODEX_DOWNLOAD_URL",
     "CODEX_DOWNLOAD_SHA",
     "CODEX_DOWNLOAD_PKG",
+    "CODEX_INSTALL_DEBIAN_PACKAGES",
 )
 
 ENV_ROOT_KEYS = (
@@ -152,6 +162,9 @@ GLOBAL_EXPORT_REQUIRED = (
 )
 GLOBAL_EXPORT_PATH_KEYS = GLOBAL_EXPORT_REQUIRED
 WRAPPER_ALIASES_FILENAME = "codex-wrapper-aliases.sh"
+CODEX_LOGIN_WRAPPER_NAME = "codex-login"
+CODEX_MCP_TOKEN_WRAPPER_NAME = "codex-mcp-token"
+DEBIAN_PACKAGE_PATTERN = re.compile(r"^[a-z0-9][a-z0-9+.-]*$")
 
 SCHEMA_TOOL_SOURCE_FILENAME = "codex_schema_tool.py"
 SCHEMA_HELPER_COMMANDS = {
@@ -427,6 +440,7 @@ class Installer:
             self.repo_layout.plugins_inventory_path,
             self.repo_layout.plugins_skills_dir,
             self._managed_secrets_source_path(),
+            self._managed_auth_source_path(),
         )
         for path in required_paths:
             if not path.exists():
@@ -447,6 +461,7 @@ class Installer:
         wrapper_dir = ensure_safe_absolute_path("CODEX_WRAPPER_DIR", self.env["CODEX_WRAPPER_DIR"])
         if wrapper_dir == Path("/"):
             fail("CODEX_WRAPPER_DIR must not be /")
+        self._configured_install_packages()
 
         ensure_sha256("CODEX_DOWNLOAD_SHA", self.env["CODEX_DOWNLOAD_SHA"])
         ensure_gitlab_url("CODEX_DOWNLOAD_URL", self.env["CODEX_DOWNLOAD_URL"])
@@ -513,6 +528,7 @@ class Installer:
         validate_agent_role_contracts(self.repo_layout.agents_config_dir, self.repo_layout.user_apps_path)
         self._validate_managed_secrets_config()
         self._validate_home_mcp_managed_secret_config()
+        self._validate_login_auth_config()
         self._validate_repo_layout()
         self._render_user_config_toml("", self._home_config_path())
 
@@ -522,18 +538,34 @@ class Installer:
         except ManagedSecretsError as exc:
             fail(str(exc))
 
+    def _supported_managed_secret_mcp_env_map(
+        self,
+        payload: dict[str, Any],
+        *,
+        path_label: str,
+    ) -> dict[str, tuple[str, ...]]:
+        try:
+            return managed_secret_supported_mcp_env_map(payload, path_label=path_label)
+        except ManagedSecretsError as exc:
+            fail(str(exc))
+
     def _validate_managed_secrets_config(self) -> None:
         config = self.secrets_config
         if config is None:
             fail("managed secrets config is not loaded")
 
-        expected = self._expected_managed_secret_mcp_map()
+        required = self._expected_managed_secret_mcp_map()
+        supported = self._supported_managed_secret_mcp_env_map(
+            self.mcp_payload,
+            path_label="config/vendor/mcp.toml",
+        )
         actual = config.mcp_servers
-        expected_servers = set(expected)
+        required_servers = set(required)
+        supported_servers = set(supported)
         actual_servers = set(actual)
-        if expected_servers != actual_servers:
-            missing = sorted(expected_servers - actual_servers)
-            unexpected = sorted(actual_servers - expected_servers)
+        if not required_servers.issubset(actual_servers) or not actual_servers.issubset(supported_servers):
+            missing = sorted(required_servers - actual_servers)
+            unexpected = sorted(actual_servers - supported_servers)
             details: list[str] = []
             if missing:
                 details.append(f"missing servers: {', '.join(missing)}")
@@ -542,13 +574,20 @@ class Installer:
             fail(f"{self._managed_secrets_source_path()} is out of sync with config/vendor/mcp.toml ({'; '.join(details)})")
 
         seen_keys: dict[str, str] = {}
-        for server_name in sorted(expected):
-            expected_keys = [expected[server_name]]
+        for server_name in sorted(actual):
             actual_keys = sorted(actual[server_name])
-            if actual_keys != expected_keys:
+            supported_keys = sorted(supported.get(server_name, ()))
+            if not supported_keys:
+                fail(f"{self._managed_secrets_source_path()} mcp_servers.{server_name} is not supported by config/vendor/mcp.toml")
+            if server_name in required and actual_keys != [required[server_name]]:
                 fail(
                     f"{self._managed_secrets_source_path()} mcp_servers.{server_name} must declare "
-                    f"{', '.join(expected_keys)}"
+                    f"{required[server_name]}"
+                )
+            if not set(actual_keys).issubset(set(supported_keys)):
+                fail(
+                    f"{self._managed_secrets_source_path()} mcp_servers.{server_name} must only declare "
+                    f"supported env vars from config/vendor/mcp.toml: {', '.join(supported_keys)}"
                 )
             for key in actual_keys:
                 existing_server = seen_keys.get(key)
@@ -560,31 +599,34 @@ class Installer:
                 seen_keys[key] = server_name
 
     def _validate_home_mcp_managed_secret_config(self) -> None:
-        expected = self._expected_managed_secret_mcp_map()
+        required = self._expected_managed_secret_mcp_map()
         home_payload = self._resolved_user_apps_payload()
-        try:
-            actual = managed_secret_mcp_env_map(home_payload, path_label="config/usr/apps.toml")
-        except ManagedSecretsError as exc:
-            fail(str(exc))
+        actual = self._supported_managed_secret_mcp_env_map(home_payload, path_label="config/usr/apps.toml")
 
-        expected_servers = set(expected)
-        actual_servers = set(actual)
-        if expected_servers != actual_servers:
-            missing = sorted(expected_servers - actual_servers)
-            unexpected = sorted(actual_servers - expected_servers)
-            details: list[str] = []
-            if missing:
-                details.append(f"missing servers: {', '.join(missing)}")
-            if unexpected:
-                details.append(f"unexpected servers: {', '.join(unexpected)}")
-            fail(f"config/usr/apps.toml managed bearer token drift ({'; '.join(details)})")
-
-        for server_name in sorted(expected):
-            if actual[server_name] != expected[server_name]:
+        for server_name in sorted(required):
+            actual_keys = actual.get(server_name)
+            if actual_keys != (required[server_name],):
                 fail(
                     "config/usr/apps.toml mcp_servers."
-                    f"{server_name} must declare bearer_token_env_var = {expected[server_name]!r}"
+                    f"{server_name} must declare bearer_token_env_var = {required[server_name]!r}"
                 )
+
+        config = self.secrets_config
+        if config is None:
+            fail("managed secrets config is not loaded")
+        for server_name, key in config.configured_server_env_map().items():
+            supported_keys = actual.get(server_name)
+            if not supported_keys or key not in supported_keys:
+                fail(
+                    f"config/usr/apps.toml mcp_servers.{server_name} must expose managed env key {key} "
+                    "through bearer_token_env_var or env_vars"
+                )
+
+    def _validate_login_auth_config(self) -> None:
+        try:
+            parse_login_auth_file(self._managed_auth_source_path())
+        except CodexLoginAuthError as exc:
+            fail(str(exc))
 
     def compile(self, output_dir: Path) -> CompiledArtifacts:
         target_output_dir = output_dir
@@ -612,6 +654,12 @@ class Installer:
     def _share_dir(self) -> Path:
         return ensure_safe_absolute_path("CODEX_SHARE_DIR", self.env["CODEX_SHARE_DIR"])
 
+    def _docs_dir(self) -> Path:
+        return ensure_safe_absolute_path("CODEX_ROOT_DIR", self.env["CODEX_ROOT_DIR"]) / "docs"
+
+    def _human_docs_source_dir(self) -> Path:
+        return self.repo_root / "docs"
+
     def _wrapper_dir(self) -> Path:
         return ensure_safe_absolute_path("CODEX_WRAPPER_DIR", self.env["CODEX_WRAPPER_DIR"])
 
@@ -636,11 +684,29 @@ class Installer:
     def _managed_secrets_source_path(self) -> Path:
         return self.repo_root / SECRETS_FILENAME
 
+    def _managed_auth_path(self) -> Path:
+        return self._managed_secrets_dir() / AUTH_FILENAME
+
+    def _managed_auth_source_path(self) -> Path:
+        return self.repo_root / AUTH_FILENAME
+
     def _managed_secret_env_helper_source_path(self) -> Path:
         return self.repo_root / "src" / "python" / "lib" / "keyring_env.py"
 
     def _managed_secret_env_helper_target(self) -> Path:
         return self._helpers_dir() / "codex-secret-tool-env.py"
+
+    def _codex_login_wrapper_source_path(self) -> Path:
+        return self.repo_root / "src" / "python" / "lib" / "codex_login.py"
+
+    def _codex_login_wrapper_target(self) -> Path:
+        return self._wrapper_dir() / CODEX_LOGIN_WRAPPER_NAME
+
+    def _codex_mcp_token_wrapper_source_path(self) -> Path:
+        return self.repo_root / "src" / "python" / "lib" / "codex_mcp_token.py"
+
+    def _codex_mcp_token_wrapper_target(self) -> Path:
+        return self._wrapper_dir() / CODEX_MCP_TOKEN_WRAPPER_NAME
 
     def _mcp_dir(self) -> Path:
         return ensure_safe_absolute_path("CODEX_MCP_DIR", self.env["CODEX_MCP_DIR"])
@@ -650,6 +716,25 @@ class Installer:
 
     def _mcp_known_hosts_path(self) -> Path:
         return self._mcp_dir() / "ssh" / "known_hosts"
+
+    def _configured_install_packages(self) -> list[str]:
+        raw = self.env.get("CODEX_INSTALL_DEBIAN_PACKAGES", "").strip()
+        if not raw:
+            fail("missing required .env key: CODEX_INSTALL_DEBIAN_PACKAGES")
+
+        packages: list[str] = []
+        seen: set[str] = set()
+        for package in raw.split():
+            if not DEBIAN_PACKAGE_PATTERN.fullmatch(package):
+                fail(f"invalid Debian package name in CODEX_INSTALL_DEBIAN_PACKAGES: {package}")
+            if package in seen:
+                continue
+            seen.add(package)
+            packages.append(package)
+
+        if not packages:
+            fail("CODEX_INSTALL_DEBIAN_PACKAGES must define at least one package")
+        return packages
 
     def _codex_binary_path(self) -> Path:
         return self._share_dir() / "bin" / "codex"
@@ -902,6 +987,48 @@ class Installer:
         except subprocess.CalledProcessError as exc:
             fail(f"command failed ({' '.join(args)}), exit code {exc.returncode}")
 
+    def _debian_package_installed(self, package: str) -> bool:
+        try:
+            proc = subprocess.run(
+                ["dpkg-query", "-W", "-f=${Status}", package],
+                check=False,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                timeout=20,
+            )
+        except FileNotFoundError as exc:
+            fail(f"dpkg-query is required for dependency checks but is unavailable: {exc}")
+        except subprocess.TimeoutExpired:
+            fail(f"dpkg-query timed out while checking package {package}")
+        return proc.returncode == 0 and proc.stdout.strip() == "install ok installed"
+
+    def _ensure_install_dependencies(self) -> None:
+        packages = self._configured_install_packages()
+        missing = [package for package in packages if not self._debian_package_installed(package)]
+        if not missing:
+            return
+
+        if self.dry_run or self._stage_mode():
+            print("[dry-run] apt-get install --no-install-recommends " + " ".join(missing))
+            return
+
+        env = dict(os.environ)
+        env["DEBIAN_FRONTEND"] = "noninteractive"
+        commands = (
+            ["sudo", "apt-get", "update"],
+            ["sudo", "apt-get", "install", "-y", "--no-install-recommends", *missing],
+        )
+        for cmd in commands:
+            try:
+                subprocess.run(cmd, check=True, env=env, timeout=900)
+            except FileNotFoundError as exc:
+                fail(f"dependency install command is unavailable: {exc}")
+            except subprocess.TimeoutExpired:
+                fail(f"dependency install command timed out: {' '.join(cmd)}")
+            except subprocess.CalledProcessError as exc:
+                fail(f"dependency install command failed ({' '.join(cmd[1:])}), exit code {exc.returncode}")
+
     def _needs_sudo_write(self, path: Path) -> bool:
         return needs_sudo_write(path)
 
@@ -1095,7 +1222,11 @@ class Installer:
 
         prompt = f"Enter {key} for mcp_servers.{server_name} (or 's' to skip): "
         while True:
-            value = input(prompt)
+            try:
+                value = getpass.getpass(prompt)
+            except (EOFError, KeyboardInterrupt):
+                print(file=sys.stderr)
+                return None
             normalized = value.strip()
             if normalized.lower() == "s":
                 return None
@@ -1156,6 +1287,16 @@ class Installer:
         self._mkdir_path(path.parent)
         if path.exists() and not path.is_file():
             fail(f"managed secrets file must be a regular file: {path}")
+        self._copy_file(source, path, mode=0o644)
+
+    def _sync_managed_auth_file(self) -> None:
+        path = self._managed_auth_path()
+        source = self._managed_auth_source_path()
+        if not source.is_file():
+            fail(f"missing login auth source file: {source}")
+        self._mkdir_path(path.parent)
+        if path.exists() and not path.is_file():
+            fail(f"login auth file must be a regular file: {path}")
         self._copy_file(source, path, mode=0o644)
 
     def _secure_exec_directories(self) -> None:
@@ -1307,6 +1448,16 @@ class Installer:
             self._instructions_source_dir(),
             self._runtime_instructions_dir(),
             skip_root_toml=True,
+            mirror_deletions=True,
+        )
+
+    def _sync_runtime_docs(self) -> None:
+        docs_src = self._human_docs_source_dir()
+        docs_dst = self._docs_dir()
+        self._sync_tree_filtered(
+            docs_src,
+            docs_dst,
+            skip_root_toml=False,
             mirror_deletions=True,
         )
 
@@ -1552,6 +1703,20 @@ class Installer:
             mode=0o755,
         )
 
+    def _sync_codex_login_wrapper(self) -> None:
+        self._copy_file(
+            self._codex_login_wrapper_source_path(),
+            self._codex_login_wrapper_target(),
+            mode=0o755,
+        )
+
+    def _sync_codex_mcp_token_wrapper(self) -> None:
+        self._copy_file(
+            self._codex_mcp_token_wrapper_source_path(),
+            self._codex_mcp_token_wrapper_target(),
+            mode=0o755,
+        )
+
     def _verify_schema_helpers(self) -> None:
         helpers_dir = self._helpers_dir()
         tool_path = helpers_dir / SCHEMA_TOOL_SOURCE_FILENAME
@@ -1566,6 +1731,61 @@ class Installer:
                 fail(f"missing installed schema helper wrapper: {helper_path}")
             if not os.access(helper_path, os.X_OK):
                 fail(f"schema helper wrapper is not executable: {helper_path}")
+
+    @staticmethod
+    def _relative_file_manifest(root: Path) -> list[str]:
+        if not root.is_dir():
+            fail(f"missing directory: {root}")
+        return sorted(
+            str(path.relative_to(root))
+            for path in root.rglob("*")
+            if path.is_file()
+        )
+
+    def _verify_runtime_hook_assets(self) -> None:
+        runtime_scripts_dir = self._runtime_hooks_scripts_dir()
+        runtime_schema_dir = self._runtime_hooks_schema_dir()
+        runtime_driver = runtime_scripts_dir / "hook_driver.pl"
+        if not runtime_driver.is_file():
+            fail(f"missing runtime hook driver: {runtime_driver}")
+
+        checks = (
+            ("runtime hook scripts", self._hooks_source_dir(), runtime_scripts_dir),
+            ("runtime hook schemas", self._hooks_schema_source_dir(), runtime_schema_dir),
+        )
+        for label, source_root, runtime_root in checks:
+            source_files = self._relative_file_manifest(source_root)
+            runtime_files = self._relative_file_manifest(runtime_root)
+            if source_files != runtime_files:
+                missing = sorted(set(source_files) - set(runtime_files))
+                unexpected = sorted(set(runtime_files) - set(source_files))
+                details: list[str] = []
+                if missing:
+                    details.append(f"missing files: {', '.join(missing)}")
+                if unexpected:
+                    details.append(f"unexpected files: {', '.join(unexpected)}")
+                fail(f"{label} drift detected at {runtime_root} ({'; '.join(details)})")
+
+        for schema_path in sorted(runtime_schema_dir.glob("*.json")):
+            try:
+                payload = json.loads(schema_path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError) as exc:
+                fail(f"runtime hook schema is not valid JSON: {schema_path}: {exc}")
+            if not isinstance(payload, dict):
+                fail(f"runtime hook schema must be a JSON object: {schema_path}")
+
+    def _verify_lookup_assets(self) -> None:
+        secrets_path = self._managed_secrets_path()
+        auth_path = self._managed_auth_path()
+        if not secrets_path.is_file():
+            fail(f"missing installed managed secrets file: {secrets_path}")
+        if not auth_path.is_file():
+            fail(f"missing installed login auth file: {auth_path}")
+        try:
+            parse_managed_secrets_file(secrets_path)
+            parse_login_auth_file(auth_path)
+        except (ManagedSecretsError, CodexLoginAuthError) as exc:
+            fail(str(exc))
 
     def _verify_release_schema_snapshot(self) -> None:
         latest_path = self._schema_latest_snapshot_path()
@@ -1584,7 +1804,7 @@ class Installer:
             content = render_shell_path_profile(
                 self._share_dir(),
                 self._wrapper_dir(),
-                self.global_vars,
+                self._stage_environment_exports() if self._stage_mode() else self._shell_profile_exports(),
                 guard_user=self._current_username(),
             )
         except RuntimeRenderError as exc:
@@ -1680,7 +1900,7 @@ class Installer:
         guard_marker = f'codex_target_user="{self._current_username()}"'
         if guard_marker not in text:
             fail(f"shell PATH profile missing current-user guard: {target}")
-        for key, value in self.global_vars.items():
+        for key, value in self._shell_profile_exports().items():
             marker = f'export {key}="{value}"'
             if marker not in text:
                 fail(f"shell PATH profile missing environment export for {key}: {target}")
@@ -1768,6 +1988,10 @@ class Installer:
     def _install_runtime_binary_wrappers(self, binary_names: list[str]) -> None:
         self._log("installing managed secret helper")
         self._sync_managed_secret_env_helper()
+        self._log("installing codex login wrapper")
+        self._sync_codex_login_wrapper()
+        self._log("installing codex MCP token wrapper")
+        self._sync_codex_mcp_token_wrapper()
         self._sync_release_shims(binary_names)
         self._sync_wrapper_aliases(binary_names)
         self._log("installing shell completion files")
@@ -1783,6 +2007,8 @@ class Installer:
 
     def _refresh_runtime_launch_wrappers(self, launch_env: dict[str, str]) -> None:
         self._sync_managed_secret_env_helper()
+        self._sync_codex_login_wrapper()
+        self._sync_codex_mcp_token_wrapper()
         binary_names = self._existing_release_binary_names()
         if binary_names:
             self._sync_release_shims(binary_names, launch_env=launch_env)
@@ -1832,6 +2058,16 @@ class Installer:
             legacy_secure_shim = shims_dir / self._legacy_secure_wrapper_name(binary.name)
             if legacy_secure_shim.exists():
                 fail(f"legacy secure shim must not exist for release binary {binary.name}: {legacy_secure_shim}")
+        login_wrapper = self._codex_login_wrapper_target()
+        if not login_wrapper.is_file():
+            fail(f"missing managed codex login wrapper: {login_wrapper}")
+        if not os.access(login_wrapper, os.X_OK):
+            fail(f"managed codex login wrapper is not executable: {login_wrapper}")
+        mcp_token_wrapper = self._codex_mcp_token_wrapper_target()
+        if not mcp_token_wrapper.is_file():
+            fail(f"missing managed codex MCP token wrapper: {mcp_token_wrapper}")
+        if not os.access(mcp_token_wrapper, os.X_OK):
+            fail(f"managed codex MCP token wrapper is not executable: {mcp_token_wrapper}")
 
     def _is_managed_wrapper_file(self, path: Path) -> bool:
         if path.is_symlink() or not path.is_file():
@@ -1929,7 +2165,7 @@ class Installer:
 
     def _backup_install_state(self, *, flow: str) -> None:
         backup_root = ensure_safe_absolute_path("CODEX_BACKUP_DIR", self.env["CODEX_BACKUP_DIR"])
-        if flow not in {"install", "update", "upgrade", "uninstall"}:
+        if flow not in {"install", "runtime", "runtime-home", "runtime-skills", "runtime-instructions", "uninstall"}:
             fail(f"unsupported backup flow: {flow}")
         sources = self._backup_source_paths()
         account_key = self._backup_account_key(sources)
@@ -1992,10 +2228,13 @@ class Installer:
         self._install_shell_path_profile()
         self._install_user_shell_hooks()
 
-    def _stage_environment_exports(self) -> dict[str, str]:
+    def _shell_profile_exports(self) -> dict[str, str]:
         exports = dict(self.global_vars)
         exports.update(self.launch_env)
         return exports
+
+    def _stage_environment_exports(self) -> dict[str, str]:
+        return self._shell_profile_exports()
 
     def _install_stage_environment_exports(self) -> None:
         activation_path = self._stage_activation_path()
@@ -2011,12 +2250,20 @@ class Installer:
         print(f'[info] source "{activation_path}" to test the staged dry-run wrappers')
 
     def _prepare_runtime_install_state(self, artifacts: CompiledArtifacts, *, flow: str) -> None:
+        self._prepare_runtime_refresh_base(flow=flow)
+        self.apply_home_bundle()
+        self.apply_admin(artifacts)
+        self.setup_environment()
+
+    def _prepare_runtime_refresh_base(self, *, flow: str) -> None:
         self._log(f"creating {flow} backup")
         self._backup_install_state(flow=flow)
         self._log("ensuring runtime directories")
         self._ensure_runtime_directories()
         self._log("syncing managed secrets file")
         self._sync_managed_secrets_file()
+        self._log("syncing login auth file")
+        self._sync_managed_auth_file()
         if self._stage_mode():
             self._log("skipping managed secret-tool mutation for staged dry-run install")
         else:
@@ -2024,9 +2271,6 @@ class Installer:
             self._ensure_enabled_managed_secrets()
         self._log("hardening executable directories")
         self._secure_exec_directories()
-        self.apply_home_bundle()
-        self.apply_admin(artifacts)
-        self.setup_environment()
 
     def _purge_codex_environment(self) -> None:
         env_script = self._env_script_path()
@@ -2642,6 +2886,7 @@ class Installer:
         return installed
 
     def build_install(self, artifacts: CompiledArtifacts) -> None:
+        self._ensure_install_dependencies()
         try:
             source_build_env = dict(self.env)
             source_build_env.update(load_source_build_environment(self.repo_root))
@@ -2675,17 +2920,45 @@ class Installer:
         self._install_runtime_binary_wrappers(installed_binaries)
 
     def apply(self, artifacts: CompiledArtifacts) -> None:
+        self._ensure_install_dependencies()
         self._prepare_runtime_install_state(artifacts, flow="install")
         self._log("installing release binaries")
         installed_binaries = self._install_release_binary()
         self._install_runtime_binary_wrappers(installed_binaries)
 
-    def apply_update(self, artifacts: CompiledArtifacts) -> None:
-        self._prepare_runtime_install_state(artifacts, flow="update")
+    def apply_runtime(self, artifacts: CompiledArtifacts) -> None:
+        self._prepare_runtime_install_state(artifacts, flow="runtime")
         self._log("refreshing runtime wrappers/helpers for installed binaries")
         self._refresh_runtime_launch_wrappers(self.launch_env)
         self._log("installing shell completion files")
         self._install_user_shell_completions()
+
+    def apply_runtime_home(self, artifacts: CompiledArtifacts) -> None:
+        self._prepare_runtime_refresh_base(flow="runtime-home")
+        self.apply_home()
+        self.apply_admin(artifacts)
+        self.setup_environment()
+        self._log("refreshing runtime wrappers/helpers for installed binaries")
+        self._refresh_runtime_launch_wrappers(self.launch_env)
+
+    def apply_runtime_skills(self, artifacts: CompiledArtifacts) -> None:
+        self._prepare_runtime_refresh_base(flow="runtime-skills")
+        self.apply_apps()
+        self.apply_skills()
+        self._log("rendering CODEX_HOME/config.toml from config fragments")
+        self._materialize_home_config_paths()
+        self._log("rendering CODEX_AGENTS/*.toml with runtime paths")
+        self._materialize_agent_config_paths(source_dir=self.repo_layout.agents_config_dir)
+        self.apply_admin(artifacts)
+
+    def apply_runtime_instructions(self) -> None:
+        self._prepare_runtime_refresh_base(flow="runtime-instructions")
+        self._log("syncing instruction assets")
+        self._sync_instruction_assets()
+        self._log("materializing default instruction assets")
+        self._materialize_instruction_default_assets()
+        self._log("rendering CODEX_HOME/config.toml from config fragments")
+        self._materialize_home_config_paths()
 
     def apply_home(self) -> None:
         home_src = self.repo_layout.home_user_dir
@@ -2703,6 +2976,8 @@ class Installer:
             preserve_root_files=set(HOME_FILTER_PRESERVE_FILES),
             mirror_deletions=True,
         )
+        self._log("syncing runtime docs to CODEX_ROOT_DIR/docs")
+        self._sync_runtime_docs()
         self._log("syncing config/agents role TOMLs to CODEX_AGENTS (filtered)")
         self._sync_tree_filtered(
             agents_src,
@@ -2774,12 +3049,6 @@ class Installer:
         self._log("writing current-user environment files")
         self._sync_global_environment()
 
-    def upgrade(self, artifacts: CompiledArtifacts) -> None:
-        self._prepare_runtime_install_state(artifacts, flow="upgrade")
-        self._log("installing release binaries and latest release schema snapshot")
-        installed_binaries = self._install_release_binary()
-        self._install_runtime_binary_wrappers(installed_binaries)
-
     def verify(self, output_dir: Path | None = None) -> None:
         self._render_requirements_toml()
 
@@ -2834,6 +3103,10 @@ class Installer:
             stage_installer.validate()
             stage_artifacts = stage_installer.compile(compiled_root / "verify-stage-compiled")
             stage_installer.apply(stage_artifacts)
+            stage_installer._verify_lookup_assets()
+            stage_installer._verify_runtime_hook_assets()
+            stage_installer._verify_release_shims()
+            stage_installer._verify_schema_helpers()
             stage_installer.apply_vars_init()
             stage_installer.apply_vars_reset()
             stage_installer.uninstall()
@@ -2999,16 +3272,12 @@ def parse_args() -> argparse.Namespace:
             "build-src",
             "build-install",
             "install",
-            "update",
-            "home",
-            "apps",
-            "plugins",
-            "skills",
-            "admin",
-            "upgrade",
+            "runtime",
+            "runtime-home",
+            "runtime-skills",
+            "runtime-instructions",
             "vars-init",
             "vars-reset",
-            "uninstall",
             "nuke",
         ),
     )
@@ -3064,13 +3333,13 @@ def run() -> int:
 
     installer.load()
 
-    if args.command in {"nuke", "uninstall"}:
-        # Uninstall must not depend on config rendering or other install-time checks.
+    if args.command == "nuke":
+        # Nuke must not depend on config rendering or other install-time checks.
         installer.uninstall()
         if args.dry_run:
             print("[ok] dry-run complete")
             return 0
-        print(f"[ok] {args.command} complete")
+        print("[ok] nuke complete")
         print('[info] current shell variables remain until session refresh (e.g., run: exec "$SHELL" -l)')
         return 0
 
@@ -3081,33 +3350,6 @@ def run() -> int:
             return 0
         print("[ok] vars-reset complete")
         print('[info] current shell variables remain until session refresh (e.g., run: exec "$SHELL" -l)')
-        return 0
-
-    if args.command == "home":
-        installer.validate()
-        installer.apply_home_bundle()
-        if args.dry_run:
-            print("[ok] dry-run complete")
-            return 0
-        print("[ok] home complete")
-        return 0
-
-    if args.command == "apps":
-        installer.validate()
-        installer.apply_apps()
-        if args.dry_run:
-            print("[ok] dry-run complete")
-            return 0
-        print("[ok] apps complete")
-        return 0
-
-    if args.command == "plugins":
-        installer.validate()
-        installer.apply_apps()
-        if args.dry_run:
-            print("[ok] dry-run complete")
-            return 0
-        print("[ok] plugins complete")
         return 0
 
     if args.command == "vars-init":
@@ -3137,15 +3379,15 @@ def run() -> int:
         print("[ok] build-install complete")
         return 0
 
-    if args.command == "update":
+    if args.command == "runtime":
         installer.validate()
         compiled_dir = (repo_root / args.compiled_dir).resolve(strict=False)
         artifacts = installer.compile(compiled_dir)
-        installer.apply_update(artifacts)
+        installer.apply_runtime(artifacts)
         if args.dry_run:
             print("[ok] dry-run complete")
             return 0
-        print("[ok] update complete")
+        print("[ok] runtime complete")
         return 0
 
     installer.validate()
@@ -3160,14 +3402,6 @@ def run() -> int:
         print("[ok] verification passed")
         return 0
 
-    if args.command == "skills":
-        installer.apply_skills()
-        if args.dry_run:
-            print("[ok] dry-run complete")
-            return 0
-        print("[ok] skills complete")
-        return 0
-
     compiled_dir = (
         installer._resolved_stage_root() / "compiled"
         if stage_dry_run
@@ -3175,12 +3409,28 @@ def run() -> int:
     )
     artifacts = installer.compile(compiled_dir)
 
-    if args.command == "admin":
-        installer.apply_admin(artifacts)
+    if args.command == "runtime-home":
+        installer.apply_runtime_home(artifacts)
         if args.dry_run:
             print("[ok] dry-run complete")
             return 0
-        print("[ok] admin complete")
+        print("[ok] runtime-home complete")
+        return 0
+
+    if args.command == "runtime-skills":
+        installer.apply_runtime_skills(artifacts)
+        if args.dry_run:
+            print("[ok] dry-run complete")
+            return 0
+        print("[ok] runtime-skills complete")
+        return 0
+
+    if args.command == "runtime-instructions":
+        installer.apply_runtime_instructions()
+        if args.dry_run:
+            print("[ok] dry-run complete")
+            return 0
+        print("[ok] runtime-instructions complete")
         return 0
 
     if args.command == "install":
@@ -3192,14 +3442,6 @@ def run() -> int:
             print("[ok] dry-run complete")
             return 0
         print("[ok] install complete")
-        return 0
-
-    if args.command == "upgrade":
-        installer.upgrade(artifacts)
-        if args.dry_run:
-            print("[ok] dry-run complete")
-            return 0
-        print("[ok] upgrade complete")
         return 0
 
     fail(f"unsupported command: {args.command}")

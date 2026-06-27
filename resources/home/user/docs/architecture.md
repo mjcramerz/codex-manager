@@ -29,6 +29,11 @@ Purpose: explain how the codex-manager source tree, the runtime-home pack, hook 
   - `$CODEX_HOME/.agents/plugins/marketplace.json`
   - `$CODEX_SKILLS/**`
 
+## Docs split
+- You use `$CODEX_HOME/docs/**` for fast runtime-pack routing.
+- You use `/data/codex/docs/**` for full host, installation, and administrative procedures.
+- Host and installation runbooks should live in the repo-level `docs/` source and install into `/data/codex/docs/**`, while `$CODEX_HOME/docs/**` stays concise.
+
 ## Why the boundary matters
 - Installed runtime paths stay coherent after the pack is rendered into `$CODEX_HOME`.
 - Agent guidance stays fast to route when it points at stable docs, plans, skills, templates, snippets, and plugin metadata.

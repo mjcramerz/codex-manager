@@ -39,15 +39,11 @@ class InstallCommandRoutingTests(unittest.TestCase):
         installer.validate.assert_not_called()
         installer.uninstall.assert_called_once_with()
 
-    def test_uninstall_alias_does_not_run_full_validate(self) -> None:
-        installer, _installer_cls = self._run_command("uninstall")
-        installer.validate.assert_not_called()
-        installer.uninstall.assert_called_once_with()
-
-    def test_home_still_runs_full_validate(self) -> None:
-        installer, _installer_cls = self._run_command("home")
+    def test_runtime_home_runs_full_validate(self) -> None:
+        installer, _installer_cls = self._run_command("runtime-home")
         installer.validate.assert_called_once_with()
-        installer.apply_home_bundle.assert_called_once_with()
+        installer.compile.assert_called_once()
+        installer.apply_runtime_home.assert_called_once_with(installer.compile.return_value)
 
     def test_build_src_uses_source_build_helpers_without_installer(self) -> None:
         args = types.SimpleNamespace(command="build-src", dry_run=False, compiled_dir="src/misc/compiled")
@@ -73,11 +69,23 @@ class InstallCommandRoutingTests(unittest.TestCase):
         installer.compile.assert_called_once()
         installer.build_install.assert_called_once_with(installer.compile.return_value)
 
-    def test_update_runs_validate_then_apply_update(self) -> None:
-        installer, _installer_cls = self._run_command("update")
+    def test_runtime_runs_validate_then_apply_runtime(self) -> None:
+        installer, _installer_cls = self._run_command("runtime")
         installer.validate.assert_called_once_with()
         installer.compile.assert_called_once()
-        installer.apply_update.assert_called_once_with(installer.compile.return_value)
+        installer.apply_runtime.assert_called_once_with(installer.compile.return_value)
+
+    def test_runtime_skills_runs_validate_then_apply_runtime_skills(self) -> None:
+        installer, _installer_cls = self._run_command("runtime-skills")
+        installer.validate.assert_called_once_with()
+        installer.compile.assert_called_once()
+        installer.apply_runtime_skills.assert_called_once_with(installer.compile.return_value)
+
+    def test_runtime_instructions_runs_validate_then_apply_runtime_instructions(self) -> None:
+        installer, _installer_cls = self._run_command("runtime-instructions")
+        installer.validate.assert_called_once_with()
+        installer.compile.assert_called_once()
+        installer.apply_runtime_instructions.assert_called_once_with()
 
     def test_install_dry_run_uses_staged_installer_root(self) -> None:
         _installer, installer_cls = self._run_command("install", dry_run=True)
@@ -116,6 +124,7 @@ class InstallCommandRoutingTests(unittest.TestCase):
         installer.stage_root = None
         installer.repo_root = Path("/tmp/repo")
         installer.dry_run = True
+        installer._ensure_install_dependencies = Mock()
         with (
             patch.object(codex_install, "load_source_build_environment", return_value={"CODEX_SOURCE_BUILD_ROOT": "/tmp/from-process/build"}),
             patch.object(codex_install, "load_source_build_settings") as load_source_build_settings,
@@ -137,6 +146,7 @@ class InstallCommandRoutingTests(unittest.TestCase):
         installer.stage_root = Path("/data/dryrun/codex")
         installer.repo_root = Path("/tmp/repo")
         installer.dry_run = True
+        installer._ensure_install_dependencies = Mock()
         with (
             patch.object(codex_install, "load_source_build_environment", return_value={"CODEX_SOURCE_BUILD_ROOT": "/tmp/from-process/build"}),
             patch.object(codex_install, "load_source_build_settings") as load_source_build_settings,
@@ -166,6 +176,7 @@ class InstallCommandRoutingTests(unittest.TestCase):
         settings = types.SimpleNamespace(output_dir=Path("/tmp/build/output"))
         build_result = types.SimpleNamespace(output_dir=Path("/tmp/build/output"))
         calls: list[str] = []
+        installer._ensure_install_dependencies = Mock(side_effect=lambda: calls.append("_ensure_install_dependencies"))
 
         for name in ("_prepare_runtime_install_state", "_install_runtime_binary_wrappers"):
             setattr(installer, name, Mock(side_effect=lambda *args, _name=name, **kwargs: calls.append(_name)))
@@ -184,6 +195,7 @@ class InstallCommandRoutingTests(unittest.TestCase):
         self.assertEqual(
             calls,
             [
+                "_ensure_install_dependencies",
                 "_prepare_runtime_install_state",
                 "_install_source_build_binary",
                 "_install_runtime_binary_wrappers",

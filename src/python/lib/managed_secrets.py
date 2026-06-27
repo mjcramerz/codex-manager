@@ -26,19 +26,27 @@ class ManagedSecretsConfig:
     service: str
     mcp_servers: dict[str, dict[str, bool]]
 
-    def enabled_runtime_env_keys(self) -> list[str]:
-        enabled: list[str] = []
+    def configured_server_env_map(self) -> dict[str, str]:
+        configured: dict[str, str] = {}
         for server_name in sorted(self.mcp_servers):
-            for key in sorted(self.mcp_servers[server_name]):
-                if self.mcp_servers[server_name][key]:
-                    enabled.append(key)
+            keys = sorted(self.mcp_servers[server_name])
+            if len(keys) != 1:
+                fail(f"managed secret config for {server_name} must declare exactly one env key")
+            configured[server_name] = keys[0]
+        return configured
+
+    def enabled_server_env_map(self) -> dict[str, str]:
+        enabled: dict[str, str] = {}
+        for server_name, key in self.configured_server_env_map().items():
+            if self.mcp_servers[server_name][key]:
+                enabled[server_name] = key
         return enabled
 
+    def enabled_runtime_env_keys(self) -> list[str]:
+        return sorted(self.enabled_server_env_map().values())
+
     def all_env_keys(self) -> list[str]:
-        keys: list[str] = []
-        for server_name in sorted(self.mcp_servers):
-            keys.extend(sorted(self.mcp_servers[server_name]))
-        return keys
+        return sorted(self.configured_server_env_map().values())
 
     def all_server_names(self) -> list[str]:
         return sorted(self.mcp_servers)
@@ -96,6 +104,7 @@ def parse_managed_secrets_file(path: Path) -> ManagedSecretsConfig:
         fail(f"{path} must declare a non-empty [mcp_servers] table")
 
     parsed_servers: dict[str, dict[str, bool]] = {}
+    seen_keys: dict[str, str] = {}
     for server_name, raw_table in raw_mcp_servers.items():
         if not isinstance(server_name, str) or not SERVER_NAME_PATTERN.fullmatch(server_name):
             fail(f"{path} contains invalid mcp server name: {server_name}")
@@ -107,10 +116,45 @@ def parse_managed_secrets_file(path: Path) -> ManagedSecretsConfig:
                 fail(f"{path} mcp_servers.{server_name} contains invalid env key: {key}")
             if not isinstance(value, bool):
                 fail(f"{path} mcp_servers.{server_name}.{key} must be boolean")
+            existing_server = seen_keys.get(key)
+            if existing_server is not None:
+                fail(
+                    f"{path} reuses env key {key} across "
+                    f"mcp_servers.{existing_server} and mcp_servers.{server_name}"
+                )
+            seen_keys[key] = server_name
             parsed_table[key] = value
+        if len(parsed_table) != 1:
+            fail(f"{path} mcp_servers.{server_name} must declare exactly one env key")
         parsed_servers[server_name] = parsed_table
 
     return ManagedSecretsConfig(service=normalized_service, mcp_servers=parsed_servers)
+
+
+def _normalized_env_var_list(
+    raw_env_vars: Any,
+    *,
+    path_label: str,
+    server_name: str,
+) -> tuple[str, ...]:
+    if raw_env_vars in (None, []):
+        return ()
+    if not isinstance(raw_env_vars, list):
+        fail(f"{path_label} mcp_servers.{server_name}.env_vars must be a list")
+
+    normalized: list[str] = []
+    seen: set[str] = set()
+    for value in raw_env_vars:
+        if not isinstance(value, str):
+            fail(f"{path_label} mcp_servers.{server_name}.env_vars entries must be strings")
+        key = value.strip()
+        if not KEY_PATTERN.fullmatch(key):
+            fail(f"{path_label} mcp_servers.{server_name}.env_vars contains invalid env key: {value}")
+        if key in seen:
+            fail(f"{path_label} mcp_servers.{server_name}.env_vars reuses env key {key}")
+        seen.add(key)
+        normalized.append(key)
+    return tuple(normalized)
 
 
 def managed_secret_mcp_env_map(
@@ -175,6 +219,67 @@ def managed_secret_mcp_env_map(
 
         exported[server_name] = normalized_key
     return exported
+
+
+def managed_secret_supported_mcp_env_map(
+    payload: dict[str, Any],
+    *,
+    path_label: str,
+    enabled_only: bool = False,
+) -> dict[str, tuple[str, ...]]:
+    if not isinstance(payload, dict):
+        fail(f"{path_label} must be a TOML object")
+
+    raw_mcp_servers = payload.get("mcp_servers")
+    if raw_mcp_servers in (None, {}):
+        return {}
+    if not isinstance(raw_mcp_servers, dict):
+        fail(f"{path_label} mcp_servers must be an object")
+
+    supported: dict[str, tuple[str, ...]] = {}
+    for server_name, raw_server in raw_mcp_servers.items():
+        if not isinstance(server_name, str) or not SERVER_NAME_PATTERN.fullmatch(server_name):
+            fail(f"{path_label} contains invalid mcp server name: {server_name}")
+        if not isinstance(raw_server, dict):
+            fail(f"{path_label} mcp_servers.{server_name} must be an object")
+
+        enabled_value = raw_server.get("enabled")
+        if enabled_value is not None and not isinstance(enabled_value, bool):
+            fail(f"{path_label} mcp_servers.{server_name}.enabled must be boolean")
+        if enabled_only and enabled_value is not True:
+            continue
+
+        command_value = raw_server.get("command")
+        if isinstance(command_value, str) and command_value.strip():
+            token_key = raw_server.get("bearer_token_env_var")
+            if token_key is not None:
+                fail(
+                    f"{path_label} mcp_servers.{server_name} uses command transport and must not declare "
+                    "bearer_token_env_var; use env_vars instead"
+                )
+            env_keys = _normalized_env_var_list(raw_server.get("env_vars"), path_label=path_label, server_name=server_name)
+            if env_keys:
+                supported[server_name] = env_keys
+            continue
+
+        env_keys: list[str] = []
+        token_key = raw_server.get("bearer_token_env_var")
+        if token_key is not None:
+            if not isinstance(token_key, str):
+                fail(f"{path_label} mcp_servers.{server_name}.bearer_token_env_var must be a string")
+            normalized_key = token_key.strip()
+            if not KEY_PATTERN.fullmatch(normalized_key):
+                fail(f"{path_label} mcp_servers.{server_name}.bearer_token_env_var must be an env var name")
+            url_value = raw_server.get("url")
+            if not isinstance(url_value, str) or not url_value.strip():
+                fail(
+                    f"{path_label} mcp_servers.{server_name} bearer_token_env_var requires a non-empty url transport"
+                )
+            env_keys.append(normalized_key)
+
+        if env_keys:
+            supported[server_name] = tuple(env_keys)
+    return supported
 
 
 def secret_tool_available() -> bool:

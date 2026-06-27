@@ -38,6 +38,7 @@ class InstructionMetadataContractTests(unittest.TestCase):
 
     def test_manifest_keys_match_active_instruction_overrides(self) -> None:
         expected = {
+            "model_catalog_json",
             "model_instructions_file",
             "experimental_compact_prompt_file",
         }
@@ -65,6 +66,7 @@ class InstructionMetadataContractTests(unittest.TestCase):
 
     def test_default_disable_paths_match_config_values(self) -> None:
         expected = {
+            "model_catalog_json": self.config["model_catalog_json"],
             "model_instructions_file": self.config["model_instructions_file"],
             "experimental_compact_prompt_file": self.config["experimental_compact_prompt_file"],
         }

@@ -1,34 +1,18 @@
 # CrowdSec
-Guidance for CrowdSec configuration and bouncer integration.
-
+Purpose: tell you to use `/data/codex/docs/observability/crowdsec.md` for detailed host, installation, or administrative steps while keeping this runtime-pack route concise.
 
 ## Navigation
 <!-- BEGIN:nav -->
-- Parent: `$CODEX_HOME/docs/observability/overview.md`
+- Detailed docs: `/data/codex/docs/observability/crowdsec.md`
 - Pack index: `$CODEX_HOME/INDEX.md`
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
+## Use this file when
+- you need the topic name and the detailed docs path quickly
+- you need the exact host, installation, or administrative steps from `/data/codex/docs/observability/crowdsec.md`
 
-## Baseline practices
-- Start with a minimal set of collections; avoid broad defaults.
-- Validate log sources and parsing before enabling remediation.
-- Keep CrowdSec API keys scoped to the minimal bouncer set.
-
-## Operations
-- Verify `acquis.yaml` log sources and timestamps.
-- Test decisions in a dry‑run or alert‑only mode first.
-- Keep parsers and scenarios pinned and reviewed.
-
-## Safety notes
-- Avoid auto‑ban on noisy signals without tuning.
-- Document whitelists and override rules explicitly.
-
-See also:
-- `overview.md`
-- `$CODEX_HOME/templates/observability/crowdsec-skeleton/`
-- `$CODEX_HOME/snippets/crowdsec/acquis.yaml`
-- `../workflows/crowdsec.md`
-- Use skill secops-crowdsec.
-- `$CODEX_HOME/index/domains/observability/stack.md`
-- `$CODEX_HOME/index/domains/observability/crowdsec.md`
+## Guidance
+- Keep your response short and operationally scoped.
+- Use `/data/codex/docs/observability/crowdsec.md` when you need the full procedure.
+- Treat this file as the route, not the full procedure.

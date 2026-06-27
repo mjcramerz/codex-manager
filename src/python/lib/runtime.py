@@ -29,7 +29,6 @@ def _validate_shell_path(label: str, value: Path) -> str:
 EXPORT_KEY_PATTERN = re.compile(r"^[A-Z][A-Z0-9_]*$")
 SHELL_ALIAS_NAME_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
 WRAPPER_ALIASES_FILENAME = "codex-wrapper-aliases.sh"
-WRAPPER_SECRET_ENV_FLAG = "CODEX_INJECT_SECRETS"
 
 
 def _validate_shell_export_value(label: str, value: str) -> str:
@@ -131,10 +130,7 @@ def render_shell_path_profile(
     )
 
 
-def render_wrapper_aliases(binary_names: list[str], *, secret_env_flag: str = WRAPPER_SECRET_ENV_FLAG) -> str:
-    if not EXPORT_KEY_PATTERN.fullmatch(secret_env_flag):
-        raise RuntimeRenderError(f"invalid secret env flag: {secret_env_flag}")
-
+def render_wrapper_aliases(binary_names: list[str]) -> str:
     lines = [
         "# managed by codex installer",
         'case "${-:-}" in',
@@ -145,9 +141,7 @@ def render_wrapper_aliases(binary_names: list[str], *, secret_env_flag: str = WR
     for name in sorted(set(binary_names)):
         if not SHELL_ALIAS_NAME_PATTERN.fullmatch(name):
             raise RuntimeRenderError(f"invalid wrapper alias name: {name}")
-        alias_name = f"{name}-s"
-        lines.append(f"unalias {alias_name} 2>/dev/null || true")
-        lines.append(f"alias {alias_name}='{secret_env_flag}=1 command {name}'")
+        lines.append(f"unalias {name}-s 2>/dev/null || true")
     return "\n".join(lines) + "\n"
 
 
@@ -199,15 +193,13 @@ def render_codex_shim(
             host_config_path,
         )
         keyring_block = (
-            f'if [ -n "${{{WRAPPER_SECRET_ENV_FLAG}:-}}" ]; then\n'
-            f'  if [ ! -x "{rendered_managed_secret_helper_path}" ]; then\n'
-            f'    echo "missing codex managed secret helper: {rendered_managed_secret_helper_path}" >&2\n'
-            "    exit 1\n"
-            "  fi\n"
+            f'if [ ! -x "{rendered_managed_secret_helper_path}" ]; then\n'
+            f'  echo "missing codex managed secret helper: {rendered_managed_secret_helper_path}" >&2\n'
+            "  exit 1\n"
+            "fi\n"
             f'  exec /usr/bin/env python3 "{rendered_managed_secret_helper_path}" exec '
             f'--secrets-file "{rendered_managed_secrets_path}" --host-config "{rendered_host_config_path}" '
             f'--binary "{binary}" -- "$@"\n'
-            "fi\n"
         )
 
     return (

@@ -3,15 +3,32 @@ from __future__ import annotations
 
 import argparse
 import os
+from pathlib import Path
 import sys
 import tomllib
-from pathlib import Path
+
+
+PYCACHE_PREFIX = "/tmp/codex-pycache"
+_pycache_target = Path(os.environ.get("PYTHONPYCACHEPREFIX", "").strip() or PYCACHE_PREFIX)
+if not _pycache_target.is_absolute():
+    _pycache_target = Path(PYCACHE_PREFIX)
+try:
+    _pycache_target.mkdir(parents=True, exist_ok=True)
+except OSError:
+    pass
+else:
+    os.environ["PYTHONPYCACHEPREFIX"] = str(_pycache_target)
+    sys.pycache_prefix = str(_pycache_target)
+
+PYTHON_ROOT = Path(__file__).resolve(strict=False).parents[1]
+if str(PYTHON_ROOT) not in sys.path:
+    sys.path.insert(0, str(PYTHON_ROOT))
 
 from lib.managed_secrets import ManagedSecretsError
 from lib.managed_secrets import SECRETS_FILENAME
 from lib.managed_secrets import KEY_PATTERN
 from lib.managed_secrets import lookup_managed_secret
-from lib.managed_secrets import managed_secret_mcp_env_map
+from lib.managed_secrets import managed_secret_supported_mcp_env_map
 from lib.managed_secrets import parse_managed_secrets_file
 from lib.runtime import RuntimeRenderError
 from lib.runtime import derive_runtime_globals_from_env
@@ -137,7 +154,7 @@ def _lookup_env_secret(key: str) -> str:
     return _normalize_secret_value(key, value, source="environment value")
 
 
-def _runtime_mcp_bearer_env_map(path: Path) -> dict[str, str]:
+def _runtime_mcp_secret_env_map(path: Path) -> dict[str, tuple[str, ...]]:
     if not path.is_file():
         fail(f"missing host config: {path}")
     try:
@@ -148,7 +165,7 @@ def _runtime_mcp_bearer_env_map(path: Path) -> dict[str, str]:
         fail(f"{path} must be a TOML object")
 
     try:
-        return managed_secret_mcp_env_map(payload, path_label=str(path), enabled_only=True)
+        return managed_secret_supported_mcp_env_map(payload, path_label=str(path), enabled_only=True)
     except ManagedSecretsError as exc:
         fail(str(exc))
 
@@ -160,7 +177,16 @@ def collect_lookup_environment(host_config_path: Path, secrets_path: Path) -> di
         fail(str(exc))
 
     exported: dict[str, str] = {}
-    for server_name, key in _runtime_mcp_bearer_env_map(host_config_path).items():
+    runtime_allowed = _runtime_mcp_secret_env_map(host_config_path)
+    for server_name, key in config.enabled_server_env_map().items():
+        allowed_keys = runtime_allowed.get(server_name)
+        if not allowed_keys:
+            continue
+        if key not in allowed_keys:
+            fail(
+                f"{secrets_path} enables mcp_servers.{server_name}.{key}, "
+                f"but {host_config_path} does not allow that runtime env var"
+            )
         value = _lookup_env_secret(key)
         if not value:
             try:

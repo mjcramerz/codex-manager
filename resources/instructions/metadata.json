@@ -23,6 +23,15 @@
       "short_description": "Model instruction assets.",
       "entries": [
         {
+          "name": "model_catalog",
+          "config_key": "model_catalog_json",
+          "file": "model_catalog.json",
+          "source_group": "models",
+          "short_description": "Runtime model catalog for model selection and capability metadata.",
+          "default_enable_path": "$CODEX_USER_DIR/instructions/models/model_catalog.json",
+          "default_disable_path": "$CODEX_HOME/.models/model_catalog.json"
+        },
+        {
           "name": "model_instructions",
           "config_key": "model_instructions_file",
           "file": "base.md",

@@ -42,9 +42,10 @@ Examples of target-only runtime state:
 ## Useful entrypoints
 - Runtime-pack router: `resources/home/user/INDEX.md`
 - Runtime memory guidance: consult `$CODEX_HOME/memories/MEMORY.md` only when it exists and the task is repo-aware
-- Installer workflow: `resources/home/user/docs/workflows/codex-manager.md`
-- MCP stack workflow: `resources/home/user/docs/workflows/codex-mcp.md`
-- Cloudflare delivery workflow: `resources/home/user/docs/workflows/cloudflare-delivery.md`
+- Human/operator docs source: `docs/`
+- Installer workflow: `docs/workflows/codex-manager.md`
+- MCP stack workflow: `docs/workflows/codex-mcp.md`
+- Cloudflare delivery workflow: `docs/workflows/cloudflare-delivery.md`
 
 ## Validation
 For installer/runtime changes, start with the narrowest checks and then run the repo gates:
@@ -54,14 +55,15 @@ python3 -m py_compile src/install/codex_install.py
 python3 -m compileall src tests
 python3 -m unittest discover -s tests
 make preflight
-make verify
 ```
 
 ## Install and cleanup notes
-- `make install` / `make build-install` materialize runtime config, wrapper state, hook assets, and managed shell exports from this repo.
-- `make nuke` / `make uninstall` create a backup first, preserve `CODEX_BACKUP_DIR`, `CODEX_MCP_DIR`, and `CODEX_SQLITE_HOME`, and remove managed shell/profile exports plus runtime paths.
-- Managed keyring cleanup during `nuke` / `uninstall` is best-effort: missing `secret-tool` entries no longer abort the filesystem cleanup.
-- Persisted `CODEX_*` exports are removed by `nuke` / `uninstall`, but the current shell keeps already-exported values until you refresh it, for example with `exec "$SHELL" -l`.
+- `make install` / `make build-install` install Debian package dependencies from `.env`, then materialize runtime config, wrapper state, hook assets, and managed shell exports from this repo.
+- `make runtime` refreshes managed runtime assets without reinstalling Debian dependencies.
+- `make runtime-home`, `make runtime-skills`, and `make runtime-instructions` refresh narrower runtime slices when you only need config/home, skills/plugins, or instruction assets.
+- `make nuke` creates a backup first, preserves `CODEX_BACKUP_DIR`, `CODEX_MCP_DIR`, and `CODEX_SQLITE_HOME`, and removes managed shell/profile exports plus runtime paths.
+- Managed keyring cleanup during `nuke` is best-effort: missing `secret-tool` entries no longer abort the filesystem cleanup.
+- Persisted `CODEX_*` exports are removed by `nuke`, but the current shell keeps already-exported values until you refresh it, for example with `exec "$SHELL" -l`.
 
 ## Managed MCP auth
 - `bearer_token_env_var` is only valid for URL-based MCP servers.

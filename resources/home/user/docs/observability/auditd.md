@@ -1,37 +1,18 @@
 # auditd
-Guidance for Linux auditd rules and safe logging.
-
+Purpose: tell you to use `/data/codex/docs/observability/auditd.md` for detailed host, installation, or administrative steps while keeping this runtime-pack route concise.
 
 ## Navigation
 <!-- BEGIN:nav -->
-- Parent: `$CODEX_HOME/docs/observability/overview.md`
+- Detailed docs: `/data/codex/docs/observability/auditd.md`
 - Pack index: `$CODEX_HOME/INDEX.md`
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
+## Use this file when
+- you need the topic name and the detailed docs path quickly
+- you need the exact host, installation, or administrative steps from `/data/codex/docs/observability/auditd.md`
 
-## Baseline practices
-- Start small: capture authentication, privilege escalation, and key system files.
-- Prefer explicit allowlists of paths and syscalls over wide, noisy rules.
-- Keep logs immutable and permission‑locked (`600` root).
-- Rotate and ship audit logs off‑host when feasible.
-
-## Rule strategy
-- Track identity: `user`, `group`, `sudo`, `ssh`, `pam` changes.
-- Track integrity: `/etc`, `/usr/local`, bootloader config, kernel modules.
-- Track time changes and auditd configuration changes.
-- Avoid high‑volume rules without rate limits; review event volume first.
-
-## Operations
-- Validate rules with `augenrules --check` where supported.
-- Test in a VM or staging host before broad rollout.
-- Keep a rollback plan (restore previous rules, restart auditd).
-
-See also:
-- `overview.md`
-- `$CODEX_HOME/templates/observability/auditd-rules-skeleton/`
-- `$CODEX_HOME/snippets/auditd/audit.rules`
-- `../workflows/auditd.md`
-- Use skill secops-auditd.
-- `$CODEX_HOME/index/domains/observability/stack.md`
-- `$CODEX_HOME/index/domains/observability/auditd.md`
+## Guidance
+- Keep your response short and operationally scoped.
+- Use `/data/codex/docs/observability/auditd.md` when you need the full procedure.
+- Treat this file as the route, not the full procedure.

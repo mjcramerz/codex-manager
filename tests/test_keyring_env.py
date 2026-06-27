@@ -1,4 +1,6 @@
+import io
 import os
+import shutil
 import sys
 import tempfile
 import unittest
@@ -16,6 +18,8 @@ if str(INSTALL_SRC) not in sys.path:
     sys.path.insert(0, str(INSTALL_SRC))
 
 from lib import keyring_env  # noqa: E402
+from lib import codex_mcp_token  # noqa: E402
+from lib import codex_login  # noqa: E402
 from lib.managed_secrets import ManagedSecretsConfig  # noqa: E402
 from lib.managed_secrets import ManagedSecretsError  # noqa: E402
 from lib.runtime import render_codex_shim  # noqa: E402
@@ -23,7 +27,65 @@ import codex_install  # noqa: E402
 
 
 class ManagedSecretsHelperTests(unittest.TestCase):
-    def test_collect_lookup_environment_uses_host_config_bearer_env_vars(self) -> None:
+    def test_collect_lookup_environment_uses_enabled_url_and_command_env_vars(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            secrets_path = Path(tmpdir) / "secrets.toml"
+            host_config_path = Path(tmpdir) / "config.toml"
+            secrets_path.write_text(
+                "\n".join(
+                    [
+                        "version = 1",
+                        'service = "codex-mcp"',
+                        "",
+                        "[mcp_servers.linear]",
+                        "LINEAR_API_KEY = true",
+                        "",
+                        "[mcp_servers.context7]",
+                        "CONTEXT7_API_KEY = true",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            host_config_path.write_text(
+                "\n".join(
+                    [
+                        "[mcp_servers.linear]",
+                        'url = "https://mcp.linear.app/mcp"',
+                        "enabled = true",
+                        'bearer_token_env_var = "LINEAR_API_KEY"',
+                        "",
+                        "[mcp_servers.context7]",
+                        'command = "/usr/bin/context7"',
+                        'env_vars = ["CONTEXT7_API_KEY"]',
+                        "enabled = true",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            with patch(
+                "lib.keyring_env.lookup_managed_secret",
+                side_effect=lambda config, server_name: (
+                    "linear-secret"
+                    if server_name == "linear"
+                    else "context7-secret"
+                    if server_name == "context7"
+                    else ""
+                ),
+            ):
+                exported = keyring_env.collect_lookup_environment(host_config_path, secrets_path)
+
+        self.assertEqual(
+            exported,
+            {
+                "LINEAR_API_KEY": "linear-secret",
+                "CONTEXT7_API_KEY": "context7-secret",
+            },
+        )
+
+    def test_collect_lookup_environment_skips_disabled_secret_entries(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             secrets_path = Path(tmpdir) / "secrets.toml"
             host_config_path = Path(tmpdir) / "config.toml"
@@ -48,29 +110,16 @@ class ManagedSecretsHelperTests(unittest.TestCase):
                         "enabled = true",
                         'bearer_token_env_var = "LINEAR_API_KEY"',
                         "",
-                        "[mcp_servers.vercel]",
-                        'url = "https://mcp.vercel.com"',
-                        "enabled = false",
-                        'bearer_token_env_var = "VERCEL_API_TOKEN"',
-                        "",
                     ]
                 ),
                 encoding="utf-8",
             )
 
-            with patch(
-                "lib.keyring_env.lookup_managed_secret",
-                side_effect=lambda config, server_name: (
-                    "linear-secret"
-                    if server_name == "linear"
-                    else "vercel-secret"
-                    if server_name == "vercel"
-                    else ""
-                ),
-            ):
+            with patch("lib.keyring_env.lookup_managed_secret", return_value="linear-secret") as lookup_mock:
                 exported = keyring_env.collect_lookup_environment(host_config_path, secrets_path)
 
-        self.assertEqual(exported, {"LINEAR_API_KEY": "linear-secret"})
+        self.assertEqual(exported, {})
+        lookup_mock.assert_not_called()
 
     def test_collect_lookup_environment_prefers_existing_environment_value(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -110,7 +159,7 @@ class ManagedSecretsHelperTests(unittest.TestCase):
 
         self.assertEqual(exported, {"LINEAR_API_KEY": "env-secret"})
 
-    def test_runtime_mcp_bearer_env_map_rejects_command_transport(self) -> None:
+    def test_runtime_mcp_secret_env_map_rejects_command_transport_bearer_token(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             host_config_path = Path(tmpdir) / "config.toml"
             host_config_path.write_text(
@@ -130,7 +179,7 @@ class ManagedSecretsHelperTests(unittest.TestCase):
                 keyring_env.KeyringEnvError,
                 "uses command transport and must not declare bearer_token_env_var",
             ):
-                keyring_env._runtime_mcp_bearer_env_map(host_config_path)
+                keyring_env._runtime_mcp_secret_env_map(host_config_path)
 
     def test_secrets_config_from_env_file_uses_codex_root(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -198,7 +247,7 @@ class ManagedSecretsHelperTests(unittest.TestCase):
             unittest.mock.ANY,
         )
 
-    def test_render_codex_shim_uses_env_gated_managed_secret_helper(self) -> None:
+    def test_render_codex_shim_always_uses_managed_secret_helper_when_configured(self) -> None:
         rendered = render_codex_shim(
             Path("/data/codex/share/bin/codex"),
             share_dir=Path("/data/codex/share"),
@@ -213,7 +262,7 @@ class ManagedSecretsHelperTests(unittest.TestCase):
         self.assertNotIn('"/data/codex/share/shims"', rendered)
         self.assertIn('--secrets-file "/data/codex/lookup/secrets.toml"', rendered)
         self.assertIn('--host-config "/data/codex/home/config.toml"', rendered)
-        self.assertIn('if [ -n "${CODEX_INJECT_SECRETS:-}" ]; then', rendered)
+        self.assertNotIn("CODEX_INJECT_SECRETS", rendered)
         self.assertIn("codex-secret-tool-env.py", rendered)
         self.assertNotIn("codex-ensure-tmpfs", rendered)
         self.assertNotIn("--lookup-file", rendered)
@@ -249,13 +298,13 @@ class InstallerManagedSecretsTests(unittest.TestCase):
         installer._warn_once = Mock()
         return installer
 
-    def test_prompt_managed_secret_value_uses_visible_input(self) -> None:
+    def test_prompt_managed_secret_value_uses_hidden_input(self) -> None:
         installer = self._make_installer()
 
         with (
             patch.object(sys.stdin, "isatty", return_value=True),
             patch.object(sys.stdout, "isatty", return_value=True),
-            patch("builtins.input", return_value=" visible-secret ") as input_mock,
+            patch("codex_install.getpass.getpass", return_value=" visible-secret ") as getpass_mock,
         ):
             value = codex_install.Installer._prompt_managed_secret_value(
                 installer,
@@ -264,7 +313,7 @@ class InstallerManagedSecretsTests(unittest.TestCase):
             )
 
         self.assertEqual(value, "visible-secret")
-        input_mock.assert_called_once_with(
+        getpass_mock.assert_called_once_with(
             "Enter VERCEL_API_TOKEN for mcp_servers.vercel (or 's' to skip): "
         )
 
@@ -274,7 +323,7 @@ class InstallerManagedSecretsTests(unittest.TestCase):
         with (
             patch.object(sys.stdin, "isatty", return_value=True),
             patch.object(sys.stdout, "isatty", return_value=True),
-            patch("builtins.input", return_value="s"),
+            patch("codex_install.getpass.getpass", return_value="s"),
         ):
             value = codex_install.Installer._prompt_managed_secret_value(
                 installer,
@@ -290,7 +339,7 @@ class InstallerManagedSecretsTests(unittest.TestCase):
         with (
             patch.object(sys.stdin, "isatty", return_value=True),
             patch.object(sys.stdout, "isatty", return_value=True),
-            patch("builtins.input", side_effect=["", " retry-secret "]) as input_mock,
+            patch("codex_install.getpass.getpass", side_effect=["", " retry-secret "]) as getpass_mock,
             patch("builtins.print") as print_mock,
         ):
             value = codex_install.Installer._prompt_managed_secret_value(
@@ -300,7 +349,7 @@ class InstallerManagedSecretsTests(unittest.TestCase):
             )
 
         self.assertEqual(value, "retry-secret")
-        self.assertEqual(input_mock.call_count, 2)
+        self.assertEqual(getpass_mock.call_count, 2)
         print_mock.assert_called_once_with(
             "[warn] VERCEL_API_TOKEN cannot be empty; enter a value or 's' to skip"
         )
@@ -334,6 +383,33 @@ class InstallerManagedSecretsTests(unittest.TestCase):
             )
 
             codex_install.Installer._sync_managed_secrets_file(installer)
+
+            self.assertEqual(installed_file.read_text(encoding="utf-8"), source_file.read_text(encoding="utf-8"))
+
+    def test_sync_managed_auth_file_overwrites_existing_file(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo_root = Path(tmpdir) / "repo"
+            repo_root.mkdir(parents=True, exist_ok=True)
+            source_file = repo_root / "auth.toml"
+            source_file.write_text(
+                'version = 1\nservice = "codex-login"\n\n[codex_login."matthew@gmail.com"]\nCODEX_ACCESS_TOKEN = true\n',
+                encoding="utf-8",
+            )
+
+            installer = self._make_installer(
+                env={"CODEX_ROOT_DIR": str(Path(tmpdir) / "runtime")},
+                repo_root=repo_root,
+            )
+            installer._needs_sudo_write = lambda _path: False
+
+            installed_file = Path(tmpdir) / "runtime" / "lookup" / "auth.toml"
+            installed_file.parent.mkdir(parents=True, exist_ok=True)
+            installed_file.write_text(
+                'version = 1\nservice = "codex-login"\n\n[codex_login."matthew@gmail.com"]\nCODEX_ACCESS_TOKEN = false\n',
+                encoding="utf-8",
+            )
+
+            codex_install.Installer._sync_managed_auth_file(installer)
 
             self.assertEqual(installed_file.read_text(encoding="utf-8"), source_file.read_text(encoding="utf-8"))
 
@@ -373,8 +449,199 @@ class InstallerManagedSecretsTests(unittest.TestCase):
                 (wrapper_dir / "codex").read_text(encoding="utf-8"),
             )
             aliases = (share_dir / "helpers" / "codex-wrapper-aliases.sh").read_text(encoding="utf-8")
-            self.assertIn("alias codex-s='CODEX_INJECT_SECRETS=1 command codex'", aliases)
-            self.assertIn("alias codex-exec-s='CODEX_INJECT_SECRETS=1 command codex-exec'", aliases)
+            self.assertNotIn("alias codex-s=", aliases)
+            self.assertNotIn("alias codex-exec-s=", aliases)
+            self.assertIn("unalias codex-s", aliases)
+            self.assertIn("unalias codex-exec-s", aliases)
+
+    def test_sync_codex_login_wrapper_installs_managed_script(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            wrapper_dir = root / "wrappers"
+            wrapper_dir.mkdir(parents=True)
+
+            installer = self._make_installer(repo_root=REPO_ROOT)
+            installer._codex_login_wrapper_source_path = lambda: REPO_ROOT / "src" / "python" / "lib" / "codex_login.py"
+            installer._codex_login_wrapper_target = lambda: wrapper_dir / "codex-login"
+            installer._copy_file = lambda src, dst, mode=0o755: (
+                dst.parent.mkdir(parents=True, exist_ok=True),
+                shutil.copy2(src, dst),
+                dst.chmod(mode),
+            )
+
+            codex_install.Installer._sync_codex_login_wrapper(installer)
+
+            rendered = (wrapper_dir / "codex-login").read_text(encoding="utf-8")
+            self.assertIn("# managed by codex installer", rendered)
+            self.assertIn('"--with-access-token"', rendered)
+            self.assertIn('"logout"', rendered)
+            self.assertTrue(os.access(wrapper_dir / "codex-login", os.X_OK))
+
+    def test_sync_codex_mcp_token_wrapper_installs_managed_script(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            wrapper_dir = root / "wrappers"
+            wrapper_dir.mkdir(parents=True)
+
+            installer = self._make_installer(repo_root=REPO_ROOT)
+            installer._codex_mcp_token_wrapper_source_path = (
+                lambda: REPO_ROOT / "src" / "python" / "lib" / "codex_mcp_token.py"
+            )
+            installer._codex_mcp_token_wrapper_target = lambda: wrapper_dir / "codex-mcp-token"
+            installer._copy_file = lambda src, dst, mode=0o755: (
+                dst.parent.mkdir(parents=True, exist_ok=True),
+                shutil.copy2(src, dst),
+                dst.chmod(mode),
+            )
+
+            codex_install.Installer._sync_codex_mcp_token_wrapper(installer)
+
+            rendered = (wrapper_dir / "codex-mcp-token").read_text(encoding="utf-8")
+            self.assertIn("Please enable secret first and try again later", rendered)
+            self.assertIn("secret-tool", rendered)
+            self.assertTrue(os.access(wrapper_dir / "codex-mcp-token", os.X_OK))
+
+    def test_codex_mcp_token_rejects_disabled_secret(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            lookup_dir = root / "lookup"
+            lookup_dir.mkdir(parents=True, exist_ok=True)
+            (lookup_dir / "secrets.toml").write_text(
+                "\n".join(
+                    [
+                        "version = 1",
+                        'service = "codex-mcp"',
+                        "",
+                        "[mcp_servers.jina-ai]",
+                        "JINA_API_KEY = false",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            with (
+                patch.dict(os.environ, {"CODEX_ROOT_DIR": str(root)}, clear=False),
+                patch("sys.stderr", new=io.StringIO()),
+            ):
+                rc = codex_mcp_token.main(["JINA_API_KEY", "1646558"])
+
+        self.assertEqual(rc, 1)
+
+    def test_codex_mcp_token_stores_enabled_secret(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            lookup_dir = root / "lookup"
+            lookup_dir.mkdir(parents=True, exist_ok=True)
+            (lookup_dir / "secrets.toml").write_text(
+                "\n".join(
+                    [
+                        "version = 1",
+                        'service = "codex-mcp"',
+                        "",
+                        "[mcp_servers.jina-ai]",
+                        "JINA_API_KEY = true",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            lookup_proc = Mock(returncode=0, stdout="existing-token\n", stderr="")
+            store_proc = Mock(returncode=0, stdout="", stderr="")
+            with (
+                patch.dict(os.environ, {"CODEX_ROOT_DIR": str(root)}, clear=False),
+                patch("lib.codex_mcp_token.shutil.which", return_value="/usr/bin/secret-tool"),
+                patch("lib.codex_mcp_token.subprocess.run", side_effect=[lookup_proc, store_proc]) as run_mock,
+                patch("sys.stdout", new=io.StringIO()),
+            ):
+                rc = codex_mcp_token.main(["JINA_API_KEY", "1646558"])
+
+        self.assertEqual(rc, 0)
+        self.assertEqual(run_mock.call_count, 2)
+        self.assertIn("lookup", run_mock.call_args_list[0].args[0])
+        self.assertIn("store", run_mock.call_args_list[1].args[0])
+
+    def test_codex_login_init_stores_enabled_accounts(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            lookup_dir = root / "lookup"
+            lookup_dir.mkdir(parents=True, exist_ok=True)
+            (lookup_dir / "auth.toml").write_text(
+                "\n".join(
+                    [
+                        "version = 1",
+                        'service = "codex-login"',
+                        "",
+                        '[codex_login."copilot@jcramer.sbs"]',
+                        "CODEX_ACCESS_TOKEN = true",
+                        "",
+                        '[codex_login."disabled@example.com"]',
+                        "CODEX_ACCESS_TOKEN = false",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            with (
+                patch.dict(os.environ, {"CODEX_ROOT_DIR": str(root)}, clear=False),
+                patch("lib.codex_login.secret_tool_available", return_value=True),
+                patch.object(sys.stdin, "isatty", return_value=True),
+                patch.object(sys.stderr, "isatty", return_value=True),
+                patch("lib.codex_login.getpass.getpass", return_value="token-1") as getpass_mock,
+                patch("lib.codex_login.store_login_secret") as store_mock,
+                patch("sys.stdout", new=io.StringIO()),
+            ):
+                rc = codex_login.main(["--init"])
+
+        self.assertEqual(rc, 0)
+        getpass_mock.assert_called_once_with("Enter the Access Token for copilot@jcramer.sbs: ")
+        self.assertEqual(store_mock.call_count, 1)
+        self.assertEqual(store_mock.call_args.args[1], "copilot@jcramer.sbs")
+        self.assertEqual(store_mock.call_args.args[2], "token-1")
+
+    def test_codex_login_selects_stored_account_token(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            lookup_dir = root / "lookup"
+            lookup_dir.mkdir(parents=True, exist_ok=True)
+            (lookup_dir / "auth.toml").write_text(
+                "\n".join(
+                    [
+                        "version = 1",
+                        'service = "codex-login"',
+                        "",
+                        '[codex_login."copilot@jcramer.sbs"]',
+                        "CODEX_ACCESS_TOKEN = true",
+                        "",
+                        '[codex_login."matthew@gmail.com"]',
+                        "CODEX_ACCESS_TOKEN = true",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            logout_proc = Mock(returncode=0, stdout="", stderr="")
+            login_proc = Mock(returncode=0, stdout="", stderr="")
+            class TtyStringIO(io.StringIO):
+                def isatty(self) -> bool:
+                    return True
+            with (
+                patch.dict(os.environ, {"CODEX_ROOT_DIR": str(root)}, clear=False),
+                patch("lib.codex_login.lookup_login_secret", side_effect=["token-a", "token-b"]),
+                patch("lib.codex_login._resolve_codex_wrapper", return_value=Path("/data/bin/codex")),
+                patch.object(sys.stdin, "isatty", return_value=True),
+                patch("builtins.input", return_value="2"),
+                patch("lib.codex_login.subprocess.run", side_effect=[logout_proc, login_proc]) as run_mock,
+                patch("sys.stdout", new=TtyStringIO()),
+            ):
+                rc = codex_login.main([])
+
+        self.assertEqual(rc, 0)
+        self.assertEqual(run_mock.call_count, 2)
+        self.assertEqual(run_mock.call_args_list[1].kwargs["input"], "token-b")
 
     def test_ensure_enabled_managed_secrets_prompts_and_stores_missing_values(self) -> None:
         installer = self._make_installer(
@@ -481,6 +748,26 @@ class InstallerManagedSecretsTests(unittest.TestCase):
         installer._warn_once.assert_called_once_with(
             "secret-tool clear failed for mcp_servers.linear: exit code 1; continuing uninstall without removing that keyring entry"
         )
+
+    def test_verify_runtime_hook_assets_detects_missing_runtime_driver(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            source_scripts = REPO_ROOT / "resources" / "hooks" / "scripts"
+            source_schemas = REPO_ROOT / "resources" / "hooks" / "schema" / "generated"
+            runtime_scripts = root / "home" / "hooks" / "scripts"
+            runtime_schemas = root / "home" / ".hooks" / "schema" / "generated"
+            shutil.copytree(source_scripts, runtime_scripts)
+            shutil.copytree(source_schemas, runtime_schemas)
+            (runtime_scripts / "hook_driver.pl").unlink()
+
+            installer = self._make_installer()
+            installer._hooks_source_dir = lambda: source_scripts
+            installer._hooks_schema_source_dir = lambda: source_schemas
+            installer._runtime_hooks_scripts_dir = lambda: runtime_scripts
+            installer._runtime_hooks_schema_dir = lambda: runtime_schemas
+
+            with self.assertRaisesRegex(codex_install.InstallError, "missing runtime hook driver"):
+                codex_install.Installer._verify_runtime_hook_assets(installer)
 
 if __name__ == "__main__":
     unittest.main()

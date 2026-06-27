@@ -70,7 +70,7 @@ def dependency_values(path: Path) -> set[str]:
 
 
 class PluginRuntimeContractsTests(unittest.TestCase):
-    def test_apps_payload_carries_bearer_env_vars_for_managed_secret_servers(self) -> None:
+    def test_apps_payload_carries_supported_env_vars_for_managed_secret_servers(self) -> None:
         apps_payload = load_apps_payload()
         vendor_payload = parse_toml_file(REPO_ROOT / "config" / "vendor" / "mcp.toml")
         secrets_payload = parse_toml_file(SECRETS_TOML_PATH)
@@ -83,16 +83,16 @@ class PluginRuntimeContractsTests(unittest.TestCase):
             self.assertIsInstance(secret_table, dict)
             self.assertEqual(len(secret_table), 1, f"{server_name} must declare exactly one managed bearer token")
             expected_key = next(iter(secret_table))
-            self.assertEqual(
-                vendor_mcp[server_name].get("bearer_token_env_var"),
-                expected_key,
-                f"vendor mcp bearer token drift for {server_name}",
-            )
-            self.assertEqual(
-                apps_mcp[server_name].get("bearer_token_env_var"),
-                expected_key,
-                f"apps.toml bearer token drift for {server_name}",
-            )
+            vendor_supported = set(vendor_mcp[server_name].get("env_vars", []))
+            apps_supported = set(apps_mcp[server_name].get("env_vars", []))
+            vendor_bearer = vendor_mcp[server_name].get("bearer_token_env_var")
+            apps_bearer = apps_mcp[server_name].get("bearer_token_env_var")
+            if isinstance(vendor_bearer, str):
+                vendor_supported.add(vendor_bearer)
+            if isinstance(apps_bearer, str):
+                apps_supported.add(apps_bearer)
+            self.assertIn(expected_key, vendor_supported, f"vendor mcp env drift for {server_name}")
+            self.assertIn(expected_key, apps_supported, f"apps.toml env drift for {server_name}")
 
     def test_command_transport_servers_do_not_declare_bearer_env_vars(self) -> None:
         for path in (APPS_TOML_PATH, REPO_ROOT / "config" / "vendor" / "mcp.toml"):

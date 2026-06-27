@@ -1,0 +1,8 @@
+version = 1
+service = "codex-login"
+
+#[codex_login."email@mail.se"]
+#CODEX_ACCESS_TOKEN = true
+
+#[codex_login."test@gmail.com"]
+#CODEX_ACCESS_TOKEN = true

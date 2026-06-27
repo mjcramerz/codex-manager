@@ -1,28 +1,18 @@
 # Security overview
-Purpose: route security work to the right checklist, threat-model, or defensive operations guide.
+Purpose: tell you to use `/data/codex/docs/security/overview.md` for detailed host, installation, or administrative steps while keeping this runtime-pack route concise.
 
 ## Navigation
 <!-- BEGIN:nav -->
-- Parent: `$CODEX_HOME/docs/OVERVIEW.md`
+- Detailed docs: `/data/codex/docs/security/overview.md`
 - Pack index: `$CODEX_HOME/INDEX.md`
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-## Start here
-- Review hardening: `review-hardening.md`
-- Threat modeling: `threat-model.md`
-- Secrets and key handling: `secrets.md`, `key-management.md`
-- Supply chain: `supply-chain.md`, `supply-chain-controls.md`
-- Logging and data hygiene: `logging.md`
-- Security-labs references: `security-labs-index.md`, `security-labs-repo-catalog.md`, `security-labs-tool-guides.md`
+## Use this file when
+- you need the topic name and the detailed docs path quickly
+- you need the exact host, installation, or administrative steps from `/data/codex/docs/security/overview.md`
 
-## Baseline expectations
-- Validate and bound untrusted input.
-- Keep least privilege explicit across code, CI, containers, and host access.
-- Treat dependency provenance and release integrity as part of the security surface.
-- Keep secrets and sensitive logs out of repo-managed artifacts.
-
-## Adjacent routing
-- App/service hardening -> `web-hardening.md` and `review-hardening.md`
-- CI/release trust -> `../workflows/ci-cd.md` and `../workflows/release.md`
-- Host/device hardening -> `../system/overview.md`
+## Guidance
+- Keep your response short and operationally scoped.
+- Use `/data/codex/docs/security/overview.md` when you need the full procedure.
+- Treat this file as the route, not the full procedure.

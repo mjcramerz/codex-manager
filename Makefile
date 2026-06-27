@@ -26,14 +26,11 @@ export PYTHONPATH := $(CURDIR)/src/python
 
 PYTHON_ENV := LC_ALL=C TZ=UTC PYTHONPATH=$(CURDIR)/src/python PYTHONDONTWRITEBYTECODE=1 PYTHONHASHSEED=0 PYTHONPYCACHEPREFIX=$(PYTHON_PYCACHE_PREFIX)
 
-.PHONY: preflight verify build-src build-install install update home admin upgrade export vars-init vars-reset uninstall nuke --dry-run
+.PHONY: preflight build-src build-install install runtime runtime-home runtime-skills runtime-instructions vars-init vars-reset nuke --dry-run
 
 preflight:
-	@printf "[make] preflight -> validating installer inputs and runtime contracts\n"
+	@printf "[make] preflight -> validating installer inputs, runtime contracts, and Python bytecode outputs\n"
 	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) preflight
-
-verify:
-	@printf "[make] verify -> byte-compiling src and tests with visible progress\n"
 	$(PYTHON_ENV) $(PYTHON) -m compileall src tests
 
 build-src:
@@ -48,28 +45,29 @@ build-install:
 	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) build-install --compiled-dir $(COMPILED_DIR) $(INSTALLER_ARGS)
 
 install:
-	@printf "Confirm 'make install' will apply runtime changes. Continue? [y/N] "; \
+	@printf "Confirm 'make install' will install dependencies, refresh runtime assets, and replace managed files in place. Continue? [y/N] "; \
 	read -r confirm; \
 	case "$$confirm" in [yY]|[yY][eE][sS]) ;; *) printf "Aborted.\n"; exit 1 ;; esac
-	@printf "[make] install -> installing packaged runtime assets\n"
+	@printf "[make] install -> installing dependencies and packaged runtime assets\n"
 	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) install --compiled-dir $(COMPILED_DIR) $(INSTALLER_ARGS)
 
-update:
-	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) update --compiled-dir $(COMPILED_DIR)
+runtime:
+	@printf "[make] runtime -> refreshing managed runtime assets without dependency installation\n"
+	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) runtime --compiled-dir $(COMPILED_DIR) $(INSTALLER_ARGS)
 
-home:
-	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) home --compiled-dir $(COMPILED_DIR)
+runtime-home:
+	@printf "[make] runtime-home -> refreshing runtime-home pack, agents, instructions, and system config\n"
+	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) runtime-home --compiled-dir $(COMPILED_DIR) $(INSTALLER_ARGS)
 
-admin:
-	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) admin --compiled-dir $(COMPILED_DIR)
+runtime-skills:
+	@printf "[make] runtime-skills -> refreshing skills, plugins, marketplace, and system skill bundles\n"
+	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) runtime-skills --compiled-dir $(COMPILED_DIR) $(INSTALLER_ARGS)
 
-upgrade:
-	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) upgrade --compiled-dir $(COMPILED_DIR)
+runtime-instructions:
+	@printf "[make] runtime-instructions -> refreshing instruction assets and rendered instruction paths\n"
+	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) runtime-instructions --compiled-dir $(COMPILED_DIR) $(INSTALLER_ARGS)
 
-export:
-	$(PYTHON_ENV) $(PYTHON) -m lib.keyring_env shell --env-file $(CURDIR)/.env
-
-# Standalone env refresh/reset targets. Install, upgrade, and nuke manage their
+# Standalone env refresh/reset targets. Install, runtime, and nuke manage their
 # own environment flows directly and do not route through these targets.
 vars-init:
 	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) vars-init --compiled-dir $(COMPILED_DIR)
@@ -83,13 +81,6 @@ nuke:
 	case "$$confirm" in [yY]|[yY][eE][sS]) ;; *) printf "Aborted.\n"; exit 1 ;; esac
 	@printf "[make] nuke -> removing runtime state, managed shell exports, and best-effort managed secrets\n"
 	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) nuke --compiled-dir $(COMPILED_DIR) $(INSTALLER_ARGS)
-
-uninstall:
-	@printf "Confirm 'make uninstall' will remove runtime state. Continue? [y/N] "; \
-	read -r confirm; \
-	case "$$confirm" in [yY]|[yY][eE][sS]) ;; *) printf "Aborted.\n"; exit 1 ;; esac
-	@printf "[make] uninstall -> removing runtime state, managed shell exports, and best-effort managed secrets\n"
-	$(PYTHON_ENV) $(PYTHON) $(INSTALLER) uninstall --compiled-dir $(COMPILED_DIR) $(INSTALLER_ARGS)
 
 --dry-run:
 	@:

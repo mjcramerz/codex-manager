@@ -1,26 +1,18 @@
 # VS Code overview
-Purpose: route editor, devcontainer, settings, and extension-related work to the correct guide.
+Purpose: tell you to use `/data/codex/docs/vscode/overview.md` for detailed host, installation, or administrative steps while keeping this runtime-pack route concise.
 
 ## Navigation
 <!-- BEGIN:nav -->
-- Parent: `$CODEX_HOME/docs/OVERVIEW.md`
+- Detailed docs: `/data/codex/docs/vscode/overview.md`
 - Pack index: `$CODEX_HOME/INDEX.md`
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-## Scope
-- Shared `settings.json` and workspace policy
-- Devcontainers and remote/container development
-- Theming and UX consistency
-- Extension and marketplace hygiene
+## Use this file when
+- you need the topic name and the detailed docs path quickly
+- you need the exact host, installation, or administrative steps from `/data/codex/docs/vscode/overview.md`
 
-## Quick map
-- Devcontainers: `devcontainer.md`
-- Settings: `settings.md`
-- Theming: `theming.md`
-- Extension delivery/review workflow: `../workflows/vscode-extensions.md`
-
-## Guardrails
-- Keep workspace trust explicit.
-- Keep settings minimal and intentional.
-- Treat devcontainers as code: pin images, review mounts, and keep secrets out.
+## Guidance
+- Keep your response short and operationally scoped.
+- Use `/data/codex/docs/vscode/overview.md` when you need the full procedure.
+- Treat this file as the route, not the full procedure.

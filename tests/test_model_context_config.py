@@ -29,6 +29,14 @@ class ModelContextConfigTests(unittest.TestCase):
         self.assertEqual(models["gpt-5.5"]["auto_compact_token_limit"], 340_000)
         self.assertLess(models["gpt-5.5"]["auto_compact_token_limit"], models["gpt-5.5"]["context_window"])
 
+    def test_runtime_catalog_adds_gpt_5_5_cyber_with_same_window(self) -> None:
+        models = catalog_models(RUNTIME_CATALOG_PATH)
+
+        self.assertEqual(models["gpt-5.5-cyber"]["context_window"], 385_000)
+        self.assertEqual(models["gpt-5.5-cyber"]["max_context_window"], 385_000)
+        self.assertEqual(models["gpt-5.5-cyber"]["auto_compact_token_limit"], 340_000)
+        self.assertEqual(models["gpt-5.5-cyber"]["default_reasoning_level"], "medium")
+
     def test_runtime_catalog_keeps_gpt_5_4_large_window(self) -> None:
         contexts = catalog_contexts(RUNTIME_CATALOG_PATH)
         self.assertEqual(contexts["gpt-5.4"], 1_050_000)

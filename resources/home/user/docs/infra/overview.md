@@ -1,26 +1,18 @@
 # Infrastructure overview
-Purpose: route infrastructure work to the right automation surface without mixing Terraform, Ansible, Kubernetes, and virtualization concerns.
+Purpose: tell you to use `/data/codex/docs/infra/overview.md` for detailed host, installation, or administrative steps while keeping this runtime-pack route concise.
 
 ## Navigation
 <!-- BEGIN:nav -->
-- Parent: `$CODEX_HOME/docs/OVERVIEW.md`
+- Detailed docs: `/data/codex/docs/infra/overview.md`
 - Pack index: `$CODEX_HOME/INDEX.md`
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-## Scope
-- Terraform for declarative infrastructure
-- Ansible for host and service configuration
-- Kubernetes for workload orchestration
-- Adjacent virtualization docs for VM-centric environments
+## Use this file when
+- you need the topic name and the detailed docs path quickly
+- you need the exact host, installation, or administrative steps from `/data/codex/docs/infra/overview.md`
 
-## Selection guide
-- Desired-state infra with plans/state -> `terraform.md`
-- Idempotent host/service configuration -> `ansible.md`
-- Cluster workload lifecycle and policy -> `kubernetes.md`
-- VM orchestration or host virtualization -> `../virtualization/overview.md`
-
-## Guardrails
-- Plan before apply.
-- Keep secrets and state inventories scoped and protected.
-- Keep provider/module/collection versions pinned and reviewable.
+## Guidance
+- Keep your response short and operationally scoped.
+- Use `/data/codex/docs/infra/overview.md` when you need the full procedure.
+- Treat this file as the route, not the full procedure.

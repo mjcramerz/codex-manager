@@ -1,35 +1,18 @@
 # Ansible
-Guidance for idempotent, reviewable configuration automation.
-
+Purpose: tell you to use `/data/codex/docs/infra/ansible.md` for detailed host, installation, or administrative steps while keeping this runtime-pack route concise.
 
 ## Navigation
 <!-- BEGIN:nav -->
-- Parent: `$CODEX_HOME/docs/infra/overview.md`
+- Detailed docs: `/data/codex/docs/infra/ansible.md`
 - Pack index: `$CODEX_HOME/INDEX.md`
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
+## Use this file when
+- you need the topic name and the detailed docs path quickly
+- you need the exact host, installation, or administrative steps from `/data/codex/docs/infra/ansible.md`
 
-## Baseline practices
-- Prefer modules over raw shell.
-- Use `check` mode for dry runs when possible.
-- Keep secrets in Ansible Vault or external secret managers.
-- Structure reusable logic into roles.
-
-## Inventory & roles
-- Keep inventory explicit and scoped.
-- Use group vars and role defaults for safe defaults.
-
-## Safety
-- Avoid running on broad host globs without confirmation.
-- Add `serial` or `max_fail_percentage` for safer rollouts.
-
-See also:
-- `overview.md`
-- `../workflows/ansible.md`
-- `$CODEX_HOME/templates/infra/ansible-role-skeleton/`
-- `$CODEX_HOME/snippets/ansible/playbook.yml`
-- `$CODEX_HOME/snippets/ansible/ansible.cfg`
-- Use skill iac-ansible.
-- `$CODEX_HOME/index/domains/infra/tooling.md`
-- `$CODEX_HOME/index/domains/infra/ansible.md`
+## Guidance
+- Keep your response short and operationally scoped.
+- Use `/data/codex/docs/infra/ansible.md` when you need the full procedure.
+- Treat this file as the route, not the full procedure.

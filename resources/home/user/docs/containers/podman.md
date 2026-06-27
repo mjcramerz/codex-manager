@@ -1,60 +1,18 @@
 # Podman
-Podman is a container engine that is rootless by default and compatible with many Docker workflows.
+Purpose: tell you to use `/data/codex/docs/containers/podman.md` for detailed host, installation, or administrative steps while keeping this runtime-pack route concise.
 
 ## Navigation
 <!-- BEGIN:nav -->
-- Parent: `$CODEX_HOME/docs/containers/overview.md`
+- Detailed docs: `/data/codex/docs/containers/podman.md`
 - Pack index: `$CODEX_HOME/INDEX.md`
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-## When to prefer Podman
-- you want rootless behavior without extra daemon setup
-- you want tighter host isolation by default
-- you are running in environments where a rootful daemon is undesirable
+## Use this file when
+- you need the topic name and the detailed docs path quickly
+- you need the exact host, installation, or administrative steps from `/data/codex/docs/containers/podman.md`
 
-## Rootless vs rootful
-- **Rootless (default)**: run `podman` as your user.
-- **Rootful**: use `sudo podman ...` or a rootful service when explicitly required.
-- Root inside a rootless engine is still unprivileged on the host.
-
-## Compatibility notes
-- Use the same **Dockerfile** + compose files as Docker to keep parity across engines.
-- Podman also supports `Containerfile`, but prefer `Dockerfile` unless the repo already uses `Containerfile`.
-- Compose support depends on your environment (`podman compose` on Podman 4+ or `podman-compose`).
-- Networking differs in some cases; validate port binding and DNS behavior.
-
-## Build tooling
-- `podman build` and Buildah both accept Dockerfile/Containerfile inputs; Buildah offers more granular control.
-- For standalone, daemonless builds, use `buildah bud` with the same Dockerfile.
-
-## Compose usage
-- Rootless: `podman compose -f compose.yml up --build`
-- Rootful: `sudo podman compose -f compose.yml up --build`
-- If `podman compose` is unavailable, use `podman-compose` with the same files.
-- Always use a Podman override (`compose.podman.override.yml`) with `userns_mode: keep-id` for bind mounts.
-
-- On macOS/Windows, run Podman via `podman machine` and target that VM.
-
-## Networking tips (rootless)
-- Rootless Podman uses user-mode networking (`slirp4netns` or `pasta`).
-- Prefer the default network for internet access; avoid `--network=host` unless required.
-
-## UID/GID mapping for bind mounts
-- Require `userns_mode: keep-id` so container user matches engine UID/GID.
-- If `keep-id` is unavailable, set the container `user:` to the engine UID/GID and document the exception.
-- Use the UID/GID of the user running Podman.
-
-## Security defaults
-- Prefer rootless Podman for local dev.
-- Keep containers non-root and avoid elevated capabilities unless required.
-
-See also:
-- `overview.md`
-- `rootless-docker.md`
-- `docker-compose.md`
-- `dockerfile.md`
-- `../workflows/containers.md`
-- `$CODEX_HOME/templates/containers/dockerfile-skeleton/`
-- `$CODEX_HOME/snippets/containers/`
-- `$CODEX_HOME/index/domains/infra/containers.md`
+## Guidance
+- Keep your response short and operationally scoped.
+- Use `/data/codex/docs/containers/podman.md` when you need the full procedure.
+- Treat this file as the route, not the full procedure.

@@ -1,31 +1,18 @@
 # Logstash
-Guidance for safe, testable ingestion pipelines.
-
+Purpose: tell you to use `/data/codex/docs/observability/logstash.md` for detailed host, installation, or administrative steps while keeping this runtime-pack route concise.
 
 ## Navigation
 <!-- BEGIN:nav -->
-- Parent: `$CODEX_HOME/docs/observability/overview.md`
+- Detailed docs: `/data/codex/docs/observability/logstash.md`
 - Pack index: `$CODEX_HOME/INDEX.md`
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
+## Use this file when
+- you need the topic name and the detailed docs path quickly
+- you need the exact host, installation, or administrative steps from `/data/codex/docs/observability/logstash.md`
 
-## Baseline practices
-- Keep pipelines small and composable.
-- Avoid unbounded regex/grok patterns on untrusted input.
-- Validate inputs early; add tags for routing.
-
-## Operations
-- Version control pipeline configs.
-- Add dead-letter queues where supported.
-
-See also:
-- `overview.md`
-- `elasticsearch.md`
-- `kibana.md`
-- `../workflows/elastic-stack.md`
-- `$CODEX_HOME/snippets/elastic/logstash.conf`
-- `$CODEX_HOME/templates/observability/elastic-stack-compose/`
-- Use skill obs-logstash.
-- `$CODEX_HOME/index/domains/observability/stack.md`
-- `$CODEX_HOME/index/domains/observability/logstash.md`
+## Guidance
+- Keep your response short and operationally scoped.
+- Use `/data/codex/docs/observability/logstash.md` when you need the full procedure.
+- Treat this file as the route, not the full procedure.

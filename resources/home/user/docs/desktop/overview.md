@@ -1,25 +1,18 @@
 # Desktop stack overview
-Purpose: route minimal Wayland desktop, desktop-entry, and hardened-browser work to the correct guide.
+Purpose: tell you to use `/data/codex/docs/desktop/overview.md` for detailed host, installation, or administrative steps while keeping this runtime-pack route concise.
 
 ## Navigation
 <!-- BEGIN:nav -->
-- Parent: `$CODEX_HOME/docs/OVERVIEW.md`
+- Detailed docs: `/data/codex/docs/desktop/overview.md`
 - Pack index: `$CODEX_HOME/INDEX.md`
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-## Scope
-- Wayland/labwc session setup
-- greetd/regreet/cage launch surfaces
-- desktop-entry integration
-- hardened browser guidance
+## Use this file when
+- you need the topic name and the detailed docs path quickly
+- you need the exact host, installation, or administrative steps from `/data/codex/docs/desktop/overview.md`
 
-## Quick map
-- Wayland stack: `wayland.md`
-- Desktop entries: `desktop-entries.md`
-- Browser stack: `browsers.md`
-
-## Guardrails
-- Keep configs minimal and versioned.
-- Prefer Wayland-native flags and apps.
-- Keep privilege boundaries explicit around polkit, launchers, and browser profile handling.
+## Guidance
+- Keep your response short and operationally scoped.
+- Use `/data/codex/docs/desktop/overview.md` when you need the full procedure.
+- Treat this file as the route, not the full procedure.

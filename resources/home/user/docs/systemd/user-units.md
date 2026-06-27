@@ -1,51 +1,18 @@
 # systemd user services
-User services run under a specific user account and are managed with `systemctl --user`.
-
+Purpose: tell you to use `/data/codex/docs/systemd/user-units.md` for detailed host, installation, or administrative steps while keeping this runtime-pack route concise.
 
 ## Navigation
 <!-- BEGIN:nav -->
-- Parent: `$CODEX_HOME/docs/systemd/overview.md`
+- Detailed docs: `/data/codex/docs/systemd/user-units.md`
 - Pack index: `$CODEX_HOME/INDEX.md`
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
+## Use this file when
+- you need the topic name and the detailed docs path quickly
+- you need the exact host, installation, or administrative steps from `/data/codex/docs/systemd/user-units.md`
 
-## When to use
-- Per-user background services (dev tools, personal daemons).
-- Services that should not require root privileges.
-
-## Key differences vs system services
-- Unit files live in `~/.config/systemd/user/` (per-user) or `/etc/systemd/user/` (system-wide user units).
-- Manage with `systemctl --user`.
-- For services that should start at boot **without login**, enable lingering:
-  - `loginctl enable-linger <user>`
-
-## Minimal user service
-```
-[Unit]
-Description=My User Service
-
-[Service]
-Type=simple
-ExecStart=%h/bin/my-user-service --serve
-Restart=on-failure
-RestartSec=5s
-
-[Install]
-WantedBy=default.target
-```
-
-## Install/enable
-- `mkdir -p ~/.config/systemd/user`
-- `cp my-user.service ~/.config/systemd/user/`
-- `systemctl --user daemon-reload`
-- `systemctl --user enable --now my-user.service`
-
-## References
-- `overview.md`
-- `service-units.md`
-- `hardening.md`
-- `../workflows/systemd.md`
-- `$CODEX_HOME/snippets/systemd/user-service.unit`
-- `$CODEX_HOME/templates/systemd/user-service-skeleton/`
-- `$CODEX_HOME/index/domains/system/systemd.md`
+## Guidance
+- Keep your response short and operationally scoped.
+- Use `/data/codex/docs/systemd/user-units.md` when you need the full procedure.
+- Treat this file as the route, not the full procedure.

@@ -44,6 +44,7 @@ class ShellPathProfileRenderTests(unittest.TestCase):
                 "CODEX_AGENTS": "/data/codex/usr/agents",
                 "CODEX_HOME": "/data/codex/usr/home",
                 "CODEX_SKILLS": "/data/codex/usr/skills",
+                "PYTHONPYCACHEPREFIX": "/tmp/codex-pycache",
             },
             guard_user="mcramer",
         )
@@ -52,6 +53,7 @@ class ShellPathProfileRenderTests(unittest.TestCase):
         self.assertIn('export CODEX_HOME="/data/codex/usr/home"', rendered)
         self.assertIn('export CODEX_AGENTS="/data/codex/usr/agents"', rendered)
         self.assertIn('export CODEX_SKILLS="/data/codex/usr/skills"', rendered)
+        self.assertIn('export PYTHONPYCACHEPREFIX="/tmp/codex-pycache"', rendered)
         self.assertIn('"/data/bin"', rendered)
         self.assertIn('"/data/codex/share/helpers"', rendered)
         self.assertIn('codex-wrapper-aliases.sh', rendered)

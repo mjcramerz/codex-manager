@@ -1,5 +1,5 @@
 ---
-title: AGENTS.md (runtime pack operating contract)
+title: AGENTS.md (global coding agent contract)
 status: active
 owner: Matthew Cramer
 tags:
@@ -8,15 +8,15 @@ tags:
 - agents
 updated: 2026-06-21
 ---
-# Runtime pack operating contract
-Purpose: define the operating contract for the installed runtime-home pack under `$CODEX_HOME/**`.
+# Global coding agent contract
+Purpose: define the top-level rules you follow when using the installed Codex pack under `$CODEX_HOME/**`.
 
 This contract applies to `$CODEX_HOME` and every child path unless a deeper `AGENTS.md` overrides it.
 
 ## Mission
-- Keep the runtime-home source pack coherent, fast to route, and correct for the installed Codex layout.
-- Treat `$CODEX_HOME/**` as runtime pack material, not as a scratch area or a runtime dump.
-- Prefer short, high-signal routing and operational guidance over encyclopedic overviews.
+- Route quickly, choose the right entrypoint, and stop broad browsing once the correct workflow is clear.
+- Treat this file as your global operating contract for routing, planning, workflows, validation, and worktree discipline.
+- Prefer short, high-signal guidance over encyclopedic restatements.
 
 ## Priorities
 1) Correctness
@@ -40,38 +40,27 @@ This contract applies to `$CODEX_HOME` and every child path unless a deeper `AGE
 6) Follow `$CODEX_HOME/docs/style/shell-runtime.md` before shell-sensitive work.
 7) Open one concrete entrypoint, then stop broad browsing.
 
-## Pack focus
-- Keep agent guidance centered on stable installed surfaces:
-  - `$CODEX_HOME/docs/**`
-  - `$CODEX_HOME/index/**`
-  - `$CODEX_HOME/plans/**`
-  - `$CODEX_HOME/templates/**`
-  - `$CODEX_HOME/snippets/**`
-  - `$CODEX_HOME/rules/**`
-  - `$CODEX_HOME/memories/MEMORY.md`
-  - `$CODEX_HOME/plugins/cache/**`
-  - `$CODEX_HOME/.agents/plugins/marketplace.json`
-- Use installed runtime paths in user-facing guidance; do not teach from repository-source paths.
+## Routing rules
+- Start with `$CODEX_HOME/INDEX.md` and choose one router before opening detailed material.
+- Use `$CODEX_HOME/memories/MEMORY.md` only when prior decisions or repo context actually matter.
+- Prefer one workflow and one plan template at a time unless the task clearly spans multiple surfaces.
+- Use installed paths in guidance; do not teach from repository-source paths unless the repository itself is the subject.
 
-## Source-of-truth map
+## Reference map
 - `$CODEX_HOME/INDEX.md` is the top router for the runtime pack.
-- `$CODEX_HOME/index/manifest.yml` is the routing metadata source for pack entrypoints and related-link intent.
 - `$CODEX_HOME/memories/MEMORY.md` is the memory-entry router for repo-aware work.
-- `$CODEX_HOME/docs/**` contains runtime documentation source.
-- `$CODEX_HOME/plans/**` contains plan-template source.
-- `$CODEX_HOME/templates/**` contains reusable scaffolds.
-- `$CODEX_HOME/.models/**` contains model catalog and instruction-source assets referenced by runtime config.
-- `$CODEX_HOME/docs/create-prompts.md` owns the prompt-file catalog and direct prompt-file references for this tree.
+- `$CODEX_HOME/docs/OVERVIEW.md` is the documentation hub.
+- `$CODEX_HOME/docs/workflows/overview.md` is the workflow hub.
+- `$CODEX_HOME/index/pack/plans.md` and `$CODEX_HOME/plans/OVERVIEW.md` are the planning entrypoints.
+- `$CODEX_HOME/rules/OVERVIEW.md` is the rule catalog.
+- `$CODEX_HOME/templates/OVERVIEW.md` and `$CODEX_HOME/snippets/OVERVIEW.md` are the scaffold/pattern catalogs.
+- `$CODEX_HOME/MULTI_AGENT.md` is the coordination guide when multi-agent work is active.
 
-## Documentation and routing rules
-- Keep top-level routing docs concise. Route first, dive deeper only when needed.
-- Update cross-links in the same change when files move or canonical paths change.
-- If a doc references a runtime path, verify that the path exists in the installed pack.
-- Do not leave stale machine-specific repository references in user-facing guidance.
-- Do not hardcode workstation-specific repository paths in docs, plans, or instruction assets.
-- Do not leave unresolved placeholders in non-template docs, plans, or workflow guides.
-- Prefer one canonical explanation for a concept instead of repeating it across multiple overview files.
-- Keep `docs/style/shell-runtime.md` as the shell compatibility entrypoint and route language-specific detail into the deeper style guides.
+## Workflow and planning rules
+- If the task is multi-step, ambiguous, or cross-cutting, use a plan and keep it current.
+- Choose one workflow before editing when the task matches a documented procedure.
+- Keep overview files concise; route first, dive deeper only when necessary.
+- Update cross-links in the same change when canonical paths or entrypoints move.
 
 ## Structured-format rules
 - Validate shape, size, and ranges for untrusted inputs.
@@ -79,16 +68,29 @@ This contract applies to `$CODEX_HOME` and every child path unless a deeper `AGE
 - Keep comments out of files that claim to be strict JSON.
 - Keep generated marker blocks (`BEGIN` / `END`) syntactically intact when editing surrounding text.
 
-## Editing discipline
+## Branch and worktree rules
+- Check current branch and worktree state before mutating files.
+- Treat unrelated local changes as user state and do not revert them without explicit approval.
+- Do not rewrite default, protected, or mirror branches unless the user explicitly asks for that mutation.
+- Prefer in-place, reviewable updates over destructive cleanup.
+
+## Editing and tool discipline
 - Prefer `rg` / `rg --files` for discovery.
 - Use `apply_patch` for focused manual edits.
 - Use deterministic scripts only when broad repetition makes them safer than manual patching.
 - Do not invent fallback paths, compatibility branches, or legacy toggles unless explicitly requested.
+- Load only the minimum skills required for the current task.
+- Follow `$CODEX_HOME/docs/style/shell-runtime.md` before shell-sensitive execution.
 
 ## Validation requirements
 - Run the narrowest checks that prove the change.
 - When touching governing pack files (`$CODEX_HOME/AGENTS.md`, `$CODEX_HOME/INDEX.md`, `$CODEX_HOME/docs/**`, `$CODEX_HOME/index/**`, `$CODEX_HOME/plans/**`, `$CODEX_HOME/templates/**`, `$CODEX_SKILLS/**`), also run focused contract checks for stale links or structural drift.
 - If you skip a check, say exactly why and name the next command that should run.
+
+## Multi-agent rules
+- Stay single-owner by default.
+- If multi-agent work is active in the current session, follow `$CODEX_HOME/MULTI_AGENT.md` for role selection, handoff discipline, and completion gates.
+- Keep handoffs explicit: objective, owned files, validation commands, assumptions, and residual risks.
 
 ## Output contract
 - Return: Summary -> Tests -> Risks/Follow-ups -> Next steps.
