@@ -1,5 +1,6 @@
 # Terraform (entrypoint)
-Purpose: stable link to Terraform guidance, workflows, and templates.
+Purpose: stable link to Terraform guidance, workflows, and templates for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -21,5 +22,5 @@ Related:
 - `$CODEX_HOME/docs/workflows/terraform.md`
 - `$CODEX_HOME/templates/infra/terraform-module-skeleton`
 - `$CODEX_HOME/snippets/terraform`
-- Use skill `iac-terraform`.
+- You must use skill `iac-terraform`.
 <!-- END:related -->

@@ -1,5 +1,6 @@
 # Framework plan catalog
-Purpose: choose one general-purpose plan template when no workflow- or skill-specific plan is a better fit.
+Purpose: choose one general-purpose plan template when no workflow- or skill-specific plan is a better fit for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 Use these templates when the task does not map cleanly to one workflow or one skill.
 
 ## Navigation
@@ -27,7 +28,7 @@ Use these templates when the task does not map cleanly to one workflow or one sk
 - the task spans several files or systems
 - you need explicit rollout and validation checkpoints without a workflow-specific template
 
-## Selection guide
+## You must choose the workflow this way
 - `plan-feature-delivery.md` for user-visible behavior changes
 - `plan-bugfix.md` for defect reproduction and bounded fixes
 - `plan-refactor.md` for behavior-preserving structural changes

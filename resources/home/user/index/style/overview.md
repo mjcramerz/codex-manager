@@ -1,5 +1,6 @@
 # Style routing (overview)
-Purpose: route shell-sensitive and language-specific work to one style entrypoint.
+Purpose: route shell-sensitive and language-specific work to one style entrypoint for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 Use this when you need language or shell conventions.
 
@@ -12,7 +13,7 @@ Use this when you need language or shell conventions.
 
 ## Load order reminder
 1) `$CODEX_HOME/AGENTS.md`
-2) `$CODEX_HOME/memories/MEMORY.md` when it is needed
+2) `$CODEX_HOME/memories/` when it is needed
 3) `$CODEX_HOME/INDEX.md`
 4) `$CODEX_HOME/index/pack/plans.md` + `$CODEX_HOME/index/pack/workflows.md`
 5) `$CODEX_HOME/index/pack/skills.md`

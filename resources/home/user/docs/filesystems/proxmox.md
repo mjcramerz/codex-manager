@@ -1,4 +1,5 @@
 # Proxmox filesystem guidance
+Purpose: tell the Codex coding agent how to use `docs/filesystems/proxmox.md` as a runtime-pack surface and when to stop browsing.
 Notes for Proxmox-compatible storage layouts.
 
 
@@ -17,8 +18,8 @@ Notes for Proxmox-compatible storage layouts.
 
 ## Safety baseline
 - Plan storage before creating VMs; migrations are disruptive.
-- Keep backups and test restore paths.
-- Document `storage.cfg` changes and keep UUIDs stable.
+- You must keep backups and test restore paths.
+- You must document `storage.cfg` changes and keep UUIDs stable.
 
 See also:
 - `overview.md`

@@ -1,5 +1,6 @@
 # sysctl (entrypoint)
-Purpose: stable link to sysctl tuning guidance and templates.
+Purpose: stable link to sysctl tuning guidance and templates for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -20,5 +21,5 @@ Use when:
 Related:
 - `$CODEX_HOME/docs/workflows/sysctl.md`
 - `$CODEX_HOME/snippets/system/sysctl.conf`
-- Use skill `infra-sysctl`.
+- You must use skill `infra-sysctl`.
 <!-- END:related -->

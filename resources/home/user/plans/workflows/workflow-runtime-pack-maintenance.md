@@ -1,6 +1,7 @@
 # Plan
+Purpose: tell the Codex coding agent how to use `plans/workflows/workflow-runtime-pack-maintenance.md` as a runtime-pack surface and when to stop browsing.
 
-Use this plan when following `$CODEX_HOME/docs/workflows/runtime-pack-maintenance.md`.
+You must use this plan when following `$CODEX_HOME/docs/workflows/runtime-pack-maintenance.md`.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -25,9 +26,9 @@ Use this plan when following `$CODEX_HOME/docs/workflows/runtime-pack-maintenanc
 [ ] Run the narrowest relevant validation and record evidence.
 
 ## Security checkpoints
-- Confirm trust boundaries, credentials, and least-privilege assumptions before execution.
-- Validate input bounds, timeout/retry limits, and failure behavior for risky operations.
+- You must confirm trust boundaries, credentials, and least-privilege assumptions before execution.
+- You must validate input bounds, timeout/retry limits, and failure behavior for risky operations.
 
 ## Deployment checkpoints
-- Document rollout order, blast-radius controls, and rollback conditions.
-- Record any required follow-up validation owners.
+- You must document rollout order, blast-radius controls, and rollback conditions.
+- You must record any required follow-up validation owners.

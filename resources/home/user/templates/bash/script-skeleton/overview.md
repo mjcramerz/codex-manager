@@ -1,4 +1,5 @@
 # Bash script skeleton (overview)
+Purpose: tell the Codex coding agent how to use `templates/bash/script-skeleton/overview.md` as a runtime-pack surface and when to stop browsing.
 Template for production-grade Bash scripts when the confirmed runtime is Bash.
 
 ## Outputs

@@ -1,5 +1,6 @@
 # Routing guide
-Purpose: explain how to choose one router and one entrypoint without opening unnecessary files.
+Purpose: explain how to choose one router and one entrypoint without opening unnecessary files for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -9,7 +10,7 @@ Purpose: explain how to choose one router and one entrypoint without opening unn
 
 ## Required context
 1. `$CODEX_HOME/AGENTS.md`
-2. `$CODEX_HOME/memories/MEMORY.md` when it is needed
+2. `$CODEX_HOME/memories/` when it is needed
 3. `$CODEX_HOME/INDEX.md`
 4. `$CODEX_HOME/index/pack/plans.md` and `$CODEX_HOME/index/pack/workflows.md`
 5. `$CODEX_HOME/index/pack/skills.md`
@@ -29,12 +30,12 @@ Purpose: explain how to choose one router and one entrypoint without opening unn
 - `$CODEX_HOME/index/style/overview.md` — Style routing (overview)
 <!-- END:contents -->
 
-## Stop conditions
+## You must stop when
 - Do not open multiple routers for one task unless the scope actually changes.
 - Do not treat overviews as deep reference docs.
 - Restart from step 1 if the task changes category.
 
 ## Pack-wide guardrails
 - `$CODEX_HOME/index/manifest.yml` is the source of truth for routing metadata.
-- Keep rendered entrypoints and the manifest aligned when canonical targets or related links change.
-- Keep routing focused on stable installed entrypoints and keep the memory router aligned with the rest of the pack.
+- You must keep rendered entrypoints and the manifest aligned when canonical targets or related links change.
+- You must keep routing focused on stable installed entrypoints and treat runtime memory as runtime-generated state instead of a shipped pack entrypoint.

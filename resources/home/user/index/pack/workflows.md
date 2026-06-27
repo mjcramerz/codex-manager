@@ -1,5 +1,6 @@
 # Workflows hub (entrypoint)
-Purpose: route to operational playbooks that explain how to execute recurring task types safely.
+Purpose: route to operational playbooks that explain how to execute recurring task types safely for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -10,12 +11,12 @@ Purpose: route to operational playbooks that explain how to execute recurring ta
 
 Canonical content: `$CODEX_HOME/docs/workflows/overview.md`
 
-## Use when
+## You must use this file when
 - choosing the right workflow before editing
 - mapping a workflow to the matching plan template
 - reviewing execution, validation, or handoff checkpoints for a recurring task type
 
-## Related
+## After that, you must check related files
 <!-- BEGIN:related -->
 - `$CODEX_HOME/docs/workflows/overview.md`
 - `$CODEX_HOME/docs/workflows`

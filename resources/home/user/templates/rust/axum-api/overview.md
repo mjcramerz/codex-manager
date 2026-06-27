@@ -1,4 +1,5 @@
 # Axum API Template (overview)
+Purpose: tell the Codex coding agent how to use `templates/rust/axum-api/overview.md` as a runtime-pack surface and when to stop browsing.
 Secure-by-default Axum scaffold (Rust).
 
 ## Quickstart
@@ -19,7 +20,7 @@ cargo run
 
 ## Notes
 - Avoid `unsafe` by default.
-- Add auth and rate limiting as needed.
+- You must add auth and rate limiting as needed.
 - Adjust request body limits and timeouts in `src/layers.rs`.
 
 ## Security defaults
@@ -59,8 +60,8 @@ docker compose -f compose.yml -f compose.offline.override.yml up --build
 Notes:
 - `compose.yml` explicitly builds `Dockerfile` so Docker and Podman use the same definition.
 - The offline override disables container networking; it does not prevent network use during image builds.
-- Keep `.env` uncommitted; use it for local-only values.
-- Prefer non-root containers and minimal capabilities in your service definitions.
+- You must keep `.env` uncommitted; use it for local-only values.
+- You must prefer non-root containers and minimal capabilities in your service definitions.
 - If rootless containers lack internet, verify the context and rootless network driver.
 
 ## Inputs
@@ -85,6 +86,6 @@ Notes:
 2) Replace placeholders and pin versions/images before first commit.
 3) Run the narrowest relevant checks (lint/test/build or dry-run) before commit.
 
-## Related
+## After that, you must check related files
 - Docs: `$CODEX_HOME/docs/security/overview.md`
 - CI templates: `$CODEX_HOME/templates/ci/github-actions/`

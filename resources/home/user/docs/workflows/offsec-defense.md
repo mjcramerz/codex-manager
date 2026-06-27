@@ -1,7 +1,8 @@
 # Offsec defense workflow
 
-Start with `$CODEX_HOME/plans/workflows/workflow-offsec-defense.md` before executing this workflow.
-Purpose: run scoped offensive simulation with cyber-defense outcomes.
+You must start with `$CODEX_HOME/plans/workflows/workflow-offsec-defense.md` before executing this workflow.
+Purpose: run scoped offensive simulation with cyber-defense outcomes for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -14,7 +15,7 @@ Purpose: run scoped offensive simulation with cyber-defense outcomes.
 
 ## Plan
 - Start from the linked workflow plan template above, then tailor scope, constraints, and validation commands before editing.
-- Keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
+- You must keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
 
 ## Workflow steps
 1) Validate documented scope and target ownership.
@@ -41,19 +42,19 @@ Purpose: run scoped offensive simulation with cyber-defense outcomes.
 - See `../security/security-labs-index.md` for security-operations navigation.
 
 ## Security checkpoints
-- Confirm operations are limited to the documented targets and change windows.
+- You must confirm operations are limited to the documented targets and change windows.
 - Reject stealth abuse, persistence, credential theft, and uncontrolled payload use.
 - Ensure secrets, tokens, and captured data are handled with least privilege and retention limits.
 
 ## Testing checkpoints
-- Validate each track with deterministic commands and explicit timeout/retry bounds.
+- You must validate each track with deterministic commands and explicit timeout/retry bounds.
 - Include negative tests for missed detections and broken controls.
-- Re-run targeted tests after each remediation item and record pass/fail evidence.
+- You must re-run targeted tests after each remediation item and record pass/fail evidence.
 
 ## Deployment checkpoints
-- Use change windows and rollback notes for production-adjacent validation.
-- Require owner acknowledgment before applying defensive control changes.
-- Confirm post-change monitoring for regressions and false positives.
+- You must use change windows and rollback notes for production-adjacent validation.
+- You must require owner acknowledgment before applying defensive control changes.
+- You must confirm post-change monitoring for regressions and false positives.
 
 ## Multi-agent handoff
 - Coordinator assigns one owner for scope validation and one owner for evidence quality.
@@ -68,4 +69,4 @@ See also:
 - `../security/security-labs-tool-guides.md`
 - `$CODEX_HOME/templates/system/offsec-defense-kit/overview.md`
 - `$CODEX_HOME/snippets/bash/security_assessment_guardrails.sh`
-- Use skill `offsec-defense`.
+- You must use skill `offsec-defense`.

@@ -1,5 +1,6 @@
 # Skill plan catalog
-Purpose: choose one skill-specific plan template for repeatable skill-driven work.
+Purpose: choose one skill-specific plan template for repeatable skill-driven work for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -21,6 +22,6 @@ Purpose: choose one skill-specific plan template for repeatable skill-driven wor
 - `$CODEX_HOME/plans/skills/skill-os-debian-preseed.md` — Plan
 <!-- END:contents -->
 
-## Maintenance rules
+## You must maintain this file by following these rules
 - File names should map to skill names as `skill-<skill>.md`.
 - If a skill exists without a matching plan, add it here in the same change.

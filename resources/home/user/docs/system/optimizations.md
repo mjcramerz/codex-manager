@@ -1,4 +1,5 @@
 # Performance/security optimizations
+Purpose: tell the Codex coding agent how to use `docs/system/optimizations.md` as a runtime-pack surface and when to stop browsing.
 Guidance for balancing performance and security on hosts.
 
 
@@ -13,7 +14,7 @@ Guidance for balancing performance and security on hosts.
 ## Baseline practices
 - Measure first; avoid blind “tuning packs”.
 - Apply one change at a time and record impact.
-- Keep rollback steps for each change.
+- You must keep rollback steps for each change.
 
 ## Common areas
 - **CPU governor**: performance vs powersave (document choice).
@@ -30,6 +31,6 @@ See also:
 - `kernel.md`
 - `sysctl.md`
 - `../workflows/optimizations.md`
-- Use skill infra-optimizations.
+- You must use skill infra-optimizations.
 - `$CODEX_HOME/index/domains/system/optimizations.md`
 - `$CODEX_HOME/index/domains/system/hardening.md`

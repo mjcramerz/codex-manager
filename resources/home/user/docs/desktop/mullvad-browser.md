@@ -1,4 +1,5 @@
 # Mullvad Browser
+Purpose: tell the Codex coding agent how to use `docs/desktop/mullvad-browser.md` as a runtime-pack surface and when to stop browsing.
 Guidance for Mullvad Browser setup and integration.
 
 
@@ -11,17 +12,17 @@ Guidance for Mullvad Browser setup and integration.
 
 
 ## Baseline practices
-- Use official builds and verify signatures.
-- Keep browser user-data storage in a dedicated, locked‑down directory.
+- You must use official builds and verify signatures.
+- You must keep browser user-data storage in a dedicated, locked‑down directory.
 - Avoid unnecessary extensions or plugins.
 
 ## Wayland notes
-- Prefer Wayland‑native launch flags when supported.
+- You must prefer Wayland‑native launch flags when supported.
 - Test rendering and font settings for readability.
 
 See also:
 - `browsers.md`
 - `$CODEX_HOME/snippets/desktop/desktop-entry.desktop`
 - `../workflows/browsers.md`
-- Use skill desktop-mullvad-browser.
+- You must use skill desktop-mullvad-browser.
 - `$CODEX_HOME/index/domains/desktop/mullvad-browser.md`

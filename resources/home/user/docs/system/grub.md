@@ -1,4 +1,5 @@
 # GRUB configuration
+Purpose: tell the Codex coding agent how to use `docs/system/grub.md` as a runtime-pack surface and when to stop browsing.
 Guidance for editing GRUB defaults and kernel command line safely.
 
 
@@ -12,8 +13,8 @@ Guidance for editing GRUB defaults and kernel command line safely.
 
 ## Baseline practices
 - Edit `/etc/default/grub` and regenerate configs; do not edit `grub.cfg` directly.
-- Keep a known‑good kernel entry for rollback.
-- Document any custom kernel parameters.
+- You must keep a known‑good kernel entry for rollback.
+- You must document any custom kernel parameters.
 
 ## Safe workflow
 1) Edit `/etc/default/grub`.
@@ -22,7 +23,7 @@ Guidance for editing GRUB defaults and kernel command line safely.
 4) Reboot and verify.
 
 ## Kernel command line
-- Keep flags minimal; each flag is an operational contract.
+- You must keep flags minimal; each flag is an operational contract.
 - Avoid disabling security protections without explicit approval.
 
 See also:
@@ -30,6 +31,6 @@ See also:
 - `../workflows/grub.md`
 - `$CODEX_HOME/templates/system/grub-baseline/`
 - `$CODEX_HOME/snippets/system/grub-default`
-- Use skill infra-grub.
+- You must use skill infra-grub.
 - `$CODEX_HOME/index/domains/system/hardening.md`
 - `$CODEX_HOME/index/domains/system/grub.md`

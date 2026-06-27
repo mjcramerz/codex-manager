@@ -1,4 +1,5 @@
 # VS Code settings
+Purpose: tell the Codex coding agent how to use `docs/vscode/settings.md` as a runtime-pack surface and when to stop browsing.
 Guidance for curating stable, secure, and ergonomic `settings.json` defaults.
 
 

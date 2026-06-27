@@ -1,4 +1,5 @@
 # Common .github templates (overview)
+Purpose: tell the Codex coding agent how to use `templates/common/.github/overview.md` as a runtime-pack surface and when to stop browsing.
 Repository hygiene defaults for dependency updates and pull request quality.
 
 ## Inputs
@@ -18,7 +19,7 @@ Repository hygiene defaults for dependency updates and pull request quality.
 
 ## Next steps
 - Pair with baseline repo files in `$CODEX_HOME/templates/common/` (`CODEOWNERS`, `SECURITY.md`, `CONTRIBUTING.md`).
-- Keep contribution/security guidance aligned with workflow docs in `$CODEX_HOME/docs/workflows/repo-ops.md`.
+- You must keep contribution/security guidance aligned with workflow docs in `$CODEX_HOME/docs/workflows/repo-ops.md`.
 
 Related:
 - `$CODEX_HOME/templates/OVERVIEW.md`

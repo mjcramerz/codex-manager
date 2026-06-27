@@ -1,4 +1,5 @@
 # Wayland / Labwc stack
+Purpose: tell the Codex coding agent how to use `docs/desktop/wayland.md` as a runtime-pack surface and when to stop browsing.
 Guidance for a lean Wayland desktop with Labwc.
 
 
@@ -21,9 +22,9 @@ Guidance for a lean Wayland desktop with Labwc.
 - **greetd + regreet**: display manager / greeter
 
 ## Baseline practices
-- Keep configs in `~/.config/` and version them.
-- Prefer Wayland flags for browsers/apps (`--ozone-platform=wayland`).
-- Use minimal autostart entries; avoid shell scripts where possible.
+- You must keep configs in `~/.config/` and version them.
+- You must prefer Wayland flags for browsers/apps (`--ozone-platform=wayland`).
+- You must use minimal autostart entries; avoid shell scripts where possible.
 
 ## Config locations (typical)
 - Labwc: `~/.config/labwc/`
@@ -44,6 +45,6 @@ See also:
 - `$CODEX_HOME/templates/desktop/wayland-skeleton/`
 - `$CODEX_HOME/snippets/desktop/`
 - `../workflows/desktop-wayland.md`
-- Use skill desktop-wayland.
+- You must use skill desktop-wayland.
 - `$CODEX_HOME/index/domains/desktop/stack.md`
 - `$CODEX_HOME/index/domains/desktop/wayland.md`

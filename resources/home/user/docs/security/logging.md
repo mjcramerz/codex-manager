@@ -1,9 +1,10 @@
 # Logging policy
+Purpose: tell the Codex coding agent how to use `docs/security/logging.md` as a runtime-pack surface and when to stop browsing.
 - Default to structured logs.
 - Log to stderr.
 - Include request-id/correlation-id.
 - Avoid logging request bodies or auth headers.
-- Use log levels; do not spam info logs on hot paths.
+- You must use log levels; do not spam info logs on hot paths.
 
 
 ## Navigation
@@ -20,7 +21,7 @@ Recommended fields (when applicable):
 Sanitization:
 - Redact tokens, passwords, session cookies.
 - Avoid dumping entire objects that may contain secrets.
-- Treat user-provided values as potentially sensitive; prefer hashing or truncation for identifiers.
+- You must treat user-provided values as potentially sensitive; prefer hashing or truncation for identifiers.
 - Consider log retention and access controls (logs are data).
 
 See also:

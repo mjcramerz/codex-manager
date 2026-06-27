@@ -1,5 +1,6 @@
 # Prompts maintenance (entrypoint)
-Purpose: stable index to prompt-library maintenance workflow guidance and assets.
+Purpose: stable index to prompt-library maintenance workflow guidance and assets for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -27,5 +28,5 @@ Related:
 - `$CODEX_HOME/plans/workflows/workflow-prompts-library.md`
 - `$CODEX_HOME/templates/prompts/slash-command-maintenance`
 - `$CODEX_HOME/snippets/docs/prompt_contract.md`
-- Use skill `pack-prompts`.
+- You must use skill `pack-prompts`.
 <!-- END:related -->

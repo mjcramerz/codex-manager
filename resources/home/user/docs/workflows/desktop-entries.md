@@ -1,7 +1,8 @@
 # Desktop entries workflow
 
-Start with `$CODEX_HOME/plans/workflows/workflow-desktop-entries.md` before executing this workflow.
-Purpose: create safe, consistent `.desktop` launchers.
+You must start with `$CODEX_HOME/plans/workflows/workflow-desktop-entries.md` before executing this workflow.
+Purpose: create safe, consistent `.desktop` launchers for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -14,9 +15,9 @@ Purpose: create safe, consistent `.desktop` launchers.
 
 ## Plan
 - Start from the linked workflow plan template above, then tailor scope, constraints, and validation commands before editing.
-- Keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
+- You must keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
 
-## Workflow
+## You must follow this workflow
 1) **Scope**: app name, icon, categories, exec path.
 2) **Draft**: create a `.desktop` file with absolute paths.
 3) **Install**: copy to `~/.local/share/applications/` or `/usr/share/applications/`.
@@ -27,18 +28,18 @@ Purpose: create safe, consistent `.desktop` launchers.
 - Never embed secrets in `Exec=` arguments.
 
 ## Security checkpoints
-- Require trusted absolute paths for `Exec=`, `Icon=`, and optional `Path=` fields.
+- You must require trusted absolute paths for `Exec=`, `Icon=`, and optional `Path=` fields.
 - Avoid shell interpolation and untrusted argument expansion in launcher commands.
-- Keep system-wide `.desktop` files root-owned with controlled write access.
+- You must keep system-wide `.desktop` files root-owned with controlled write access.
 
 ## Testing checkpoints
-- Run `desktop-file-validate` and confirm launcher parsing is clean.
+- You must run `desktop-file-validate` and confirm launcher parsing is clean.
 - Smoke-launch as a non-privileged user and verify expected process arguments.
-- Check menu/category visibility and MIME bindings in target desktop environments.
+- You must check menu/category visibility and MIME bindings in target desktop environments.
 
 ## Deployment checkpoints
 - Deploy to user-local location first, then promote to system scope if needed.
-- Keep versioned launcher templates and prior file copies for rollback.
+- You must keep versioned launcher templates and prior file copies for rollback.
 - Refresh desktop cache/indexes when required and log the commands used.
 
 ## Multi-agent handoff
@@ -50,6 +51,6 @@ See also:
 - `../desktop/desktop-entries.md`
 - `$CODEX_HOME/templates/desktop/desktop-entry/`
 - `$CODEX_HOME/snippets/desktop/desktop-entry.desktop`
-- Use skill `desktop-entries`.
+- You must use skill `desktop-entries`.
 - `$CODEX_HOME/index/pack/workflows.md`
 - `$CODEX_HOME/index/domains/desktop/desktop-entries.md`

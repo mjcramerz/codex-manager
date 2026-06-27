@@ -1,4 +1,5 @@
 # Style guides
+Purpose: tell the Codex coding agent how to use `docs/style/overview.md` as a runtime-pack surface and when to stop browsing.
 Follow repository-local conventions first. Use this pack as the default when a repo has no explicit style guide.
 
 ## Navigation
@@ -33,8 +34,8 @@ Follow repository-local conventions first. Use this pack as the default when a r
 - TypeScript: `typescript.md`
 
 ## Cross-language rules
-- Prefer small, cohesive diffs; avoid drive-by refactors.
-- Keep I/O at the edges; keep core logic testable and deterministic.
+- You must prefer small, cohesive diffs; avoid drive-by refactors.
+- You must keep I/O at the edges; keep core logic testable and deterministic.
 - Never log secrets. Prefer structured logs to stderr.
 - Bound all I/O and resource usage.
-- Treat external inputs as hostile.
+- You must treat external inputs as hostile.

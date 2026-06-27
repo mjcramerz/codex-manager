@@ -1,5 +1,6 @@
 # Codex repository workflow (entrypoint)
-Purpose: stable link to Codex repository implementation workflow guidance.
+Purpose: stable link to Codex repository implementation workflow guidance for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -27,7 +28,7 @@ Related:
 - `$CODEX_HOME/docs/workflows/repo-ops.md`
 - `$CODEX_HOME/docs/workflows/web-frontend.md`
 - `$CODEX_HOME/docs/security/supply-chain-controls.md`
-- Use skill `ci-github-actions`.
-- Use skill `lang-typescript`.
-- Use skill `repo-ops`.
+- You must use skill `ci-github-actions`.
+- You must use skill `lang-typescript`.
+- You must use skill `repo-ops`.
 <!-- END:related -->

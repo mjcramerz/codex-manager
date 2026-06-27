@@ -1,5 +1,5 @@
 # Codex Pack Index
-Purpose: route an agent to one correct runtime-pack entrypoint with minimal context load.
+Purpose: tell the Codex coding agent which router to open first, which entrypoints are authoritative, and when to stop discovery.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -8,45 +8,47 @@ Purpose: route an agent to one correct runtime-pack entrypoint with minimal cont
 <!-- END:nav -->
 
 ## Required load order
-1. `$CODEX_HOME/AGENTS.md`
-2. `$CODEX_HOME/memories/MEMORY.md` when the task is repo-aware or ambiguous
-3. `$CODEX_HOME/INDEX.md`
-4. `$CODEX_HOME/index/pack/plans.md` and `$CODEX_HOME/index/pack/workflows.md`
-5. `$CODEX_HOME/index/pack/skills.md`
-6. `$CODEX_HOME/docs/style/shell-runtime.md` before shell-sensitive execution
+1. You must read `$CODEX_HOME/AGENTS.md` first.
+2. You must read `$CODEX_HOME/memories/` only when repo context or prior decisions matter.
+3. You must route through `$CODEX_HOME/INDEX.md`.
+4. You must open `$CODEX_HOME/index/pack/plans.md` and `$CODEX_HOME/index/pack/workflows.md` before large or cross-cutting work.
+5. You must open `$CODEX_HOME/index/pack/skills.md` only after the workflow and plan surfaces are clear.
+6. You must follow `$CODEX_HOME/docs/style/shell-runtime.md` before shell-sensitive execution.
 
 ## Fast catalogs
-- Memory router: `$CODEX_HOME/memories/MEMORY.md`
-- Runtime docs hub: `$CODEX_HOME/docs/OVERVIEW.md`
-- Runtime workflow hub: `$CODEX_HOME/docs/workflows/overview.md`
-- Runtime templates hub: `$CODEX_HOME/templates/OVERVIEW.md`
-- Runtime skill roots: `$CODEX_SKILLS` and the managed admin skill root
+- Runtime memory directory: `$CODEX_HOME/memories/` when it already exists
+- Documentation hub: `$CODEX_HOME/docs/OVERVIEW.md`
+- Workflow hub: `$CODEX_HOME/docs/workflows/overview.md`
+- Planning hub: `$CODEX_HOME/plans/OVERVIEW.md`
+- Snippet hub: `$CODEX_HOME/snippets/OVERVIEW.md`
+- Template hub: `$CODEX_HOME/templates/OVERVIEW.md`
+- Prompt catalog: `$CODEX_HOME/docs/create-prompts.md`
 - Plugin runtime guide: `$CODEX_HOME/docs/plugins.md`
-- Multi-agent role guide: `$CODEX_HOME/MULTI_AGENT.md`
 
-## Choose one router
-- Workflow-level, cross-cutting, or unclear work -> `$CODEX_HOME/index/core/overview.md`
-- Platform/tooling-specific work -> `$CODEX_HOME/index/domains/overview.md`
-- Runtime-pack maintenance -> `$CODEX_HOME/index/pack/overview.md`
-- Language or shell conventions only -> `$CODEX_HOME/index/style/overview.md`
+## You must choose one router
+- For workflow-level, cross-cutting, or unclear work, open `$CODEX_HOME/index/core/overview.md`.
+- For platform, domain, or tooling-specific work, open `$CODEX_HOME/index/domains/overview.md`.
+- For runtime-pack maintenance, routing, docs, prompts, snippets, templates, or rules work, open `$CODEX_HOME/index/pack/overview.md`.
+- For language or shell conventions only, open `$CODEX_HOME/index/style/overview.md`.
+
+## High-value entrypoints
+- Codex installer and runtime source work -> `$CODEX_HOME/docs/workflows/codex-manager.md`
+- Repo-aware memory routing -> `$CODEX_HOME/memories/`
+- MCP stack repo work -> `$CODEX_HOME/docs/workflows/codex-mcp.md`
+- Cloudflare and GitLab delivery work -> `$CODEX_HOME/docs/workflows/cloudflare-delivery.md`
+- Runtime-pack maintenance -> `$CODEX_HOME/docs/workflows/runtime-pack-maintenance.md`
+- Planning and decomposition -> `$CODEX_HOME/docs/workflows/planning.md`
+- Testing and verification -> `$CODEX_HOME/docs/workflows/testing.md`
 
 ## Current pack defaults
-- Treat `$CODEX_HOME/index/manifest.yml` as routing metadata for pack entrypoints.
-- Keep top-level routing docs short and deterministic.
-- Prefer repo-aware memory routing through `$CODEX_HOME/memories/MEMORY.md`.
-- Keep plugin and skill guidance anchored to installed runtime paths such as `$CODEX_HOME/plugins/cache/**`, `$CODEX_HOME/.agents/plugins/marketplace.json`, and `$CODEX_SKILLS/**`.
-
-## High-value workflow entrypoints
-- Codex installer/runtime source work -> `$CODEX_HOME/docs/workflows/codex-manager.md`
-- Repo-aware memory routing -> `$CODEX_HOME/memories/MEMORY.md`
-- MCP stack repo work -> `$CODEX_HOME/docs/workflows/codex-mcp.md`
-- Cloudflare + GitLab delivery work -> `$CODEX_HOME/docs/workflows/cloudflare-delivery.md`
-- Runtime-pack catalog maintenance -> `$CODEX_HOME/docs/workflows/runtime-pack-maintenance.md`
-- Debian installer repo work -> `$CODEX_HOME/docs/workflows/debian-preseed.md`
+- You must treat `$CODEX_HOME/index/manifest.yml` as the routing metadata source.
+- You must keep top-level routers short and deterministic.
+- You must keep multi-agent rules in `$CODEX_HOME/AGENTS.md` and workflow procedure in `$CODEX_HOME/docs/workflows/agent-orchestration.md`.
+- You must keep model catalog references aligned with `$CODEX_HOME/.models/default_catalog.json`.
 
 ## Stop conditions
-- Open one router.
-- Choose one entrypoint from that router.
-- Stop broad discovery once the entrypoint is clear.
+- You must open one router.
+- You must choose one concrete entrypoint from that router.
+- You must stop broad discovery once the next concrete file or command is clear.
 
 This file is aligned with `$CODEX_HOME/index/manifest.yml`.

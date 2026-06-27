@@ -1,7 +1,8 @@
 # GitHub Actions workflow
 
-Start with `$CODEX_HOME/plans/workflows/workflow-github-actions.md` before executing this workflow.
-Purpose: provide GitHub-specific CI guidance with security and reproducibility defaults.
+You must start with `$CODEX_HOME/plans/workflows/workflow-github-actions.md` before executing this workflow.
+Purpose: provide GitHub-specific CI guidance with security and reproducibility defaults for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -14,15 +15,15 @@ Purpose: provide GitHub-specific CI guidance with security and reproducibility d
 
 ## Plan
 - Start from the linked workflow plan template above, then tailor scope, constraints, and validation commands before editing.
-- Keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
+- You must keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
 
 ## Baseline design
 - Scope triggers explicitly (`pull_request` + `push` on protected branches).
 - Align push/PR triggers with `mcr/main`, `mcr/staging`, and `mcr/release`.
 - Set default permissions to read-only and elevate per job when required.
-- Use `concurrency` to cancel redundant runs on the same branch/PR.
+- You must use `concurrency` to cancel redundant runs on the same branch/PR.
 - Set `timeout-minutes` for every job.
-- Prefer reusable workflows for shared CI logic across repos.
+- You must prefer reusable workflows for shared CI logic across repos.
 - Trigger release builds from protected release tags and verify the tag points to the tip of `mcr/release` before compiling.
 
 ## Shared release behavior
@@ -30,28 +31,28 @@ Purpose: provide GitHub-specific CI guidance with security and reproducibility d
 - For tag-release pipelines, avoid duplicating repo-local `security-gates` jobs unless you explicitly need additional non-release scans.
 
 ## Wrapper workflow contract (shared orchestration)
-- Treat organization wrappers (`gh-actions-upstream`, `gh-actions-xf-checkout`, `gh-actions-xf-main`, `gh-actions-xf-secops`) as thin entrypoints that only call shared workflows/actions.
+- You must treat organization wrappers (`gh-actions-upstream`, `gh-actions-xf-checkout`, `gh-actions-xf-main`, `gh-actions-xf-secops`) as thin entrypoints that only call shared workflows/actions.
 - Wrapper repos should call shared reusable workflows pinned to a reviewed immutable SHA (for example the codex release caller pin in `.github/workflows/release-codex-rs.yml`).
-- Keep `workflow_dispatch` contracts explicit and validated (`event-context`, `event-name`, `expected-event-action`, `target-org`, `shared-repo`, `shared-ref`).
+- You must keep `workflow_dispatch` contracts explicit and validated (`event-context`, `event-name`, `expected-event-action`, `target-org`, `shared-repo`, `shared-ref`).
 - Pin and roll shared refs deliberately; update wrapper refs and allowlists together to avoid dispatch drift.
-- Keep worker dispatch alignment explicit: `GH_WORKFLOW_REF` selects wrapper workflow ref, while fork-mode branch mirroring remains limited to read-only `github/mcr/main` and `github/mcr/staging`.
+- You must keep worker dispatch alignment explicit: `GH_WORKFLOW_REF` selects wrapper workflow ref, while fork-mode branch mirroring remains limited to read-only `github/mcr/main` and `github/mcr/staging`.
 - In fork mode, keep release validation tied to `origin/github/mcr/main -> github/mcr/main -> mcr/main` sync and patch checks on `mcr/main` before `mcr/release` tagging.
 
 ## Reproducibility
 - Pin toolchains and versions (language setup actions + lockfiles).
-- Use deterministic installers (`npm ci`, `cargo build --locked`, `pip --require-hashes` where feasible).
+- You must use deterministic installers (`npm ci`, `cargo build --locked`, `pip --require-hashes` where feasible).
 - Cache dependencies keyed by lockfiles; avoid caching build outputs with secrets.
 - Avoid unpinned actions and images (`:latest`).
 
 ## Security
 - Avoid `pull_request_target` unless you fully understand the trust boundary.
 - Never expose secrets to untrusted PRs or forks.
-- Prefer OIDC for cloud auth (`id-token: write`) over long-lived keys.
+- You must prefer OIDC for cloud auth (`id-token: write`) over long-lived keys.
 - Pin third-party actions to major versions at minimum; pin to SHAs for high-assurance environments.
 
 ## Secrets management
 - Store secrets in GitHub Encrypted Secrets; prefer environment-scoped secrets.
-- Use a dedicated secrets manager when available (e.g., Bitwarden Secrets Manager).
+- You must use a dedicated secrets manager when available (e.g., Bitwarden Secrets Manager).
 - When using BWS-backed workflows, keep `BWS_ACCESS_TOKEN` and `BWS_PROJECT_ID` explicit in the runtime contract.
 - Map secrets to env vars at runtime; avoid command-line args for secrets.
 
@@ -68,17 +69,17 @@ Purpose: provide GitHub-specific CI guidance with security and reproducibility d
 
 ## Security checkpoints
 - Pin third-party actions to commit SHAs for jobs with write permissions or secret access.
-- Keep default `permissions` read-only and justify each per-job scope elevation.
+- You must keep default `permissions` read-only and justify each per-job scope elevation.
 - Ensure fork/untrusted PR paths cannot access deploy secrets; avoid `pull_request_target` unless required.
 
 ## Testing checkpoints
-- Run workflow lint validation (for example `actionlint`) on every workflow change.
+- You must run workflow lint validation (for example `actionlint`) on every workflow change.
 - Exercise changed trigger paths (PR, push, tag) with dry-run or test-branch runs before merge.
-- Confirm cache keys and matrix expansion behave deterministically across reruns.
+- You must confirm cache keys and matrix expansion behave deterministically across reruns.
 
 ## Deployment checkpoints
-- Require protected environments and reviewers for staging/production deploy jobs.
-- Verify release-tag guards enforce "tag points to tip of mcr/release" before release builds.
+- You must require protected environments and reviewers for staging/production deploy jobs.
+- You must verify release-tag guards enforce "tag points to tip of mcr/release" before release builds.
 - Persist artifact names and retention settings needed for rollback in workflow outputs.
 
 ## Multi-agent handoff
@@ -94,8 +95,8 @@ See also:
 - `../security/supply-chain-controls.md`
 - `$CODEX_HOME/templates/ci/github-actions/release-build.yml`
 - `$CODEX_HOME/templates/ci/github-actions/release-publish.yml`
-- Use skill `ci-github-actions`.
-- Use skill `ci-github-actions-fix`.
-- Use skill `repo-ops`.
+- You must use skill `ci-github-actions`.
+- You must use skill `ci-github-actions-fix`.
+- You must use skill `repo-ops`.
 - `$CODEX_HOME/index/pack/workflows.md`
 - `$CODEX_HOME/index/core/ci-cd.md`

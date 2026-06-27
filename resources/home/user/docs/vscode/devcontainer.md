@@ -1,5 +1,6 @@
 # VS Code devcontainers
-Purpose: document safe, reproducible `.devcontainer/` layouts and how they relate to the pack's container templates.
+Purpose: document safe, reproducible `.devcontainer/` layouts and how they relate to the pack's container templates for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -15,15 +16,15 @@ Purpose: document safe, reproducible `.devcontainer/` layouts and how they relat
 
 ## Defaults
 - Pin base images and toolchains.
-- Prefer non-root `remoteUser`.
-- Keep secrets out of images and tracked config.
+- You must prefer non-root `remoteUser`.
+- You must keep secrets out of images and tracked config.
 - Make network and bind-mount behavior explicit.
 
 ## Pack alignment
-- Use `$CODEX_HOME/templates/containers/devlab-codelab-skeleton/` when the devcontainer should mirror the broader local container workflow.
-- Keep Podman/Docker expectations aligned with `$CODEX_HOME/docs/containers/dev-containers.md`.
+- You must use `$CODEX_HOME/templates/containers/devlab-codelab-skeleton/` when the devcontainer should mirror the broader local container workflow.
+- You must keep Podman/Docker expectations aligned with `$CODEX_HOME/docs/containers/dev-containers.md`.
 
-## Related
+## After that, you must check related files
 - `$CODEX_HOME/docs/containers/overview.md`
 - `$CODEX_HOME/docs/containers/dev-containers.md`
 - `$CODEX_HOME/snippets/vscode/devcontainer.json`

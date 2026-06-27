@@ -1,7 +1,8 @@
 # CrowdSec workflow
 
-Start with `$CODEX_HOME/plans/workflows/workflow-crowdsec.md` before executing this workflow.
-Purpose: deploy CrowdSec with safe defaults and minimal false positives.
+You must start with `$CODEX_HOME/plans/workflows/workflow-crowdsec.md` before executing this workflow.
+Purpose: deploy CrowdSec with safe defaults and minimal false positives for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -14,9 +15,9 @@ Purpose: deploy CrowdSec with safe defaults and minimal false positives.
 
 ## Plan
 - Start from the linked workflow plan template above, then tailor scope, constraints, and validation commands before editing.
-- Keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
+- You must keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
 
-## Workflow
+## You must follow this workflow
 1) **Scope**: log sources, threat model, remediation policy.
 2) **Configure**: `acquis.yaml` and minimal collections.
 3) **Validate**: parsing and scenario detection (no remediation).
@@ -25,7 +26,7 @@ Purpose: deploy CrowdSec with safe defaults and minimal false positives.
 
 ## Safety rules
 - Start in alert‑only mode and monitor noise.
-- Keep API keys scoped to the minimal bouncer set.
+- You must keep API keys scoped to the minimal bouncer set.
 
 ## Security checkpoints
 - Scope `acquis.yaml` inputs explicitly and avoid collecting unnecessary sensitive logs.
@@ -33,9 +34,9 @@ Purpose: deploy CrowdSec with safe defaults and minimal false positives.
 - Review whitelists and ban scopes to avoid blocking trusted internal ranges.
 
 ## Testing checkpoints
-- Run parser and scenario tests before enabling live remediation.
+- You must run parser and scenario tests before enabling live remediation.
 - Replay benign and malicious samples to measure false-positive behavior.
-- Verify ban and unban paths work for each configured bouncer type.
+- You must verify ban and unban paths work for each configured bouncer type.
 
 ## Deployment checkpoints
 - Start in detection-only mode, then enable remediation in staged host groups.
@@ -51,6 +52,6 @@ See also:
 - `../observability/crowdsec.md`
 - `$CODEX_HOME/templates/observability/crowdsec-skeleton/`
 - `$CODEX_HOME/snippets/crowdsec/acquis.yaml`
-- Use skill `secops-crowdsec`.
+- You must use skill `secops-crowdsec`.
 - `$CODEX_HOME/index/pack/workflows.md`
 - `$CODEX_HOME/index/domains/observability/crowdsec.md`

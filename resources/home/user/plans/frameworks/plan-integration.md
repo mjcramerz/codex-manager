@@ -1,6 +1,7 @@
 # Plan
+Purpose: tell the Codex coding agent how to use `plans/frameworks/plan-integration.md` as a runtime-pack surface and when to stop browsing.
 
-Use this plan when integrating with external APIs, SDKs, or services.
+You must use this plan when integrating with external APIs, SDKs, or services.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -19,9 +20,9 @@ Use this plan when integrating with external APIs, SDKs, or services.
 - Out: unrelated feature work.
 
 ## Dependencies and assumptions
-- Record provider SLAs, ownership contacts, and escalation paths.
-- Record credentials, scopes, network constraints, and environment-parity assumptions.
-- Record upstream versioning, deprecation windows, and release-cadence assumptions.
+- You must record provider SLAs, ownership contacts, and escalation paths.
+- You must record credentials, scopes, network constraints, and environment-parity assumptions.
+- You must record upstream versioning, deprecation windows, and release-cadence assumptions.
 
 ## Files and entry points
 - List the integration entrypoints that will change.
@@ -32,14 +33,14 @@ Use this plan when integrating with external APIs, SDKs, or services.
 
 ## API contract and compatibility
 - Name the OpenAPI or JSON schema source and the locked version used for planning.
-- Define operation mappings, success/error responses, and pagination behavior.
-- Define backward-compatibility, version negotiation, and deprecation handling.
-- Define server URLs, security schemes/scopes, and callback or webhook contracts where applicable.
-- Define timeout budgets, retry/backoff ceilings, circuit-breaker thresholds, and dead-letter handling.
+- You must define operation mappings, success/error responses, and pagination behavior.
+- You must define backward-compatibility, version negotiation, and deprecation handling.
+- You must define server URLs, security schemes/scopes, and callback or webhook contracts where applicable.
+- You must define timeout budgets, retry/backoff ceilings, circuit-breaker thresholds, and dead-letter handling.
 
 ## Success metrics and exit criteria
-- Define latency, error-rate, and reliability targets.
-- Define functional completion criteria for every required endpoint flow.
+- You must define latency, error-rate, and reliability targets.
+- You must define functional completion criteria for every required endpoint flow.
 - State the fallback path, go/no-go criteria, and sign-off owner.
 
 ## Action items
@@ -62,23 +63,23 @@ Use this plan when integrating with external APIs, SDKs, or services.
 - Describe offline or reconnect validation for constrained environments when relevant.
 
 ## Rollout / monitoring
-- Define feature flags, canary scope, metrics, and alerts.
-- Define the kill switch, fallback mode, and the decision owner.
+- You must define feature flags, canary scope, metrics, and alerts.
+- You must define the kill switch, fallback mode, and the decision owner.
 
 ## Security checkpoints
-- Confirm trust boundaries, credentials, and least-privilege assumptions before execution.
-- Validate input bounds, timeout/retry limits, and failure behavior for risky operations.
-- Record any approved exception, owner, and expiry before proceeding.
+- You must confirm trust boundaries, credentials, and least-privilege assumptions before execution.
+- You must validate input bounds, timeout/retry limits, and failure behavior for risky operations.
+- You must record any approved exception, owner, and expiry before proceeding.
 
 ## Testing checkpoints
-- Define fast-path and deep validation commands before making changes.
-- Capture expected outcomes and acceptance criteria for each validation step.
-- Re-run impacted checks after major changes and before final handoff.
+- You must define fast-path and deep validation commands before making changes.
+- You must capture expected outcomes and acceptance criteria for each validation step.
+- You must re-run impacted checks after major changes and before final handoff.
 
 ## Deployment checkpoints
-- Document rollout order, blast-radius controls, and rollback conditions.
-- Confirm migration/backfill or feature-flag sequencing when applicable.
-- Record post-deploy verification owners and evidence.
+- You must document rollout order, blast-radius controls, and rollback conditions.
+- You must confirm migration/backfill or feature-flag sequencing when applicable.
+- You must record post-deploy verification owners and evidence.
 
 ## Multi-agent handoff
 - Coordinator hands off scope, constraints, and stop condition with the target entrypoint.
@@ -93,4 +94,4 @@ Use this plan when integrating with external APIs, SDKs, or services.
 - Example validation: "python3 -m unittest tests.test_plugin_runtime_contracts"
 
 ## Open questions
-- Record only the missing API details, credentials, or environment access that block delivery.
+- You must record only the missing API details, credentials, or environment access that block delivery.

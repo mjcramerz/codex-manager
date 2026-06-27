@@ -1,5 +1,6 @@
 # Pack maintenance router
-Purpose: choose one pack-maintenance hub for runtime-pack source work.
+Purpose: choose one pack-maintenance hub for runtime-pack source work for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 Use this router when maintaining the runtime pack itself: docs, plans, skills, templates, snippets, rules, config, or plugin metadata.
 
 ## Navigation
@@ -11,7 +12,7 @@ Use this router when maintaining the runtime pack itself: docs, plans, skills, t
 
 ## Required source files for pack work
 - `$CODEX_HOME/index/manifest.yml` for routing metadata
-- `$CODEX_HOME/memories/MEMORY.md` for repo-aware memory routing
+- `$CODEX_HOME/memories/` when runtime memory already exists for the active workspace
 - `$CODEX_HOME/docs/**` for runtime docs and workflows
 - `$CODEX_HOME/plans/**` for plan templates
 - `$CODEX_HOME/templates/**` for reusable scaffolds
@@ -19,9 +20,9 @@ Use this router when maintaining the runtime pack itself: docs, plans, skills, t
 - `$CODEX_HOME/plugins/cache/**` plus `$CODEX_HOME/.agents/plugins/marketplace.json` for plugin bundles and marketplace wiring
 
 ## Pack scope
-- Source-managed pack content stops at docs, plans, templates, skills, rules, snippets, routing metadata, plugins, and the memory router.
-- Keep installed-path references coherent across `$CODEX_HOME/**`, `$CODEX_AGENTS/**`, and `$CODEX_SKILLS/**`.
-- Treat `$CODEX_HOME/memories/MEMORY.md` and the mirrored memory instruction assets as pack source when the task is memory-related.
+- Source-managed pack content stops at docs, plans, templates, skills, rules, snippets, routing metadata, and plugins. Runtime memory is generated later by Codex and is not shipped from this repository.
+- You must keep installed-path references coherent across `$CODEX_HOME/**`, `$CODEX_AGENTS/**`, and `$CODEX_SKILLS/**`.
+- You must treat `$CODEX_HOME/memories/` and the mirrored memory instruction assets as pack source when the task is memory-related.
 
 ## Choose one hub
 <!-- BEGIN:contents -->

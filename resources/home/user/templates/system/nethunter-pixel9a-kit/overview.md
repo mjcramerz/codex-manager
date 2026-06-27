@@ -1,4 +1,5 @@
 # NetHunter Pixel 9a kit (overview)
+Purpose: tell the Codex coding agent how to use `templates/system/nethunter-pixel9a-kit/overview.md` as a runtime-pack surface and when to stop browsing.
 Starter assets for scoped NetHunter kernel-porting and Android root lab operations.
 
 ## Outputs

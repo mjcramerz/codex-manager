@@ -1,5 +1,6 @@
 # Workflow plan catalog
-Purpose: choose one workflow-specific plan template that mirrors an execution playbook.
+Purpose: choose one workflow-specific plan template that mirrors an execution playbook for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -20,6 +21,6 @@ Purpose: choose one workflow-specific plan template that mirrors an execution pl
 - `$CODEX_HOME/plans/workflows/workflow-debian-preseed.md` — Plan
 <!-- END:contents -->
 
-## Maintenance rules
+## You must maintain this file by following these rules
 - File names should map to workflow docs as `workflow-<name>.md`.
 - If a workflow exists without a matching plan, add it here in the same change.

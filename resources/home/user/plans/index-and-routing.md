@@ -1,7 +1,8 @@
 # Plan
-Purpose: change entrypoints, related links, or index routing while keeping fast catalogs and memory-router paths consistent.
+Purpose: change entrypoints, related links, or index routing while keeping fast catalogs and memory-router paths consistent for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
-Use this plan when changing entrypoints, related links, or index routing.
+You must use this plan when changing entrypoints, related links, or index routing.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -25,28 +26,28 @@ Use this plan when changing entrypoints, related links, or index routing.
 - `$CODEX_HOME/index/core/*.md`
 - `$CODEX_HOME/index/domains/*/*.md`
 - `$CODEX_HOME/INDEX.md`
-- `$CODEX_HOME/memories/MEMORY.md`
+- `$CODEX_HOME/memories/`
 
 ## Action items
 [ ] Update `$CODEX_HOME/index/manifest.yml` entries and related links.
 [ ] Add or adjust entrypoint files under `$CODEX_HOME/index/`.
-[ ] Keep `$CODEX_HOME/INDEX.md` and `$CODEX_HOME/memories/MEMORY.md` aligned with the touched routes.
+[ ] Keep `$CODEX_HOME/INDEX.md` and `$CODEX_HOME/memories/` aligned with the touched routes.
 [ ] Spot-check key entrypoints for link accuracy.
 
 ## Security checkpoints
-- Confirm trust boundaries, credentials, and least-privilege assumptions before execution.
-- Validate input bounds, timeout/retry limits, and failure behavior for risky operations.
-- Record any approved exception, owner, and expiry before proceeding.
+- You must confirm trust boundaries, credentials, and least-privilege assumptions before execution.
+- You must validate input bounds, timeout/retry limits, and failure behavior for risky operations.
+- You must record any approved exception, owner, and expiry before proceeding.
 
 ## Testing checkpoints
-- Define fast-path and deep validation commands before making changes.
-- Capture expected outcomes and acceptance criteria for each validation step.
-- Re-run impacted checks after major changes and before final handoff.
+- You must define fast-path and deep validation commands before making changes.
+- You must capture expected outcomes and acceptance criteria for each validation step.
+- You must re-run impacted checks after major changes and before final handoff.
 
 ## Deployment checkpoints
-- Document rollout order, blast-radius controls, and rollback conditions.
-- Confirm migration/backfill or feature-flag sequencing when applicable.
-- Record post-deploy verification owners and evidence.
+- You must document rollout order, blast-radius controls, and rollback conditions.
+- You must confirm migration/backfill or feature-flag sequencing when applicable.
+- You must record post-deploy verification owners and evidence.
 
 ## Multi-agent handoff
 - Coordinator hands off scope, constraints, and stop condition with the target entrypoint.

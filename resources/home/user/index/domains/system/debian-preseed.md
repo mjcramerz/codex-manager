@@ -1,5 +1,6 @@
 # Debian preseed workflow (entrypoint)
-Purpose: stable link to Debian unattended install guidance.
+Purpose: stable link to Debian unattended install guidance for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -22,5 +23,5 @@ Related:
 - `$CODEX_HOME/docs/virtualization/debian-preseed.md`
 - `$CODEX_HOME/templates/virtualization/debian-preseed`
 - `$CODEX_HOME/snippets/preseed/include.preseed.cfg`
-- Use skill `os-debian-preseed`.
+- You must use skill `os-debian-preseed`.
 <!-- END:related -->

@@ -1,5 +1,6 @@
 # Containers workflow (entrypoint)
-Purpose: stable link to container guidance and templates.
+Purpose: stable link to container guidance and templates for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -31,5 +32,5 @@ Related:
 - `$CODEX_HOME/templates/containers/dockerfile-skeleton`
 - `$CODEX_HOME/templates/containers/devlab-codelab-skeleton`
 - `$CODEX_HOME/snippets/containers`
-- Use skill `infra-containers`.
+- You must use skill `infra-containers`.
 <!-- END:related -->

@@ -1,6 +1,7 @@
 # Plan
+Purpose: tell the Codex coding agent how to use `plans/skills/skill-rust-cargo.md` as a runtime-pack surface and when to stop browsing.
 
-Use this plan when applying or updating the `rust-cargo` skill.
+You must use this plan when applying or updating the `rust-cargo` skill.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -10,7 +11,7 @@ Use this plan when applying or updating the `rust-cargo` skill.
 <!-- END:nav -->
 
 ## Inputs
-- Use skill `rust-cargo`.
+- You must use skill `rust-cargo`.
 - Any referenced scripts, assets, or references in the skill.
 
 ## Scope

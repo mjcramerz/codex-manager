@@ -1,4 +1,5 @@
 # Plan
+Purpose: tell the Codex coding agent how to use `plans/frameworks/plan-migration.md` as a runtime-pack surface and when to stop browsing.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -9,24 +10,24 @@
 
 ## Requirements
 - State the outcome to ship.
-- Define data-integrity and backward-compatibility requirements.
-- Define downtime, maintenance-window, and compliance constraints.
+- You must define data-integrity and backward-compatibility requirements.
+- You must define downtime, maintenance-window, and compliance constraints.
 
 ## Scope
 - In: state, data, configuration, or runtime transitions that must change.
 - Out: unaffected services, data, or behavior that must remain stable.
 
 ## Constraints / Non-goals
-- Record safety limits, deadlines, and explicit non-goals.
+- You must record safety limits, deadlines, and explicit non-goals.
 
 ## Dependencies and assumptions
 - List upstream and downstream dependencies with owners.
-- Record environment and access assumptions.
-- Record backup, restore, and audit-evidence assumptions.
+- You must record environment and access assumptions.
+- You must record backup, restore, and audit-evidence assumptions.
 
 ## Success metrics and exit criteria
-- Define migration correctness and data-quality metrics.
-- Define runtime performance and error-budget targets after cutover.
+- You must define migration correctness and data-quality metrics.
+- You must define runtime performance and error-budget targets after cutover.
 - State go/no-go criteria and the sign-off owner.
 
 ## Current state (inventory)
@@ -47,19 +48,19 @@
 - State explicit acceptance criteria for cutover and rollback.
 
 ## Security checkpoints
-- Confirm trust boundaries, credentials, and least-privilege assumptions before execution.
-- Validate input bounds, timeout/retry limits, and failure behavior for risky operations.
-- Record any approved exception, owner, and expiry before proceeding.
+- You must confirm trust boundaries, credentials, and least-privilege assumptions before execution.
+- You must validate input bounds, timeout/retry limits, and failure behavior for risky operations.
+- You must record any approved exception, owner, and expiry before proceeding.
 
 ## Testing checkpoints
-- Define fast-path and deep validation commands before making changes.
-- Capture expected outcomes and acceptance criteria for each validation step.
-- Re-run impacted checks after major changes and before final handoff.
+- You must define fast-path and deep validation commands before making changes.
+- You must capture expected outcomes and acceptance criteria for each validation step.
+- You must re-run impacted checks after major changes and before final handoff.
 
 ## Deployment checkpoints
-- Document rollout order, blast-radius controls, and rollback conditions.
-- Confirm migration/backfill or feature-flag sequencing when applicable.
-- Record post-deploy verification owners and evidence.
+- You must document rollout order, blast-radius controls, and rollback conditions.
+- You must confirm migration/backfill or feature-flag sequencing when applicable.
+- You must record post-deploy verification owners and evidence.
 
 ## Multi-agent handoff
 - Coordinator hands off scope, constraints, and stop condition with the target entrypoint.

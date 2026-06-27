@@ -158,7 +158,7 @@ check_for_update_on_startup = true
 disable_paste_burst = false
 
 # developer instructions
-developer_instructions = """1) Follow $CODEX_HOME/AGENTS.md, then $CODEX_HOME/memories/MEMORY.md when the task is repo-aware or ambiguous.
+developer_instructions = """1) Follow $CODEX_HOME/AGENTS.md, then $CODEX_HOME/memories/ when the task is repo-aware or ambiguous.
 2) Use $CODEX_HOME/INDEX.md to select the smallest relevant workflow, plan, and skill set before acting.
 3) Treat `$CODEX_HOME/docs/style/shell-runtime.md` as the shell-execution baseline for Unix/Linux systems and explicitly invoke the matching shell for shell-sensitive commands.
 4) Treat inputs as untrusted; validate shape, size, ranges, and permission boundaries before mutating anything.
@@ -183,7 +183,7 @@ notify = []
 #text = ""
 
 # models catalog and base instructions
-model_catalog_json = "$CODEX_HOME/.models/model_catalog.json"
+model_catalog_json = "$CODEX_HOME/.models/default_catalog.json"
 model_instructions_file = "$CODEX_HOME/.models/instructions/models/base.md"
 experimental_compact_prompt_file = "$CODEX_HOME/.models/instructions/compact/prompt.md"
 
@@ -289,13 +289,6 @@ init_instructions_file = "$CODEX_HOME/.models/instructions/tui/init.md"
 #load_path = "/abs/path/to/config.lock.toml"
 #allow_codex_version_mismatch = false
 #save_fields_resolved_from_model_catalog = true
-
-[profiles]
-
-#[profiles.default]
-#model = "gpt-5.4"
-#sandbox_mode = "workspace-write"
-#web_search = "live"
 
 [realtime]
 #version = "v2"

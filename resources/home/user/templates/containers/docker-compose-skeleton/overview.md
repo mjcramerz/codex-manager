@@ -1,4 +1,5 @@
 # Docker Compose skeleton (overview, rootless-friendly)
+Purpose: tell the Codex coding agent how to use `templates/containers/docker-compose-skeleton/overview.md` as a runtime-pack surface and when to stop browsing.
 This is a generic compose scaffold you can adapt to an existing `Dockerfile`.
 
 ## Inputs
@@ -56,13 +57,13 @@ Notes:
 - `compose.yml` explicitly builds `Dockerfile` so Docker and Podman use the same build definition.
 - `compose.yml` passes `APP_UID`/`APP_GID` build args so file ownership matches the runtime user.
 - The offline override disables container networking; it does not prevent network use during image builds.
-- Keep `.env` uncommitted; use it for local-only values.
-- Prefer non-root containers and minimal capabilities in your service definitions.
+- You must keep `.env` uncommitted; use it for local-only values.
+- You must prefer non-root containers and minimal capabilities in your service definitions.
 - If rootless containers lack internet, verify the context and rootless network driver.
 
 ## Next steps
-- Add volumes and healthchecks as needed.
-- Document rootless limitations and required host setup.
+- You must add volumes and healthchecks as needed.
+- You must document rootless limitations and required host setup.
 
 See also:
 - `$CODEX_HOME/docs/containers/overview.md`

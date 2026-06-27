@@ -1,5 +1,6 @@
 # Desktop entries (entrypoint)
-Purpose: stable link to `.desktop` file creation guidance.
+Purpose: stable link to `.desktop` file creation guidance for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -20,5 +21,5 @@ Use when:
 Related:
 - `$CODEX_HOME/docs/workflows/desktop-entries.md`
 - `$CODEX_HOME/snippets/desktop/desktop-entry.desktop`
-- Use skill `desktop-entries`.
+- You must use skill `desktop-entries`.
 <!-- END:related -->

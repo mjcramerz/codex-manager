@@ -1,4 +1,5 @@
 # Offsec-defense engagement checklist
+Purpose: tell the Codex coding agent how to use `templates/system/offsec-defense-kit/engagement-checklist.md` as a runtime-pack surface and when to stop browsing.
 
 ## Pre-flight
 - [ ] Scope ID and ownership verified

@@ -1,4 +1,5 @@
 # Vue
+Purpose: tell the Codex coding agent how to use `docs/web/vue.md` as a runtime-pack surface and when to stop browsing.
 Guidance for Vue applications with Composition API defaults.
 
 
@@ -11,14 +12,14 @@ Guidance for Vue applications with Composition API defaults.
 
 
 ## Baseline practices
-- Prefer Composition API for shared logic.
-- Keep state local; avoid global singletons where possible.
-- Use `<script setup>` for clarity.
+- You must prefer Composition API for shared logic.
+- You must keep state local; avoid global singletons where possible.
+- You must use `<script setup>` for clarity.
 
 See also:
 - `overview.md`
 - `nuxt.md`
 - `$CODEX_HOME/templates/web/vue-app/`
-- Use skill web-vue.
+- You must use skill web-vue.
 - `$CODEX_HOME/index/domains/web/frameworks.md`
 - `$CODEX_HOME/index/domains/web/vue.md`

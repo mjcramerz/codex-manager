@@ -1,7 +1,8 @@
 # systemd workflow
 
-Start with `$CODEX_HOME/plans/workflows/workflow-systemd.md` before executing this workflow.
-Purpose: design, harden, and install systemd services and timers.
+You must start with `$CODEX_HOME/plans/workflows/workflow-systemd.md` before executing this workflow.
+Purpose: design, harden, and install systemd services and timers for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -14,9 +15,9 @@ Purpose: design, harden, and install systemd services and timers.
 
 ## Plan
 - Start from the linked workflow plan template above, then tailor scope, constraints, and validation commands before editing.
-- Keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
+- You must keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
 
-## Workflow
+## You must follow this workflow
 1) **Clarify intent**: system vs user service, ExecStart, user/group, working dir, dependencies, restart policy.
 2) **Draft unit**: service file with explicit timeouts and environment file.
 3) **Harden**: add safe defaults (`NoNewPrivileges`, `ProtectSystem`, etc.).
@@ -27,22 +28,22 @@ Purpose: design, harden, and install systemd services and timers.
 
 ## Safety rules
 - Avoid `sh -c` and shell pipelines in `ExecStart=`.
-- Run as non-root unless explicitly required.
-- Keep secrets in env files or secret managers, not unit files.
+- You must run as non-root unless explicitly required.
+- You must keep secrets in env files or secret managers, not unit files.
 
 ## Security checkpoints
-- Require least-privilege unit settings (`User=`, capabilities, filesystem protection).
-- Verify secret handling via protected env files instead of inline unit values.
+- You must require least-privilege unit settings (`User=`, capabilities, filesystem protection).
+- You must verify secret handling via protected env files instead of inline unit values.
 - Review dependency graph to avoid unintended privileged execution paths.
 
 ## Testing checkpoints
-- Run `systemd-analyze verify` and resolve warnings before enabling units.
+- You must run `systemd-analyze verify` and resolve warnings before enabling units.
 - Test start/stop/restart cycles and confirm clean status and exit codes.
 - For timers, validate schedule firing and missed-run behavior with `list-timers`.
 
 ## Deployment checkpoints
 - Deploy to canary host/user first, then `enable --now` after soak success.
-- Keep previous unit revisions and documented `daemon-reload` rollback steps.
+- You must keep previous unit revisions and documented `daemon-reload` rollback steps.
 - Monitor journal output and restart counters during initial runtime window.
 
 ## Multi-agent handoff
@@ -61,6 +62,6 @@ Purpose: design, harden, and install systemd services and timers.
 - `$CODEX_HOME/snippets/systemd/service.unit`
 - `$CODEX_HOME/snippets/systemd/timer.unit`
 - `$CODEX_HOME/snippets/systemd/user-service.unit`
-- Use skill `infra-systemd`.
+- You must use skill `infra-systemd`.
 - `$CODEX_HOME/index/pack/workflows.md`
 - `$CODEX_HOME/index/domains/system/systemd.md`

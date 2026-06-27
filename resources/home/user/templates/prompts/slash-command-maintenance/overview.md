@@ -1,4 +1,5 @@
 # Slash command prompt maintenance template
+Purpose: tell the Codex coding agent how to use `templates/prompts/slash-command-maintenance/overview.md` as a runtime-pack surface and when to stop browsing.
 Use this template when creating or refactoring slash-command prompt files.
 
 ## Inputs
@@ -19,6 +20,6 @@ Use this template when creating or refactoring slash-command prompt files.
 4) Run prompt checks, then pack checks.
 
 ## Next steps
-- Update `$CODEX_HOME/docs/workflows/prompts-library.md` if maintenance flow changed.
-- Update `$CODEX_HOME/snippets/docs/prompt_contract.md` if contract conventions changed.
-- Use skill `pack-prompts` for larger prompt-library edits.
+- You must update `$CODEX_HOME/docs/workflows/prompts-library.md` if maintenance flow changed.
+- You must update `$CODEX_HOME/snippets/docs/prompt_contract.md` if contract conventions changed.
+- You must use skill `pack-prompts` for larger prompt-library edits.

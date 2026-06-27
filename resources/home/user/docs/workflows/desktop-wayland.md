@@ -1,7 +1,8 @@
 # Wayland desktop workflow
 
-Start with `$CODEX_HOME/plans/workflows/workflow-desktop-wayland.md` before executing this workflow.
-Purpose: configure a minimal Wayland desktop with Labwc and related tools.
+You must start with `$CODEX_HOME/plans/workflows/workflow-desktop-wayland.md` before executing this workflow.
+Purpose: configure a minimal Wayland desktop with Labwc and related tools for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -14,9 +15,9 @@ Purpose: configure a minimal Wayland desktop with Labwc and related tools.
 
 ## Plan
 - Start from the linked workflow plan template above, then tailor scope, constraints, and validation commands before editing.
-- Keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
+- You must keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
 
-## Workflow
+## You must follow this workflow
 1) **Scope**: target apps, displays, login/greeter requirements.
 2) **Install**: labwc + required components (waybar, kanshi, swaylock, wofi).
 3) **Configure**: place configs under `~/.config/`.
@@ -24,22 +25,22 @@ Purpose: configure a minimal Wayland desktop with Labwc and related tools.
 5) **Verify**: test session, locking, and output switching.
 
 ## Safety rules
-- Keep a fallback TTY or alternate session.
+- You must keep a fallback TTY or alternate session.
 - Avoid autostart scripts that run privileged commands.
 
 ## Security checkpoints
 - Ensure session config and startup scripts are user-owned and not group/world writable.
 - Review autostart entries for privileged commands or unsafe environment injection.
-- Confirm lock-screen and idle behavior protect active sessions.
+- You must confirm lock-screen and idle behavior protect active sessions.
 
 ## Testing checkpoints
 - Test login, lock/unlock, monitor hotplug, and session recovery from a TTY fallback.
-- Verify portal, clipboard, and screenshot permissions for allowed applications.
-- Validate required workflow apps across single and multi-monitor setups.
+- You must verify portal, clipboard, and screenshot permissions for allowed applications.
+- You must validate required workflow apps across single and multi-monitor setups.
 
 ## Deployment checkpoints
 - Roll out by host profile with backups of previous compositor configs.
-- Keep a known-good config snapshot for quick restore after regressions.
+- You must keep a known-good config snapshot for quick restore after regressions.
 - Schedule session restarts and communicate expected user impact.
 
 ## Multi-agent handoff
@@ -51,7 +52,7 @@ See also:
 - `../desktop/wayland.md`
 - `$CODEX_HOME/templates/desktop/wayland-skeleton/`
 - `$CODEX_HOME/snippets/desktop/`
-- Use skill `desktop-wayland`.
+- You must use skill `desktop-wayland`.
 - `$CODEX_HOME/index/pack/workflows.md`
 - `$CODEX_HOME/index/domains/desktop/stack.md`
 - `$CODEX_HOME/index/domains/desktop/wayland.md`

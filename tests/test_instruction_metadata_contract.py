@@ -52,7 +52,7 @@ class InstructionMetadataContractTests(unittest.TestCase):
             for key in self.memory.get("memories", {})
             if key.endswith("_instructions_file")
         }
-        actual = {entry["config_key"] for _, entry in self.entries}
+        actual = {entry["config_key"] for _, entry in self.entries if entry.get("config_key")}
         self.assertEqual(actual, expected)
 
     def test_manifest_source_files_exist(self) -> None:
@@ -85,8 +85,23 @@ class InstructionMetadataContractTests(unittest.TestCase):
         actual = {
             entry["config_key"]: entry["default_disable_path"]
             for _, entry in self.entries
+            if entry.get("config_key")
         }
         self.assertEqual(actual, expected)
+
+    def test_asset_only_catalog_entries_use_expected_runtime_targets(self) -> None:
+        actual = {
+            entry["name"]: entry["default_disable_path"]
+            for _, entry in self.entries
+            if not entry.get("config_key")
+        }
+        self.assertEqual(
+            actual,
+            {
+                "review_catalog_asset": "$CODEX_HOME/.models/review_catalog.json",
+                "cyber_catalog_asset": "$CODEX_HOME/.models/cyber_catalog.json",
+            },
+        )
 
 
 if __name__ == "__main__":

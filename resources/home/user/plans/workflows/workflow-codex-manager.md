@@ -1,6 +1,7 @@
 # Plan
+Purpose: tell the Codex coding agent how to use `plans/workflows/workflow-codex-manager.md` as a runtime-pack surface and when to stop browsing.
 
-Use this plan when following `$CODEX_HOME/docs/workflows/codex-manager.md`.
+You must use this plan when following `$CODEX_HOME/docs/workflows/codex-manager.md`.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -27,11 +28,11 @@ Use this plan when following `$CODEX_HOME/docs/workflows/codex-manager.md`.
 [ ] Run the narrowest relevant validation and record evidence.
 
 ## Security checkpoints
-- Confirm trust boundaries, credentials, and least-privilege assumptions before execution.
+- You must confirm trust boundaries, credentials, and least-privilege assumptions before execution.
 - Ensure URL transports are the only MCP servers that declare `bearer_token_env_var`; use `env_vars` for stdio wrappers.
-- Validate input bounds, timeout/retry limits, and failure behavior for risky operations.
+- You must validate input bounds, timeout/retry limits, and failure behavior for risky operations.
 
 ## Deployment checkpoints
 - Call out whether current shells need a refresh after env-export cleanup.
-- Document rollout order, blast-radius controls, and rollback conditions.
-- Record any required follow-up validation owners.
+- You must document rollout order, blast-radius controls, and rollback conditions.
+- You must record any required follow-up validation owners.

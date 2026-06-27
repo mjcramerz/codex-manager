@@ -1,5 +1,6 @@
 # systemd services workflow (entrypoint)
-Purpose: stable link to systemd unit design, hardening, and timers.
+Purpose: stable link to systemd unit design, hardening, and timers for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -21,5 +22,5 @@ Use when:
 Related:
 - `$CODEX_HOME/docs/workflows/systemd.md`
 - `$CODEX_HOME/templates/systemd`
-- Use skill `infra-systemd`.
+- You must use skill `infra-systemd`.
 <!-- END:related -->

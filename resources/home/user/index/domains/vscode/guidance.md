@@ -1,5 +1,6 @@
 # VS Code guidance (entrypoint)
-Purpose: stable link to VS Code settings, theming, and devcontainer guidance.
+Purpose: stable link to VS Code settings, theming, and devcontainer guidance for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation

@@ -1,4 +1,5 @@
 # Filesystem ops scripts (template, overview)
+Purpose: tell the Codex coding agent how to use `templates/filesystems/ops-scripts/overview.md` as a runtime-pack surface and when to stop browsing.
 Safe-by-default Bash helpers for partitioning, formatting, mounting, and `fstab` updates.
 
 ## Outputs

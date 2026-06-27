@@ -1,5 +1,6 @@
 # Filesystems workflow (entrypoint)
-Purpose: stable link to filesystem partitioning, formatting, and fstab guidance.
+Purpose: stable link to filesystem partitioning, formatting, and fstab guidance for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -21,5 +22,5 @@ Use when:
 Related:
 - `$CODEX_HOME/docs/workflows/filesystems.md`
 - `$CODEX_HOME/templates/filesystems`
-- Use skill `storage-filesystems`.
+- You must use skill `storage-filesystems`.
 <!-- END:related -->

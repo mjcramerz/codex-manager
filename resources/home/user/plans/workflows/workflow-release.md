@@ -1,6 +1,7 @@
 # Plan
+Purpose: tell the Codex coding agent how to use `plans/workflows/workflow-release.md` as a runtime-pack surface and when to stop browsing.
 
-Use this plan when following `$CODEX_HOME/docs/workflows/release.md`.
+You must use this plan when following `$CODEX_HOME/docs/workflows/release.md`.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -34,21 +35,21 @@ Use this plan when following `$CODEX_HOME/docs/workflows/release.md`.
 [ ] Document rollback refs and operator ownership before closing the release.
 
 ## Testing and validation
-- Confirm the tag SHA equals `origin/mcr/release` before publish jobs run.
-- Confirm required release jobs complete and record run URLs plus artifact digests.
+- You must confirm the tag SHA equals `origin/mcr/release` before publish jobs run.
+- You must confirm required release jobs complete and record run URLs plus artifact digests.
 - Accept only if published artifacts map to the tagged release tip and rollback refs are documented.
 
 ## Security checkpoints
-- Verify signing credentials are scoped, valid, and available only to protected release refs.
-- Treat policy bypasses as explicit exceptions with owner, reason, and expiry.
+- You must verify signing credentials are scoped, valid, and available only to protected release refs.
+- You must treat policy bypasses as explicit exceptions with owner, reason, and expiry.
 
 ## Testing checkpoints
-- Define pre-tag and post-tag checks with explicit pass criteria.
-- Re-run critical smoke/security checks when release workflows require post-tag validation.
+- You must define pre-tag and post-tag checks with explicit pass criteria.
+- You must re-run critical smoke/security checks when release workflows require post-tag validation.
 
 ## Deployment checkpoints
-- Keep release order explicit (`mcr/staging` gates -> `mcr/release` tip tag -> publish channels).
-- Record post-release monitoring owner and rollback threshold in release notes.
+- You must keep release order explicit (`mcr/staging` gates -> `mcr/release` tip tag -> publish channels).
+- You must record post-release monitoring owner and rollback threshold in release notes.
 
 ## Multi-agent handoff
 - Coordinator hands off scope, target entrypoint, and stop condition.

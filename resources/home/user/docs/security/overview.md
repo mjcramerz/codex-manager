@@ -1,5 +1,6 @@
 # Security overview
-Purpose: route security work to the right checklist, threat-model, or defensive operations guide.
+Purpose: route security work to the right checklist, threat-model, or defensive operations guide for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -17,10 +18,10 @@ Purpose: route security work to the right checklist, threat-model, or defensive 
 - Security-labs references: `security-labs-index.md`, `security-labs-repo-catalog.md`, `security-labs-tool-guides.md`
 
 ## Baseline expectations
-- Validate and bound untrusted input.
-- Keep least privilege explicit across code, CI, containers, and host access.
-- Treat dependency provenance and release integrity as part of the security surface.
-- Keep secrets and sensitive logs out of repo-managed artifacts.
+- You must validate and bound untrusted input.
+- You must keep least privilege explicit across code, CI, containers, and host access.
+- You must treat dependency provenance and release integrity as part of the security surface.
+- You must keep secrets and sensitive logs out of repo-managed artifacts.
 
 ## Adjacent routing
 - App/service hardening -> `web-hardening.md` and `review-hardening.md`

@@ -1,4 +1,5 @@
 # Nuxt app scaffold (overview)
+Purpose: tell the Codex coding agent how to use `templates/web/nuxt-app/overview.md` as a runtime-pack surface and when to stop browsing.
 Wrapper around the official Nuxt scaffold.
 
 ## Recommended approach
@@ -8,7 +9,7 @@ Wrapper around the official Nuxt scaffold.
 
 ## Notes
 - Pin Node.js and Nuxt versions.
-- Keep runtime config explicit.
+- You must keep runtime config explicit.
 
 ## Inputs
 - Destination repository path for this template.

@@ -1,4 +1,5 @@
 # Elastic Stack (compose) skeleton (overview)
+Purpose: tell the Codex coding agent how to use `templates/observability/elastic-stack-compose/overview.md` as a runtime-pack surface and when to stop browsing.
 Compose-based development stack for Elasticsearch, Kibana, and Logstash.
 
 ## Outputs

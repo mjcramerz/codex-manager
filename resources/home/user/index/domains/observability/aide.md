@@ -1,5 +1,6 @@
 # AIDE (entrypoint)
-Purpose: stable link to AIDE file‑integrity monitoring guidance.
+Purpose: stable link to AIDE file‑integrity monitoring guidance for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -20,5 +21,5 @@ Use when:
 Related:
 - `$CODEX_HOME/docs/workflows/aide.md`
 - `$CODEX_HOME/snippets/aide`
-- Use skill `secops-aide`.
+- You must use skill `secops-aide`.
 <!-- END:related -->

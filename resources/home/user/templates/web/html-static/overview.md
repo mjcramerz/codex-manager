@@ -1,4 +1,5 @@
 # HTML static skeleton (overview)
+Purpose: tell the Codex coding agent how to use `templates/web/html-static/overview.md` as a runtime-pack surface and when to stop browsing.
 Minimal accessible HTML page.
 
 ## Outputs

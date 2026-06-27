@@ -1,4 +1,5 @@
 # QEMU/KVM + libvirt
+Purpose: tell the Codex coding agent how to use `docs/virtualization/qemu-kvm-libvirt.md` as a runtime-pack surface and when to stop browsing.
 This document is a pragmatic reference for working with VMs on Linux using KVM and libvirt.
 
 
@@ -29,13 +30,13 @@ Common libvirt network modes:
 Treat network mode changes as security-sensitive.
 
 ## Images and storage
-- Prefer qcow2 images for snapshots and space efficiency.
-- Keep base images immutable; clone per-project instances.
+- You must prefer qcow2 images for snapshots and space efficiency.
+- You must keep base images immutable; clone per-project instances.
 
 ## Safety notes
 - Avoid enabling broad host-device passthrough unless required and reviewed.
-- Prefer explicit resource limits (CPU, memory, disk).
-- Document any host networking changes (bridges, firewall rules).
+- You must prefer explicit resource limits (CPU, memory, disk).
+- You must document any host networking changes (bridges, firewall rules).
 
 See also:
 - `overview.md`

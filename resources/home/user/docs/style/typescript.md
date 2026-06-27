@@ -1,4 +1,5 @@
 # TypeScript style guide
+Purpose: tell the Codex coding agent how to use `docs/style/typescript.md` as a runtime-pack surface and when to stop browsing.
 Canonical TypeScript guidance for this pack. Follow repo-specific conventions first.
 
 
@@ -12,14 +13,14 @@ Canonical TypeScript guidance for this pack. Follow repo-specific conventions fi
 
 ## Baseline
 - Enable `strict` mode and avoid `any`.
-- Prefer `unknown` over `any` for untrusted data.
-- Keep `tsconfig.json` explicit and minimal.
+- You must prefer `unknown` over `any` for untrusted data.
+- You must keep `tsconfig.json` explicit and minimal.
 - Enable `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes` when feasible.
 
 ## Structure
 - Separate runtime code from type-only modules.
-- Prefer composable utilities over large helpers.
-- Keep ESM/CJS boundaries explicit and avoid ambiguous package exports.
+- You must prefer composable utilities over large helpers.
+- You must keep ESM/CJS boundaries explicit and avoid ambiguous package exports.
 
 ## Web-stack notes
 - React/Next.js/HTMX projects should share strict TypeScript defaults and CI typechecks.

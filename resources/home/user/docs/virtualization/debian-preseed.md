@@ -1,5 +1,6 @@
 # Debian preseed (deep dive)
-Purpose: explain the split-file preseed layout and the operational boundaries behind the higher-level Debian preseed workflow.
+Purpose: explain the split-file preseed layout and the operational boundaries behind the higher-level Debian preseed workflow for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -8,7 +9,7 @@ Purpose: explain the split-file preseed layout and the operational boundaries be
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-## Use this file when
+## You must use this file when
 - you already chose the Debian preseed route and need the split-file structure
 - you are reviewing what belongs in top-level vs included seed files
 - you are validating late-command scope before changing the installer repo
@@ -22,13 +23,13 @@ Purpose: explain the split-file preseed layout and the operational boundaries be
 - `preseed/packages.preseed.cfg`
 - `preseed/finish.preseed.cfg`
 
-## Guardrails
+## You must enforce these guardrails
 - Never commit plaintext secrets.
-- Keep destructive disk targets explicit and reviewable.
-- Keep `late_command` minimal and prefer deterministic target-side scripts.
+- You must keep destructive disk targets explicit and reviewable.
+- You must keep `late_command` minimal and prefer deterministic target-side scripts.
 - Test the exact BIOS/UEFI + storage path you intend to ship.
 
-## Related
+## After that, you must check related files
 - `$CODEX_HOME/docs/workflows/debian-preseed.md`
 - `$CODEX_HOME/templates/virtualization/debian-preseed/`
 - `$CODEX_HOME/snippets/preseed/include.preseed.cfg`

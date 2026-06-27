@@ -1,4 +1,5 @@
 # Filesystem types (quick reference)
+Purpose: tell the Codex coding agent how to use `docs/filesystems/filesystem-types.md` as a runtime-pack surface and when to stop browsing.
 Choose based on workload, platform compatibility, and operational constraints.
 
 

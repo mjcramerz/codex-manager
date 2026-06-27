@@ -1,7 +1,8 @@
 # Workflow: build an app (end-to-end)
 
-Start with `$CODEX_HOME/plans/workflows/workflow-build-an-app.md` before executing this workflow.
-Purpose: a reliable, repeatable path from idea to a secure, testable MVP.
+You must start with `$CODEX_HOME/plans/workflows/workflow-build-an-app.md` before executing this workflow.
+Purpose: a reliable, repeatable path from idea to a secure, testable MVP for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -14,7 +15,7 @@ Purpose: a reliable, repeatable path from idea to a secure, testable MVP.
 
 ## Plan
 - Start from the linked workflow plan template above, then tailor scope, constraints, and validation commands before editing.
-- Keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
+- You must keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
 
 ## 1) Define scope
 - MVP vs production target
@@ -39,16 +40,16 @@ Purpose: a reliable, repeatable path from idea to a secure, testable MVP.
 
 ## 4) Implement a vertical slice
 - One feature end-to-end with tests.
-- Keep diffs small and reviewable.
+- You must keep diffs small and reviewable.
 
 ## 5) Hardening pass
 - Input validation + explicit size limits.
 - Timeouts and bounded retries on all I/O.
-- Add rate limiting/quotas if public-facing.
+- You must add rate limiting/quotas if public-facing.
 - Dependency audits and lockfiles.
 
 ## 6) CI/CD
-- Add workflows from `$CODEX_HOME/templates/ci/github-actions/` or `$CODEX_HOME/templates/ci/gitlab-ci/`.
+- You must add workflows from `$CODEX_HOME/templates/ci/github-actions/` or `$CODEX_HOME/templates/ci/gitlab-ci/`.
 - Lint, test, and audit gates with minimal permissions.
 
 ## Branching & release flow
@@ -58,16 +59,16 @@ Purpose: a reliable, repeatable path from idea to a secure, testable MVP.
 - In fork mode, sync `origin/github/mcr/main -> github/mcr/main -> mcr/main` before release patch checks.
 - In fork mode, run release patch checks on `mcr/main` only, then create test branches from synced `mcr/main`.
 - For GitLab-delivered GitHub releases, tag from the tip of `mcr/release` using your protected release tag contract.
-- Keep delivery mutation order deterministic for release syncs: `checkout -> true sync -> version bump -> patch apply -> push` (with patches sourced from `patches/release/series`).
+- You must keep delivery mutation order deterministic for release syncs: `checkout -> true sync -> version bump -> patch apply -> push` (with patches sourced from `patches/release/series`).
 
 ## Deterministic build checklist
 - Pin toolchains and base images; avoid `:latest`.
 - Commit lockfiles and use deterministic installs (`cargo --locked`, `npm ci`, `pnpm install --frozen-lockfile`).
-- Keep version changes script-driven through the target repository's release helper scripts (for example `scripts/release/get_version.py` and `scripts/release/bump_version.py`).
+- You must keep version changes script-driven through the target repository's release helper scripts (for example `scripts/release/get_version.py` and `scripts/release/bump_version.py`).
 
 ## 7) Docs + runbook
-- Update README with setup/run/test commands.
-- Document config and operational notes.
+- You must update README with setup/run/test commands.
+- You must document config and operational notes.
 
 ## Security checkpoints
 - Lock auth model, trust boundaries, and secret storage approach before shipping the first endpoint.
@@ -75,12 +76,12 @@ Purpose: a reliable, repeatable path from idea to a secure, testable MVP.
 - Audit new dependencies before merge and document any temporary vulnerability waiver.
 
 ## Testing checkpoints
-- Require one happy-path and one abuse-path test for each externally reachable feature slice.
-- Keep startup, health, and config-validation checks in the always-on smoke suite.
+- You must require one happy-path and one abuse-path test for each externally reachable feature slice.
+- You must keep startup, health, and config-validation checks in the always-on smoke suite.
 - Gate merges on template-aligned lint/unit/integration commands captured in README or CI.
 
 ## Deployment checkpoints
-- Define the environment contract (required vars, secrets source, migrations) before first deploy.
+- You must define the environment contract (required vars, secrets source, migrations) before first deploy.
 - Promote local -> staging -> production with health checks and explicit rollback criteria.
 - Publish a runbook with release command, rollback command, and on-call owner.
 

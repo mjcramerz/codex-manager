@@ -1,4 +1,5 @@
 # VS Code theming
+Purpose: tell the Codex coding agent how to use `docs/vscode/theming.md` as a runtime-pack surface and when to stop browsing.
 Guidance for consistent and accessible editor theming.
 
 
@@ -11,13 +12,13 @@ Guidance for consistent and accessible editor theming.
 
 
 ## Recommended approach
-- Choose a theme and icon theme that meet contrast requirements.
-- Keep UI motion and animations minimal for accessibility.
-- Prefer built-in theming over custom CSS/JS injection.
+- You must choose a theme and icon theme that meet contrast requirements.
+- You must keep UI motion and animations minimal for accessibility.
+- You must prefer built-in theming over custom CSS/JS injection.
 
 ## Customization tips
-- Use `editor.tokenColorCustomizations` for code tokens.
-- Use `workbench.colorCustomizations` for UI accents.
+- You must use `editor.tokenColorCustomizations` for code tokens.
+- You must use `workbench.colorCustomizations` for UI accents.
 - Avoid theme drift across machines or workspaces unless intentional.
 
 ## Safety note

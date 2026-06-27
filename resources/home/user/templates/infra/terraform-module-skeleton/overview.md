@@ -1,4 +1,5 @@
 # Terraform module skeleton (overview)
+Purpose: tell the Codex coding agent how to use `templates/infra/terraform-module-skeleton/overview.md` as a runtime-pack surface and when to stop browsing.
 Baseline structure for a reusable Terraform module.
 
 ## Outputs
@@ -13,7 +14,7 @@ Baseline structure for a reusable Terraform module.
 3) Run `terraform fmt` and `terraform validate`.
 
 ## Notes
-- Keep modules small and composable.
+- You must keep modules small and composable.
 - Pin provider versions and commit lockfiles.
 
 ## Inputs

@@ -1,4 +1,5 @@
 # Nuxt
+Purpose: tell the Codex coding agent how to use `docs/web/nuxt.md` as a runtime-pack surface and when to stop browsing.
 Guidance for Vue SSR/SSG apps using Nuxt.
 
 
@@ -11,14 +12,14 @@ Guidance for Vue SSR/SSG apps using Nuxt.
 
 
 ## Baseline practices
-- Keep runtime config explicit and minimal.
+- You must keep runtime config explicit and minimal.
 - Avoid leaking server secrets into client code.
-- Use Nitro/server routes for server-side logic.
+- You must use Nitro/server routes for server-side logic.
 
 See also:
 - `overview.md`
 - `vue.md`
 - `$CODEX_HOME/templates/web/nuxt-app/`
-- Use skill web-nuxt.
+- You must use skill web-nuxt.
 - `$CODEX_HOME/index/domains/web/frameworks.md`
 - `$CODEX_HOME/index/domains/web/nuxt.md`

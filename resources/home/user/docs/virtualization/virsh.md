@@ -1,4 +1,5 @@
 # virsh / libvirt
+Purpose: tell the Codex coding agent how to use `docs/virtualization/virsh.md` as a runtime-pack surface and when to stop browsing.
 Guidance for managing KVM/libvirt with `virsh`.
 
 
@@ -11,19 +12,19 @@ Guidance for managing KVM/libvirt with `virsh`.
 
 
 ## Baseline practices
-- Use explicit domain XML checked into version control.
-- Prefer QCOW2 images for snapshots.
+- You must use explicit domain XML checked into version control.
+- You must prefer QCOW2 images for snapshots.
 - Restrict host device passthrough.
 
 ## Safety
 - Avoid destructive operations without confirmation.
-- Keep network definitions explicit and documented.
+- You must keep network definitions explicit and documented.
 
 See also:
 - `overview.md`
 - `qemu-kvm-libvirt.md`
 - `$CODEX_HOME/templates/virtualization/virsh-vm-skeleton/`
 - `$CODEX_HOME/snippets/virsh/domain.xml`
-- Use skill infra-virsh.
+- You must use skill infra-virsh.
 - `$CODEX_HOME/index/domains/infra/virtualization.md`
 - `$CODEX_HOME/index/domains/infra/virsh.md`

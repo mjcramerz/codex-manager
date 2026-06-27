@@ -1,4 +1,5 @@
 # systemd timers
+Purpose: tell the Codex coding agent how to use `docs/systemd/timers.md` as a runtime-pack surface and when to stop browsing.
 Timers schedule service units (like cron, but first-class systemd).
 
 

@@ -1,5 +1,6 @@
 # Prompt writing
-Purpose: write concise, testable prompts that produce deterministic engineering outputs.
+Purpose: write concise, testable prompts that produce deterministic engineering outputs for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -9,7 +10,7 @@ Purpose: write concise, testable prompts that produce deterministic engineering 
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-## Use this file when
+## You must use this file when
 - you need general prompt-writing advice that is not specific to runtime prompt assets
 - you want to improve instruction quality, precision, or validation wording
 
@@ -28,8 +29,8 @@ Purpose: write concise, testable prompts that produce deterministic engineering 
 
 ## Tips
 - Reference files or modules to anchor the agent.
-- Use absolute paths for critical files and commands.
-- Prefer one clear objective over multi-part requests in a single prompt.
+- You must use absolute paths for critical files and commands.
+- You must prefer one clear objective over multi-part requests in a single prompt.
 - Call out non-negotiables first (security, data safety, rollout constraints).
 
 ## Review checklist

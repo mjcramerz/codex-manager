@@ -1,5 +1,6 @@
 # Performance playbook (entrypoint)
-Purpose: stable link to performance guidance.
+Purpose: stable link to performance guidance for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -20,5 +21,5 @@ Use when:
 <!-- BEGIN:related -->
 Related:
 - `$CODEX_HOME/docs/perf/profiling.md`
-- Use skill `perf-profiling`.
+- You must use skill `perf-profiling`.
 <!-- END:related -->

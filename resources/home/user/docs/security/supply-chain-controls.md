@@ -1,4 +1,5 @@
 # Supply-chain controls (deeper checklist)
+Purpose: tell the Codex coding agent how to use `docs/security/supply-chain-controls.md` as a runtime-pack surface and when to stop browsing.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -13,11 +14,11 @@
   - explicit justification
   - license compatibility check
   - maintainer/health check (last release, downloads, known issues)
-- Prefer fewer deps; prefer stdlib.
+- You must prefer fewer deps; prefer stdlib.
 
 ## Verification
-- Verify checksums/signatures for binaries.
-- Prefer signed tags for critical releases.
+- You must verify checksums/signatures for binaries.
+- You must prefer signed tags for critical releases.
 - Consider vendoring dependencies for hermetic builds (high assurance).
 
 ## CI enforcement
@@ -46,8 +47,8 @@
 - separate build and deploy identities
 
 ## Codex source hardening checklist
-- Keep release integrity checks synchronized with `.github/workflows/build-codex-rs.yml` and `.github/workflows/release-codex-rs.yml`.
-- Validate reusable release callsites stay pinned to reviewed immutable SHAs (current codex-source pin: `4ad5d3f542f960875f7bc3b17fec77e25b62d3f6`).
+- You must keep release integrity checks synchronized with `.github/workflows/build-codex-rs.yml` and `.github/workflows/release-codex-rs.yml`.
+- You must validate reusable release callsites stay pinned to reviewed immutable SHAs (current codex-source pin: `4ad5d3f542f960875f7bc3b17fec77e25b62d3f6`).
 - Re-verify schema/artifact packaging steps and release checksum generation whenever release workflows change.
 - If additional dependency or hygiene workflows are introduced (for example cargo-deny/codespell), mirror them in pack guidance immediately.
 

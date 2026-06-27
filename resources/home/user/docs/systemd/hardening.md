@@ -1,4 +1,5 @@
 # systemd hardening options
+Purpose: tell the Codex coding agent how to use `docs/systemd/hardening.md` as a runtime-pack surface and when to stop browsing.
 Apply these incrementally; test after each change.
 
 

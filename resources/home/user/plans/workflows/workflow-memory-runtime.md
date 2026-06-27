@@ -1,6 +1,7 @@
 # Plan
+Purpose: tell the Codex coding agent how to use `plans/workflows/workflow-memory-runtime.md` as a runtime-pack surface and when to stop browsing.
 
-Use this plan when removing or replacing legacy references to `$CODEX_HOME/docs/workflows/memory-runtime.md`.
+You must use this plan when removing or replacing legacy references to `$CODEX_HOME/docs/workflows/memory-runtime.md`.
 
 
 ## Navigation
@@ -28,15 +29,15 @@ Use this plan when removing or replacing legacy references to `$CODEX_HOME/docs/
 [ ] Run the narrowest relevant validation before handoff.
 
 ## Testing and validation
-- Run `rg -n --sort path --color=never 'codex-db-fetch|\$CODEX_ROOT/mem' $CODEX_HOME`.
-- Run the narrowest relevant validation after the cleanup lands.
+- You must run `rg -n --sort path --color=never 'codex-db-fetch|\$CODEX_ROOT/mem' $CODEX_HOME`.
+- You must run the narrowest relevant validation after the cleanup lands.
 
 ## Security checkpoints
-- Treat any request to restore the removed flow as a separate behavior change requiring approval.
+- You must treat any request to restore the removed flow as a separate behavior change requiring approval.
 
 ## Testing checkpoints
-- Capture search output before and after edits.
-- Record the replacement entrypoint used for each rewritten doc.
+- You must capture search output before and after edits.
+- You must record the replacement entrypoint used for each rewritten doc.
 
 ## Deployment checkpoints
 - Land the cleanup before telling operators to use the affected guidance.

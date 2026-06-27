@@ -1,4 +1,5 @@
 # Desktop entries
+Purpose: tell the Codex coding agent how to use `docs/desktop/desktop-entries.md` as a runtime-pack surface and when to stop browsing.
 Guidance for creating `.desktop` files for application launchers.
 
 
@@ -11,9 +12,9 @@ Guidance for creating `.desktop` files for application launchers.
 
 
 ## Baseline practices
-- Use absolute paths in `Exec=`.
+- You must use absolute paths in `Exec=`.
 - Avoid `sh -c` unless required; prefer direct arguments.
-- Keep `Name`, `Comment`, `Icon`, and `Categories` consistent.
+- You must keep `Name`, `Comment`, `Icon`, and `Categories` consistent.
 - Set `Terminal=false` unless a terminal is required.
 
 ## Install locations
@@ -29,5 +30,5 @@ See also:
 - `$CODEX_HOME/templates/desktop/desktop-entry/`
 - `$CODEX_HOME/snippets/desktop/desktop-entry.desktop`
 - `../workflows/desktop-entries.md`
-- Use skill desktop-entries.
+- You must use skill desktop-entries.
 - `$CODEX_HOME/index/domains/desktop/desktop-entries.md`

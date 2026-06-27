@@ -1,5 +1,6 @@
 # Thorium Browser (entrypoint)
-Purpose: stable link to Thorium build/setup guidance.
+Purpose: stable link to Thorium build/setup guidance for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -20,5 +21,5 @@ Use when:
 Related:
 - `$CODEX_HOME/docs/workflows/browsers.md`
 - `$CODEX_HOME/docs/desktop/browsers.md`
-- Use skill `desktop-thorium`.
+- You must use skill `desktop-thorium`.
 <!-- END:related -->

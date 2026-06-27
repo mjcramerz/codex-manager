@@ -1,7 +1,8 @@
 # Execpolicy workflow
 
-Start with `$CODEX_HOME/plans/workflows/workflow-execpolicy.md` before executing this workflow.
-Purpose: use execpolicy rules to prevent accidental high-risk command execution outside the sandbox.
+You must start with `$CODEX_HOME/plans/workflows/workflow-execpolicy.md` before executing this workflow.
+Purpose: use execpolicy rules to prevent accidental high-risk command execution outside the sandbox for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -14,12 +15,12 @@ Purpose: use execpolicy rules to prevent accidental high-risk command execution 
 
 ## Plan
 - Start from the linked workflow plan template above, then tailor scope, constraints, and validation commands before editing.
-- Keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
+- You must keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
 
 ## Recommended posture
 - Default: do everything inside the sandbox.
 - Outside sandbox: only allow narrowly-scoped commands that you fully understand.
-- Prefer sandboxed execution modes over unrestricted full access.
+- You must prefer sandboxed execution modes over unrestricted full access.
 
 ## Execpolicy behavior
 - Rules load only when `features.exec_policy = true`; if disabled, Codex uses an empty policy.
@@ -27,7 +28,7 @@ Purpose: use execpolicy rules to prevent accidental high-risk command execution 
 
 ## Tuning rules
 - Start from `$CODEX_HOME/rules/OVERVIEW.md` and keep broad operational allows plus explicit hard-deny rules.
-- Add scoped policy coverage for commands that:
+- You must add scoped policy coverage for commands that:
   - touch the network
   - install dependencies
   - write outside the workspace
@@ -35,15 +36,15 @@ Purpose: use execpolicy rules to prevent accidental high-risk command execution 
   - modify git remotes or tags
 
 ## Testing changes
-- Add `match`/`not_match` examples to each rule so the policy is self-tested.
+- You must add `match`/`not_match` examples to each rule so the policy is self-tested.
 
 ## Security checkpoints
-- Prefer deny-by-default patterns for destructive commands, broad globs, and credential-bearing calls.
+- You must prefer deny-by-default patterns for destructive commands, broad globs, and credential-bearing calls.
 - Constrain `allow` rules by command, args, and path scope; avoid blanket shell passthrough.
-- Record rule owner, review date, and runtime assumptions (`approval_policy`, `sandbox_mode`) per change.
+- You must record rule owner, review date, and runtime assumptions (`approval_policy`, `sandbox_mode`) per change.
 
 ## Testing checkpoints
-- Add `match` and `not_match` examples for every edited rule plus one abuse-case command.
+- You must add `match` and `not_match` examples for every edited rule plus one abuse-case command.
 - Test behavior across the supported execution modes, including `approval_policy = "never"`.
 
 ## Deployment checkpoints

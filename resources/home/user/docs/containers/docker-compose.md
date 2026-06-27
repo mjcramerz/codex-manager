@@ -1,4 +1,5 @@
 # Docker Compose
+Purpose: tell the Codex coding agent how to use `docs/containers/docker-compose.md` as a runtime-pack surface and when to stop browsing.
 Compose is the preferred way to define multi-service dev environments. It works with both rootless and rootful Docker (selected via Docker context).
 
 
@@ -27,7 +28,7 @@ When bind-mounting host paths under Podman, **always** use a `compose.podman.ove
 
 ## Dockerfile parity
 - Set `build.dockerfile: Dockerfile` so Docker + Podman use the same build definition.
-- Prefer `Dockerfile` over `Containerfile` unless the repo already uses `Containerfile`.
+- You must prefer `Dockerfile` over `Containerfile` unless the repo already uses `Containerfile`.
 - Pass UID/GID build args when the Dockerfile expects them so ownership matches the runtime user.
 
 ## Network access templates
@@ -39,29 +40,29 @@ Use the offline override for tests/lints that should not hit the internet.
 
 ## Rootless connectivity checklist
 - Ensure you are using the correct context (`docker context ls`).
-- Use the default network for online mode; avoid `network_mode: host` with rootless daemons.
+- You must use the default network for online mode; avoid `network_mode: host` with rootless daemons.
 - If DNS fails in rootless containers, add explicit DNS only when required and document why.
 
 ## UID/GID mapping for bind mounts
 If you bind-mount host paths (source code, caches):
 - Set the container `user:` to match the engine UID/GID (`id -u` / `id -g`).
 - For Podman, require `userns_mode: keep-id` when supported.
-- Use the UID/GID of the user running the rootless engine (see `rootless_env.sh` for helpers).
+- You must use the UID/GID of the user running the rootless engine (see `rootless_env.sh` for helpers).
 
 ## Proxy support
 If your environment requires proxies:
-- Prefer a `.env` file for local-only values.
+- You must prefer a `.env` file for local-only values.
 - Pass proxy env vars at runtime; avoid baking them into images.
 
 ## Security defaults
-- Run the service as a non-root user in the container.
-- Use `read_only: true` where feasible and mount only needed writable paths.
-- Keep secrets out of compose files; use `.env` (ignored) or engine secrets when supported.
+- You must run the service as a non-root user in the container.
+- You must use `read_only: true` where feasible and mount only needed writable paths.
+- You must keep secrets out of compose files; use `.env` (ignored) or engine secrets when supported.
 
 ## Root override (when required)
 If you must run as root inside the container:
-- Add a `compose.rootful.override.yml` that sets `user: "0:0"` and relaxes hardening (`read_only: false`, clear `cap_drop`/`security_opt`).
-- Keep it opt-in and document when it is required.
+- You must add a `compose.rootful.override.yml` that sets `user: "0:0"` and relaxes hardening (`read_only: false`, clear `cap_drop`/`security_opt`).
+- You must keep it opt-in and document when it is required.
 
 See also:
 - `overview.md`

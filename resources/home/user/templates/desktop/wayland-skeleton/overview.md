@@ -1,4 +1,5 @@
 # Wayland desktop skeleton (overview)
+Purpose: tell the Codex coding agent how to use `templates/desktop/wayland-skeleton/overview.md` as a runtime-pack surface and when to stop browsing.
 Minimal configs for a Labwc‑based Wayland session.
 
 ## Outputs

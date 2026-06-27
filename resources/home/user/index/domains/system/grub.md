@@ -1,5 +1,6 @@
 # GRUB (entrypoint)
-Purpose: stable link to GRUB configuration guidance.
+Purpose: stable link to GRUB configuration guidance for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -20,5 +21,5 @@ Use when:
 Related:
 - `$CODEX_HOME/docs/workflows/grub.md`
 - `$CODEX_HOME/snippets/system/grub-default`
-- Use skill `infra-grub`.
+- You must use skill `infra-grub`.
 <!-- END:related -->

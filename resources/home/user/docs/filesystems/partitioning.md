@@ -1,4 +1,5 @@
 # Partitioning workflow
+Purpose: tell the Codex coding agent how to use `docs/filesystems/partitioning.md` as a runtime-pack surface and when to stop browsing.
 Partitioning is destructive. Require explicit user confirmation, double-check the target device, and use stable device paths.
 
 
@@ -11,9 +12,9 @@ Partitioning is destructive. Require explicit user confirmation, double-check th
 
 
 ## Preflight checklist
-- Confirm the **exact** target device using `lsblk -f` and `blkid`.
-- Use a stable path (`/dev/disk/by-id/...`) and resolve it to the block device.
-- Verify no partitions are mounted on the target disk.
+- You must confirm the **exact** target device using `lsblk -f` and `blkid`.
+- You must use a stable path (`/dev/disk/by-id/...`) and resolve it to the block device.
+- You must verify no partitions are mounted on the target disk.
 - Ensure backups exist (or explicitly acknowledge data loss).
 
 ## GPT vs MBR
@@ -34,7 +35,7 @@ Use your tooling of choice and verify each step before applying.
 
 ## Verification
 - Re-scan: `lsblk -f`
-- Verify PARTUUID/UUID with `blkid`
+- You must verify PARTUUID/UUID with `blkid`
 - Mount and test before editing `fstab`
 
 ## References

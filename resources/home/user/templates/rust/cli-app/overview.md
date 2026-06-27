@@ -1,4 +1,5 @@
 # Rust CLI Template (overview)
+Purpose: tell the Codex coding agent how to use `templates/rust/cli-app/overview.md` as a runtime-pack surface and when to stop browsing.
 
 ## Quickstart
 ```bash
@@ -14,8 +15,8 @@ cargo test
 - `LOG_FORMAT` can be set to `json` or `compact`
 
 ## Notes
-- Keep dependencies minimal and pinned.
-- Prefer typed errors and explicit exit codes.
+- You must keep dependencies minimal and pinned.
+- You must prefer typed errors and explicit exit codes.
 
 ## Inputs
 - Destination repository path for this template.
@@ -35,6 +36,6 @@ cargo test
 2) Replace placeholders and pin versions/images before first commit.
 3) Run the narrowest relevant checks (lint/test/build or dry-run) before commit.
 
-## Related
+## After that, you must check related files
 - Docs: `$CODEX_HOME/docs/style/rust.md`
 - Snippets: `$CODEX_HOME/snippets/rust/`

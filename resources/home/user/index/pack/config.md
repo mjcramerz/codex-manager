@@ -1,5 +1,6 @@
 # Pack configuration (entrypoint)
-Purpose: stable link to the pack’s configuration and runtime settings.
+Purpose: stable link to the pack’s configuration and runtime settings for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -19,7 +20,7 @@ Use when:
 
 <!-- BEGIN:related -->
 Related:
-- `$CODEX_HOME/.models/model_catalog.json`
+- `$CODEX_HOME/.models/default_catalog.json`
 - `$CODEX_HOME/.models/instructions/models/base.md`
 - `$CODEX_HOME/.models/instructions/compact/prompt.md`
 - `$CODEX_HOME/index/pack/docs.md`

@@ -1,6 +1,7 @@
 # Plan
+Purpose: tell the Codex coding agent how to use `plans/skills/skill-codex-manager.md` as a runtime-pack surface and when to stop browsing.
 
-Use this plan when applying or updating the `codex-manager` skill.
+You must use this plan when applying or updating the `codex-manager` skill.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -10,7 +11,7 @@ Use this plan when applying or updating the `codex-manager` skill.
 <!-- END:nav -->
 
 ## Inputs
-- Use skill `codex-manager`.
+- You must use skill `codex-manager`.
 - Any referenced scripts, assets, or references in the skill.
 
 ## Scope

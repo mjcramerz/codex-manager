@@ -1,4 +1,5 @@
 # Daily Note
+Purpose: tell the Codex coding agent how to use `docs/templates/daily-note.md` as a runtime-pack surface and when to stop browsing.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -17,4 +18,4 @@
 - [ ] Add one cleanup/follow-up action.
 
 ## Notes
-- Capture blockers, assumptions, and any risk that needs review before close.
+- You must capture blockers, assumptions, and any risk that needs review before close.

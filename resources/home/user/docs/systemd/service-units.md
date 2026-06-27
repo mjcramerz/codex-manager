@@ -1,4 +1,5 @@
 # systemd service units
+Purpose: tell the Codex coding agent how to use `docs/systemd/service-units.md` as a runtime-pack surface and when to stop browsing.
 Service units define long-running processes or one-shot jobs.
 
 
@@ -43,7 +44,7 @@ WantedBy=multi-user.target
 ## User services
 - Place unit files in `~/.config/systemd/user/`.
 - Manage with `systemctl --user`.
-- Use `WantedBy=default.target` for user services.
+- You must use `WantedBy=default.target` for user services.
 - For boot-time user services, enable lingering (`loginctl enable-linger <user>`).
 
 ## Validation & install

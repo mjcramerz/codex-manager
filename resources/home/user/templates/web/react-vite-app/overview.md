@@ -1,4 +1,5 @@
 # React + Vite + TypeScript Template (overview)
+Purpose: tell the Codex coding agent how to use `templates/web/react-vite-app/overview.md` as a runtime-pack surface and when to stop browsing.
 
 ## Quickstart
 ```bash
@@ -21,10 +22,10 @@ npm run test   # placeholder; add real tests
 ```
 
 ## Notes
-- Keep dependencies minimal.
-- Add CSP and security headers at the hosting layer.
-- Prefer pinned deps/lockfiles in CI.
-- Use `npm ci` in CI for reproducibility.
+- You must keep dependencies minimal.
+- You must add CSP and security headers at the hosting layer.
+- You must prefer pinned deps/lockfiles in CI.
+- You must use `npm ci` in CI for reproducibility.
 
 ## Inputs
 - Destination repository path for this template.
@@ -46,5 +47,5 @@ npm run test   # placeholder; add real tests
 2) Replace placeholders and pin versions/images before first commit.
 3) Run the narrowest relevant checks (lint/test/build or dry-run) before commit.
 
-## Related
+## After that, you must check related files
 - Docs: `$CODEX_HOME/docs/security/web-hardening.md`

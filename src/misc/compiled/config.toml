@@ -26,7 +26,7 @@ default_permissions = "full"
 [model_providers.openai-custom]
 # Managed ChatGPT/Codex-compatible provider profile.
 name = "OpenAI (Custom)"
-#model = "gpt-5.3-codex"
+#model = "gpt-5.4"
 #model_reasoning_summary = "xhigh"
 requires_openai_auth = true
 #forced_login_method = "api"

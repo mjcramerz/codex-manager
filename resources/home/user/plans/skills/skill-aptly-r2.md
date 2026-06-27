@@ -1,6 +1,7 @@
 # Plan
+Purpose: tell the Codex coding agent how to use `plans/skills/skill-aptly-r2.md` as a runtime-pack surface and when to stop browsing.
 
-Use this plan when applying or updating the `aptly-r2` skill.
+You must use this plan when applying or updating the `aptly-r2` skill.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -10,7 +11,7 @@ Use this plan when applying or updating the `aptly-r2` skill.
 <!-- END:nav -->
 
 ## Inputs
-- Use skill `aptly-r2`.
+- You must use skill `aptly-r2`.
 - Any referenced scripts, assets, or references in the skill.
 
 ## Scope

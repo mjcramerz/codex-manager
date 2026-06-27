@@ -1,4 +1,5 @@
 # Vagrant + libvirt skeleton (overview)
+Purpose: tell the Codex coding agent how to use `templates/virtualization/vagrant-libvirt-skeleton/overview.md` as a runtime-pack surface and when to stop browsing.
 Minimal Vagrantfile scaffold targeting the libvirt provider (Linux).
 
 ## Requirements (host)
@@ -21,7 +22,7 @@ The Vagrantfile includes a private network (DHCP). Adjust as needed:
 - Bridged networking only when you explicitly need LAN exposure
 
 ## Notes
-- Treat provisioning scripts as privileged code inside the VM.
+- You must treat provisioning scripts as privileged code inside the VM.
 - Pin box versions and verify provenance when your policy requires it.
 
 ## Inputs
@@ -38,5 +39,5 @@ The Vagrantfile includes a private network (DHCP). Adjust as needed:
 2) Replace placeholders and pin versions/images before first commit.
 3) Run the narrowest relevant checks (lint/test/build or dry-run) before commit.
 
-## Related
+## After that, you must check related files
 - Docs: `$CODEX_HOME/docs/virtualization/overview.md`

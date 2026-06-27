@@ -1,4 +1,5 @@
 # sysctl tuning
+Purpose: tell the Codex coding agent how to use `docs/system/sysctl.md` as a runtime-pack surface and when to stop browsing.
 Guidance for safe kernel parameter tuning.
 
 
@@ -11,8 +12,8 @@ Guidance for safe kernel parameter tuning.
 
 
 ## Baseline practices
-- Use drop‑in files under `/etc/sysctl.d/` instead of editing `/etc/sysctl.conf`.
-- Keep changes minimal and documented; measure impact.
+- You must use drop‑in files under `/etc/sysctl.d/` instead of editing `/etc/sysctl.conf`.
+- You must keep changes minimal and documented; measure impact.
 - Avoid “one‑size‑fits‑all” performance tweaks.
 
 ## Safe workflow
@@ -22,7 +23,7 @@ Guidance for safe kernel parameter tuning.
 4) Roll back by removing the drop‑in and re‑applying.
 
 ## Security vs performance
-- Prefer security‑first defaults unless a measured perf regression exists.
+- You must prefer security‑first defaults unless a measured perf regression exists.
 - For servers, ensure network hardening flags align with role (router vs host).
 
 See also:
@@ -30,6 +31,6 @@ See also:
 - `../workflows/sysctl.md`
 - `$CODEX_HOME/templates/system/sysctl-baseline/`
 - `$CODEX_HOME/snippets/system/sysctl.conf`
-- Use skill infra-sysctl.
+- You must use skill infra-sysctl.
 - `$CODEX_HOME/index/domains/system/hardening.md`
 - `$CODEX_HOME/index/domains/system/sysctl.md`

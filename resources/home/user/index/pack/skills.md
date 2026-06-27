@@ -1,5 +1,6 @@
 # Skills hub (entrypoint)
-Purpose: route to reusable skill playbooks and the runtime skill catalog.
+Purpose: route to reusable skill playbooks and the runtime skill catalog for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -10,7 +11,7 @@ Purpose: route to reusable skill playbooks and the runtime skill catalog.
 
 Canonical content: runtime skill roots under `$CODEX_SKILLS`, plugin skills under the managed runtime plugin root, and `$CODEX_HOME/.agents/plugins/marketplace.json` for marketplace mapping.
 
-## Use when
+## You must use this file when
 - the task maps directly to a reusable skill
 - you are maintaining skill instructions, metadata, support files, or routing
 - you need to verify how a skill should be triggered or validated
@@ -22,7 +23,7 @@ Canonical content: runtime skill roots under `$CODEX_SKILLS`, plugin skills unde
 - Debian install skills: `os-debian-preseed`
 - Language skills: `lang-perl`, `lang-rust`
 
-## Related
+## After that, you must check related files
 <!-- BEGIN:related -->
 - `$CODEX_HOME/docs/OVERVIEW.md`
 - `$CODEX_HOME/docs/workflows/overview.md`

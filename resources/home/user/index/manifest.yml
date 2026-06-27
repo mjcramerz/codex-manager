@@ -7,7 +7,7 @@ core:
     entrypoint: $CODEX_HOME/index/core/agent-orchestration.md
     canonical: $CODEX_HOME/docs/workflows/agent-orchestration.md
     related:
-      - $CODEX_HOME/MULTI_AGENT.md
+      - $CODEX_HOME/AGENTS.md
       - $CODEX_HOME/docs/workflows/planning.md
       - $CODEX_HOME/docs/workflows/repo-ops.md
       - $CODEX_HOME/docs/workflows/code-review.md
@@ -196,7 +196,7 @@ pack:
     entrypoint: $CODEX_HOME/index/pack/config.md
     canonical: $CODEX_HOME/config.toml
     related:
-      - $CODEX_HOME/.models/model_catalog.json
+      - $CODEX_HOME/.models/default_catalog.json
       - $CODEX_HOME/.models/instructions/models/base.md
       - $CODEX_HOME/.models/instructions/compact/prompt.md
       - $CODEX_HOME/index/pack/docs.md
@@ -212,7 +212,7 @@ pack:
     entrypoint: $CODEX_HOME/index/pack/docs.md
     canonical: $CODEX_HOME/docs/OVERVIEW.md
     related:
-      - $CODEX_HOME/memories/MEMORY.md
+      - $CODEX_HOME/memories/
       - $CODEX_HOME/index/pack/config.md
       - $CODEX_HOME/index/pack/plans.md
       - $CODEX_HOME/index/pack/workflows.md
@@ -405,7 +405,7 @@ pack:
     entrypoint: $CODEX_HOME/index/pack/workflows.md
     canonical: $CODEX_HOME/docs/workflows/overview.md
     related:
-      - $CODEX_HOME/memories/MEMORY.md
+      - $CODEX_HOME/memories/
       - $CODEX_HOME/docs/workflows/overview.md
       - $CODEX_HOME/docs/workflows/
       - $CODEX_HOME/docs/workflows/memory-runtime.md

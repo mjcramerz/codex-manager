@@ -1,4 +1,5 @@
 # Offsec defense reference
+Purpose: tell the Codex coding agent how to use `docs/security/offsec-defense.md` as a runtime-pack surface and when to stop browsing.
 
 This reference supports reusable offsec-defense and cyber-defense work with explicit scope, evidence, and rollback boundaries.
 
@@ -13,7 +14,7 @@ This reference supports reusable offsec-defense and cyber-defense work with expl
 
 ## Intent
 - Combine scoped offensive simulation with practical defensive outcomes.
-- Keep assessments bounded, evidence-backed, and reversible.
+- You must keep assessments bounded, evidence-backed, and reversible.
 - Prioritize risk reduction over exploit novelty.
 
 ## Coverage domains
@@ -44,4 +45,4 @@ See also:
 - `security-labs-repo-catalog.md`
 - `security-labs-tool-guides.md`
 - `$CODEX_HOME/plans/workflows/workflow-offsec-defense.md`
-- Use skill offsec-defense.
+- You must use skill offsec-defense.

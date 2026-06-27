@@ -1,12 +1,13 @@
 # Rust performance notes
-- Prefer `Bytes` for large buffers and zero-copy slicing.
+Purpose: tell the Codex coding agent how to use `docs/perf/rust-perf.md` as a runtime-pack surface and when to stop browsing.
+- You must prefer `Bytes` for large buffers and zero-copy slicing.
 - Minimize `clone()` and intermediate allocations.
 - Avoid per-request global locks; use sharding or lock-free where possible.
-- Use `tracing` spans with sampling/levels to avoid overhead.
-- Prefer `&str`/slices over allocating `String`/`Vec` when lifetimes allow.
-- Use `tokio::task::spawn_blocking` for CPU-bound work in async servers.
+- You must use `tracing` spans with sampling/levels to avoid overhead.
+- You must prefer `&str`/slices over allocating `String`/`Vec` when lifetimes allow.
+- You must use `tokio::task::spawn_blocking` for CPU-bound work in async servers.
 - Benchmark in `--release`; avoid drawing conclusions from debug builds.
-- Validate with `cargo bench` or a reproducible load test when possible.
+- You must validate with `cargo bench` or a reproducible load test when possible.
 
 
 ## Navigation

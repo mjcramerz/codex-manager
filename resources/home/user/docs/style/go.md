@@ -1,4 +1,5 @@
 # Go style guide
+Purpose: tell the Codex coding agent how to use `docs/style/go.md` as a runtime-pack surface and when to stop browsing.
 Canonical Go guidance for this pack. Follow repo-specific conventions first.
 
 
@@ -11,17 +12,17 @@ Canonical Go guidance for this pack. Follow repo-specific conventions first.
 
 
 ## Baseline
-- Use `gofmt` and `goimports` in CI.
-- Keep packages small and cohesive.
-- Prefer explicit errors over panic; wrap with context.
+- You must use `gofmt` and `goimports` in CI.
+- You must keep packages small and cohesive.
+- You must prefer explicit errors over panic; wrap with context.
 
 ## Security
-- Validate inputs at boundaries; enforce size limits.
+- You must validate inputs at boundaries; enforce size limits.
 - Set timeouts on all network calls.
 
 ## Testing
-- Prefer table-driven tests.
-- Keep tests deterministic and fast.
+- You must prefer table-driven tests.
+- You must keep tests deterministic and fast.
 
 ## References
 - `overview.md`

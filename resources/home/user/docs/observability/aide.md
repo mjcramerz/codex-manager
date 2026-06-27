@@ -1,4 +1,5 @@
 # AIDE
+Purpose: tell the Codex coding agent how to use `docs/observability/aide.md` as a runtime-pack surface and when to stop browsing.
 Guidance for AIDE file‑integrity monitoring.
 
 
@@ -16,9 +17,9 @@ Guidance for AIDE file‑integrity monitoring.
 - Monitor critical paths (`/etc`, `/usr`, bootloader, kernel modules).
 
 ## Operations
-- Run `aide --init` to generate the initial database.
+- You must run `aide --init` to generate the initial database.
 - Schedule regular checks and alert on diffs.
-- Update the baseline after approved changes.
+- You must update the baseline after approved changes.
 
 ## Safety notes
 - Restrict access to AIDE config and database files.
@@ -29,6 +30,6 @@ See also:
 - `$CODEX_HOME/templates/observability/aide-skeleton/`
 - `$CODEX_HOME/snippets/aide/aide.conf`
 - `../workflows/aide.md`
-- Use skill secops-aide.
+- You must use skill secops-aide.
 - `$CODEX_HOME/index/domains/observability/stack.md`
 - `$CODEX_HOME/index/domains/observability/aide.md`

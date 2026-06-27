@@ -1,4 +1,5 @@
 # Proxmox VE
+Purpose: tell the Codex coding agent how to use `docs/virtualization/proxmox.md` as a runtime-pack surface and when to stop browsing.
 Guidance for Proxmox virtualization setups.
 
 
@@ -11,22 +12,22 @@ Guidance for Proxmox virtualization setups.
 
 
 ## Baseline practices
-- Treat storage layout as high‑risk; plan before creating pools.
-- Prefer templates and clones for repeatable VM creation.
-- Keep backups and verify restore workflows.
+- You must treat storage layout as high‑risk; plan before creating pools.
+- You must prefer templates and clones for repeatable VM creation.
+- You must keep backups and verify restore workflows.
 
 ## Storage notes
 - Common backends: ZFS, LVM-thin, directory.
-- Keep `storage.cfg` under version control (where safe).
+- You must keep `storage.cfg` under version control (where safe).
 
 ## Networking
-- Use explicit bridges; document VLANs and firewall rules.
+- You must use explicit bridges; document VLANs and firewall rules.
 
 See also:
 - `overview.md`
 - `../filesystems/proxmox.md`
 - `$CODEX_HOME/templates/virtualization/proxmox-vm-skeleton/`
 - `$CODEX_HOME/snippets/proxmox/storage.cfg`
-- Use skill infra-proxmox.
+- You must use skill infra-proxmox.
 - `$CODEX_HOME/index/domains/infra/virtualization.md`
 - `$CODEX_HOME/index/domains/infra/proxmox.md`

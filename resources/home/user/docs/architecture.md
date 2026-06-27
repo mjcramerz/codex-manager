@@ -1,5 +1,6 @@
 # Runtime-pack architecture
-Purpose: explain how the codex-manager source tree, the runtime-home pack, hook runtime, and adjacent repos fit together.
+Purpose: explain how the codex-manager source tree, the runtime-home pack, hook runtime, and adjacent repos fit together for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 ## Primary surfaces
 - **Compiled runtime configuration**: `$CODEX_HOME/config.toml`, `$CODEX_AGENTS/*.toml`, `/etc/codex/config.toml`, `/etc/codex/requirements.toml`
@@ -36,6 +37,6 @@ Purpose: explain how the codex-manager source tree, the runtime-home pack, hook 
 
 ## Source-pack operating shape
 1. Route through `INDEX.md` and the `index/**` entrypoints.
-2. Use `$CODEX_HOME/memories/MEMORY.md` when prior decisions actually matter.
+2. Use `$CODEX_HOME/memories/` when prior decisions actually matter.
 3. Update docs, plans, templates, skills, and manifest links together when entrypoints change.
 4. Validate syntax and contract tests before handoff.

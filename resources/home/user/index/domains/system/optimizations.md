@@ -1,5 +1,6 @@
 # Host optimizations (entrypoint)
-Purpose: stable link to host performance/security tuning guidance.
+Purpose: stable link to host performance/security tuning guidance for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -21,5 +22,5 @@ Related:
 - `$CODEX_HOME/docs/workflows/optimizations.md`
 - `$CODEX_HOME/docs/system/optimizations.md`
 - `$CODEX_HOME/index/domains/system/kernel.md`
-- Use skill `infra-optimizations`.
+- You must use skill `infra-optimizations`.
 <!-- END:related -->

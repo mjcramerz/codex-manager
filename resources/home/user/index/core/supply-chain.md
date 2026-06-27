@@ -1,5 +1,6 @@
 # Supply-chain controls (entrypoint)
-Purpose: stable link to supply-chain guidance and audit controls.
+Purpose: stable link to supply-chain guidance and audit controls for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -21,5 +22,5 @@ Related:
 - `$CODEX_HOME/docs/workflows/dependency-updates.md`
 - `$CODEX_HOME/docs/security/supply-chain-controls.md`
 - `$CODEX_HOME/docs/security/supply-chain.md`
-- Use skill `secops-supply-chain`.
+- You must use skill `secops-supply-chain`.
 <!-- END:related -->

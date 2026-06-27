@@ -1,5 +1,6 @@
 # Security overview (entrypoint)
-Purpose: stable link to the security overview and checklists.
+Purpose: stable link to the security overview and checklists for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -22,5 +23,5 @@ Related:
 - `$CODEX_HOME/docs/security/threat-model.md`
 - `$CODEX_HOME/docs/security/supply-chain.md`
 - `$CODEX_HOME/index/domains/system/hardening.md`
-- Use skill `appsec-hardening`.
+- You must use skill `appsec-hardening`.
 <!-- END:related -->

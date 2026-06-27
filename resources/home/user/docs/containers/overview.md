@@ -1,5 +1,6 @@
 # Containers overview
-Purpose: route container work to the right engine, template, and workflow without mixing rootless, rootful, build, and runtime concerns.
+Purpose: route container work to the right engine, template, and workflow without mixing rootless, rootful, build, and runtime concerns for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -8,7 +9,7 @@ Purpose: route container work to the right engine, template, and workflow withou
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-## Use this file when
+## You must use this file when
 - you need to choose Docker vs Podman vs build tooling
 - you are selecting a container scaffold or local dev layout
 - you are reviewing rootless/rootful safety expectations before editing
@@ -33,7 +34,7 @@ Purpose: route container work to the right engine, template, and workflow withou
 - Snippets: `$CODEX_HOME/snippets/containers/`
 - Workflow: `$CODEX_HOME/docs/workflows/containers.md`
 
-## Guardrails
-- Treat Docker socket mounts, `--privileged`, and `CAP_SYS_ADMIN` as explicit exceptions.
-- Treat online vs offline runtime as a contract, not an afterthought.
+## You must enforce these guardrails
+- You must treat Docker socket mounts, `--privileged`, and `CAP_SYS_ADMIN` as explicit exceptions.
+- You must treat online vs offline runtime as a contract, not an afterthought.
 - For bind mounts, keep UID/GID or `keep-id` behavior explicit in the chosen template.

@@ -1,4 +1,5 @@
 # POSIX sh script template (overview)
+Purpose: tell the Codex coding agent how to use `templates/common/posix-sh-script/overview.md` as a runtime-pack surface and when to stop browsing.
 Use this template for BusyBox or minimal `/bin/sh` environments.
 
 ## Outputs

@@ -1,4 +1,5 @@
 # sysctl baseline template (overview)
+Purpose: tell the Codex coding agent how to use `templates/system/sysctl-baseline/overview.md` as a runtime-pack surface and when to stop browsing.
 Minimal sysctl drop‑in.
 
 ## Outputs

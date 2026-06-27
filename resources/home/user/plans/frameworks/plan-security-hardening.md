@@ -1,4 +1,5 @@
 # Plan
+Purpose: tell the Codex coding agent how to use `plans/frameworks/plan-security-hardening.md` as a runtime-pack surface and when to stop browsing.
 
 Use this plan for security reviews, mitigations, and hardening changes.
 
@@ -21,13 +22,13 @@ Use this plan for security reviews, mitigations, and hardening changes.
 - API-facing surfaces: map controls against OWASP API Security Top 10 (2023) categories.
 
 ## Dependencies and assumptions
-- Record the required security tooling, telemetry, and access.
-- Record policy, compliance, and approval dependencies.
+- You must record the required security tooling, telemetry, and access.
+- You must record policy, compliance, and approval dependencies.
 
 ## Success metrics and exit criteria
-- Define risk-reduction metrics and control-coverage targets.
-- Define the validation evidence required for sign-off.
-- Define incident-response and rollback readiness criteria.
+- You must define risk-reduction metrics and control-coverage targets.
+- You must define the validation evidence required for sign-off.
+- You must define incident-response and rollback readiness criteria.
 
 ## Files and entry points
 - List the security-sensitive boundaries under review.
@@ -46,22 +47,22 @@ Use this plan for security reviews, mitigations, and hardening changes.
 - List the security tests, linters, scans, and manual review steps in execution order.
 
 ## Rollout / monitoring
-- Define staged rollout, alerting, and incident-response expectations.
+- You must define staged rollout, alerting, and incident-response expectations.
 
 ## Security checkpoints
-- Confirm trust boundaries, credentials, and least-privilege assumptions before execution.
-- Validate input bounds, timeout/retry limits, and failure behavior for risky operations.
-- Record any approved exception, owner, and expiry before proceeding.
+- You must confirm trust boundaries, credentials, and least-privilege assumptions before execution.
+- You must validate input bounds, timeout/retry limits, and failure behavior for risky operations.
+- You must record any approved exception, owner, and expiry before proceeding.
 
 ## Testing checkpoints
-- Define fast-path and deep validation commands before making changes.
-- Capture expected outcomes and acceptance criteria for each validation step.
-- Re-run impacted checks after major changes and before final handoff.
+- You must define fast-path and deep validation commands before making changes.
+- You must capture expected outcomes and acceptance criteria for each validation step.
+- You must re-run impacted checks after major changes and before final handoff.
 
 ## Deployment checkpoints
-- Document rollout order, blast-radius controls, and rollback conditions.
-- Confirm migration/backfill or feature-flag sequencing when applicable.
-- Record post-deploy verification owners and evidence.
+- You must document rollout order, blast-radius controls, and rollback conditions.
+- You must confirm migration/backfill or feature-flag sequencing when applicable.
+- You must record post-deploy verification owners and evidence.
 
 ## Multi-agent handoff
 - Coordinator hands off scope, constraints, and stop condition with the target entrypoint.
@@ -76,4 +77,4 @@ Use this plan for security reviews, mitigations, and hardening changes.
 - Example validation: "python3 -m unittest tests.test_runtime_reference_contract"
 
 ## Open questions
-- Record only the policy or threat-model gaps that block sign-off.
+- You must record only the policy or threat-model gaps that block sign-off.

@@ -1,4 +1,5 @@
 # Go CLI app skeleton (overview)
+Purpose: tell the Codex coding agent how to use `templates/go/cli-app/overview.md` as a runtime-pack surface and when to stop browsing.
 Minimal Go CLI layout.
 
 ## Outputs

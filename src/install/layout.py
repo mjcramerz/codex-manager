@@ -10,6 +10,7 @@ from common import ensure_safe_absolute_path
 class RepoLayout:
     repo_root: Path
     config_dir: Path
+    profiles_config_dir: Path
     agents_config_dir: Path
     vendor_dir: Path
     user_dir: Path
@@ -43,6 +44,7 @@ class RepoLayout:
     @classmethod
     def from_repo_root(cls, repo_root: Path) -> "RepoLayout":
         config_dir = repo_root / "config"
+        profiles_config_dir = config_dir / "profiles"
         agents_config_dir = config_dir / "agents"
         vendor_dir = config_dir / "vendor"
         user_dir = config_dir / "usr"
@@ -55,6 +57,7 @@ class RepoLayout:
         return cls(
             repo_root=repo_root,
             config_dir=config_dir,
+            profiles_config_dir=profiles_config_dir,
             agents_config_dir=agents_config_dir,
             vendor_dir=vendor_dir,
             user_dir=user_dir,

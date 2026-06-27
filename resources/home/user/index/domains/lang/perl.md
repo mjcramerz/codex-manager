@@ -1,5 +1,6 @@
 # Perl (entrypoint)
-Purpose: stable link to Perl guidance.
+Purpose: stable link to Perl guidance for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -10,7 +11,7 @@ Purpose: stable link to Perl guidance.
 
 Canonical content: `$CODEX_HOME/docs/lang/perl.md`
 
-## Related
+## After that, you must check related files
 - `$CODEX_HOME/docs/style/perl.md`
 - `$CODEX_HOME/docs/workflows/codex-manager.md`
 - `$CODEX_HOME/templates/perl/codex-hook-module/`

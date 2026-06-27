@@ -1,6 +1,7 @@
 # Plan
+Purpose: tell the Codex coding agent how to use `plans/frameworks/plan-infra-change.md` as a runtime-pack surface and when to stop browsing.
 
-Use this plan when modifying infrastructure, deployment, or system services.
+You must use this plan when modifying infrastructure, deployment, or system services.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -20,12 +21,12 @@ Use this plan when modifying infrastructure, deployment, or system services.
 
 ## Dependencies and assumptions
 - Identify the target environments, ownership boundaries, and required approvals.
-- Record network, storage, identity, and platform constraints.
-- Define the maintenance window and rollback prerequisites.
+- You must record network, storage, identity, and platform constraints.
+- You must define the maintenance window and rollback prerequisites.
 
 ## Success metrics and exit criteria
-- Define post-change availability, reliability, and performance targets.
-- Define drift checks and policy-compliance criteria.
+- You must define post-change availability, reliability, and performance targets.
+- You must define drift checks and policy-compliance criteria.
 - State promotion go/no-go criteria and the sign-off owner.
 
 ## Files and entry points
@@ -47,19 +48,19 @@ Use this plan when modifying infrastructure, deployment, or system services.
 - Describe phased rollout order, backups, and post-change verification steps.
 
 ## Security checkpoints
-- Confirm trust boundaries, credentials, and least-privilege assumptions before execution.
-- Validate input bounds, timeout/retry limits, and failure behavior for risky operations.
-- Record any approved exception, owner, and expiry before proceeding.
+- You must confirm trust boundaries, credentials, and least-privilege assumptions before execution.
+- You must validate input bounds, timeout/retry limits, and failure behavior for risky operations.
+- You must record any approved exception, owner, and expiry before proceeding.
 
 ## Testing checkpoints
-- Define fast-path and deep validation commands before making changes.
-- Capture expected outcomes and acceptance criteria for each validation step.
-- Re-run impacted checks after major changes and before final handoff.
+- You must define fast-path and deep validation commands before making changes.
+- You must capture expected outcomes and acceptance criteria for each validation step.
+- You must re-run impacted checks after major changes and before final handoff.
 
 ## Deployment checkpoints
-- Document rollout order, blast-radius controls, and rollback conditions.
-- Confirm migration/backfill or feature-flag sequencing when applicable.
-- Record post-deploy verification owners and evidence.
+- You must document rollout order, blast-radius controls, and rollback conditions.
+- You must confirm migration/backfill or feature-flag sequencing when applicable.
+- You must record post-deploy verification owners and evidence.
 
 ## Multi-agent handoff
 - Coordinator hands off scope, constraints, and stop condition with the target entrypoint.
@@ -74,4 +75,4 @@ Use this plan when modifying infrastructure, deployment, or system services.
 - Example validation: "make preflight && python3 -m unittest tests.test_plugin_runtime_contracts"
 
 ## Open questions
-- Record only the missing approvals or environment details that block rollout.
+- You must record only the missing approvals or environment details that block rollout.

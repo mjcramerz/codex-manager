@@ -1,4 +1,5 @@
 # Kernel build & configuration
+Purpose: tell the Codex coding agent how to use `docs/system/kernel.md` as a runtime-pack surface and when to stop browsing.
 Guidance for building and configuring a custom kernel.
 
 
@@ -12,8 +13,8 @@ Guidance for building and configuring a custom kernel.
 
 ## Baseline practices
 - Start from the distro kernel config (`/boot/config-*`) and change minimally.
-- Use config fragments for small deltas; keep them versioned.
-- Verify build provenance (signatures) when downloading sources.
+- You must use config fragments for small deltas; keep them versioned.
+- You must verify build provenance (signatures) when downloading sources.
 - Test new kernels in a VM before deploying to hosts.
 
 ## Build workflow (high‑level)
@@ -27,13 +28,13 @@ Guidance for building and configuring a custom kernel.
 ## Config hygiene
 - Disable unused subsystems to reduce attack surface.
 - Enable module signature verification where policy requires it.
-- Prefer LTS kernels for stability.
+- You must prefer LTS kernels for stability.
 
 See also:
 - `overview.md`
 - `../workflows/kernel-build.md`
 - `$CODEX_HOME/templates/system/kernel-build-skeleton/`
 - `$CODEX_HOME/snippets/system/kernel-config.fragment`
-- Use skill infra-kernel.
+- You must use skill infra-kernel.
 - `$CODEX_HOME/index/domains/system/hardening.md`
 - `$CODEX_HOME/index/domains/system/kernel.md`

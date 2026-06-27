@@ -1,4 +1,5 @@
 # LibreWolf
+Purpose: tell the Codex coding agent how to use `docs/desktop/librewolf.md` as a runtime-pack surface and when to stop browsing.
 Guidance for LibreWolf installation and hardened defaults.
 
 
@@ -11,17 +12,17 @@ Guidance for LibreWolf installation and hardened defaults.
 
 
 ## Baseline practices
-- Use vendor‑signed packages or verified builds.
-- Keep browser user data in a dedicated path with `0700` permissions.
+- You must use vendor‑signed packages or verified builds.
+- You must keep browser user data in a dedicated path with `0700` permissions.
 - Apply overrides via `librewolf.overrides.cfg` or policies.
 
 ## Wayland notes
-- Use Wayland flags when supported (`--ozone-platform=wayland`).
-- Keep GPU/WebGL flags explicit; disable if unstable.
+- You must use Wayland flags when supported (`--ozone-platform=wayland`).
+- You must keep GPU/WebGL flags explicit; disable if unstable.
 
 See also:
 - `browsers.md`
 - `$CODEX_HOME/snippets/desktop/librewolf.overrides.cfg`
 - `../workflows/browsers.md`
-- Use skill desktop-librewolf.
+- You must use skill desktop-librewolf.
 - `$CODEX_HOME/index/domains/desktop/librewolf.md`

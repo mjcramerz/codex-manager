@@ -1,4 +1,5 @@
 # FastAPI App Template (overview)
+Purpose: tell the Codex coding agent how to use `templates/python/fastapi-app/overview.md` as a runtime-pack surface and when to stop browsing.
 Secure-by-default FastAPI scaffold.
 
 ## Quickstart
@@ -29,9 +30,9 @@ Logging env vars:
 - Default request size limit (via `APP_MAX_BODY_BYTES`)
 
 ## Notes
-- Keep dependencies minimal.
-- Add rate limiting and auth as needed.
-- Add DB only when required.
+- You must keep dependencies minimal.
+- You must add rate limiting and auth as needed.
+- You must add DB only when required.
 
 ## Docker / Compose (rootless-friendly)
 1) Create a local env file:
@@ -66,8 +67,8 @@ docker compose -f compose.yml -f compose.offline.override.yml up --build
 Notes:
 - `compose.yml` explicitly builds `Dockerfile` so Docker and Podman use the same definition.
 - The offline override disables container networking; it does not prevent network use during image builds.
-- Keep `.env` uncommitted; use it for local-only values.
-- Prefer non-root containers and minimal capabilities in your service definitions.
+- You must keep `.env` uncommitted; use it for local-only values.
+- You must prefer non-root containers and minimal capabilities in your service definitions.
 - If rootless containers lack internet, verify the context and rootless network driver.
 
 ## Inputs
@@ -92,6 +93,6 @@ Notes:
 2) Replace placeholders and pin versions/images before first commit.
 3) Run the narrowest relevant checks (lint/test/build or dry-run) before commit.
 
-## Related
+## After that, you must check related files
 - Docs: `$CODEX_HOME/docs/security/overview.md`
 - CI templates: `$CODEX_HOME/templates/ci/github-actions/`

@@ -1,6 +1,7 @@
 # Plan
+Purpose: tell the Codex coding agent how to use `plans/skills/skill-devtools-vscode-extension.md` as a runtime-pack surface and when to stop browsing.
 
-Use this plan when applying or updating the `devtools-vscode-extension` skill.
+You must use this plan when applying or updating the `devtools-vscode-extension` skill.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -10,7 +11,7 @@ Use this plan when applying or updating the `devtools-vscode-extension` skill.
 <!-- END:nav -->
 
 ## Inputs
-- Use skill devtools-vscode-extension.
+- You must use skill devtools-vscode-extension.
 - Any referenced scripts, assets, or references in the skill
 
 ## Scope
@@ -26,22 +27,22 @@ Use this plan when applying or updating the `devtools-vscode-extension` skill.
 [ ] Validate outputs and update links/backlinks if applicable.
 
 ## Testing and validation
-- Follow validation steps in the skill or linked docs.
+- You must follow validation steps in the skill or linked docs.
 
 ## Security checkpoints
-- Confirm trust boundaries, credentials, and least-privilege assumptions before execution.
-- Validate input bounds, timeout/retry limits, and failure behavior for risky operations.
-- Record any approved exception, owner, and expiry before proceeding.
+- You must confirm trust boundaries, credentials, and least-privilege assumptions before execution.
+- You must validate input bounds, timeout/retry limits, and failure behavior for risky operations.
+- You must record any approved exception, owner, and expiry before proceeding.
 
 ## Testing checkpoints
-- Define fast-path and deep validation commands before making changes.
-- Capture expected outcomes and acceptance criteria for each validation step.
-- Re-run impacted checks after major changes and before final handoff.
+- You must define fast-path and deep validation commands before making changes.
+- You must capture expected outcomes and acceptance criteria for each validation step.
+- You must re-run impacted checks after major changes and before final handoff.
 
 ## Deployment checkpoints
-- Document rollout order, blast-radius controls, and rollback conditions.
-- Confirm migration/backfill or feature-flag sequencing when applicable.
-- Record post-deploy verification owners and evidence.
+- You must document rollout order, blast-radius controls, and rollback conditions.
+- You must confirm migration/backfill or feature-flag sequencing when applicable.
+- You must record post-deploy verification owners and evidence.
 
 ## Multi-agent handoff
 - Coordinator hands off scope, constraints, and stop condition with the target entrypoint.

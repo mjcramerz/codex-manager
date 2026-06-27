@@ -1,4 +1,5 @@
 # Observability overview
+Purpose: tell the Codex coding agent how to use `docs/observability/overview.md` as a runtime-pack surface and when to stop browsing.
 Guidance for building search/log pipelines with the Elastic Stack.
 
 
@@ -33,8 +34,8 @@ Guidance for building search/log pipelines with the Elastic Stack.
 
 ## Safety baseline
 - Restrict network exposure; enable auth where possible.
-- Define retention policies and index lifecycle management.
-- Treat logs as sensitive data; redact at ingestion.
+- You must define retention policies and index lifecycle management.
+- You must treat logs as sensitive data; redact at ingestion.
 
 ## Quick map
 - Elasticsearch: `elasticsearch.md`

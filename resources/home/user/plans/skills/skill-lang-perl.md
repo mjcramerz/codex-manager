@@ -1,6 +1,7 @@
 # Plan
+Purpose: tell the Codex coding agent how to use `plans/skills/skill-lang-perl.md` as a runtime-pack surface and when to stop browsing.
 
-Use this plan when applying or updating the `lang-perl` skill.
+You must use this plan when applying or updating the `lang-perl` skill.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -10,7 +11,7 @@ Use this plan when applying or updating the `lang-perl` skill.
 <!-- END:nav -->
 
 ## Inputs
-- Use skill `lang-perl`.
+- You must use skill `lang-perl`.
 - Any referenced scripts, assets, or references in the skill.
 
 ## Scope

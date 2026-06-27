@@ -1,4 +1,5 @@
 # Desktop entry template (overview)
+Purpose: tell the Codex coding agent how to use `templates/desktop/desktop-entry/overview.md` as a runtime-pack surface and when to stop browsing.
 Minimal `.desktop` file example.
 
 ## Outputs

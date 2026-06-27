@@ -1,5 +1,6 @@
 # Bash style guide (entrypoint)
-Purpose: stable link to the canonical Bash style guide.
+Purpose: stable link to the canonical Bash style guide for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -21,5 +22,5 @@ Use when:
 Related:
 - `$CODEX_HOME/snippets/bash`
 - `$CODEX_HOME/docs/style/overview.md`
-- Use skill `shell-bash`.
+- You must use skill `shell-bash`.
 <!-- END:related -->

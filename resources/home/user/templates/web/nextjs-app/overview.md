@@ -1,4 +1,5 @@
 # Next.js app scaffold (overview)
+Purpose: tell the Codex coding agent how to use `templates/web/nextjs-app/overview.md` as a runtime-pack surface and when to stop browsing.
 This template is a wrapper around the official Next.js scaffold.
 
 ## Recommended approach
@@ -8,7 +9,7 @@ This template is a wrapper around the official Next.js scaffold.
 
 ## Notes
 - Pin Node.js and Next.js versions.
-- Keep server/client boundaries explicit.
+- You must keep server/client boundaries explicit.
 
 ## Inputs
 - Destination repository path for this template.

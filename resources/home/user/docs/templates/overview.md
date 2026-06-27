@@ -1,4 +1,5 @@
 # Templates overview
+Purpose: tell the Codex coding agent how to use `docs/templates/overview.md` as a runtime-pack surface and when to stop browsing.
 Guidance for choosing and applying templates in this pack.
 
 ## Contents

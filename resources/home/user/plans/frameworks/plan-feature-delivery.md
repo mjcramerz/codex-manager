@@ -1,6 +1,7 @@
 # Plan
+Purpose: tell the Codex coding agent how to use `plans/frameworks/plan-feature-delivery.md` as a runtime-pack surface and when to stop browsing.
 
-Use this plan when implementing a new feature or significant enhancement.
+You must use this plan when implementing a new feature or significant enhancement.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -24,27 +25,27 @@ Use this plan when implementing a new feature or significant enhancement.
 
 ## PoC hypothesis and decision gate (required in PoC mode)
 - State the hypothesis and why the PoC reduces implementation risk.
-- Record the timebox, budget, and the maximum acceptable scope for the PoC.
-- Define the success thresholds and how evidence will be collected.
+- You must record the timebox, budget, and the maximum acceptable scope for the PoC.
+- You must define the success thresholds and how evidence will be collected.
 - Name the go/no-go owner and the decision date.
 
 ## Dependencies and assumptions
 - List internal and external dependencies plus an owner for each.
-- Record environment, access, and tooling assumptions that must hold.
+- You must record environment, access, and tooling assumptions that must hold.
 - Note approval checkpoints or decision deadlines that can block delivery.
 
 ## Success metrics and exit criteria
-- Define business outcomes and user-visible success metrics.
-- Define technical reliability, performance, and operational targets.
+- You must define business outcomes and user-visible success metrics.
+- You must define technical reliability, performance, and operational targets.
 - State the go/no-go decision criteria and the approver.
 
 ## Files and entry points
-- Record the entrypoints you will inspect first.
+- You must record the entrypoints you will inspect first.
 - List the files or modules most likely to change.
 
 ## Data model / API changes
 - Describe the schemas or contracts affected by the feature.
-- Record versioning or compatibility notes.
+- You must record versioning or compatibility notes.
 - If API surfaces change, specify the contract source, normalized error model, and idempotency/retry policy.
 
 ## Action items
@@ -66,23 +67,23 @@ Use this plan when implementing a new feature or significant enhancement.
 - State the evidence required for PoC go/no-go or implementation launch.
 
 ## Rollout / migration
-- Document backward-compatibility strategy, flags, migrations, and rollback steps.
+- You must document backward-compatibility strategy, flags, migrations, and rollback steps.
 - Name phased rollout owners and post-deploy verification checkpoints.
 
 ## Security checkpoints
-- Confirm trust boundaries, credentials, and least-privilege assumptions before execution.
-- Validate input bounds, timeout/retry limits, and failure behavior for risky operations.
-- Record any approved exception, owner, and expiry before proceeding.
+- You must confirm trust boundaries, credentials, and least-privilege assumptions before execution.
+- You must validate input bounds, timeout/retry limits, and failure behavior for risky operations.
+- You must record any approved exception, owner, and expiry before proceeding.
 
 ## Testing checkpoints
-- Define fast-path and deep validation commands before making changes.
-- Capture expected outcomes and acceptance criteria for each validation step.
-- Re-run impacted checks after major changes and before final handoff.
+- You must define fast-path and deep validation commands before making changes.
+- You must capture expected outcomes and acceptance criteria for each validation step.
+- You must re-run impacted checks after major changes and before final handoff.
 
 ## Deployment checkpoints
-- Document rollout order, blast-radius controls, and rollback conditions.
-- Confirm migration/backfill or feature-flag sequencing when applicable.
-- Record post-deploy verification owners and evidence.
+- You must document rollout order, blast-radius controls, and rollback conditions.
+- You must confirm migration/backfill or feature-flag sequencing when applicable.
+- You must record post-deploy verification owners and evidence.
 
 ## Multi-agent handoff
 - Coordinator hands off scope, constraints, and stop condition with the target entrypoint.
@@ -97,4 +98,4 @@ Use this plan when implementing a new feature or significant enhancement.
 - Example validation: "make preflight && python3 -m unittest tests.test_install_command_routing"
 
 ## Open questions
-- Record only the open questions that block implementation or rollout.
+- You must record only the open questions that block implementation or rollout.

@@ -1,4 +1,5 @@
 # systemd service skeleton (overview)
+Purpose: tell the Codex coding agent how to use `templates/systemd/service-skeleton/overview.md` as a runtime-pack surface and when to stop browsing.
 Template for a hardened `systemd` service (and optional timer).
 
 ## Outputs

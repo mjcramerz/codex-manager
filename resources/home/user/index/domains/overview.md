@@ -1,5 +1,6 @@
 # Domain router
-Purpose: choose one platform or tooling router for domain-specific work.
+Purpose: choose one platform or tooling router for domain-specific work for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 Use this router when the task is mainly tied to one platform, toolchain, or operating surface.
 
 ## Navigation
@@ -29,6 +30,6 @@ Use this router when the task is mainly tied to one platform, toolchain, or oper
 - Go, TypeScript, HTML, shell-adjacent language guidance -> lang
 - VS Code profiles, settings, or extensions -> vscode
 
-## Stop conditions
+## You must stop when
 - Pick one domain router and then one entrypoint from it.
 - If the task is mainly about execution process rather than platform specifics, route back to `$CODEX_HOME/index/core/overview.md`.

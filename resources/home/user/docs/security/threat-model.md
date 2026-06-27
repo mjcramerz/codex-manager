@@ -1,4 +1,5 @@
 # Threat modeling (lightweight)
+Purpose: tell the Codex coding agent how to use `docs/security/threat-model.md` as a runtime-pack surface and when to stop browsing.
 Use this when building APIs/services/CLIs that touch untrusted input.
 
 
@@ -42,7 +43,7 @@ Use this when building APIs/services/CLIs that touch untrusted input.
 - Supply chain compromise (malicious dep update)
 
 ## 5) Controls
-- Validate inputs + size limits
+- You must validate inputs + size limits
 - AuthZ checks with tests
 - Timeouts + bounded retries
 - Egress allowlists

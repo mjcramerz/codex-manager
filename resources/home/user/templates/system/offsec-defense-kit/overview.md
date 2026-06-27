@@ -1,4 +1,5 @@
 # Offsec-defense kit (overview)
+Purpose: tell the Codex coding agent how to use `templates/system/offsec-defense-kit/overview.md` as a runtime-pack surface and when to stop browsing.
 Starter files for scoped offensive simulation and cyber-defense operations.
 
 ## Outputs

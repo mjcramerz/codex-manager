@@ -1,5 +1,6 @@
 # Browsers (entrypoint)
-Purpose: stable link to hardened browser setup guidance.
+Purpose: stable link to hardened browser setup guidance for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -23,5 +24,5 @@ Related:
 - `$CODEX_HOME/docs/desktop/mullvad-browser.md`
 - `$CODEX_HOME/docs/desktop/thorium.md`
 - `$CODEX_HOME/snippets/desktop`
-- Use skill `desktop-browser-hardening`.
+- You must use skill `desktop-browser-hardening`.
 <!-- END:related -->

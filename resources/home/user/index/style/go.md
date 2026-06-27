@@ -1,5 +1,6 @@
 # Go style guide (entrypoint)
-Purpose: stable link to the canonical Go style guide.
+Purpose: stable link to the canonical Go style guide for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -21,5 +22,5 @@ Related:
 - `$CODEX_HOME/snippets/go`
 - `$CODEX_HOME/templates/go/cli-app`
 - `$CODEX_HOME/docs/style/overview.md`
-- Use skill `lang-go`.
+- You must use skill `lang-go`.
 <!-- END:related -->

@@ -1,5 +1,6 @@
 # Proxmox (entrypoint)
-Purpose: stable link to Proxmox VE guidance, workflows, and templates.
+Purpose: stable link to Proxmox VE guidance, workflows, and templates for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -21,5 +22,5 @@ Related:
 - `$CODEX_HOME/docs/workflows/proxmox.md`
 - `$CODEX_HOME/templates/virtualization/proxmox-vm-skeleton`
 - `$CODEX_HOME/snippets/proxmox`
-- Use skill `infra-proxmox`.
+- You must use skill `infra-proxmox`.
 <!-- END:related -->

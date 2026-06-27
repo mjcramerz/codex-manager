@@ -1,4 +1,5 @@
 # Bitwarden Secrets Manager (BWS)
+Purpose: tell the Codex coding agent how to use `docs/security/bitwarden-secrets.md` as a runtime-pack surface and when to stop browsing.
 Guidance for using Bitwarden Secrets Manager in repos and CI.
 
 
@@ -27,7 +28,7 @@ For local-host operation guidance, use `$CODEX_HOME/docs/security/bitwarden-secr
 ## Hardening checklist
 - Scope tokens to read-only and to the minimal project/collection.
 - Rotate tokens regularly and after suspected exposure.
-- Use separate tokens for prod vs non-prod.
+- You must use separate tokens for prod vs non-prod.
 - Avoid passing secrets through command arguments when possible.
 
 See also:

@@ -1,4 +1,5 @@
 # GitLab CI templates (overview)
+Purpose: tell the Codex coding agent how to use `templates/ci/gitlab-ci/overview.md` as a runtime-pack surface and when to stop browsing.
 Minimal, reproducible GitLab CI pipelines with security-friendly defaults.
 
 ## Inputs
@@ -27,14 +28,14 @@ Minimal, reproducible GitLab CI pipelines with security-friendly defaults.
 ## Shared delivery contract (`github-delivery.yml`)
 - Include consumer files from `GL_CICD_SHARED_PROJ`: `/github/validate.yml` and `/github/push.yml`.
 - Shared contract internals: `/github/version.yml`, `/patches/patches.yml`, `/github/visibility.yml`.
-- Keep repo layout: `patches/`, `patches/release/series`, `<repo>/scripts/release/get_version.py`, `<repo>/scripts/release/bump_version.py`.
-- Use `rust-release-delivery.yml` when you also need shared `/rustc/verify.yml`, `/rustc/test.yml`, and `/rustc/release-build.yml`.
+- You must keep repo layout: `patches/`, `patches/release/series`, `<repo>/scripts/release/get_version.py`, `<repo>/scripts/release/bump_version.py`.
+- You must use `rust-release-delivery.yml` when you also need shared `/rustc/verify.yml`, `/rustc/test.yml`, and `/rustc/release-build.yml`.
 - Inherit delivery variable contracts from shared includes; set repo-local variable overrides only when behavior differs from shared defaults.
 - Default workflow shape: protected tags always run, while protected `mcr/release` branch pipelines should only be created when `GH_RELEASE_PUSH=true`.
 - Shared patch helpers currently enforce `patches/release` + `patches/release/series`; keep `PATCH_RELEASE_DIR`/`PATCH_SERIES_FILE` declared for contract visibility.
-- Keep mutation order deterministic: `checkout -> true sync -> version bump -> patch apply -> push`.
+- You must keep mutation order deterministic: `checkout -> true sync -> version bump -> patch apply -> push`.
 - In fork mode, sync `origin/github/mcr/main -> github/mcr/main -> mcr/main` before patch checks, and keep patch checks on `mcr/main` only.
-- Create and push protected release tags from the tip of `mcr/release` before release sync runs.
+- You must create and push protected release tags from the tip of `mcr/release` before release sync runs.
 - Pair release repos with `.github/workflows/release-*.yml` pinned to shared `release-from-workflow-run.yml` so publish always executes shared security gates.
 - Optional GitLab package publishing uses `/gitlab/validate.yml` + `/gitlab/release.yml` and vars `GL_RELEASE_ASSET`, `GL_GROUP_TOP_RELEASE`, `GL_PAT_RELEASE_TOKEN`, `GL_CICD_RUNNER_BUILD`, `GL_CICD_RUNNER_RELEASE`.
 

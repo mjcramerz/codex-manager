@@ -1,5 +1,6 @@
 # Codex hook module template
-Purpose: scaffold a small Perl hook/runtime module with a matching CLI wrapper for local validation.
+Purpose: scaffold a small Perl hook/runtime module with a matching CLI wrapper for local validation for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 ## Inputs
 - Module name

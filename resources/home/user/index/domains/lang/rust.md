@@ -1,5 +1,6 @@
 # Rust (entrypoint)
-Purpose: stable link to Rust guidance.
+Purpose: stable link to Rust guidance for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -10,7 +11,7 @@ Purpose: stable link to Rust guidance.
 
 Canonical content: `$CODEX_HOME/docs/lang/rust.md`
 
-## Related
+## After that, you must check related files
 - `$CODEX_HOME/docs/style/rust.md`
 - `$CODEX_HOME/docs/workflows/codex-repo.md`
 - `$CODEX_HOME/docs/workflows/codex-mcp.md`

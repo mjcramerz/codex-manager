@@ -1,7 +1,8 @@
 # Elastic Stack workflow
 
-Start with `$CODEX_HOME/plans/workflows/workflow-elastic-stack.md` before executing this workflow.
-Purpose: wire Elasticsearch, Logstash, and Kibana safely.
+You must start with `$CODEX_HOME/plans/workflows/workflow-elastic-stack.md` before executing this workflow.
+Purpose: wire Elasticsearch, Logstash, and Kibana safely for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -14,9 +15,9 @@ Purpose: wire Elasticsearch, Logstash, and Kibana safely.
 
 ## Plan
 - Start from the linked workflow plan template above, then tailor scope, constraints, and validation commands before editing.
-- Keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
+- You must keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
 
-## Workflow
+## You must follow this workflow
 1) **Scope**: data sources, retention, access controls.
 2) **Ingest**: design Logstash pipelines and validate samples.
 3) **Store**: define index templates and ILM policies.
@@ -24,7 +25,7 @@ Purpose: wire Elasticsearch, Logstash, and Kibana safely.
 5) **Secure**: enable auth/TLS and restrict network exposure.
 
 ## Safety rules
-- Treat logs as sensitive data.
+- You must treat logs as sensitive data.
 - Avoid public endpoints without authentication.
 
 ## Security checkpoints
@@ -33,9 +34,9 @@ Purpose: wire Elasticsearch, Logstash, and Kibana safely.
 - Review pipelines for sensitive-field redaction before indexing.
 
 ## Testing checkpoints
-- Validate Logstash pipelines with representative samples and mapping conflict checks.
+- You must validate Logstash pipelines with representative samples and mapping conflict checks.
 - Test ILM rollover/retention behavior in non-production indices first.
-- Verify dashboards and saved searches under restricted user roles.
+- You must verify dashboards and saved searches under restricted user roles.
 
 ## Deployment checkpoints
 - Apply changes in dependency order and confirm version compatibility at each step.

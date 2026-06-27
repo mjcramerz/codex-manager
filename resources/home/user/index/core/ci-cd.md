@@ -1,5 +1,6 @@
 # CI/CD workflow (entrypoint)
-Purpose: stable link to CI/CD guidance and templates.
+Purpose: stable link to CI/CD guidance and templates for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -26,8 +27,8 @@ Related:
 - `$CODEX_HOME/templates/ci/github-actions`
 - `$CODEX_HOME/templates/ci/gitlab-ci`
 - `$CODEX_HOME/snippets/ci/gitlab_delivery_vars.env`
-- Use skill `ci-github-actions`.
-- Use skill `ci-github-actions-fix`.
-- Use skill `ci-gitlab-cicd`.
-- Use skill `repo-ops`.
+- You must use skill `ci-github-actions`.
+- You must use skill `ci-github-actions-fix`.
+- You must use skill `ci-gitlab-cicd`.
+- You must use skill `repo-ops`.
 <!-- END:related -->

@@ -1,6 +1,7 @@
 # Plan
+Purpose: tell the Codex coding agent how to use `plans/prompts-library.md` as a runtime-pack surface and when to stop browsing.
 
-Use this plan when adding, updating, or removing prompt assets in the pack source tree.
+You must use this plan when adding, updating, or removing prompt assets in the pack source tree.
 
 
 ## Navigation
@@ -12,8 +13,8 @@ Use this plan when adding, updating, or removing prompt assets in the pack sourc
 
 
 ## Requirements
-- Use `$CODEX_HOME/docs/create-prompts.md` as the source of truth for prompt-file structure and catalog updates.
-- Keep command coverage and argument contracts explicit in each prompt file.
+- You must use `$CODEX_HOME/docs/create-prompts.md` as the source of truth for prompt-file structure and catalog updates.
+- You must keep command coverage and argument contracts explicit in each prompt file.
 - Preserve deterministic verification and routing behavior after edits.
 
 ## Scope
@@ -27,7 +28,7 @@ Use this plan when adding, updating, or removing prompt assets in the pack sourc
 - `$CODEX_HOME/docs/create-prompts.md`
 - `$CODEX_HOME/templates/prompts/slash-command-maintenance/`
 - `$CODEX_HOME/snippets/docs/prompt_contract.md`
-- Use skill `pack-prompts`.
+- You must use skill `pack-prompts`.
 
 ## Action items
 [ ] Define prompt objective, required inputs, and expected outputs before editing.
@@ -36,23 +37,23 @@ Use this plan when adding, updating, or removing prompt assets in the pack sourc
 [ ] Validate command naming, argument placeholders, and linked entrypoints.
 
 ## Testing and validation
-- Validate Markdown structure for changed prompt files and guidance docs.
-- Run a stale-reference sweep for direct prompt-file paths outside `$CODEX_HOME/docs/create-prompts.md`.
-- Run targeted repo checks after structural changes.
+- You must validate Markdown structure for changed prompt files and guidance docs.
+- You must run a stale-reference sweep for direct prompt-file paths outside `$CODEX_HOME/docs/create-prompts.md`.
+- You must run targeted repo checks after structural changes.
 
 ## Security checkpoints
 - Ensure prompts do not instruct bypassing auth, validation, or safety constraints.
-- Keep network/destructive actions explicit and bounded.
+- You must keep network/destructive actions explicit and bounded.
 - Avoid embedding secrets or environment dumps in prompt content.
 
 ## Testing checkpoints
-- Confirm every changed prompt remains discoverable through `$CODEX_HOME/docs/create-prompts.md`.
-- Verify no stale references remain after rename/remove operations.
-- Re-run prompt checks after any follow-up edits.
+- You must confirm every changed prompt remains discoverable through `$CODEX_HOME/docs/create-prompts.md`.
+- You must verify no stale references remain after rename/remove operations.
+- You must re-run prompt checks after any follow-up edits.
 
 ## Deployment checkpoints
-- Record changed commands and migration notes for users.
-- Confirm rollback path (restore prior prompt files) before release.
+- You must record changed commands and migration notes for users.
+- You must confirm rollback path (restore prior prompt files) before release.
 
 ## Multi-agent handoff
 - Coordinator assigns ownership by prompt file set and stop condition.

@@ -1,7 +1,8 @@
 # Release workflow
 
-Start with `$CODEX_HOME/plans/workflows/workflow-release.md` before executing this workflow.
-Purpose: ship reproducible, auditable releases.
+You must start with `$CODEX_HOME/plans/workflows/workflow-release.md` before executing this workflow.
+Purpose: ship reproducible, auditable releases for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -27,12 +28,12 @@ Purpose: ship reproducible, auditable releases.
 8) Publish release notes and packages.
 
 ## Shared delivery guardrails
-- Keep shared GitLab delivery logic in the central `delivery` repository unless intentionally diverging.
+- You must keep shared GitLab delivery logic in the central `delivery` repository unless intentionally diverging.
 - For repos like `cf-git-cicd-worker` and `cf-aptly-r2`, align release notes, routes, and variable contracts with the shared delivery templates they actually consume.
-- Keep release overlays deterministic and document the exact publish order in repo-local release docs.
+- You must keep release overlays deterministic and document the exact publish order in repo-local release docs.
 
 ## Security checkpoints
-- Verify signing keys/tokens are valid, scoped, and rotated before tagging or publishing.
+- You must verify signing keys/tokens are valid, scoped, and rotated before tagging or publishing.
 - Attach SBOM/provenance artifacts to the release and confirm integrity checks pass.
 - Block release if protected-ref, protected-tag, or approval requirements are violated.
 

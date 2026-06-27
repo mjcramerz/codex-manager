@@ -1,7 +1,8 @@
 # Code review workflow
 
-Start with `$CODEX_HOME/plans/workflows/workflow-code-review.md` before executing this workflow.
-Purpose: consistent, high-signal reviews with minimal noise.
+You must start with `$CODEX_HOME/plans/workflows/workflow-code-review.md` before executing this workflow.
+Purpose: consistent, high-signal reviews with minimal noise for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -14,7 +15,7 @@ Purpose: consistent, high-signal reviews with minimal noise.
 
 ## Plan
 - Start from the linked workflow plan template above, then tailor scope, constraints, and validation commands before editing.
-- Keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
+- You must keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
 
 ## Review steps
 1) Read intent (issue/PR description).
@@ -40,8 +41,8 @@ Purpose: consistent, high-signal reviews with minimal noise.
 
 ## Security checkpoints
 - Review auth, input parsing, subprocess, and secret-touching diffs first; escalate must-fix issues.
-- Verify CI/workflow permission changes use least privilege and document any broad scope.
-- Require explicit rationale and expiry for waived security findings before approval.
+- You must verify CI/workflow permission changes use least privilege and document any broad scope.
+- You must require explicit rationale and expiry for waived security findings before approval.
 
 ## Testing checkpoints
 - Reviewer states exact commands run (or required) and maps them to changed risk areas.

@@ -1,6 +1,7 @@
 # Plan
+Purpose: tell the Codex coding agent how to use `plans/workflows/workflow-bws-local.md` as a runtime-pack surface and when to stop browsing.
 
-Use this plan when following `$CODEX_HOME/docs/workflows/bws-local.md`.
+You must use this plan when following `$CODEX_HOME/docs/workflows/bws-local.md`.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -27,22 +28,22 @@ Use this plan when following `$CODEX_HOME/docs/workflows/bws-local.md`.
 [ ] Run teardown/idempotency checks and capture non-secret evidence.
 
 ## Testing and validation
-- Run workflow-defined checks for install, keyring update/status, and cleanup.
+- You must run workflow-defined checks for install, keyring update/status, and cleanup.
 
 ## Security checkpoints
-- Confirm token and project ID values are never printed or copied into logs/notes.
-- Verify keyring service/account identifiers use constrained, expected values.
+- You must confirm token and project ID values are never printed or copied into logs/notes.
+- You must verify keyring service/account identifiers use constrained, expected values.
 - Ensure privileged actions require explicit sudo prompts and avoid full-root execution mode.
 
 ## Testing checkpoints
-- Define fast-path checks (`make check`, help output checks) before mutation steps.
-- Re-run key verification commands after each state-changing operation.
-- Validate negative paths (missing keyring entries, invalid identifiers, root invocation guardrails).
+- You must define fast-path checks (`make check`, help output checks) before mutation steps.
+- You must re-run key verification commands after each state-changing operation.
+- You must validate negative paths (missing keyring entries, invalid identifiers, root invocation guardrails).
 
 ## Deployment checkpoints
 - Roll out in deterministic order: install -> keyring update -> verification.
-- Capture rollback path: nuke flow and revalidation of keyring absence.
-- Assign post-rollout owner for periodic token rotation and keyring hygiene checks.
+- You must capture rollback path: nuke flow and revalidation of keyring absence.
+- You must assign post-rollout owner for periodic token rotation and keyring hygiene checks.
 
 ## Multi-agent handoff
 - Coordinator hands off host assumptions and expected final local state.

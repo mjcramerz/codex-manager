@@ -1,4 +1,5 @@
 # Pixel 9a NetHunter porting checklist (controlled)
+Purpose: tell the Codex coding agent how to use `templates/system/mobile-wireless-defense-kit/pixel9a-porting-checklist.md` as a runtime-pack surface and when to stop browsing.
 
 ## Source control
 - [ ] Record Google kernel source revision and manifest.

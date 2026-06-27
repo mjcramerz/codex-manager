@@ -1,5 +1,6 @@
 # Languages (entrypoint)
-Purpose: stable link to language guidance and templates.
+Purpose: stable link to language guidance and templates for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation

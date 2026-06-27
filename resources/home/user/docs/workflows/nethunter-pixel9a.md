@@ -1,5 +1,6 @@
 # NetHunter Pixel 9a workflow
-Purpose: execute NetHunter kernel porting and Android root validation for Google Pixel 9a with a documented device scope.
+Purpose: execute NetHunter kernel porting and Android root validation for Google Pixel 9a with a documented device scope for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -11,7 +12,7 @@ Purpose: execute NetHunter kernel porting and Android root validation for Google
 
 
 ## Plan
-Start with `$CODEX_HOME/plans/workflows/workflow-nethunter-pixel9a.md` before executing this workflow.
+You must start with `$CODEX_HOME/plans/workflows/workflow-nethunter-pixel9a.md` before executing this workflow.
 
 ## Inputs
 - Scope file with allowed device IDs and allowed operation classes.
@@ -46,21 +47,21 @@ Start with `$CODEX_HOME/plans/workflows/workflow-nethunter-pixel9a.md` before ex
 ## Security checkpoints
 - Reject operations without a documented scope or documented device ownership.
 - Never bypass locked bootloader controls through exploit techniques.
-- Keep factory images and stock boot images available before flash operations.
+- You must keep factory images and stock boot images available before flash operations.
 - Restrict all activity to lab/staging and avoid production identities.
 - Fail closed if slot/mode state cannot be verified (`fastboot getvar current-slot`, `is-userspace`).
 
 ## Testing checkpoints
-- Verify host tools (`adb`, `fastboot`, `sha256sum`, `python3`) before device operations.
-- Validate build outputs with deterministic hashes.
-- Re-run functional checks after each flash action.
-- Confirm rollback path with at least one successful drill.
-- Confirm expected Platform-Tools behavior for target commands from current Android docs.
+- You must verify host tools (`adb`, `fastboot`, `sha256sum`, `python3`) before device operations.
+- You must validate build outputs with deterministic hashes.
+- You must re-run functional checks after each flash action.
+- You must confirm rollback path with at least one successful drill.
+- You must confirm expected Platform-Tools behavior for target commands from current Android docs.
 
 ## Deployment checkpoints
-- Treat flashing as change-managed operation with owner acknowledgment.
-- Document blast radius and expected data loss before unlock.
-- Define clear stop conditions and escalation contacts for failed boots.
+- You must treat flashing as change-managed operation with owner acknowledgment.
+- You must document blast radius and expected data loss before unlock.
+- You must define clear stop conditions and escalation contacts for failed boots.
 
 ## Multi-agent handoff
 - Scope owner validates scope completeness and stop conditions.
@@ -74,4 +75,4 @@ See also:
 - `$CODEX_HOME/templates/system/nethunter-pixel9a-kit/overview.md`
 - `$CODEX_HOME/snippets/bash/nethunter_pixel9a_preflight.sh`
 - `$CODEX_HOME/snippets/bash/nethunter_pixel9a_root_sequence.sh`
-- Use skill `nethunter-pixel9a`.
+- You must use skill `nethunter-pixel9a`.

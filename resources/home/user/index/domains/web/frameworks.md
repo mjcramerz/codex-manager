@@ -1,5 +1,6 @@
 # Web frameworks (entrypoint)
-Purpose: stable link to frontend framework guidance and templates.
+Purpose: stable link to frontend framework guidance and templates for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -26,7 +27,7 @@ Related:
 - `$CODEX_HOME/docs/web/nuxt.md`
 - `$CODEX_HOME/docs/workflows/web-frontend.md`
 - `$CODEX_HOME/templates/web`
-- Use skill `web-react`.
-- Use skill `web-nextjs`.
-- Use skill `web-htmx`.
+- You must use skill `web-react`.
+- You must use skill `web-nextjs`.
+- You must use skill `web-htmx`.
 <!-- END:related -->

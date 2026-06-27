@@ -1,4 +1,5 @@
 # Using templates
+Purpose: tell the Codex coding agent how to use `docs/templates/using-templates.md` as a runtime-pack surface and when to stop browsing.
 Templates are scaffolds you can copy into a repository.
 
 ## Navigation
@@ -32,7 +33,7 @@ Templates are scaffolds you can copy into a repository.
 - Perl runtime/hook baseline: `$CODEX_HOME/templates/perl/codex-hook-module/`.
 - For Cloudflare Worker plus shared GitLab delivery repos, route through `$CODEX_HOME/docs/workflows/cloudflare-delivery.md` before editing the copied pipeline or worker scaffold.
 - For GitLab delivery repos, keep shared include ownership in the central delivery project; do not duplicate internal shared include graphs unless intentionally forking behavior.
-- Keep protected release refs, patch ordering, and publish mutation order explicit in repo-local docs when a template adopts those flows.
+- You must keep protected release refs, patch ordering, and publish mutation order explicit in repo-local docs when a template adopts those flows.
 
 ## Next steps
 1) Add repo hygiene files from `$CODEX_HOME/templates/common/` (`SECURITY.md`, `CONTRIBUTING.md`, `CODEOWNERS`).

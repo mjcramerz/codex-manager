@@ -1,6 +1,7 @@
 # Plan
+Purpose: tell the Codex coding agent how to use `plans/frameworks/plan-refactor.md` as a runtime-pack surface and when to stop browsing.
 
-Use this plan when restructuring code without changing external behavior.
+You must use this plan when restructuring code without changing external behavior.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -18,12 +19,12 @@ Use this plan when restructuring code without changing external behavior.
 - Out: feature changes or large rewrites.
 
 ## Dependencies and assumptions
-- Record test-coverage assumptions and the quality gates that must stay green.
-- Record shared-component ownership and review dependencies.
+- You must record test-coverage assumptions and the quality gates that must stay green.
+- You must record shared-component ownership and review dependencies.
 
 ## Success metrics and exit criteria
-- Define the regression suite that proves behavior is preserved.
-- Define the maintainability improvements expected without creating SLA regressions.
+- You must define the regression suite that proves behavior is preserved.
+- You must define the maintainability improvements expected without creating SLA regressions.
 
 ## Files and entry points
 - List the modules or services to refactor.
@@ -44,19 +45,19 @@ Use this plan when restructuring code without changing external behavior.
 - Describe the revert plan if the refactor introduces regressions.
 
 ## Security checkpoints
-- Confirm trust boundaries, credentials, and least-privilege assumptions before execution.
-- Validate input bounds, timeout/retry limits, and failure behavior for risky operations.
-- Record any approved exception, owner, and expiry before proceeding.
+- You must confirm trust boundaries, credentials, and least-privilege assumptions before execution.
+- You must validate input bounds, timeout/retry limits, and failure behavior for risky operations.
+- You must record any approved exception, owner, and expiry before proceeding.
 
 ## Testing checkpoints
-- Define fast-path and deep validation commands before making changes.
-- Capture expected outcomes and acceptance criteria for each validation step.
-- Re-run impacted checks after major changes and before final handoff.
+- You must define fast-path and deep validation commands before making changes.
+- You must capture expected outcomes and acceptance criteria for each validation step.
+- You must re-run impacted checks after major changes and before final handoff.
 
 ## Deployment checkpoints
-- Document rollout order, blast-radius controls, and rollback conditions.
-- Confirm migration/backfill or feature-flag sequencing when applicable.
-- Record post-deploy verification owners and evidence.
+- You must document rollout order, blast-radius controls, and rollback conditions.
+- You must confirm migration/backfill or feature-flag sequencing when applicable.
+- You must record post-deploy verification owners and evidence.
 
 ## Multi-agent handoff
 - Coordinator hands off scope, constraints, and stop condition with the target entrypoint.
@@ -71,4 +72,4 @@ Use this plan when restructuring code without changing external behavior.
 - Example validation: "python3 -m unittest tests.test_runtime_pack_docs_contract tests.test_runtime_pack_structure_contract"
 
 ## Open questions
-- Record only the coverage gaps or invariants that are still unclear.
+- You must record only the coverage gaps or invariants that are still unclear.

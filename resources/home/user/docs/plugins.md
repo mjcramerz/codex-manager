@@ -1,6 +1,7 @@
 # Plugins runtime overview
+Purpose: tell the Codex coding agent how to use `docs/plugins.md` as a runtime-pack surface and when to stop browsing.
 
-Use this guide when working with runtime plugin bundles inside an installed Codex home.
+You must use this guide when working with runtime plugin bundles inside an installed Codex home.
 
 ## What exists at runtime
 - Plugin enablement lives in `$CODEX_HOME/config.toml` under `[plugins]`.

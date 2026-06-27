@@ -1,5 +1,6 @@
 # auditd (entrypoint)
-Purpose: stable link to auditd guidance, workflows, and templates.
+Purpose: stable link to auditd guidance, workflows, and templates for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -20,5 +21,5 @@ Use when:
 Related:
 - `$CODEX_HOME/docs/workflows/auditd.md`
 - `$CODEX_HOME/snippets/auditd`
-- Use skill `secops-auditd`.
+- You must use skill `secops-auditd`.
 <!-- END:related -->

@@ -1,4 +1,5 @@
 # Dockerfile guidance
+Purpose: tell the Codex coding agent how to use `docs/containers/dockerfile.md` as a runtime-pack surface and when to stop browsing.
 How to write Dockerfiles that are rootless-friendly, reproducible, and secure by default.
 
 
@@ -11,26 +12,26 @@ How to write Dockerfiles that are rootless-friendly, reproducible, and secure by
 
 
 ## Baseline rules
-- Run the service process as a non-root user (`USER` in Dockerfile).
+- You must run the service process as a non-root user (`USER` in Dockerfile).
 - Avoid `:latest` base images; pin versions (use digests for high assurance).
-- Keep layers minimal; clean package caches.
-- Use `.dockerignore` to keep secrets and build artifacts out of the context.
-- Prefer `COPY --chown` so app files are owned by the non-root UID/GID at build time.
+- You must keep layers minimal; clean package caches.
+- You must use `.dockerignore` to keep secrets and build artifacts out of the context.
+- You must prefer `COPY --chown` so app files are owned by the non-root UID/GID at build time.
 
 ## Rootless considerations
 - Rootless Docker/Podman use the same Dockerfile; the differences are daemon-level.
-- Prefer high ports (`>=1024`) and map them in compose/run.
+- You must prefer high ports (`>=1024`) and map them in compose/run.
 - Avoid host network mode (`network_mode: host`) for rootless workflows.
 - If volume permissions are an issue, set ownership at build time with numeric UID/GID.
 
 ## UID/GID and bind mounts
 - When bind-mounting host paths, match the container runtime user to the engine UID/GID.
 - Pass the same UID/GID as build args so image ownership matches the runtime user (see templates).
-- Prefer numeric IDs in `USER` and `chown` to avoid name mismatches.
+- You must prefer numeric IDs in `USER` and `chown` to avoid name mismatches.
 
 ## Podman notes
-- Prefer `Dockerfile` so Docker + Podman share the same build definition.
-- Use `Containerfile` only if the repo already standardizes on it.
+- You must prefer `Dockerfile` so Docker + Podman share the same build definition.
+- You must use `Containerfile` only if the repo already standardizes on it.
 - Rootful Podman uses the same file; the engine mode changes, not the Dockerfile.
 
 ## Template (recommended start)

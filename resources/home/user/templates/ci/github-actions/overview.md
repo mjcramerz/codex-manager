@@ -1,4 +1,5 @@
 # GitHub Actions templates (overview)
+Purpose: tell the Codex coding agent how to use `templates/ci/github-actions/overview.md` as a runtime-pack surface and when to stop browsing.
 Pinned starter workflows for common language stacks and baseline security checks.
 
 ## Inputs

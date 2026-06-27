@@ -1,5 +1,6 @@
 # Repo delivery layout template
-Create deterministic repository layout for GitLab-delivered GitHub releases.
+Purpose: tell the Codex coding agent how to use `templates/common/repo-delivery-layout/overview.md` as a runtime-pack surface and when to stop browsing.
+You must use this template to create deterministic repository layout for GitLab-delivered GitHub releases.
 
 ## Inputs
 - Repository root path.
@@ -35,4 +36,4 @@ python3 scripts/release/bump_version.py --version 0.0.1
 1) Wire shared delivery consumer includes: `/github/validate.yml`, `/github/push.yml`.
 2) Verify shared contract internals remain available: `/github/version.yml`, `/patches/patches.yml`, `/github/visibility.yml`.
 3) If GitLab package artifacts are required, add `/gitlab/validate.yml` + `/gitlab/release.yml`.
-4) Keep `github/*` branches read-only and implement on `mcr/feature/*`.
+4) You must keep `github/*` and `gitlab/*` branches read-only, and you must implement allowlisted repository edits on `mcr/main` only.

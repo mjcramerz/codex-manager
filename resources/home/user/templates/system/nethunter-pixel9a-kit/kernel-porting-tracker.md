@@ -1,4 +1,5 @@
 # Pixel 9a NetHunter kernel porting tracker
+Purpose: tell the Codex coding agent how to use `templates/system/nethunter-pixel9a-kit/kernel-porting-tracker.md` as a runtime-pack surface and when to stop browsing.
 
 ## Scope and ownership
 - Scope ID:
@@ -35,7 +36,7 @@
 - [ ] Rollback drill passed
 
 ## Findings and next actions
-- Open risks:
+- You must open risks:
 - Mitigations:
 - Re-test date:
 - Rollback owner:

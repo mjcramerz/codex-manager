@@ -1,4 +1,5 @@
 # Podman
+Purpose: tell the Codex coding agent how to use `docs/containers/podman.md` as a runtime-pack surface and when to stop browsing.
 Podman is a container engine that is rootless by default and compatible with many Docker workflows.
 
 ## Navigation
@@ -19,7 +20,7 @@ Podman is a container engine that is rootless by default and compatible with man
 - Root inside a rootless engine is still unprivileged on the host.
 
 ## Compatibility notes
-- Use the same **Dockerfile** + compose files as Docker to keep parity across engines.
+- You must use the same **Dockerfile** + compose files as Docker to keep parity across engines.
 - Podman also supports `Containerfile`, but prefer `Dockerfile` unless the repo already uses `Containerfile`.
 - Compose support depends on your environment (`podman compose` on Podman 4+ or `podman-compose`).
 - Networking differs in some cases; validate port binding and DNS behavior.
@@ -38,16 +39,16 @@ Podman is a container engine that is rootless by default and compatible with man
 
 ## Networking tips (rootless)
 - Rootless Podman uses user-mode networking (`slirp4netns` or `pasta`).
-- Prefer the default network for internet access; avoid `--network=host` unless required.
+- You must prefer the default network for internet access; avoid `--network=host` unless required.
 
 ## UID/GID mapping for bind mounts
-- Require `userns_mode: keep-id` so container user matches engine UID/GID.
+- You must require `userns_mode: keep-id` so container user matches engine UID/GID.
 - If `keep-id` is unavailable, set the container `user:` to the engine UID/GID and document the exception.
-- Use the UID/GID of the user running Podman.
+- You must use the UID/GID of the user running Podman.
 
 ## Security defaults
-- Prefer rootless Podman for local dev.
-- Keep containers non-root and avoid elevated capabilities unless required.
+- You must prefer rootless Podman for local dev.
+- You must keep containers non-root and avoid elevated capabilities unless required.
 
 See also:
 - `overview.md`

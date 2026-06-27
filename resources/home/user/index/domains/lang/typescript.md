@@ -1,5 +1,6 @@
 # TypeScript (entrypoint)
-Purpose: stable link to TypeScript guidance, templates, and style.
+Purpose: stable link to TypeScript guidance, templates, and style for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -20,5 +21,5 @@ Use when:
 Related:
 - `$CODEX_HOME/docs/lang/typescript.md`
 - `$CODEX_HOME/templates/typescript`
-- Use skill `lang-typescript`.
+- You must use skill `lang-typescript`.
 <!-- END:related -->

@@ -1,4 +1,5 @@
 # SvelteKit app scaffold (overview)
+Purpose: tell the Codex coding agent how to use `templates/web/sveltekit-app/overview.md` as a runtime-pack surface and when to stop browsing.
 Wrapper around the official SvelteKit scaffold.
 
 ## Recommended approach
@@ -8,7 +9,7 @@ Wrapper around the official SvelteKit scaffold.
 
 ## Notes
 - Pin Node.js and SvelteKit versions.
-- Document adapter choices and deployment targets.
+- You must document adapter choices and deployment targets.
 
 ## Inputs
 - Destination repository path for this template.

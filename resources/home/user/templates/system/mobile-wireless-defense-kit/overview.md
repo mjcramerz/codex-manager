@@ -1,4 +1,5 @@
 # Mobile-wireless kit (overview)
+Purpose: tell the Codex coding agent how to use `templates/system/mobile-wireless-defense-kit/overview.md` as a runtime-pack surface and when to stop browsing.
 Starter assets for scoped wireless/mobile defense operations.
 
 ## Outputs

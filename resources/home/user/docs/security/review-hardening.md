@@ -1,4 +1,5 @@
 # Review hardening checklist
+Purpose: tell the Codex coding agent how to use `docs/security/review-hardening.md` as a runtime-pack surface and when to stop browsing.
 A practical, high-signal hardening checklist for code reviews.
 
 

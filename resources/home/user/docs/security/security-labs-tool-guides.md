@@ -1,4 +1,5 @@
 # Security tool guides
+Purpose: tell the Codex coding agent how to use `docs/security/security-labs-tool-guides.md` as a runtime-pack surface and when to stop browsing.
 Defensive and scoped-simulation guide set for high-risk security tools.
 
 
@@ -12,8 +13,8 @@ Defensive and scoped-simulation guide set for high-risk security tools.
 
 ## Global guardrails
 - Execute only within a documented scope manifest with a named owner and environment class.
-- Use lab/staging environments for high-risk simulations.
-- Keep deterministic command logs, hashes, and rollback notes.
+- You must use lab/staging environments for high-risk simulations.
+- You must keep deterministic command logs, hashes, and rollback notes.
 - Exclude weaponized or uncontrolled exploitation procedures.
 
 ## Cobalt Strike (defense and detection)

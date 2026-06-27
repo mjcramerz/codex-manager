@@ -1,4 +1,5 @@
 # Kubernetes
+Purpose: tell the Codex coding agent how to use `docs/infra/kubernetes.md` as a runtime-pack surface and when to stop browsing.
 Guidance for safe, reproducible Kubernetes deployments.
 
 
@@ -11,17 +12,17 @@ Guidance for safe, reproducible Kubernetes deployments.
 
 
 ## Baseline practices
-- Use namespaces and least-privilege RBAC.
+- You must use namespaces and least-privilege RBAC.
 - Set resource requests/limits for all workloads.
-- Use readiness/liveness probes.
+- You must use readiness/liveness probes.
 - Pin image tags and avoid `latest`.
 
 ## Manifests
-- Keep manifests small and composable (use Kustomize where helpful).
+- You must keep manifests small and composable (use Kustomize where helpful).
 - Avoid storing secrets in plain YAML; use external secret stores.
 
 ## Safety
-- Prefer `kubectl apply` with review in CI.
+- You must prefer `kubectl apply` with review in CI.
 - Gate changes via PRs and manifest validation.
 
 See also:
@@ -30,6 +31,6 @@ See also:
 - `$CODEX_HOME/templates/infra/kubernetes-app-skeleton/`
 - `$CODEX_HOME/snippets/kubernetes/deployment.yaml`
 - `$CODEX_HOME/snippets/kubernetes/service.yaml`
-- Use skill infra-kubernetes.
+- You must use skill infra-kubernetes.
 - `$CODEX_HOME/index/domains/infra/tooling.md`
 - `$CODEX_HOME/index/domains/infra/kubernetes.md`

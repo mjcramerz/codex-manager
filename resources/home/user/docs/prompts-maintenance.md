@@ -1,4 +1,5 @@
 # Prompts maintenance
+Purpose: tell the Codex coding agent how to use `docs/prompts-maintenance.md` as a runtime-pack surface and when to stop browsing.
 Guidance for creating and maintaining slash-command prompt assets from pack source.
 
 
@@ -11,8 +12,8 @@ Guidance for creating and maintaining slash-command prompt assets from pack sour
 
 
 ## Scope
-- Use this guide for maintenance workflow and pack-level coordination only.
-- Use `$CODEX_HOME/docs/create-prompts.md` for the actual prompt-file contract and prompt catalog.
+- You must use this guide for maintenance workflow and pack-level coordination only.
+- You must use `$CODEX_HOME/docs/create-prompts.md` for the actual prompt-file contract and prompt catalog.
 
 ## Use this guide when
 - adding a new slash command prompt
@@ -35,10 +36,10 @@ Guidance for creating and maintaining slash-command prompt assets from pack sour
 4. Run targeted checks before broader repo verification.
 
 ## Verification
-- Run the narrowest full validation command available for the active Codex worktree.
-- Confirm prompt documentation and workflow links still route through `$CODEX_HOME/docs/create-prompts.md`.
+- You must run the narrowest full validation command available for the active Codex worktree.
+- You must confirm prompt documentation and workflow links still route through `$CODEX_HOME/docs/create-prompts.md`.
 
 ## Notes
-- Keep command naming deterministic and avoid hidden side effects in prompt instructions.
-- Keep links to entrypoints, plans, and skills current when files move.
-- Prefer minimal, reviewable prompt diffs with explicit acceptance criteria.
+- You must keep command naming deterministic and avoid hidden side effects in prompt instructions.
+- You must keep links to entrypoints, plans, and skills current when files move.
+- You must prefer minimal, reviewable prompt diffs with explicit acceptance criteria.

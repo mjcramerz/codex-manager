@@ -1,4 +1,5 @@
 # Python style guide
+Purpose: tell the Codex coding agent how to use `docs/style/python.md` as a runtime-pack surface and when to stop browsing.
 Canonical Python guidance for this pack. Follow repo-specific conventions first.
 
 
@@ -12,13 +13,13 @@ Canonical Python guidance for this pack. Follow repo-specific conventions first.
 
 ## Baseline
 - Target Python 3.11+ unless repo constraints say otherwise.
-- Prefer type hints everywhere; use `mypy` or `pyright` when the repo supports it.
-- Prefer `ruff` for linting and formatting; keep configuration in `pyproject.toml`.
+- You must prefer type hints everywhere; use `mypy` or `pyright` when the repo supports it.
+- You must prefer `ruff` for linting and formatting; keep configuration in `pyproject.toml`.
 
 ## Structure
-- Prefer explicit packages/modules; avoid circular imports.
-- Keep I/O at the edges; keep core logic pure and testable.
-- Use `pydantic`/`pydantic-settings` only when it meaningfully improves validation.
+- You must prefer explicit packages/modules; avoid circular imports.
+- You must keep I/O at the edges; keep core logic pure and testable.
+- You must use `pydantic`/`pydantic-settings` only when it meaningfully improves validation.
 
 ## Errors
 - Raise specific exceptions.
@@ -27,16 +28,16 @@ Canonical Python guidance for this pack. Follow repo-specific conventions first.
 
 ## Security
 - No `eval`, no `pickle` for untrusted input.
-- Validate inputs at boundaries; enforce size limits.
-- Use `secrets` for tokens; use `hashlib`/`hmac` correctly; no custom crypto.
+- You must validate inputs at boundaries; enforce size limits.
+- You must use `secrets` for tokens; use `hashlib`/`hmac` correctly; no custom crypto.
 - HTTP clients must set timeouts and avoid redirect surprises; prefer `trust_env=False` unless you control the environment.
 - Avoid SSRF: never fetch arbitrary user-provided URLs without host allowlists and private-IP blocking.
 
 ## Performance
 - Avoid quadratic string concatenation; prefer `''.join(...)`.
 - Stream large files instead of buffering whole content.
-- Add timeouts to requests; keep retries bounded.
-- Prefer context managers for resources (`with open(...)`, `with httpx.Client(...)`).
+- You must add timeouts to requests; keep retries bounded.
+- You must prefer context managers for resources (`with open(...)`, `with httpx.Client(...)`).
 
 ## Logging
 - Default to structured logs to stderr; keep stdout for machine output.

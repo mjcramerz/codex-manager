@@ -1,7 +1,8 @@
 # CI/CD workflow
 
-Start with `$CODEX_HOME/plans/workflows/workflow-ci-cd.md` before executing this workflow.
-Purpose: provide canonical CI/CD guidance for this pack.
+You must start with `$CODEX_HOME/plans/workflows/workflow-ci-cd.md` before executing this workflow.
+Purpose: provide canonical CI/CD guidance for this pack for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -33,14 +34,14 @@ Purpose: provide canonical CI/CD guidance for this pack.
 8) Artifact signing (org policy)
 
 ## Delivery rules
-- Keep release jobs limited to protected refs and protected release tags.
-- Keep variable contracts centralized in `$CODEX_HOME/snippets/ci/gitlab_delivery_vars.env`.
-- Keep delivery mutation order deterministic: `checkout -> true sync -> version bump -> patch apply -> push`.
-- Keep shared delivery logic centralized when multiple repos consume the same contract.
+- You must keep release jobs limited to protected refs and protected release tags.
+- You must keep variable contracts centralized in `$CODEX_HOME/snippets/ci/gitlab_delivery_vars.env`.
+- You must keep delivery mutation order deterministic: `checkout -> true sync -> version bump -> patch apply -> push`.
+- You must keep shared delivery logic centralized when multiple repos consume the same contract.
 
 ## Security checkpoints
 - Enforce least-privilege tokens per stage; keep deploy credentials unavailable to untrusted branches.
-- Treat scanner and policy bypasses as expiring exceptions with owner and rationale.
+- You must treat scanner and policy bypasses as expiring exceptions with owner and rationale.
 - Review artifact/log retention so pipelines do not leak secrets or sensitive build metadata.
 
 ## See also

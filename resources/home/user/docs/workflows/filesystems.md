@@ -1,7 +1,8 @@
 # Filesystems workflow
 
-Start with `$CODEX_HOME/plans/workflows/workflow-filesystems.md` before executing this workflow.
-Purpose: safely partition, format, mount, and persist filesystems.
+You must start with `$CODEX_HOME/plans/workflows/workflow-filesystems.md` before executing this workflow.
+Purpose: safely partition, format, mount, and persist filesystems for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -14,9 +15,9 @@ Purpose: safely partition, format, mount, and persist filesystems.
 
 ## Plan
 - Start from the linked workflow plan template above, then tailor scope, constraints, and validation commands before editing.
-- Keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
+- You must keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
 
-## Workflow
+## You must follow this workflow
 1) **Clarify intent**: device(s), target filesystem(s), mountpoints, and OS.
 2) **Preflight**: `lsblk -f`, `blkid`, confirm stable device paths.
 3) **Plan**: partition scheme (GPT/MBR), FS type, mount options, fstab entry.
@@ -32,23 +33,23 @@ Purpose: safely partition, format, mount, and persist filesystems.
 
 ## Safety rules
 - Never run destructive commands without explicit confirmation.
-- Require stable device paths (`/dev/disk/by-id/...`).
+- You must require stable device paths (`/dev/disk/by-id/...`).
 - Make `fstab` edits idempotent and keep backups.
 
 ## Security checkpoints
-- Confirm target devices by stable `/dev/disk/by-id` path and expected size before `mkfs`.
+- You must confirm target devices by stable `/dev/disk/by-id` path and expected size before `mkfs`.
 - Apply mount options (`nodev`, `nosuid`, `noexec`) based on workload threat model.
 - Set mountpoint ownership and mode before exposing the filesystem to services.
 
 ## Testing checkpoints
-- Run `findmnt --verify` and non-destructive mount checks before any reboot.
+- You must run `findmnt --verify` and non-destructive mount checks before any reboot.
 - Perform create/read/write/delete smoke tests and permission checks on new mounts.
 - Reboot or remount to confirm `fstab` persistence and clean startup behavior.
 
 ## Deployment checkpoints
 - Roll out one device/filesystem change at a time within a maintenance window.
-- Keep partition-table and `fstab` backups for rapid rollback.
-- Document restore source and rollback commands before closing the task.
+- You must keep partition-table and `fstab` backups for rapid rollback.
+- You must document restore source and rollback commands before closing the task.
 
 ## Multi-agent handoff
 - Coordinator provides approved device IDs, filesystem choice, and mount options.
@@ -63,6 +64,6 @@ Purpose: safely partition, format, mount, and persist filesystems.
 - `$CODEX_HOME/templates/filesystems/ops-scripts/`
 - `$CODEX_HOME/snippets/bash/fs_probe.sh`
 - `$CODEX_HOME/snippets/bash/fstab_update.sh`
-- Use skill `storage-filesystems`.
+- You must use skill `storage-filesystems`.
 - `$CODEX_HOME/index/pack/workflows.md`
 - `$CODEX_HOME/index/domains/system/filesystems.md`

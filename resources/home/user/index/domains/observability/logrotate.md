@@ -1,5 +1,6 @@
 # logrotate (entrypoint)
-Purpose: stable link to logrotate guidance, workflows, and templates.
+Purpose: stable link to logrotate guidance, workflows, and templates for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -20,5 +21,5 @@ Use when:
 Related:
 - `$CODEX_HOME/docs/workflows/logrotate.md`
 - `$CODEX_HOME/snippets/logrotate`
-- Use skill `ops-logrotate`.
+- You must use skill `ops-logrotate`.
 <!-- END:related -->

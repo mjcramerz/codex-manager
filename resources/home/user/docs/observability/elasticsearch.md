@@ -1,4 +1,5 @@
 # Elasticsearch
+Purpose: tell the Codex coding agent how to use `docs/observability/elasticsearch.md` as a runtime-pack surface and when to stop browsing.
 Guidance for secure, reliable Elasticsearch setups.
 
 
@@ -13,11 +14,11 @@ Guidance for secure, reliable Elasticsearch setups.
 ## Baseline practices
 - Enable security features and TLS where available.
 - Restrict network exposure; avoid public endpoints.
-- Use index templates and ILM policies for retention.
+- You must use index templates and ILM policies for retention.
 - Monitor shard counts and disk usage.
 
 ## Operations
-- Prefer snapshots for backup/restore.
+- You must prefer snapshots for backup/restore.
 - Limit query complexity and unbounded aggregations.
 
 See also:
@@ -27,6 +28,6 @@ See also:
 - `../workflows/elastic-stack.md`
 - `$CODEX_HOME/snippets/elastic/elasticsearch.yml`
 - `$CODEX_HOME/templates/observability/elastic-stack-compose/`
-- Use skill obs-elasticsearch.
+- You must use skill obs-elasticsearch.
 - `$CODEX_HOME/index/domains/observability/stack.md`
 - `$CODEX_HOME/index/domains/observability/elasticsearch.md`

@@ -1,4 +1,5 @@
 # systemd overview
+Purpose: tell the Codex coding agent how to use `docs/systemd/overview.md` as a runtime-pack surface and when to stop browsing.
 This pack treats systemd units as production interfaces. Prefer explicit units, clear ownership, and safe defaults.
 
 
@@ -26,10 +27,10 @@ This pack treats systemd units as production interfaces. Prefer explicit units, 
 - **User units**: per-user services managed by `systemctl --user`.
 
 ## Safety baseline
-- Run as non-root when possible (`User=`/`Group=`).
+- You must run as non-root when possible (`User=`/`Group=`).
 - Set timeouts and restart policies explicitly.
 - Avoid running shells; use direct `ExecStart=` arguments.
-- Use hardening options where feasible (see `hardening.md`).
+- You must use hardening options where feasible (see `hardening.md`).
 
 ## Common flow
 1) Draft a unit file.

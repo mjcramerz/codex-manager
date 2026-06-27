@@ -1,7 +1,8 @@
 # logrotate workflow
 
-Start with `$CODEX_HOME/plans/workflows/workflow-logrotate.md` before executing this workflow.
-Purpose: define safe log rotation policies.
+You must start with `$CODEX_HOME/plans/workflows/workflow-logrotate.md` before executing this workflow.
+Purpose: define safe log rotation policies for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -14,9 +15,9 @@ Purpose: define safe log rotation policies.
 
 ## Plan
 - Start from the linked workflow plan template above, then tailor scope, constraints, and validation commands before editing.
-- Keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
+- You must keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
 
-## Workflow
+## You must follow this workflow
 1) **Scope**: log sources, retention, compliance requirements.
 2) **Draft**: size/time rotation and compression policy.
 3) **Validate**: `logrotate -d` dry run.
@@ -25,7 +26,7 @@ Purpose: define safe log rotation policies.
 
 ## Safety rules
 - Avoid `copytruncate` unless necessary.
-- Keep sensitive logs `0600` or tighter.
+- You must keep sensitive logs `0600` or tighter.
 
 ## Security checkpoints
 - Enforce strict ownership/mode on active and rotated logs, including archives.
@@ -33,13 +34,13 @@ Purpose: define safe log rotation policies.
 - Align retention windows with compliance and sensitive-data handling policy.
 
 ## Testing checkpoints
-- Run `logrotate -d` for dry validation before forcing any rotation.
-- Use targeted `logrotate -f` tests and verify postrotate hooks behave safely.
-- Check archive compression, permissions, and service continuity after rotation.
+- You must run `logrotate -d` for dry validation before forcing any rotation.
+- You must use targeted `logrotate -f` tests and verify postrotate hooks behave safely.
+- You must check archive compression, permissions, and service continuity after rotation.
 
 ## Deployment checkpoints
 - Roll out by service group to limit simultaneous logging disruptions.
-- Keep previous config fragments for fast restore if rotations fail.
+- You must keep previous config fragments for fast restore if rotations fail.
 - Monitor disk and inode trends for at least one rotation cycle.
 
 ## Multi-agent handoff
@@ -51,6 +52,6 @@ See also:
 - `../observability/logrotate.md`
 - `$CODEX_HOME/templates/observability/logrotate-skeleton/`
 - `$CODEX_HOME/snippets/logrotate/app.logrotate`
-- Use skill `ops-logrotate`.
+- You must use skill `ops-logrotate`.
 - `$CODEX_HOME/index/pack/workflows.md`
 - `$CODEX_HOME/index/domains/observability/logrotate.md`

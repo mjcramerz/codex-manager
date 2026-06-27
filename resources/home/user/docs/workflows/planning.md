@@ -1,7 +1,8 @@
 # Planning workflow
-Purpose: provide the canonical planning workflow for this pack.
+Purpose: provide the canonical planning workflow for this pack for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
-Start with `$CODEX_HOME/plans/workflows/workflow-planning.md` before executing this workflow.
+You must start with `$CODEX_HOME/plans/workflows/workflow-planning.md` before executing this workflow.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -12,16 +13,16 @@ Start with `$CODEX_HOME/plans/workflows/workflow-planning.md` before executing t
 
 ## Required routing contract
 - `$CODEX_HOME/AGENTS.md`
-- `$CODEX_HOME/memories/MEMORY.md` when the task is repo-aware or ambiguous
+- `$CODEX_HOME/memories/` when the task is repo-aware or ambiguous
 - `$CODEX_HOME/INDEX.md`
 - `$CODEX_HOME/index/pack/plans.md` + `$CODEX_HOME/index/pack/workflows.md`
 - `$CODEX_HOME/index/pack/skills.md`
 - follow `$CODEX_HOME/docs/style/shell-runtime.md` before running commands
 
 ## Runtime-state boundary
-- Use `$CODEX_HOME/memories/MEMORY.md` for context only when prior decisions matter.
-- Treat the memory router and mirrored memory instruction assets as source-managed pack content when planning memory-related work.
-- Keep plans grounded in stable installed pack surfaces and avoid repository-source paths in final guidance.
+- You must use `$CODEX_HOME/memories/` for context only when prior decisions matter.
+- You must treat runtime memory as generated state and only inspect it when the live `$CODEX_HOME/memories/` directory already exists for the task.
+- You must keep plans grounded in stable installed pack surfaces and avoid repository-source paths in final guidance.
 
 ## Plan selection (quick guide)
 - **Workflow-specific work**: use `$CODEX_HOME/plans/workflows/` (for example `workflow-<name>.md`).
@@ -45,14 +46,14 @@ A plan should include:
 - When a plan touches external repos or delivery contracts, list those repos explicitly in the inventory section.
 
 ## Security checkpoints
-- Add threat assumptions and privileged operations to the plan before implementation begins.
+- You must add threat assumptions and privileged operations to the plan before implementation begins.
 - Attach input bounds/timeouts to steps that touch I/O, parsing, or remote systems.
-- Record waiver owner and expiry for every planned security exception.
+- You must record waiver owner and expiry for every planned security exception.
 
 ## Testing checkpoints
 - Every step includes a concrete verify command plus pass/fail expectation.
 - For bugfix or hardening work, require at least one failing or abuse test in the plan.
-- Define fast-path versus full-suite checkpoints for incremental validation.
+- You must define fast-path versus full-suite checkpoints for incremental validation.
 
 ## Deployment checkpoints
 - Include rollout, rollback, and migration/flag steps when runtime behavior changes.

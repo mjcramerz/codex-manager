@@ -1,4 +1,5 @@
 # Web hardening quick reference
+Purpose: tell the Codex coding agent how to use `docs/security/web-hardening.md` as a runtime-pack surface and when to stop browsing.
 
 ## Navigation
 <!-- BEGIN:nav -->

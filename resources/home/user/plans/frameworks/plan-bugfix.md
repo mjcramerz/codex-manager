@@ -1,6 +1,7 @@
 # Plan
+Purpose: tell the Codex coding agent how to use `plans/frameworks/plan-bugfix.md` as a runtime-pack surface and when to stop browsing.
 
-Use this plan when diagnosing and fixing a bug or regression.
+You must use this plan when diagnosing and fixing a bug or regression.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -20,7 +21,7 @@ Use this plan when diagnosing and fixing a bug or regression.
 
 ## Dependencies and assumptions
 - List the systems and environments required to reproduce and validate the bug.
-- Record required access, logs, traces, and telemetry dependencies.
+- You must record required access, logs, traces, and telemetry dependencies.
 
 ## Success metrics and exit criteria
 - Reproduction no longer fails and regression coverage exists for the fixed path.
@@ -28,7 +29,7 @@ Use this plan when diagnosing and fixing a bug or regression.
 - Name the release-readiness owner when the bug affects shipped behavior.
 
 ## Files and entry points
-- Record the reproduction entrypoints you inspected first.
+- You must record the reproduction entrypoints you inspected first.
 - List the files or modules most likely to contain the defect.
 
 ## Action items
@@ -47,19 +48,19 @@ Use this plan when diagnosing and fixing a bug or regression.
 - Describe the rollback or mitigation path if the fix cannot ship immediately.
 
 ## Security checkpoints
-- Confirm trust boundaries, credentials, and least-privilege assumptions before execution.
-- Validate input bounds, timeout/retry limits, and failure behavior for risky operations.
-- Record any approved exception, owner, and expiry before proceeding.
+- You must confirm trust boundaries, credentials, and least-privilege assumptions before execution.
+- You must validate input bounds, timeout/retry limits, and failure behavior for risky operations.
+- You must record any approved exception, owner, and expiry before proceeding.
 
 ## Testing checkpoints
-- Define fast-path and deep validation commands before making changes.
-- Capture expected outcomes and acceptance criteria for each validation step.
-- Re-run impacted checks after major changes and before final handoff.
+- You must define fast-path and deep validation commands before making changes.
+- You must capture expected outcomes and acceptance criteria for each validation step.
+- You must re-run impacted checks after major changes and before final handoff.
 
 ## Deployment checkpoints
-- Document rollout order, blast-radius controls, and rollback conditions.
-- Confirm migration/backfill or feature-flag sequencing when applicable.
-- Record post-deploy verification owners and evidence.
+- You must document rollout order, blast-radius controls, and rollback conditions.
+- You must confirm migration/backfill or feature-flag sequencing when applicable.
+- You must record post-deploy verification owners and evidence.
 
 ## Multi-agent handoff
 - Coordinator hands off scope, constraints, and stop condition with the target entrypoint.
@@ -74,4 +75,4 @@ Use this plan when diagnosing and fixing a bug or regression.
 - Example validation: "python3 -m unittest tests.test_hooks_scripts"
 
 ## Open questions
-- Record only the missing inputs that block reproduction or release readiness.
+- You must record only the missing inputs that block reproduction or release readiness.

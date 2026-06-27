@@ -1,4 +1,5 @@
 # Next.js
+Purpose: tell the Codex coding agent how to use `docs/web/nextjs.md` as a runtime-pack surface and when to stop browsing.
 Guidance for SSR/ISR React apps with Next.js.
 
 
@@ -11,26 +12,26 @@ Guidance for SSR/ISR React apps with Next.js.
 
 
 ## Baseline practices
-- Keep server/client boundaries explicit.
-- Use route segments and layouts consistently.
+- You must keep server/client boundaries explicit.
+- You must use route segments and layouts consistently.
 - Avoid leaking secrets into client bundles.
-- Keep side effects and data-fetching in server components where possible.
-- Validate runtime config at startup and fail closed on missing secrets.
+- You must keep side effects and data-fetching in server components where possible.
+- You must validate runtime config at startup and fail closed on missing secrets.
 
 ## Performance
-- Prefer streaming and incremental rendering where supported.
-- Keep API routes slim; move heavy work to workers.
+- You must prefer streaming and incremental rendering where supported.
+- You must keep API routes slim; move heavy work to workers.
 
 ## Validation checklist
-- Run `pnpm lint`, `pnpm test`, and `pnpm build` with production env defaults.
-- Verify route handlers enforce authz/input validation and bounded I/O.
-- Check caching policy (`revalidate`, headers, ISR paths) for correctness and stale-data behavior.
-- Confirm client bundles exclude server-only modules and secrets.
+- You must run `pnpm lint`, `pnpm test`, and `pnpm build` with production env defaults.
+- You must verify route handlers enforce authz/input validation and bounded I/O.
+- You must check caching policy (`revalidate`, headers, ISR paths) for correctness and stale-data behavior.
+- You must confirm client bundles exclude server-only modules and secrets.
 
 See also:
 - `overview.md`
 - `react.md`
 - `$CODEX_HOME/templates/web/nextjs-app/`
-- Use skill web-nextjs.
+- You must use skill web-nextjs.
 - `$CODEX_HOME/index/domains/web/frameworks.md`
 - `$CODEX_HOME/index/domains/web/nextjs.md`

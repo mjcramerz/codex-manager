@@ -1,5 +1,6 @@
 # Languages overview
-Purpose: map language-specific guidance to the right document without duplicating the style guides.
+Purpose: map language-specific guidance to the right document without duplicating the style guides for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -24,7 +25,7 @@ Purpose: map language-specific guidance to the right document without duplicatin
 - TypeScript: tooling and web surfaces
 - HTML: static documents and semantic structure
 
-## Related
+## After that, you must check related files
 - `$CODEX_HOME/docs/style/overview.md`
 - `$CODEX_HOME/index/domains/lang/overview.md`
 - `$CODEX_HOME/templates/`

@@ -1,4 +1,5 @@
 # Devlab / codelab dev container (overview)
+Purpose: tell the Codex coding agent how to use `templates/containers/devlab-codelab-skeleton/overview.md` as a runtime-pack surface and when to stop browsing.
 Reproducible dev container scaffold for Codex coding agents and local development.
 
 ## Inputs
@@ -72,7 +73,7 @@ Offline runtime (no container network):
 - Podman rootless: always use `compose.podman.override.yml` (`userns_mode: keep-id`) for bind mounts.
 - `compose.podman.override.yml` applies Podman-specific `userns_mode: keep-id` for better volume permissions.
 - The Dockerfile installs common dev tools (git, build essentials, Python, Node, Go, Rust, jq, ripgrep); adjust the list if you need slimmer images.
-- Prefer pinned base images (tag or digest) and document rootless limitations.
+- You must prefer pinned base images (tag or digest) and document rootless limitations.
 
 ## Next steps
 1) Copy files into deterministic repository paths.

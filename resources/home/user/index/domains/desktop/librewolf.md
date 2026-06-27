@@ -1,5 +1,6 @@
 # LibreWolf (entrypoint)
-Purpose: stable link to LibreWolf hardening guidance.
+Purpose: stable link to LibreWolf hardening guidance for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -20,5 +21,5 @@ Use when:
 Related:
 - `$CODEX_HOME/docs/workflows/browsers.md`
 - `$CODEX_HOME/docs/desktop/browsers.md`
-- Use skill `desktop-librewolf`.
+- You must use skill `desktop-librewolf`.
 <!-- END:related -->

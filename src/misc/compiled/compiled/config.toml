@@ -23,7 +23,7 @@ sandbox_mode = "workspace-write"
 
 [model_providers.openai-custom]
 name = "OpenAI (Custom)"
-#model = "gpt-5.3-codex"
+#model = "gpt-5.4"
 #model_reasoning_summary = "xhigh"
 requires_openai_auth = true
 #forced_login_method = "api"

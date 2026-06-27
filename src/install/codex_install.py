@@ -419,6 +419,7 @@ class Installer:
             self.repo_layout.vendor_policy_path,
             self.repo_layout.vendor_mcp_path,
             self.repo_layout.vendor_requirements_path,
+            self.repo_layout.profiles_config_dir,
             self.repo_layout.agents_config_dir,
             self.repo_layout.user_config_path,
             self.repo_layout.user_features_path,
@@ -791,6 +792,12 @@ class Installer:
 
     def _instructions_source_dir(self) -> Path:
         return self.repo_layout.instructions_dir
+
+    def _profiles_source_dir(self) -> Path:
+        return self.repo_layout.profiles_config_dir
+
+    def _runtime_profiles_dir(self) -> Path:
+        return self._runtime_home_dir()
 
     def _instruction_manifest_entries(self) -> list[dict[str, Any]]:
         manifest_path = self._instructions_manifest_path()
@@ -1450,6 +1457,24 @@ class Installer:
             skip_root_toml=True,
             mirror_deletions=True,
         )
+
+    def _materialize_profile_config_paths(self, source_dir: Path | None = None) -> None:
+        runtime_profiles_dir = self._runtime_profiles_dir()
+        resolved_source_dir = source_dir or self._profiles_source_dir()
+        if not resolved_source_dir.is_dir():
+            return
+
+        for source_path in sorted(path for path in resolved_source_dir.glob("*.toml") if path.is_file()):
+            target_path = runtime_profiles_dir / source_path.name
+            raw = source_path.read_text(encoding="utf-8")
+            rendered = self._render_home_toml(raw, target_path, apply_instruction_overrides=False)
+            mode = stat.S_IMODE(source_path.stat().st_mode) or 0o644
+            self._materialize_rendered_text(
+                target_path,
+                rendered,
+                mode=mode,
+                dry_run_message="render profile config into",
+            )
 
     def _sync_runtime_docs(self) -> None:
         docs_src = self._human_docs_source_dir()
@@ -2959,9 +2984,12 @@ class Installer:
         self._materialize_instruction_default_assets()
         self._log("rendering CODEX_HOME/config.toml from config fragments")
         self._materialize_home_config_paths()
+        self._log("rendering CODEX_HOME/*.config.toml profile layers with runtime paths")
+        self._materialize_profile_config_paths(source_dir=self.repo_layout.profiles_config_dir)
 
     def apply_home(self) -> None:
         home_src = self.repo_layout.home_user_dir
+        profiles_src = self.repo_layout.profiles_config_dir
         agents_src = self.repo_layout.agents_config_dir
         home_dst = Path(self.runtime_vars["CODEX_HOME"])
         agents_dst = Path(self.runtime_vars["CODEX_AGENTS"])
@@ -2995,6 +3023,8 @@ class Installer:
         self._sync_hooks_assets()
         self._log("rendering CODEX_HOME/config.toml from config fragments")
         self._materialize_home_config_paths()
+        self._log("rendering CODEX_HOME/*.config.toml profile layers with runtime paths")
+        self._materialize_profile_config_paths(source_dir=profiles_src)
         self._log("rendering CODEX_AGENTS/*.toml with runtime paths")
         self._materialize_agent_config_paths(source_dir=agents_src)
 

@@ -1,4 +1,5 @@
 # Debian preseed template (overview)
+Purpose: tell the Codex coding agent how to use `templates/virtualization/debian-preseed/overview.md` as a runtime-pack surface and when to stop browsing.
 Unattended installer baseline for Debian.
 
 ## Outputs
@@ -33,5 +34,5 @@ Related:
 - `$CODEX_HOME/index/domains/system/debian-preseed.md`
 - `$CODEX_HOME/docs/workflows/debian-preseed.md`
 - `$CODEX_HOME/docs/virtualization/debian-preseed.md`
-- Use skill os-debian-preseed.
+- You must use skill os-debian-preseed.
 - `$CODEX_HOME/snippets/virtualization/preseed_boot_params.txt`

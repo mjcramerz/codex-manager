@@ -1,5 +1,6 @@
 # Infrastructure overview
-Purpose: route infrastructure work to the right automation surface without mixing Terraform, Ansible, Kubernetes, and virtualization concerns.
+Purpose: route infrastructure work to the right automation surface without mixing Terraform, Ansible, Kubernetes, and virtualization concerns for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -14,13 +15,13 @@ Purpose: route infrastructure work to the right automation surface without mixin
 - Kubernetes for workload orchestration
 - Adjacent virtualization docs for VM-centric environments
 
-## Selection guide
+## You must choose the workflow this way
 - Desired-state infra with plans/state -> `terraform.md`
 - Idempotent host/service configuration -> `ansible.md`
 - Cluster workload lifecycle and policy -> `kubernetes.md`
 - VM orchestration or host virtualization -> `../virtualization/overview.md`
 
-## Guardrails
+## You must enforce these guardrails
 - Plan before apply.
-- Keep secrets and state inventories scoped and protected.
-- Keep provider/module/collection versions pinned and reviewable.
+- You must keep secrets and state inventories scoped and protected.
+- You must keep provider/module/collection versions pinned and reviewable.

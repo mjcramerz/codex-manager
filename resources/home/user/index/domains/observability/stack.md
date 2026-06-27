@@ -1,5 +1,6 @@
 # Observability stack (entrypoint)
-Purpose: stable link to observability stack guidance (Elastic Stack and host logging).
+Purpose: stable link to observability stack guidance (Elastic Stack and host logging) for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation

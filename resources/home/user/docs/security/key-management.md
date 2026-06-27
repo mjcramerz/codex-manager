@@ -1,4 +1,5 @@
 # Key management (TLS, SSH, GPG)
+Purpose: tell the Codex coding agent how to use `docs/security/key-management.md` as a runtime-pack surface and when to stop browsing.
 Processes and guardrails for generating and using cryptographic keys in codebases.
 
 
@@ -19,13 +20,13 @@ Processes and guardrails for generating and using cryptographic keys in codebase
 
 ## TLS certificates
 Production:
-- Prefer ACME or your org CA for issuance and rotation.
-- Use modern algorithms (ECDSA P-256 or RSA 3072+).
-- Keep CA/root keys offline; use short-lived leaf certs.
+- You must prefer ACME or your org CA for issuance and rotation.
+- You must use modern algorithms (ECDSA P-256 or RSA 3072+).
+- You must keep CA/root keys offline; use short-lived leaf certs.
 - Always set SANs; avoid relying on CN.
 
 Development/test:
-- Use short-lived self-signed certs and label them as non-prod.
+- You must use short-lived self-signed certs and label them as non-prod.
 - Trust only in local dev contexts; never ship to prod.
 
 Process:
@@ -35,8 +36,8 @@ Process:
 4) Install the issued cert + chain and verify expiry/renewal.
 
 ## SSH keys
-- Prefer Ed25519 (`ssh-keygen -t ed25519 -a 100`).
-- Use deploy keys or short-lived SSH certificates instead of shared keys.
+- You must prefer Ed25519 (`ssh-keygen -t ed25519 -a 100`).
+- You must use deploy keys or short-lived SSH certificates instead of shared keys.
 - Restrict access to the minimal repo or host and rotate regularly.
 - Pin host keys in `known_hosts` and avoid `StrictHostKeyChecking=no`.
 
@@ -47,10 +48,10 @@ Process:
 4) Test connectivity with strict host key checking enabled.
 
 ## GPG keys
-- Use a dedicated signing key or subkey for CI.
+- You must use a dedicated signing key or subkey for CI.
 - Set expirations and rotate before expiry.
-- Keep the primary key offline and export only signing subkeys to CI.
-- Verify signatures in CI for protected branches and releases.
+- You must keep the primary key offline and export only signing subkeys to CI.
+- You must verify signatures in CI for protected branches and releases.
 
 Process:
 1) Generate a primary key offline and add a signing subkey.

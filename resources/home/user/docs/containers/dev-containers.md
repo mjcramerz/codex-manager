@@ -1,5 +1,6 @@
 # Dev containers
-Purpose: guide reproducible development containers for local work, CI parity, and Codex-oriented tool bundles.
+Purpose: guide reproducible development containers for local work, CI parity, and Codex-oriented tool bundles for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -8,7 +9,7 @@ Purpose: guide reproducible development containers for local work, CI parity, an
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-## Use this file when
+## You must use this file when
 - you need a portable developer environment across machines
 - you want Docker and Podman support from one scaffold
 - you need to choose between non-root default, root override, or offline runtime
@@ -31,10 +32,10 @@ It already carries:
 
 ## Validation
 - Render the chosen compose files before first run.
-- Confirm container user, UID/GID, bind-mount ownership, and published ports.
-- Re-run the template's local verification commands after changing the package/tool list.
+- You must confirm container user, UID/GID, bind-mount ownership, and published ports.
+- You must re-run the template's local verification commands after changing the package/tool list.
 
-## Related
+## After that, you must check related files
 - `overview.md`
 - `docker-compose.md`
 - `podman.md`

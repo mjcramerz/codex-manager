@@ -1,4 +1,5 @@
 # logrotate skeleton (overview)
+Purpose: tell the Codex coding agent how to use `templates/observability/logrotate-skeleton/overview.md` as a runtime-pack surface and when to stop browsing.
 Minimal logrotate config for an application log.
 
 ## Outputs

@@ -1,5 +1,6 @@
 # virsh / KVM (entrypoint)
-Purpose: stable link to virsh/libvirt guidance, workflows, and templates.
+Purpose: stable link to virsh/libvirt guidance, workflows, and templates for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -21,5 +22,5 @@ Related:
 - `$CODEX_HOME/docs/workflows/virsh.md`
 - `$CODEX_HOME/templates/virtualization/virsh-vm-skeleton`
 - `$CODEX_HOME/snippets/virsh`
-- Use skill `infra-virsh`.
+- You must use skill `infra-virsh`.
 <!-- END:related -->

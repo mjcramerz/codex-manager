@@ -1,4 +1,5 @@
 # Security operations index
+Purpose: tell the Codex coding agent how to use `docs/security/security-labs-index.md` as a runtime-pack surface and when to stop browsing.
 This is the central knowledge index for reusable security operations, cyber defense, mobile defense, and NetHunter workflows.
 
 
@@ -51,6 +52,6 @@ This is the central knowledge index for reusable security operations, cyber defe
 - `$CODEX_HOME/snippets/bash/nethunter_pixel9a_root_sequence.sh`
 
 ## Enforcement notes
-- Keep offensive simulation content scoped to the documented workflow and target set.
+- You must keep offensive simulation content scoped to the documented workflow and target set.
 - Reuse these runbooks by adapting the scope manifest, environment class, and validation checkpoints.
-- Require a documented scope manifest before active security simulation.
+- You must require a documented scope manifest before active security simulation.

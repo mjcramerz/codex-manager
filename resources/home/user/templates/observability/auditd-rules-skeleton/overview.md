@@ -1,4 +1,5 @@
 # auditd rules skeleton (overview)
+Purpose: tell the Codex coding agent how to use `templates/observability/auditd-rules-skeleton/overview.md` as a runtime-pack surface and when to stop browsing.
 Minimal audit rules baseline. Start small and expand based on actual needs.
 
 ## Outputs

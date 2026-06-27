@@ -1,4 +1,5 @@
 # Python CLI Template (overview)
+Purpose: tell the Codex coding agent how to use `templates/python/cli-app/overview.md` as a runtime-pack surface and when to stop browsing.
 
 ## Quickstart
 ```bash
@@ -19,8 +20,8 @@ cli-app --help
 - `LOG_LEVEL` and `LOG_FORMAT` env vars override defaults
 
 ## Notes
-- Keep dependencies minimal and pinned.
-- Use `APP_` env prefix if you add settings.
+- You must keep dependencies minimal and pinned.
+- You must use `APP_` env prefix if you add settings.
 
 ## Inputs
 - Destination repository path for this template.
@@ -40,6 +41,6 @@ cli-app --help
 2) Replace placeholders and pin versions/images before first commit.
 3) Run the narrowest relevant checks (lint/test/build or dry-run) before commit.
 
-## Related
+## After that, you must check related files
 - Docs: `$CODEX_HOME/docs/style/python.md`
 - Snippets: `$CODEX_HOME/snippets/python/`

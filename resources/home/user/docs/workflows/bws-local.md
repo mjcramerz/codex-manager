@@ -1,7 +1,8 @@
 # Local BWS workflow
 
-Start with `$CODEX_HOME/plans/workflows/workflow-bws-local.md` before executing this workflow.
-Purpose: provide a local-only playbook for Bitwarden Secrets Manager CLI (`bws`) on Debian workstations and servers.
+You must start with `$CODEX_HOME/plans/workflows/workflow-bws-local.md` before executing this workflow.
+Purpose: provide a local-only playbook for Bitwarden Secrets Manager CLI (`bws`) on Debian workstations and servers for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -13,14 +14,14 @@ Purpose: provide a local-only playbook for Bitwarden Secrets Manager CLI (`bws`)
 
 
 ## Plan
-- Use `$CODEX_HOME/plans/workflows/workflow-bws-local.md`.
+- You must use `$CODEX_HOME/plans/workflows/workflow-bws-local.md`.
 
 ## Scope
 - In scope: local installation, PATH wiring, keyring storage, token rotation, and local teardown.
 - Out of scope: CI/CD secret injection, hosted runner setup, and GitHub/GitLab pipeline wiring.
 
 ## Skill routing
-- Use skill `bws-local`.
+- You must use skill `bws-local`.
 
 ## Baseline workflow
 1) Validate local prerequisites (Debian, sudo availability, DBus/session keyring readiness).
@@ -32,20 +33,20 @@ Purpose: provide a local-only playbook for Bitwarden Secrets Manager CLI (`bws`)
 7) Tear down cleanly by removing binary, path hooks, and keyring entries.
 
 ## Operational guidance
-- Keep token material out of shell history and logs.
-- Prefer keyring retrieval over persistent plaintext env files.
-- Keep path mutation deterministic and scoped to dedicated marker blocks.
-- Require explicit sudo elevation only for privileged writes.
+- You must keep token material out of shell history and logs.
+- You must prefer keyring retrieval over persistent plaintext env files.
+- You must keep path mutation deterministic and scoped to dedicated marker blocks.
+- You must require explicit sudo elevation only for privileged writes.
 
 ## Security checkpoints
-- Confirm `BWS_ACCESS_TOKEN` and `BWS_PROJECT_ID` are never printed, logged, or committed.
-- Validate keyring target attributes (service/account names) against strict allowlists.
+- You must confirm `BWS_ACCESS_TOKEN` and `BWS_PROJECT_ID` are never printed, logged, or committed.
+- You must validate keyring target attributes (service/account names) against strict allowlists.
 - Ensure scripts are run as a non-root user and only elevate specific privileged commands.
 
 ## Testing checkpoints
-- Validate syntax/static checks for shell scripts before execution.
+- You must validate syntax/static checks for shell scripts before execution.
 - Test install, update-keyring, keyring-status, and nuke flows in a non-prod shell session.
-- Confirm keyring deletion behavior is deterministic and idempotent.
+- You must confirm keyring deletion behavior is deterministic and idempotent.
 
 ## Deployment checkpoints
 - For workstation rollout, sequence install -> keyring update -> verification in one session.

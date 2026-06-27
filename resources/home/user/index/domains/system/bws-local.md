@@ -1,5 +1,6 @@
 # Local BWS workflow (entrypoint)
-Purpose: stable link to local Bitwarden Secrets Manager (`bws`) guidance for Debian hosts.
+Purpose: stable link to local Bitwarden Secrets Manager (`bws`) guidance for Debian hosts for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -22,5 +23,5 @@ Related:
 - `$CODEX_HOME/docs/prompt-writing.md`
 - `$CODEX_HOME/docs/security/bitwarden-secrets-local.md`
 - `$CODEX_HOME/docs/workflows/bws-local.md`
-- Use skill `bws-local`.
+- You must use skill `bws-local`.
 <!-- END:related -->

@@ -1,4 +1,5 @@
 # Docker Buildx
+Purpose: tell the Codex coding agent how to use `docs/containers/buildx.md` as a runtime-pack surface and when to stop browsing.
 Buildx enables multi-platform builds and advanced caching via BuildKit.
 
 
@@ -17,8 +18,8 @@ Buildx enables multi-platform builds and advanced caching via BuildKit.
 
 ## Determinism and safety
 - Avoid `:latest` base images; prefer pinned versions (or image digests for high assurance).
-- Use lockfiles inside builds (e.g., `Cargo.lock`, `requirements.txt` / lockfile).
-- Keep network use explicit. When possible, build with restricted network or vendor dependencies.
+- You must use lockfiles inside builds (e.g., `Cargo.lock`, `requirements.txt` / lockfile).
+- You must keep network use explicit. When possible, build with restricted network or vendor dependencies.
 - If a build requires outbound network, document why and keep it bounded (proxies, retries).
 
 ## Common pitfalls

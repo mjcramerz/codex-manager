@@ -1,0 +1,10 @@
+profile = "review"
+model = "gpt-5.4"
+model_catalog_json = "$CODEX_HOME/.models/review_catalog.json"
+model_instructions_file = "$CODEX_USER_DIR/instructions/profiles/review/models/base.md"
+model_reasoning_effort = "high"
+model_reasoning_summary = "detailed"
+model_verbosity = "low"
+
+[instruction_overrides.models]
+base_instructions_file = "$CODEX_USER_DIR/instructions/profiles/review/models/base.md"

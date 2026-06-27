@@ -1,5 +1,6 @@
 # Agent orchestration workflow (entrypoint)
-Purpose: stable link to multi-agent orchestration guidance.
+Purpose: stable link to multi-agent orchestration guidance for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -10,18 +11,18 @@ Purpose: stable link to multi-agent orchestration guidance.
 
 Canonical content: `$CODEX_HOME/docs/workflows/agent-orchestration.md`
 
-## Use when
+## You must use this file when
 - a task is large enough to benefit from multiple coordinated roles
 - you need explicit ownership, handoff, and reconciliation rules
 - review and testing should be owned separately from implementation
 
-## Related
+## After that, you must check related files
 <!-- BEGIN:related -->
-- `$CODEX_HOME/MULTI_AGENT.md`
+- `$CODEX_HOME/AGENTS.md`
 - `$CODEX_HOME/docs/workflows/planning.md`
 - `$CODEX_HOME/docs/workflows/repo-ops.md`
 - `$CODEX_HOME/docs/workflows/code-review.md`
 - `$CODEX_HOME/index/pack/workflows.md`
-- Use skill `workflow-plans`.
-- Use skill `repo-ops`.
+- You must use skill `workflow-plans`.
+- You must use skill `repo-ops`.
 <!-- END:related -->

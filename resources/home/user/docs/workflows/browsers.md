@@ -1,7 +1,8 @@
 # Browsers workflow
 
-Start with `$CODEX_HOME/plans/workflows/workflow-browsers.md` before executing this workflow.
-Purpose: install and harden desktop browsers safely.
+You must start with `$CODEX_HOME/plans/workflows/workflow-browsers.md` before executing this workflow.
+Purpose: install and harden desktop browsers safely for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -14,9 +15,9 @@ Purpose: install and harden desktop browsers safely.
 
 ## Plan
 - Start from the linked workflow plan template above, then tailor scope, constraints, and validation commands before editing.
-- Keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
+- You must keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
 
-## Workflow
+## You must follow this workflow
 1) **Scope**: threat model, user-data location, extension policy.
 2) **Install**: use vendor‑signed builds; verify provenance.
 3) **Configure**: apply overrides or policies.
@@ -24,23 +25,23 @@ Purpose: install and harden desktop browsers safely.
 5) **Verify**: test user-data directory permissions and updates.
 
 ## Safety rules
-- Keep browser user-data directories in `0700` directories.
+- You must keep browser user-data directories in `0700` directories.
 - Avoid running browsers as root.
 
 ## Security checkpoints
-- Verify package signatures/checksums and trusted update channels for each browser build.
+- You must verify package signatures/checksums and trusted update channels for each browser build.
 - Apply extension and policy allowlists; disable risky debug or unmanaged user-data paths.
-- Keep user-data directories at `0700` and system policy files root-owned.
+- You must keep user-data directories at `0700` and system policy files root-owned.
 
 ## Testing checkpoints
 - Launch with hardened browser state and confirm policies are applied as expected.
-- Validate required internal sites, SSO flows, and certificate trust behavior.
+- You must validate required internal sites, SSO flows, and certificate trust behavior.
 - Test Wayland and `.desktop` integration paths used by target users.
 
 ## Deployment checkpoints
 - Pilot one browser/user-data combination before expanding to wider user groups.
-- Keep prior browser package and policy snapshots for fast rollback.
-- Define update cadence, ownership, and post-update compatibility checks.
+- You must keep prior browser package and policy snapshots for fast rollback.
+- You must define update cadence, ownership, and post-update compatibility checks.
 
 ## Multi-agent handoff
 - Coordinator shares target browser versions, user-data paths, and extension policy scope.
@@ -52,6 +53,6 @@ See also:
 - `../desktop/librewolf.md`
 - `../desktop/mullvad-browser.md`
 - `../desktop/thorium.md`
-- Use skill `desktop-browser-hardening`.
+- You must use skill `desktop-browser-hardening`.
 - `$CODEX_HOME/index/pack/workflows.md`
 - `$CODEX_HOME/index/domains/desktop/browsers.md`

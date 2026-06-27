@@ -102,7 +102,7 @@ class RuntimePackDocsContractTests(unittest.TestCase):
         self.assertNotIn("$CODEX_HOME/prompts", manifest)
         self.assertNotIn("$CODEX_HOME/.models/OVERVIEW.md", manifest)
         self.assertIn("$CODEX_HOME/docs/create-prompts.md", manifest)
-        self.assertIn("$CODEX_HOME/.models/model_catalog.json", manifest)
+        self.assertIn("$CODEX_HOME/.models/default_catalog.json", manifest)
         self.assertIn("$CODEX_HOME/.models/instructions/models/base.md", manifest)
         self.assertIn("$CODEX_HOME/.models/instructions/compact/prompt.md", manifest)
 
@@ -117,7 +117,6 @@ class RuntimePackDocsContractTests(unittest.TestCase):
             HOME_ROOT / "index" / "OVERVIEW.md",
             HOME_ROOT / "index" / "pack" / "overview.md",
             HOME_ROOT / "index" / "pack" / "skills.md",
-            HOME_ROOT / "memories" / "MEMORY.md",
         ]
         banned = (
             "resources/home/user",

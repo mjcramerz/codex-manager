@@ -1,6 +1,7 @@
 # Plan
+Purpose: tell the Codex coding agent how to use `plans/workflows/workflow-prompts-library.md` as a runtime-pack surface and when to stop browsing.
 
-Use this plan when following `$CODEX_HOME/docs/workflows/prompts-library.md`.
+You must use this plan when following `$CODEX_HOME/docs/workflows/prompts-library.md`.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -25,24 +26,24 @@ Use this plan when following `$CODEX_HOME/docs/workflows/prompts-library.md`.
 [ ] Update linked maintenance assets (docs, index, template, snippet, skill references) when required.
 
 ## Testing and validation
-- Run a stale-reference sweep for direct prompt-file paths outside `$CODEX_HOME/docs/create-prompts.md`.
-- Validate Markdown structure for the changed guidance files.
-- Run the narrowest repo checks required by the touched files.
+- You must run a stale-reference sweep for direct prompt-file paths outside `$CODEX_HOME/docs/create-prompts.md`.
+- You must validate Markdown structure for the changed guidance files.
+- You must run the narrowest repo checks required by the touched files.
 
 ## Security checkpoints
-- Confirm trust boundaries and disallow prompt text that bypasses required controls.
-- Validate input bounds and expected verification steps before shipping prompt edits.
-- Record approved exceptions with owner and expiry.
+- You must confirm trust boundaries and disallow prompt text that bypasses required controls.
+- You must validate input bounds and expected verification steps before shipping prompt edits.
+- You must record approved exceptions with owner and expiry.
 
 ## Testing checkpoints
-- Validate updated prompt listings and command names in `$CODEX_HOME/docs/create-prompts.md`.
-- Confirm routing and plan links resolve after any file rename or move.
-- Re-run impacted checks after every contract or command change.
+- You must validate updated prompt listings and command names in `$CODEX_HOME/docs/create-prompts.md`.
+- You must confirm routing and plan links resolve after any file rename or move.
+- You must re-run impacted checks after every contract or command change.
 
 ## Deployment checkpoints
-- Keep prompt assets and prompt guidance aligned before broader pack checks.
-- Document user-impacting command changes and rollback instructions.
-- Confirm post-sync spot checks of affected commands.
+- You must keep prompt assets and prompt guidance aligned before broader pack checks.
+- You must document user-impacting command changes and rollback instructions.
+- You must confirm post-sync spot checks of affected commands.
 
 ## Multi-agent handoff
 - Coordinator shares prompt scope, stop conditions, and required checks.

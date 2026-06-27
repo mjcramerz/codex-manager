@@ -1,6 +1,7 @@
 # Plan
+Purpose: tell the Codex coding agent how to use `plans/workflows/workflow-ci-cd.md` as a runtime-pack surface and when to stop browsing.
 
-Use this plan when following `$CODEX_HOME/docs/workflows/ci-cd.md`.
+You must use this plan when following `$CODEX_HOME/docs/workflows/ci-cd.md`.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -32,21 +33,21 @@ Use this plan when following `$CODEX_HOME/docs/workflows/ci-cd.md`.
 [ ] Apply updates in reversible order and record acceptance evidence per platform.
 
 ## Testing and validation
-- Run deterministic contract checks first (`git fetch origin --prune --prune-tags`, bounded `rg` scans for includes/variables/rules).
-- Run platform-specific lint/validation for each edited CI file.
+- You must run deterministic contract checks first (`git fetch origin --prune --prune-tags`, bounded `rg` scans for includes/variables/rules).
+- You must run platform-specific lint/validation for each edited CI file.
 - Accept only if branch/tag gates, include wiring, and variable contracts match workflow guidance.
 
 ## Security checkpoints
-- Keep stage tokens least-privilege; block release credentials on untrusted refs.
-- Record any bypass as a time-boxed exception with owner, reason, and expiry.
+- You must keep stage tokens least-privilege; block release credentials on untrusted refs.
+- You must record any bypass as a time-boxed exception with owner, reason, and expiry.
 
 ## Testing checkpoints
-- Define fast-path and deep-path checks with explicit pass criteria before edits.
-- Re-run checks after every trigger/rules/include contract change.
+- You must define fast-path and deep-path checks with explicit pass criteria before edits.
+- You must re-run checks after every trigger/rules/include contract change.
 
 ## Deployment checkpoints
-- Keep promotion order explicit (`mcr/main` -> `mcr/staging` -> `mcr/release` -> release tag).
-- Record rollback ref/tag and post-deploy owner before closing the task.
+- You must keep promotion order explicit (`mcr/main` -> `mcr/staging` -> `mcr/release` -> release tag).
+- You must record rollback ref/tag and post-deploy owner before closing the task.
 
 ## Multi-agent handoff
 - Coordinator hands off scope, target entrypoint, and stop condition.

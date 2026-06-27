@@ -1,4 +1,5 @@
 # Ansible role skeleton (overview)
+Purpose: tell the Codex coding agent how to use `templates/infra/ansible-role-skeleton/overview.md` as a runtime-pack surface and when to stop browsing.
 Baseline structure for an idempotent role.
 
 ## Structure

@@ -1,6 +1,7 @@
 # Plan
+Purpose: tell the Codex coding agent how to use `plans/skills/skill-perl-hooks.md` as a runtime-pack surface and when to stop browsing.
 
-Use this plan when applying or updating the `perl-hooks` skill.
+You must use this plan when applying or updating the `perl-hooks` skill.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -10,7 +11,7 @@ Use this plan when applying or updating the `perl-hooks` skill.
 <!-- END:nav -->
 
 ## Inputs
-- Use skill `perl-hooks`.
+- You must use skill `perl-hooks`.
 - Any referenced scripts, assets, or references in the skill.
 
 ## Scope

@@ -1,4 +1,5 @@
 # Performance playbook
+Purpose: tell the Codex coding agent how to use `docs/perf/overview.md` as a runtime-pack surface and when to stop browsing.
 Performance playbook for Codex-driven changes.
 
 
@@ -74,4 +75,4 @@ See also:
 - `python-perf.md`
 - `$CODEX_HOME/index/core/perf.md`
 - `../workflows/overview.md`
-- Use skill perf-profiling.
+- You must use skill perf-profiling.

@@ -1,4 +1,5 @@
 # Browsers overview
+Purpose: tell the Codex coding agent how to use `docs/desktop/browsers.md` as a runtime-pack surface and when to stop browsing.
 Guidance for hardened desktop browser setup.
 
 
@@ -11,14 +12,14 @@ Guidance for hardened desktop browser setup.
 
 
 ## Baseline practices
-- Prefer vendor‑signed builds and verify signatures.
+- You must prefer vendor‑signed builds and verify signatures.
 - Pin versions in automation and record provenance.
-- Keep browser user-data directories on user‑writable paths with strict permissions.
+- You must keep browser user-data directories on user‑writable paths with strict permissions.
 - Avoid installing browser extensions without review.
 
 ## Wayland defaults
-- Prefer native Wayland flags where supported.
-- Use GPU acceleration only after verifying stability.
+- You must prefer native Wayland flags where supported.
+- You must use GPU acceleration only after verifying stability.
 
 ## Quick map
 - LibreWolf: `librewolf.md`

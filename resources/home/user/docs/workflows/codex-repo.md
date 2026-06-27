@@ -1,7 +1,8 @@
 # Codex repository workflow
 
-Start with `$CODEX_HOME/plans/workflows/workflow-codex-repo.md` before executing this workflow.
-Purpose: keep the Codex source repo and this config pack aligned across tooling, CI/CD, release, and web-stack guidance.
+You must start with `$CODEX_HOME/plans/workflows/workflow-codex-repo.md` before executing this workflow.
+Purpose: keep the Codex source repo and this config pack aligned across tooling, CI/CD, release, and web-stack guidance for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -12,12 +13,12 @@ Purpose: keep the Codex source repo and this config pack aligned across tooling,
 
 ## Plan
 - Start from the linked workflow plan template above, then tailor scope, constraints, and validation commands before editing.
-- Keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
+- You must keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
 
 ## Current upstream anchors
 - Upstream reference commit (realtime transport behavior): `10a3adad8ee8d2cc5a22d0d85622d9ea84d2989f` (2026-02-23).
 - Upstream schema source-of-truth: `https://raw.githubusercontent.com/openai/codex/refs/heads/main/codex-rs/core/config.schema.json`.
-- Upstream bundled model catalog source: `https://raw.githubusercontent.com/openai/codex/main/codex-rs/core/models.json`.
+- Curated runtime model catalogs live under `$CODEX_USER_DIR/instructions/default/models/` and `$CODEX_USER_DIR/instructions/profiles/**/models/`.
 
 ## Source scope
 - Primary implementation surface: `codex-rs/` (Rust workspace)
@@ -31,8 +32,8 @@ Purpose: keep the Codex source repo and this config pack aligned across tooling,
 - `cf-git-cicd-worker` and `cf-aptly-r2` when Cloudflare-oriented skills or workflow docs depend on current delivery behavior.
 
 ## Repo-aware memory guidance
-- Use `$CODEX_HOME/memories/MEMORY.md` only when prior repo-specific decisions actually matter.
-- Keep runtime-pack references pointed at stable installed docs, plans, skills, templates, snippets, and plugin metadata.
+- You must use `$CODEX_HOME/memories/` only when prior repo-specific decisions actually matter.
+- You must keep runtime-pack references pointed at stable installed docs, plans, skills, templates, snippets, and plugin metadata.
 
 ## Audit workflow
 1) **Inventory** language/tooling and test/build entrypoints (`justfile`, Cargo, pnpm, Python scripts).
@@ -50,12 +51,12 @@ Purpose: keep the Codex source repo and this config pack aligned across tooling,
 - Ensure `/etc/codex/config.toml` keeps commented reference examples for:
   - `experimental_realtime_ws_backend_prompt`
   - `experimental_realtime_ws_base_url`
-- Keep layer expectations explicit:
+- You must keep layer expectations explicit:
   - system-level compiled config lives in `/etc/codex/config.toml` and `/etc/codex/requirements.toml`
   - user-level compiled config lives in `$CODEX_HOME/config.toml`
   - `$CODEX_HOME/config.toml` keeps structured inline profile maps under `[permissions]`
   - `/etc/codex/config.toml` keeps structured inline vendor maps under `[permissions]` without normalizing them into another shape
-- Keep `$CODEX_HOME/.models/model_catalog.json` in sync with upstream `codex-rs/core/models.json`.
+- You must keep `$CODEX_HOME/.models/default_catalog.json`, `$CODEX_HOME/.models/review_catalog.json`, and `$CODEX_HOME/.models/cyber_catalog.json` aligned with the curated instruction catalogs in `$CODEX_USER_DIR/instructions/`.
 
 ## CI/CD and release alignment checklist
 - Build + tag-guard pipeline: `.github/workflows/build-codex-rs.yml`
@@ -66,15 +67,15 @@ Purpose: keep the Codex source repo and this config pack aligned across tooling,
 
 ## Testing checkpoints
 - For each mapping update, run or cite source-equivalent Rust/pnpm/Python checks.
-- Validate that every referenced source path/workflow file exists before publishing pack updates.
-- Validate TOML syntax after config changes.
-- Validate catalog JSON syntax after model-catalog refresh.
-- Re-run pack verification after edits to confirm indexes and links stay consistent.
+- You must validate that every referenced source path/workflow file exists before publishing pack updates.
+- You must validate TOML syntax after config changes.
+- You must validate catalog JSON syntax after model-catalog refresh.
+- You must re-run pack verification after edits to confirm indexes and links stay consistent.
 
 ## Deployment checkpoints
 - Land pack alignment changes before related source release branch/tag cuts whenever possible.
 - Coordinate CI/release doc updates so branch/tag policies stay synchronized across repos.
-- Keep a rollback note to the previous pack commit if updated guidance causes operator confusion.
+- You must keep a rollback note to the previous pack commit if updated guidance causes operator confusion.
 
 ## Multi-agent handoff
 - Source auditor hands file-to-file mapping (`source path -> pack doc`) with unresolved gaps.

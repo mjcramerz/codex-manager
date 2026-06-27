@@ -1,7 +1,8 @@
 # Terraform workflow
 
-Start with `$CODEX_HOME/plans/workflows/workflow-terraform.md` before executing this workflow.
-Purpose: plan, review, and apply Terraform changes safely.
+You must start with `$CODEX_HOME/plans/workflows/workflow-terraform.md` before executing this workflow.
+Purpose: plan, review, and apply Terraform changes safely for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -14,9 +15,9 @@ Purpose: plan, review, and apply Terraform changes safely.
 
 ## Plan
 - Start from the linked workflow plan template above, then tailor scope, constraints, and validation commands before editing.
-- Keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
+- You must keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
 
-## Workflow
+## You must follow this workflow
 1) **Scope**: modules, environments, backends, credentials.
 2) **Init**: `terraform init` with backend config.
 3) **Validate**: `fmt`, `validate`, `plan`.
@@ -26,8 +27,8 @@ Purpose: plan, review, and apply Terraform changes safely.
 
 ## Safety rules
 - Never `apply` without a reviewed plan.
-- Treat state as sensitive; avoid leaking it.
-- Use locks to prevent concurrent applies.
+- You must treat state as sensitive; avoid leaking it.
+- You must use locks to prevent concurrent applies.
 
 ## Security checkpoints
 - Pin provider/module versions and verify source trust before planning.
@@ -35,14 +36,14 @@ Purpose: plan, review, and apply Terraform changes safely.
 - Review plan output for privilege expansion, public exposure, or destructive drift.
 
 ## Testing checkpoints
-- Run `terraform fmt -check`, `terraform validate`, and environment-specific `plan`.
+- You must run `terraform fmt -check`, `terraform validate`, and environment-specific `plan`.
 - Execute repository policy checks for IaC security if configured.
-- Confirm drift-sensitive resources with refresh/import checks before apply.
+- You must confirm drift-sensitive resources with refresh/import checks before apply.
 
 ## Deployment checkpoints
-- Require approved plan artifacts tied to the exact commit/workspace before apply.
+- You must require approved plan artifacts tied to the exact commit/workspace before apply.
 - Apply in smallest safe scope and avoid ad-hoc concurrent runs.
-- Capture apply logs, resulting outputs, and lock/unlock events for auditability.
+- You must capture apply logs, resulting outputs, and lock/unlock events for auditability.
 
 ## Multi-agent handoff
 - Coordinator provides workspace/backend context and approval gate owner.
@@ -53,5 +54,5 @@ See also:
 - `../infra/terraform.md`
 - `$CODEX_HOME/templates/infra/terraform-module-skeleton/`
 - `$CODEX_HOME/snippets/terraform/versions.tf`
-- Use skill `iac-terraform`.
+- You must use skill `iac-terraform`.
 - `$CODEX_HOME/index/pack/workflows.md`

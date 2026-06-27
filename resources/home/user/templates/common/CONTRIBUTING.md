@@ -1,14 +1,15 @@
 # Contributing (template)
+Purpose: tell the Codex coding agent how to use `templates/common/CONTRIBUTING.md` as a runtime-pack surface and when to stop browsing.
 
 ## Principles
-- Keep PRs small, cohesive, and reviewable.
+- You must keep PRs small, cohesive, and reviewable.
 - Preserve existing behavior unless the change is intentional and documented.
-- Prefer correctness first, then security, then performance, then polish.
+- You must prefer correctness first, then security, then performance, then polish.
 
 ## Before opening a PR
-- Run format + lint + tests locally (or document why not).
-- Add tests for behavior changes (including negative/security cases where applicable).
-- Update project runbooks/docs when user-visible behavior changes.
+- You must run format + lint + tests locally (or document why not).
+- You must add tests for behavior changes (including negative/security cases where applicable).
+- You must update project runbooks/docs when user-visible behavior changes.
 - Commit lockfile updates when dependencies change.
 
 ## PR description checklist
@@ -18,7 +19,7 @@
 - Rollout/migration notes (if applicable)
 
 ## Security
-- Treat all inputs as untrusted; validate and bound sizes/timeouts at trust boundaries.
+- You must treat all inputs as untrusted; validate and bound sizes/timeouts at trust boundaries.
 - Never log secrets or request bodies by default.
 - Avoid `eval`, shell interpolation with untrusted input, and unsafe deserialization.
 

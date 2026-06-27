@@ -1,5 +1,6 @@
 # Security source catalog
-Purpose: list the primary-source retrieval set for security-labs work so repo-local notes do not drift from upstream standards and official docs.
+Purpose: list the primary-source retrieval set for security-labs work so repo-local notes do not drift from upstream standards and official docs for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -8,7 +9,7 @@ Purpose: list the primary-source retrieval set for security-labs work so repo-lo
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-## Use this file when
+## You must use this file when
 - preparing NetHunter, mobile rooting, wireless, or defensive simulation work
 - updating security-labs skills or workflows
 - checking which sources are acceptable before writing new runbooks
@@ -25,6 +26,6 @@ Purpose: list the primary-source retrieval set for security-labs work so repo-lo
 - MITRE ATT&CK, NIST, and CISA references
 
 ## Notes
-- Record exact retrieval date and commit/tag when using build guidance.
-- Keep workspace-local clone paths out of published runbooks.
+- You must record exact retrieval date and commit/tag when using build guidance.
+- You must keep workspace-local clone paths out of published runbooks.
 - Do not promote uncontrolled PoC material as the primary source of truth.

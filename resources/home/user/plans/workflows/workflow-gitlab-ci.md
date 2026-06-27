@@ -1,6 +1,7 @@
 # Plan
+Purpose: tell the Codex coding agent how to use `plans/workflows/workflow-gitlab-ci.md` as a runtime-pack surface and when to stop browsing.
 
-Use this plan when following `$CODEX_HOME/docs/workflows/gitlab-ci.md`.
+You must use this plan when following `$CODEX_HOME/docs/workflows/gitlab-ci.md`.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -33,21 +34,21 @@ Use this plan when following `$CODEX_HOME/docs/workflows/gitlab-ci.md`.
 [ ] Apply updates in reversible order and capture acceptance evidence.
 
 ## Testing and validation
-- Run GitLab CI lint and targeted pipeline checks for changed include/rules paths.
-- Run deterministic contract scans (`rg` for includes, vars, refs) before broad pipeline runs.
+- You must run GitLab CI lint and targeted pipeline checks for changed include/rules paths.
+- You must run deterministic contract scans (`rg` for includes, vars, refs) before broad pipeline runs.
 - Accept only if protected-ref rules, include wiring, and variable contracts match the workflow guide.
 
 ## Security checkpoints
 - Restrict release jobs and protected variables to trusted refs only.
-- Treat runner privilege or secret-scope exceptions as time-boxed approvals with owner and expiry.
+- You must treat runner privilege or secret-scope exceptions as time-boxed approvals with owner and expiry.
 
 ## Testing checkpoints
-- Define fast-path and deep-path checks with explicit pass criteria before edits.
-- Re-run checks after include, rules, or variable contract changes.
+- You must define fast-path and deep-path checks with explicit pass criteria before edits.
+- You must re-run checks after include, rules, or variable contract changes.
 
 ## Deployment checkpoints
-- Keep promotion order explicit (`mcr/staging` validation -> `mcr/release` -> protected release tag).
-- Record rollback artifact refs and release operator ownership in handoff notes.
+- You must keep promotion order explicit (`mcr/staging` validation -> `mcr/release` -> protected release tag).
+- You must record rollback artifact refs and release operator ownership in handoff notes.
 
 ## Multi-agent handoff
 - Coordinator hands off scope, target entrypoint, and stop condition.

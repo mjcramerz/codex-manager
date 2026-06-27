@@ -34,6 +34,9 @@ class RuntimePackStructureContractTests(unittest.TestCase):
     def test_legacy_unix_entrypoint_is_removed(self) -> None:
         self.assertFalse((HOME_ROOT / "UNIX.md").exists())
 
+    def test_legacy_multi_agent_entrypoint_is_removed(self) -> None:
+        self.assertFalse((HOME_ROOT / "MULTI_AGENT.md").exists())
+
     def test_governing_docs_avoid_tool_specific_or_stale_contract_language(self) -> None:
         files = [
             HOME_ROOT / "AGENTS.md",

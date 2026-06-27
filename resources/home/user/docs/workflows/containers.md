@@ -1,7 +1,8 @@
 # Containers workflow
 
-Start with `$CODEX_HOME/plans/workflows/workflow-containers.md` before executing this workflow.
-Purpose: build containerized dev/test environments with rootless-friendly defaults.
+You must start with `$CODEX_HOME/plans/workflows/workflow-containers.md` before executing this workflow.
+Purpose: build containerized dev/test environments with rootless-friendly defaults for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -14,9 +15,9 @@ Purpose: build containerized dev/test environments with rootless-friendly defaul
 
 ## Plan
 - Start from the linked workflow plan template above, then tailor scope, constraints, and validation commands before editing.
-- Keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
+- You must keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
 
-## Workflow
+## You must follow this workflow
 1) **Scope**: define services, ports, storage, and required network access.
 2) **Engine**: choose Docker or Podman, rootless or rootful; decide if you need a dev container.
 3) **Dockerfile**: add a non-root file (pin base image; add `.dockerignore`; prefer `COPY --chown`). Use `Containerfile` only if the repo already standardizes on it.
@@ -28,7 +29,7 @@ Purpose: build containerized dev/test environments with rootless-friendly defaul
 ## Safety rules
 - Avoid `--privileged`, `--cap-add=ALL`, and Docker socket mounts.
 - Do not bake secrets into images or compose files.
-- Prefer high ports (>=1024) for rootless compatibility.
+- You must prefer high ports (>=1024) for rootless compatibility.
 - Pin base images and lock dependencies for reproducible builds.
 - For Podman tasks, use the same Dockerfile + compose files as Docker; require `compose.podman.override.yml` when bind-mounting.
 
@@ -39,13 +40,13 @@ Purpose: build containerized dev/test environments with rootless-friendly defaul
 
 ## Testing checkpoints
 - Build and run required matrix variants (online/offline and Docker/Podman where in scope).
-- Run smoke checks for health endpoints, permissions, and bind-mount UID/GID behavior.
-- Validate rootless networking and Podman `keep-id` expectations on target hosts.
+- You must run smoke checks for health endpoints, permissions, and bind-mount UID/GID behavior.
+- You must validate rootless networking and Podman `keep-id` expectations on target hosts.
 
 ## Deployment checkpoints
 - Promote immutable image tags/digests through environments with canary-first rollout.
-- Keep previous image digest and compose overrides available for rollback.
-- Capture registry publish evidence, scan results, and runtime verification notes.
+- You must keep previous image digest and compose overrides available for rollback.
+- You must capture registry publish evidence, scan results, and runtime verification notes.
 
 ## Multi-agent handoff
 - Coordinator defines engine matrix, compose overrides, and target runtime constraints.
@@ -60,5 +61,5 @@ See also:
 - `$CODEX_HOME/templates/containers/docker-compose-skeleton/`
 - `$CODEX_HOME/templates/containers/devlab-codelab-skeleton/`
 - `$CODEX_HOME/snippets/containers/`
-- Use skill `infra-containers`.
+- You must use skill `infra-containers`.
 - `$CODEX_HOME/index/pack/workflows.md`

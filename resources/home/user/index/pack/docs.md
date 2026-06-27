@@ -1,5 +1,6 @@
 # Docs hub (entrypoint)
-Purpose: route to the runtime documentation tree when the task is documentation maintenance or doc discovery.
+Purpose: route to the runtime documentation tree when the task is documentation maintenance or doc discovery for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -10,12 +11,12 @@ Purpose: route to the runtime documentation tree when the task is documentation 
 
 Canonical content: `$CODEX_HOME/docs/OVERVIEW.md`
 
-## Use when
+## You must use this file when
 - you need the map of runtime documentation
 - you are fixing stale links, routing, or doc structure
 - you are deciding which documentation domain to open next
 
-## Related
+## After that, you must check related files
 <!-- BEGIN:related -->
 - `$CODEX_HOME/index/pack/config.md`
 - `$CODEX_HOME/index/pack/plans.md`
@@ -25,5 +26,5 @@ Canonical content: `$CODEX_HOME/docs/OVERVIEW.md`
 - `$CODEX_HOME/index/pack/skills.md`
 - `$CODEX_HOME/index/pack/prompts.md`
 - `$CODEX_HOME/index/pack/style.md`
-- `$CODEX_HOME/memories/MEMORY.md`
+- `$CODEX_HOME/memories/`
 <!-- END:related -->

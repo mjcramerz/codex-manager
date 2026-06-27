@@ -1,7 +1,8 @@
 # VS Code extensions
 
-Start with `$CODEX_HOME/plans/workflows/workflow-vscode-extensions.md` before executing this workflow.
-Purpose: guide creation and maintenance of VS Code extensions with secure, reproducible defaults.
+You must start with `$CODEX_HOME/plans/workflows/workflow-vscode-extensions.md` before executing this workflow.
+Purpose: guide creation and maintenance of VS Code extensions with secure, reproducible defaults for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -14,7 +15,7 @@ Purpose: guide creation and maintenance of VS Code extensions with secure, repro
 
 ## Plan
 - Start from the linked workflow plan template above, then tailor scope, constraints, and validation commands before editing.
-- Keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
+- You must keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
 
 ## Baseline structure
 - `package.json` with `engines.vscode`, `activationEvents`, and `contributes`.
@@ -24,8 +25,8 @@ Purpose: guide creation and maintenance of VS Code extensions with secure, repro
 
 ## Security and safety
 - Avoid executing shell commands with user input.
-- Validate and bound all external data.
-- Keep telemetry opt-in and minimal, or omit entirely.
+- You must validate and bound all external data.
+- You must keep telemetry opt-in and minimal, or omit entirely.
 - Never log secrets or tokens.
 
 ## Testing
@@ -34,7 +35,7 @@ Purpose: guide creation and maintenance of VS Code extensions with secure, repro
 - Ensure tests run headless in CI.
 
 ## Packaging and release
-- Use a pinned Node.js version and lockfile.
+- You must use a pinned Node.js version and lockfile.
 - Package with `vsce` or the official VS Code tooling.
 - Sign or checksum release artifacts if required by policy.
 
@@ -44,7 +45,7 @@ Purpose: guide creation and maintenance of VS Code extensions with secure, repro
 - Ensure telemetry and logs never contain tokens, secrets, or sensitive file paths.
 
 ## Testing checkpoints
-- Run unit tests plus VS Code integration tests on supported engine versions.
+- You must run unit tests plus VS Code integration tests on supported engine versions.
 - Test in untrusted workspace and remote/container development scenarios.
 - Package once and verify `.vscodeignore` excludes development-only artifacts.
 
@@ -60,6 +61,6 @@ Purpose: guide creation and maintenance of VS Code extensions with secure, repro
 See also:
 - `overview.md`
 - `../vscode/overview.md`
-- Use skill `devtools-vscode-extension`.
+- You must use skill `devtools-vscode-extension`.
 - `$CODEX_HOME/index/pack/workflows.md`
 - `$CODEX_HOME/index/domains/vscode/vscode-extension.md`

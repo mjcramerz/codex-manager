@@ -1,4 +1,5 @@
 # Vue app scaffold (overview)
+Purpose: tell the Codex coding agent how to use `templates/web/vue-app/overview.md` as a runtime-pack surface and when to stop browsing.
 Wrapper around the official Vue scaffold.
 
 ## Recommended approach
@@ -8,7 +9,7 @@ Wrapper around the official Vue scaffold.
 
 ## Notes
 - Pin Node.js and Vue versions.
-- Prefer Composition API.
+- You must prefer Composition API.
 
 ## Inputs
 - Destination repository path for this template.

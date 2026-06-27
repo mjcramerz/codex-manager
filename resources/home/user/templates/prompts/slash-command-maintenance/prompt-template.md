@@ -1,4 +1,5 @@
 # /<command>
+Purpose: tell the Codex coding agent how to use `templates/prompts/slash-command-maintenance/prompt-template.md` as a runtime-pack surface and when to stop browsing.
 
 ## Objective
 State exactly what this command should achieve.
@@ -9,10 +10,10 @@ State exactly what this command should achieve.
 
 ## Constraints
 - Preserve existing behavior unless explicitly requested.
-- Keep output deterministic and reviewable.
+- You must keep output deterministic and reviewable.
 - Avoid unsafe or destructive operations without explicit confirmation.
 
-## Workflow
+## You must follow this workflow
 1) Confirm the task scope and assumptions.
 2) Inspect only the files needed for this command.
 3) Apply minimal edits and keep references synchronized.

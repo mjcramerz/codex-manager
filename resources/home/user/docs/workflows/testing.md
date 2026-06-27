@@ -1,7 +1,8 @@
 # Testing workflow
 
-Start with `$CODEX_HOME/plans/workflows/workflow-testing.md` before executing this workflow.
-Purpose: build a fast, layered test suite that protects correctness and security.
+You must start with `$CODEX_HOME/plans/workflows/workflow-testing.md` before executing this workflow.
+Purpose: build a fast, layered test suite that protects correctness and security for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -14,7 +15,7 @@ Purpose: build a fast, layered test suite that protects correctness and security
 
 ## Plan
 - Start from the linked workflow plan template above, then tailor scope, constraints, and validation commands before editing.
-- Keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
+- You must keep the plan updated as execution progresses, including risk and rollback notes for any sensitive change.
 
 ## Testing philosophy
 - Fast unit tests for core logic.
@@ -30,14 +31,14 @@ Purpose: build a fast, layered test suite that protects correctness and security
 
 ## Hermeticity
 - Tests should not require network by default.
-- Use fixtures and local containers only when necessary (and time-box them).
+- You must use fixtures and local containers only when necessary (and time-box them).
 - Seed RNG for deterministic tests.
 - Avoid wall-clock dependencies; inject clocks or use time-freezing tools.
-- Keep filesystem tests in temp dirs; clean up deterministically.
+- You must keep filesystem tests in temp dirs; clean up deterministically.
 
 ## CI strategy
-- Run fast checks on every push.
-- Run slower suites on a schedule or on-demand.
+- You must run fast checks on every push.
+- You must run slower suites on a schedule or on-demand.
 - Time-box tests and track slowest tests to keep the suite healthy.
 
 ## Minimum bar for changes
@@ -57,12 +58,12 @@ Purpose: build a fast, layered test suite that protects correctness and security
 
 ## Security checkpoints
 - Include negative tests for auth, input validation, and boundary abuse on changed surfaces.
-- Keep fixtures free of real secrets and disable outbound network unless explicitly required.
-- Add regression tests for any prior vulnerability before closing the issue.
+- You must keep fixtures free of real secrets and disable outbound network unless explicitly required.
+- You must add regression tests for any prior vulnerability before closing the issue.
 
 ## Testing checkpoints
-- Define tiered commands (quick, full, nightly) with time budgets and ownership.
-- Require deterministic seeds/fixtures for flaky areas and track quarantined tests explicitly.
+- You must define tiered commands (quick, full, nightly) with time budgets and ownership.
+- You must require deterministic seeds/fixtures for flaky areas and track quarantined tests explicitly.
 - Map each changed module to at least one validating test so coverage gaps stay visible.
 
 ## Deployment checkpoints

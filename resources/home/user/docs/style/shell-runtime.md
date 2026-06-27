@@ -1,29 +1,30 @@
 # Shell runtime guidance
-Purpose: define the common shell execution rules for shell-sensitive work in the runtime pack.
+Purpose: define the common shell execution rules for shell-sensitive work in the runtime pack for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 ## Choose the matching shell
-- Use `zsh` for zsh-sensitive commands and zsh assets.
-- Use `bash` for Bash-sensitive commands and Bash assets.
-- Use `sh`/`dash` for POSIX-portable assets.
-- Validate shell-specific files with the shell they claim to support.
+- You must use `zsh` for zsh-sensitive commands and zsh assets.
+- You must use `bash` for Bash-sensitive commands and Bash assets.
+- You must use `sh`/`dash` for POSIX-portable assets.
+- You must validate shell-specific files with the shell they claim to support.
 
 ## Deterministic execution defaults
-- Prefer `LC_ALL=C` and `TZ=UTC` for reproducible command output.
-- Prefer machine-readable flags (`--json`, `--porcelain`, `--null`, `--color=never`) when available.
-- Prefer read-only discovery first, then the smallest deterministic change.
+- You must prefer `LC_ALL=C` and `TZ=UTC` for reproducible command output.
+- You must prefer machine-readable flags (`--json`, `--porcelain`, `--null`, `--color=never`) when available.
+- You must prefer read-only discovery first, then the smallest deterministic change.
 - Avoid interactive flows and fuzzy parsing.
 
 ## Safe command shape
 - Refuse destructive operations on empty paths, `/`, or ambiguous globs.
-- Use `--` before untrusted positionals where supported.
-- Prefer explicit arrays or direct argv execution over shell-string construction.
+- You must use `--` before untrusted positionals where supported.
+- You must prefer explicit arrays or direct argv execution over shell-string construction.
 - Reparse structured files after mutation.
 
 ## Documentation scope
-- Keep shell guidance focused on shell choice, reproducibility, validation, and command safety.
-- Route plugin, skill, and workflow ownership questions through the matching pack entrypoints instead of shell guidance.
+- You must keep shell guidance focused on shell choice, reproducibility, validation, and command safety.
+- You must route plugin, skill, and workflow ownership questions through the matching pack entrypoints instead of shell guidance.
 
-## Related
+## After that, you must check related files
 - `$CODEX_HOME/docs/style/bash.md`
 - `$CODEX_HOME/docs/style/sh.md`
 - `$CODEX_HOME/index/style/overview.md`

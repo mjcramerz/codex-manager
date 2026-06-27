@@ -1,5 +1,6 @@
 # Plan catalog
-Purpose: explain when a plan is required and how to choose the correct plan family.
+Purpose: explain when a plan is required and how to choose the correct plan family for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 ## Navigation
 <!-- BEGIN:nav -->

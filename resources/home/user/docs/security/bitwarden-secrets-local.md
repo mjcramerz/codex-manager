@@ -1,4 +1,5 @@
 # Bitwarden Secrets Manager (BWS) for local hosts
+Purpose: tell the Codex coding agent how to use `docs/security/bitwarden-secrets-local.md` as a runtime-pack surface and when to stop browsing.
 Guidance for using BWS on local Debian systems with OS keyring storage.
 
 
@@ -11,14 +12,14 @@ Guidance for using BWS on local Debian systems with OS keyring storage.
 
 
 ## Local-only objective
-- Keep `BWS_ACCESS_TOKEN` and `BWS_PROJECT_ID` in the user keyring for local development and operator tasks.
+- You must keep `BWS_ACCESS_TOKEN` and `BWS_PROJECT_ID` in the user keyring for local development and operator tasks.
 - Expose `bws` through deterministic system PATH wiring.
 - Enforce non-root invocation with explicit sudo only for privileged filesystem/package steps.
 
 ## Baseline controls
-- Validate token/project ID structure before any write operation.
+- You must validate token/project ID structure before any write operation.
 - Write secrets only through keyring tooling (Secret Service/libsecret), not persistent shell files.
-- Keep keyring service/account identifiers constrained to safe character sets.
+- You must keep keyring service/account identifiers constrained to safe character sets.
 - Avoid command patterns that print secret values to stdout/stderr.
 
 ## Lifecycle

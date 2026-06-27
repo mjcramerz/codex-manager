@@ -1,4 +1,5 @@
 # Filesystems overview
+Purpose: tell the Codex coding agent how to use `docs/filesystems/overview.md` as a runtime-pack surface and when to stop browsing.
 This pack treats filesystem changes as **high-risk** operations. Default to read-only inspection and require
 explicit confirmation before destructive steps (partitioning, formatting, fstab edits).
 
@@ -22,9 +23,9 @@ explicit confirmation before destructive steps (partitioning, formatting, fstab 
 
 ## Safety baseline
 - Identify targets by stable path (`/dev/disk/by-id/...` or `/dev/disk/by-path/...`), not `/dev/sdX`.
-- Verify current state with `lsblk -f` and `blkid` before planning changes.
-- Require backups for any disk that contains data you care about.
-- Use dry-run / plan outputs first; apply only after explicit user confirmation.
+- You must verify current state with `lsblk -f` and `blkid` before planning changes.
+- You must require backups for any disk that contains data you care about.
+- You must use dry-run / plan outputs first; apply only after explicit user confirmation.
 
 ## High-level workflow
 1) **Discovery:** list devices, partitions, mountpoints, UUIDs.

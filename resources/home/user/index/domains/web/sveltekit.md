@@ -1,5 +1,6 @@
 # Svelte / SvelteKit (entrypoint)
-Purpose: stable link to Svelte/SvelteKit guidance and templates.
+Purpose: stable link to Svelte/SvelteKit guidance and templates for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -20,5 +21,5 @@ Use when:
 Related:
 - `$CODEX_HOME/docs/workflows/web-frontend.md`
 - `$CODEX_HOME/templates/web/sveltekit-app`
-- Use skill `web-sveltekit`.
+- You must use skill `web-sveltekit`.
 <!-- END:related -->

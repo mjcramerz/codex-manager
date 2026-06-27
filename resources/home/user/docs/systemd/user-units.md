@@ -1,4 +1,5 @@
 # systemd user services
+Purpose: tell the Codex coding agent how to use `docs/systemd/user-units.md` as a runtime-pack surface and when to stop browsing.
 User services run under a specific user account and are managed with `systemctl --user`.
 
 

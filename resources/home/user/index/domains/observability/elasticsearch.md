@@ -1,5 +1,6 @@
 # Elasticsearch (entrypoint)
-Purpose: stable link to Elasticsearch guidance, workflows, and templates.
+Purpose: stable link to Elasticsearch guidance, workflows, and templates for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -21,5 +22,5 @@ Related:
 - `$CODEX_HOME/docs/workflows/elastic-stack.md`
 - `$CODEX_HOME/templates/observability/elastic-stack-compose`
 - `$CODEX_HOME/snippets/elastic/elasticsearch.yml`
-- Use skill `obs-elasticsearch`.
+- You must use skill `obs-elasticsearch`.
 <!-- END:related -->

@@ -1,6 +1,7 @@
 # Plan
+Purpose: tell the Codex coding agent how to use `plans/workflows/workflow-github-actions.md` as a runtime-pack surface and when to stop browsing.
 
-Use this plan when following `$CODEX_HOME/docs/workflows/github-actions.md`.
+You must use this plan when following `$CODEX_HOME/docs/workflows/github-actions.md`.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -29,21 +30,21 @@ Use this plan when following `$CODEX_HOME/docs/workflows/github-actions.md`.
 [ ] Apply updates in reversible order and capture run evidence for every changed trigger path.
 
 ## Testing and validation
-- Run workflow lint/syntax checks (for example, `actionlint`) for changed files.
+- You must run workflow lint/syntax checks (for example, `actionlint`) for changed files.
 - Exercise each changed trigger path (PR, push, tag, dispatch dry run).
 - Accept only if triggers, permissions, and shared-ref pins match workflow guidance.
 
 ## Security checkpoints
-- Keep default `permissions` read-only and justify each write scope.
+- You must keep default `permissions` read-only and justify each write scope.
 - Ensure untrusted PR/fork paths cannot access deploy secrets.
 
 ## Testing checkpoints
-- Define fast-path and deep-path checks with explicit pass criteria before edits.
-- Re-run checks after trigger, rules, permission, or shared-ref changes.
+- You must define fast-path and deep-path checks with explicit pass criteria before edits.
+- You must re-run checks after trigger, rules, permission, or shared-ref changes.
 
 ## Deployment checkpoints
-- Confirm protected environment approvals and release-tag guards before publish.
-- Record rollback artifact/tag references and release owner in handoff notes.
+- You must confirm protected environment approvals and release-tag guards before publish.
+- You must record rollback artifact/tag references and release owner in handoff notes.
 
 ## Multi-agent handoff
 - Coordinator hands off scope, target entrypoint, and stop condition.

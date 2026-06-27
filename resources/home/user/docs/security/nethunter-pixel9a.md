@@ -1,4 +1,5 @@
 # NetHunter Pixel 9a reference
+Purpose: tell the Codex coding agent how to use `docs/security/nethunter-pixel9a.md` as a runtime-pack surface and when to stop browsing.
 
 This guide supports repeatable Pixel 9a NetHunter work with explicit scope, evidence, and rollback guardrails.
 
@@ -173,10 +174,10 @@ Recommended evidence layout:
 - `evidence/<run-id>/validation/`
 - `evidence/<run-id>/rollback/`
 
-## Related
+## After that, you must check related files
 - `security-labs-index.md`
 - `security-labs-tool-guides.md`
 - `security-labs-repo-catalog.md`
 - `../workflows/nethunter-pixel9a.md`
 - `$CODEX_HOME/templates/system/nethunter-pixel9a-kit/overview.md`
-- Use skill `nethunter-pixel9a`.
+- You must use skill `nethunter-pixel9a`.

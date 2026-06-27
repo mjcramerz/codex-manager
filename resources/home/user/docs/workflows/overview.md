@@ -1,5 +1,6 @@
 # Workflow catalog
-Purpose: map recurring task types to operational playbooks and help the agent choose one workflow before editing.
+Purpose: map recurring task types to operational playbooks and help the agent choose one workflow before editing for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 ## Navigation
 <!-- BEGIN:nav -->
@@ -25,7 +26,7 @@ Purpose: map recurring task types to operational playbooks and help the agent ch
 - `$CODEX_HOME/docs/workflows/codex-repo.md` — Codex source repository workflow
 <!-- END:contents -->
 
-## Selection guide
+## You must choose the workflow this way
 - Multi-agent routing and handoff design -> `agent-orchestration.md`
 - Plan creation, validation ladders, and rollout shape -> `planning.md`
 - Repo-aware memory routing or retired memory-flow cleanup -> `memory-runtime.md`
@@ -35,6 +36,6 @@ Purpose: map recurring task types to operational playbooks and help the agent ch
 - Cloudflare Worker plus delivery-template repos -> `cloudflare-delivery.md`
 - Debian installer trees and unattended install contracts -> `debian-preseed.md`
 
-## Maintenance rules
+## You must maintain this file by following these rules
 - Every workflow added here should have a corresponding plan under `$CODEX_HOME/plans/workflows/` when the execution path is non-trivial.
-- Prefer repo-grounded guidance for the named adjacent repositories.
+- You must prefer repo-grounded guidance for the named adjacent repositories.

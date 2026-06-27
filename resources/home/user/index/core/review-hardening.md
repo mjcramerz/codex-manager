@@ -1,5 +1,6 @@
 # Review hardening checklist (entrypoint)
-Purpose: stable link to the security review checklist.
+Purpose: stable link to the security review checklist for the Codex coding agent.
+You must read only the smallest section that resolves the current task, follow the first matching route, and stop broad browsing once the next concrete file or command is clear.
 
 
 ## Navigation
@@ -21,5 +22,5 @@ Related:
 - `$CODEX_HOME/docs/workflows/code-review.md`
 - `$CODEX_HOME/docs/security/threat-model.md`
 - `$CODEX_HOME/docs/security/overview.md`
-- Use skill `quality-code-review`.
+- You must use skill `quality-code-review`.
 <!-- END:related -->

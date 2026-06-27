@@ -1,4 +1,5 @@
 # Supply-chain controls
+Purpose: tell the Codex coding agent how to use `docs/security/supply-chain.md` as a runtime-pack surface and when to stop browsing.
 Practical supply-chain controls for software built with Codex.
 
 
@@ -19,18 +20,18 @@ Practical supply-chain controls for software built with Codex.
 ## Language ecosystems
 ### Node.js
 - Commit `package-lock.json` / `pnpm-lock.yaml` / `yarn.lock`.
-- Prefer `npm ci` in CI.
+- You must prefer `npm ci` in CI.
 - Consider `npm config set ignore-scripts true` for CI if feasible.
-- Use `npm audit`/`pnpm audit` + GitHub dependency review.
+- You must use `npm audit`/`pnpm audit` + GitHub dependency review.
 
 ### Python
 - Pin dependencies (hashes if possible).
-- Use `pip-audit` or OSV scan.
-- Prefer `pip install --require-hashes` for high-assurance builds.
+- You must use `pip-audit` or OSV scan.
+- You must prefer `pip install --require-hashes` for high-assurance builds.
 
 ### Rust
 - Commit `Cargo.lock` (even for binaries).
-- Use `cargo audit` + `cargo deny` (licenses, bans, advisories).
+- You must use `cargo audit` + `cargo deny` (licenses, bans, advisories).
 - Consider vendoring deps for hermetic builds when required by policy.
 
 ## Containers & CI
@@ -39,10 +40,10 @@ Practical supply-chain controls for software built with Codex.
 - Avoid running untrusted build scripts without review.
 
 ## Codex source controls to mirror
-- Keep release preflight and artifact build controls aligned with `.github/workflows/build-codex-rs.yml`.
-- Keep publish orchestration aligned with `.github/workflows/release-codex-rs.yml` and pinned reusable workflow SHAs.
-- Keep release event handling aligned with `.github/workflows/publish-codex-rs.yml`.
-- Validate config schema packaging, checksum generation, and release-tip tag checks as part of release hardening.
+- You must keep release preflight and artifact build controls aligned with `.github/workflows/build-codex-rs.yml`.
+- You must keep publish orchestration aligned with `.github/workflows/release-codex-rs.yml` and pinned reusable workflow SHAs.
+- You must keep release event handling aligned with `.github/workflows/publish-codex-rs.yml`.
+- You must validate config schema packaging, checksum generation, and release-tip tag checks as part of release hardening.
 
 ## Avoid
 - `curl | sh`
