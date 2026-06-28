@@ -81,6 +81,8 @@ print JSON::PP::encode_json({
   semgrep_label => tool_group_label('mcp__semgrep__scan'),
   generic_mcp_group => tool_group_name('mcp__github_router__git_status'),
   generic_mcp_label => tool_group_label('mcp__github_router__git_status'),
+  memories_group => tool_group_name('memoriessearch'),
+  memories_label => tool_group_label('memoriessearch'),
   generic_group => tool_group_name('write_stdin'),
   generic_label => tool_group_label('write_stdin'),
 });
@@ -110,6 +112,8 @@ print JSON::PP::encode_json({
         self.assertEqual(payload["semgrep_label"], "Semgrep MCP call")
         self.assertEqual(payload["generic_mcp_group"], "mcp")
         self.assertEqual(payload["generic_mcp_label"], "MCP tool call")
+        self.assertEqual(payload["memories_group"], "generic")
+        self.assertEqual(payload["memories_label"], "tool call")
         self.assertEqual(payload["generic_group"], "generic")
         self.assertEqual(payload["generic_label"], "tool call")
 

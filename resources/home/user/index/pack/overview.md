@@ -16,12 +16,12 @@ Use this router when maintaining the runtime pack itself: docs, plans, skills, t
 - `$CODEX_HOME/docs/**` for runtime docs and workflows
 - `$CODEX_HOME/plans/**` for plan templates
 - `$CODEX_HOME/templates/**` for reusable scaffolds
-- `$CODEX_SKILLS/**` for the runtime skill catalog and skill assets
+- `$CODEX_HOME/.agents/skills/**` for the runtime skill catalog and skill assets
 - `$CODEX_HOME/plugins/cache/**` plus `$CODEX_HOME/.agents/plugins/marketplace.json` for plugin bundles and marketplace wiring
 
 ## Pack scope
 - Source-managed pack content stops at docs, plans, templates, skills, rules, snippets, routing metadata, and plugins. Runtime memory is generated later by Codex and is not shipped from this repository.
-- You must keep installed-path references coherent across `$CODEX_HOME/**`, `$CODEX_AGENTS/**`, and `$CODEX_SKILLS/**`.
+- You must keep installed-path references coherent across `$CODEX_HOME/**`, `$CODEX_AGENTS/**`, and `$CODEX_HOME/.agents/skills/**`.
 - You must treat `$CODEX_HOME/memories/` and the mirrored memory instruction assets as pack source when the task is memory-related.
 
 ## Choose one hub

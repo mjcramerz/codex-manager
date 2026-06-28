@@ -29,9 +29,9 @@ You must read only the smallest section that resolves the current task, follow t
 
 ## Branching model (mcr/*)
 - Default branch: `mcr/main`.
-- Feature work: `mcr/feature/<name>` → merge into `mcr/main`, then merge `mcr/main` into `mcr/staging` for tests/builds.
+- Authored edits must land on `mcr/main`; do not implement on other branches.
 - Release branch: `mcr/release` holds the final shipped state; keep it in sync from `mcr/staging`.
-- In fork mode (`github/*` mirrors present), keep `github/*` read-only and sync `origin/github/mcr/main -> github/mcr/main -> mcr/main` before patch checks.
+- In the restricted mirror workflow (`github/mcr/main` or `gitlab/mcr/main` exists), keep `github/*` and `gitlab/*` read-only, sync mirror main into `mcr/main` before patch checks, and treat `mcr/main` edits as allowlist-only unless a deeper repo contract expands scope.
 
 ## Pull request discipline
 - PR description should include:
@@ -63,7 +63,7 @@ You must read only the smallest section that resolves the current task, follow t
 - Automation scripts must be safe-by-default: refuse ambiguous state, validate inputs, and avoid destructive defaults.
 
 ## Pack implementation notes
-- You must keep runtime module layout explicit: the active repository runtime modules, plus the installed runtime roots under `$CODEX_HOME/`, `$CODEX_AGENTS/`, and `$CODEX_SKILLS/`.
+- You must keep runtime module layout explicit: the active repository runtime modules, plus the installed runtime roots under `$CODEX_HOME/`, `$CODEX_AGENTS/`, and `$CODEX_HOME/.agents/skills/`.
 - Do not reintroduce previous flat loader fallback scripts under `lib/`.
 - The legacy `codex-db-fetch` / `$CODEX_ROOT/mem/*` memory-runtime flow has been removed; keep related guidance retired.
 - Path-constrain helper operations to repo/runtime roots; reject traversal or ambiguous paths.

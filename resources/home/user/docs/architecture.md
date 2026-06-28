@@ -6,7 +6,7 @@ You must read only the smallest section that resolves the current task, follow t
 - **Compiled runtime configuration**: `$CODEX_HOME/config.toml`, `$CODEX_AGENTS/*.toml`, `/etc/codex/config.toml`, `/etc/codex/requirements.toml`
 - **Runtime-home pack**: `$CODEX_HOME/**`
 - **Hook runtime source of truth**: `$CODEX_HOME/hooks/scripts/lib/Codex/Hook/**`
-- **Runtime skill catalog**: `$CODEX_SKILLS/**`
+- **Runtime skill catalog**: `$CODEX_HOME/.agents/skills/**`
 - **Plugin bundles and marketplace**: `$CODEX_HOME/plugins/cache/**` plus `$CODEX_HOME/.agents/plugins/marketplace.json`
 
 ## Adjacent repository map
@@ -28,7 +28,7 @@ You must read only the smallest section that resolves the current task, follow t
   - `$CODEX_HOME/snippets/**`
   - `$CODEX_HOME/plugins/cache/**`
   - `$CODEX_HOME/.agents/plugins/marketplace.json`
-  - `$CODEX_SKILLS/**`
+  - `$CODEX_HOME/.agents/skills/**`
 
 ## Why the boundary matters
 - Installed runtime paths stay coherent after the pack is rendered into `$CODEX_HOME`.

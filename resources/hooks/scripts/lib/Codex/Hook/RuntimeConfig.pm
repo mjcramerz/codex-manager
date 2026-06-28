@@ -61,8 +61,12 @@ sub runtime_config {
                 },
                 environment => {
                     required_commands => ['bash', 'make'],
-                    optional_commands => ['shellcheck', 'yamllint', 'uv', 'wrangler', 'node', 'npx'],
+                    optional_commands => ['shellcheck', 'yamllint', 'uv', 'wrangler', 'node', 'npx', 'podman', 'docker'],
                     optional_probes   => [
+                        {
+                            label   => 'podman ps',
+                            command => ['podman', 'ps'],
+                        },
                         {
                             label   => 'docker ps',
                             command => ['docker', 'ps'],

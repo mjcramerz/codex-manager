@@ -18,11 +18,11 @@ You must use this plan when adding or revising skills in the pack.
 - You must add bundled scripts/references/assets when they materially improve reliability or reuse.
 
 ## Scope
-- In: runtime skill roots under `$CODEX_SKILLS/**` and the managed admin skill root, plus related index links.
+- In: runtime skill roots under `$CODEX_HOME/.agents/skills/**` and the managed admin skill root, plus related index links.
 - Out: changes to unrelated pack surfaces.
 
 ## Files and entry points
-- `$CODEX_SKILLS`
+- `$CODEX_HOME/.agents/skills`
 - the managed admin skill root
 - `$CODEX_HOME/index/pack/skills.md`
 - `$CODEX_HOME/index/manifest.yml`
@@ -31,7 +31,7 @@ You must use this plan when adding or revising skills in the pack.
 [ ] Create or update skill directories and `SKILL.md` files.
 [ ] Ensure `metadata.version`, `metadata.short-description`, and `metadata.tags` are present.
 [ ] Refresh nearby runtime catalog docs or metadata after changing a skill.
-[ ] Validate the affected runtime references under `$CODEX_SKILLS` or the managed admin skill root.
+[ ] Validate the affected runtime references under `$CODEX_HOME/.agents/skills` or the managed admin skill root.
 
 ## Testing and validation
 

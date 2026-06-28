@@ -238,9 +238,10 @@ class HookScriptTests(unittest.TestCase):
 
             payload = json.loads(result.stdout)
             context = payload["hookSpecificOutput"]["additionalContext"]
-            self.assertIn("Mirror refs detected", context)
-            self.assertIn("true-sync `mcr/main` from `github/mcr/main`", context)
+            self.assertIn("Restricted mirror workflow detected (`github/mcr/main` exists).", context)
+            self.assertIn("Authored edits are only allowed on `mcr/main`.", context)
             self.assertIn("Current branch `github/mcr/main` is a read-only mirror branch.", context)
+            self.assertIn("Current branch `github/mcr/main` is not `mcr/main`", context)
             self.assertIn("`patches/release/` exists.", context)
 
     def test_session_start_injects_salsa_packaging_mirror_context(self) -> None:
@@ -270,6 +271,11 @@ class HookScriptTests(unittest.TestCase):
             repo = make_codex_manager_repo(tmpdir)
             wrapper_dir = Path(tmpdir) / "bin"
             wrapper_dir.mkdir()
+            (wrapper_dir / "podman").write_text(
+                "#!/bin/sh\nprintf '%s\\n' 'CONTAINER ID   IMAGE'\n",
+                encoding="utf-8",
+            )
+            (wrapper_dir / "podman").chmod(0o755)
             (wrapper_dir / "docker").write_text(
                 "#!/bin/sh\nprintf '%s\\n' 'CONTAINER ID   IMAGE'\n",
                 encoding="utf-8",
@@ -289,6 +295,10 @@ class HookScriptTests(unittest.TestCase):
             context = payload["hookSpecificOutput"]["additionalContext"]
             self.assertIn("Local environment signals:", context)
             self.assertIn("Required commands available: `bash`, `make`.", context)
+            self.assertIn("Optional commands available:", context)
+            self.assertIn("`podman`", context)
+            self.assertIn("`docker`", context)
+            self.assertIn("Probe `podman ps`: ok (CONTAINER ID   IMAGE).", context)
             self.assertIn("Probe `docker ps`: ok (CONTAINER ID   IMAGE).", context)
 
     def test_resume_injects_generic_worktree_summary(self) -> None:
@@ -426,7 +436,7 @@ class HookScriptTests(unittest.TestCase):
             self.assertIn("`planner`:", context)
             self.assertIn("`delegator`:", context)
             self.assertIn("`orchestrator`:", context)
-            self.assertLess(len(context), 1800)
+            self.assertLess(len(context), 2200)
 
     def test_resume_context_stays_bounded_with_noisy_transcript(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -555,6 +565,11 @@ class HookScriptTests(unittest.TestCase):
             repo = make_codex_manager_repo(tmpdir)
             wrapper_dir = Path(tmpdir) / "bin"
             wrapper_dir.mkdir()
+            (wrapper_dir / "podman").write_text(
+                "#!/bin/sh\nprintf '%s\\n' 'current system boot ID differs from cached boot ID' >&2\nexit 125\n",
+                encoding="utf-8",
+            )
+            (wrapper_dir / "podman").chmod(0o755)
             (wrapper_dir / "docker").write_text(
                 "#!/bin/sh\nprintf '%s\\n' 'Cannot connect to the Docker daemon' >&2\nexit 1\n",
                 encoding="utf-8",
@@ -573,7 +588,26 @@ class HookScriptTests(unittest.TestCase):
             payload = json.loads(result.stdout)
             context = payload["hookSpecificOutput"]["additionalContext"]
             self.assertIn("Local environment signals:", context)
+            self.assertIn("Probe `podman ps`: failed (current system boot ID differs from cached boot ID).", context)
             self.assertIn("Probe `docker ps`: failed (Cannot connect to the Docker daemon).", context)
+
+    def test_pre_tool_use_memoriessearch_uses_generic_guardrails(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_codex_manager_repo(tmpdir)
+
+            result = run_hook(
+                "pre-tool-use",
+                {
+                    "cwd": str(repo),
+                    "tool_name": "memoriessearch",
+                    "tool_input": {"queries": ["skills symlink"]},
+                },
+            )
+
+            payload = json.loads(result.stdout)
+            context = payload["hookSpecificOutput"]["additionalContext"]
+            self.assertIn("Pre-tool guardrails for `tool call` (`memoriessearch`):", context)
+            self.assertIn("Prefer deterministic inputs, bounded I/O, and the smallest reviewable mutation.", context)
 
     def test_user_prompt_submit_mentions_salsa_packaging_mirror_context(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -709,6 +743,46 @@ class HookScriptTests(unittest.TestCase):
             self.assertEqual(payload["decision"], "block")
             self.assertIn("Perl changes", payload["reason"])
             self.assertIn("perl -c <file>", payload["reason"])
+
+    def test_stop_blocks_authored_changes_outside_mcr_main(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_codex_manager_repo(tmpdir)
+            subprocess.run(["git", "checkout", "-qb", "mcr/feature/test"], cwd=repo, check=True)
+            write_file(repo / "notes.txt", "changed\n")
+
+            result = run_hook(
+                "stop",
+                {
+                    "cwd": str(repo),
+                    "last_assistant_message": "Updated the file and finished the change.",
+                    "stop_hook_active": False,
+                },
+            )
+
+            payload = json.loads(result.stdout)
+            self.assertEqual(payload["decision"], "block")
+            self.assertIn("Authored changes are only allowed on `mcr/main`", payload["reason"])
+            self.assertIn("mcr/feature/test", payload["reason"])
+
+    def test_stop_blocks_disallowed_paths_in_restricted_mirror_workflow(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_codex_manager_repo(tmpdir)
+            subprocess.run(["git", "branch", "github/mcr/main"], cwd=repo, check=True)
+            write_file(repo / "notes.txt", "changed\n")
+
+            result = run_hook(
+                "stop",
+                {
+                    "cwd": str(repo),
+                    "last_assistant_message": "Updated the file and finished the change.",
+                    "stop_hook_active": False,
+                },
+            )
+
+            payload = json.loads(result.stdout)
+            self.assertEqual(payload["decision"], "block")
+            self.assertIn("Restricted mirror workflow detected via `github/mcr/main`", payload["reason"])
+            self.assertIn("notes.txt", payload["reason"])
 
     def test_pre_tool_use_shell_command_is_disabled(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

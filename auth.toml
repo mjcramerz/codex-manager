@@ -1,38 +1,50 @@
 version = 1
 service = "codex-login"
 
-[codex_login."copliot@jcramer.sbs"]
-CODEX_ACCESS_TOKEN = true
-
-[codex_login."nikke@jcramer.sbs"]
+[codex_login."copilot@jcramer.sbs"]
 CODEX_ACCESS_TOKEN = true
 
 [codex_login."tolvis.nicko@jcramer.sbs"]
 CODEX_ACCESS_TOKEN = true
 
-[codex_login."thor.lundh@jcramer.xyz"]
+[codex_login."sven.tumba@jcramer.sbs"]
 CODEX_ACCESS_TOKEN = true
 
-[codex_login."oskar@jcramer.sbs"]
+[codex_login."johlsan@jcramer.sbs"]
 CODEX_ACCESS_TOKEN = true
 
 [codex_login."nerikes.allhanda@jcramer.sbs"]
 CODEX_ACCESS_TOKEN = true
 
-[codex_login."1email@mail.se"]
-CODEX_ACCESS_TOKEN = false
+[codex_login."thor.lundh@jcramer.xyz"]
+CODEX_ACCESS_TOKEN = true
 
-[codex_login."2test@gmail.com"]
-CODEX_ACCESS_TOKEN = false
+[codex_login."nikke@jcramer.sbs"]
+CODEX_ACCESS_TOKEN = true
 
-[codex_login."3email@mail.se"]
-CODEX_ACCESS_TOKEN = false
+[codex_login."oskar@jcramer.sbs"]
+CODEX_ACCESS_TOKEN = true
 
-[codex_login."4test@gmail.com"]
-CODEX_ACCESS_TOKEN = false
+[codex_login."goran.silkesqvist@jcramer.sbs"]
+CODEX_ACCESS_TOKEN = true
 
-[codex_login."5email@mail.se"]
-CODEX_ACCESS_TOKEN = false
+[codex_login."livarnix@jcramer.sbs"]
+CODEX_ACCESS_TOKEN = true
 
-[codex_login."6test@gmail.com"]
-CODEX_ACCESS_TOKEN = false
+[codex_login."narnia85@jcramer.xyz"]
+CODEX_ACCESS_TOKEN = true
+
+[codex_login."oai@jcramer.xyz"]
+CODEX_ACCESS_TOKEN = true
+
+[codex_login."ozzi@jcramer.sbs"]
+CODEX_ACCESS_TOKEN = true
+
+[codex_login."ralf.edstrom@jcramer.sbs"]
+CODEX_ACCESS_TOKEN = true
+
+[codex_login."tobjorn.ikke@jcramer.sbs"]
+CODEX_ACCESS_TOKEN = true
+
+[codex_login."trixien@jcramer.sbs"]
+CODEX_ACCESS_TOKEN = true

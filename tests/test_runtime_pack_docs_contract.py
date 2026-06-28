@@ -106,6 +106,26 @@ class RuntimePackDocsContractTests(unittest.TestCase):
         self.assertIn("$CODEX_HOME/.models/instructions/models/base.md", manifest)
         self.assertIn("$CODEX_HOME/.models/instructions/compact/prompt.md", manifest)
 
+    def test_runtime_home_routes_skill_catalog_via_agents_symlink(self) -> None:
+        files = [
+            HOME_ROOT / "docs" / "OVERVIEW.md",
+            HOME_ROOT / "docs" / "architecture.md",
+            HOME_ROOT / "docs" / "workflows" / "codex-manager.md",
+            HOME_ROOT / "docs" / "workflows" / "runtime-pack-maintenance.md",
+            HOME_ROOT / "docs" / "workflows" / "repo-ops.md",
+            HOME_ROOT / "index" / "pack" / "overview.md",
+            HOME_ROOT / "index" / "pack" / "skills.md",
+            HOME_ROOT / "plans" / "skills-library.md",
+        ]
+        for path in files:
+            text = path.read_text(encoding="utf-8")
+            self.assertIn("$CODEX_HOME/.agents/skills", text, f"{path} must route skills via the home symlink")
+            self.assertNotIn("$CODEX_SKILLS", text, f"{path} must not point runtime-home docs at CODEX_SKILLS")
+
+        manifest = (HOME_ROOT / "index" / "manifest.yml").read_text(encoding="utf-8")
+        self.assertIn("canonical: $CODEX_HOME/.agents/skills", manifest)
+        self.assertNotIn("$CODEX_SKILLS", manifest)
+
     def test_key_runtime_docs_avoid_repo_source_paths(self) -> None:
         files = [
             HOME_ROOT / "AGENTS.md",
@@ -133,3 +153,19 @@ class RuntimePackDocsContractTests(unittest.TestCase):
             text = path.read_text(encoding="utf-8")
             for needle in banned:
                 self.assertNotIn(needle, text, f"{path} still contains repo-source path {needle!r}")
+
+    def test_repo_write_contract_requires_mcr_main_and_restricted_mirror_allowlist(self) -> None:
+        agents = (HOME_ROOT / "AGENTS.md").read_text(encoding="utf-8")
+        self.assertIn("You must allow authored file edits only on `mcr/main`.", agents)
+        self.assertIn("A repository that does not contain `gitlab/mcr/main` or `github/mcr/main` is not subject to this allowlist rule", agents)
+        self.assertNotIn("Feature work: `mcr/feature/<name>`", agents)
+
+        repo_ops = (HOME_ROOT / "docs" / "workflows" / "repo-ops.md").read_text(encoding="utf-8")
+        self.assertIn("Authored edits must land on `mcr/main`", repo_ops)
+        self.assertNotIn("Feature work: `mcr/feature/<name>`", repo_ops)
+
+        build_app = (HOME_ROOT / "docs" / "workflows" / "build-an-app.md").read_text(encoding="utf-8")
+        self.assertNotIn("Implement on `mcr/feature/<name>`", build_app)
+
+        nethunter = (HOME_ROOT / "docs" / "security" / "nethunter-pixel9a.md").read_text(encoding="utf-8")
+        self.assertNotIn("mcr/feature/nh-pixel9a-", nethunter)

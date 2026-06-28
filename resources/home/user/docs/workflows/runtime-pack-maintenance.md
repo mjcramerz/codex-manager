@@ -6,7 +6,7 @@ You must start with `$CODEX_HOME/plans/workflows/workflow-runtime-pack-maintenan
 
 ## Scope
 - `$CODEX_HOME/**`
-- `$CODEX_SKILLS/**`
+- `$CODEX_HOME/.agents/skills/**`
 - `$CODEX_HOME/plugins/cache/**`
 - `$CODEX_HOME/.agents/plugins/marketplace.json`
 - routing metadata under `$CODEX_HOME/index/manifest.yml`

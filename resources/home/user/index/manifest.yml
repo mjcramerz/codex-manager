@@ -295,12 +295,12 @@ pack:
     kind: entrypoint
     description: stable index to skills and deep playbooks.
     entrypoint: $CODEX_HOME/index/pack/skills.md
-    canonical: $CODEX_SKILLS
+    canonical: $CODEX_HOME/.agents/skills
     related:
       - $CODEX_HOME/docs/OVERVIEW.md
       - $CODEX_HOME/index/pack/plans.md
       - $CODEX_HOME/snippets/OVERVIEW.md
-      - $CODEX_SKILLS
+      - $CODEX_HOME/.agents/skills
       - the managed admin skill root
       - skill:workflow-plans
       - skill:pack-skills
@@ -340,7 +340,7 @@ pack:
     related:
       - $CODEX_HOME/snippets/OVERVIEW.md
       - $CODEX_HOME/templates/OVERVIEW.md
-      - $CODEX_SKILLS
+      - $CODEX_HOME/.agents/skills
     metadata:
       version: '1.0'
       short-description: hardened snippets and patterns
@@ -374,7 +374,7 @@ pack:
       - $CODEX_HOME/templates/common/
       - $CODEX_HOME/templates/prompts/slash-command-maintenance/
       - $CODEX_HOME/snippets/OVERVIEW.md
-      - $CODEX_SKILLS
+      - $CODEX_HOME/.agents/skills
     metadata:
       version: '1.0'
       short-description: pack’s templates

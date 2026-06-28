@@ -162,6 +162,36 @@ sub _matches_any_glob {
     return 0;
 }
 
+my @RESTRICTED_MIRROR_ALLOWLIST_GLOBS = (
+    'AGENTS.override.md',
+    '.gitlab-ci.yml',
+    '.cirrus.yml',
+    'Makefile',
+    'justfile',
+    '.github/**',
+    'scripts/release/**',
+    'patches/release/**',
+    '.mcr/**',
+    '.circleci/**',
+    '.devcontainer/**',
+    '.vscode/**',
+    '.codex/**',
+    '.agents/**',
+    'debian/**',
+    '.bazelversion',
+    '.bazelignore',
+    '.bazelrc',
+    'bazel/**',
+);
+
+sub _restricted_mirror_disallowed_paths {
+    my ($changed_files) = @_;
+    return () if ref($changed_files) ne 'ARRAY';
+    return grep {
+        defined($_) && length($_) && !_matches_any_glob($_, \@RESTRICTED_MIRROR_ALLOWLIST_GLOBS)
+    } @{$changed_files};
+}
+
 sub _focus_areas {
     my ($manifest, $profiles) = @_;
     my @groups;
@@ -344,6 +374,7 @@ sub _session_start_context {
     my @mirror_refs = list_mirror_refs($repo_root);
     my @packaging_refs = list_packaging_refs($repo_root);
     my $mirror_main = preferred_mirror_main_branch($repo_root);
+    my $restricted_mirror = length($mirror_main) ? 1 : 0;
     my $has_salsa_packaging = has_salsa_packaging_layout($repo_root);
     my $worktree = summarize_worktree($repo_root);
     my @profile_ids = map { $_->{id} } grep { ref($_) eq 'HASH' && defined($_->{id}) && length($_->{id}) } @profiles;
@@ -365,19 +396,22 @@ sub _session_start_context {
     my @repo_lines = (
         "Repo root: `$repo_root`",
         "Current branch: `$current`",
+        'Authored edits are only allowed on `mcr/main`.',
     );
     push @repo_lines, "Root instructions: follow the repo-root `AGENTS.md`, plus any deeper `AGENTS.md` files under touched paths."
       if -f "$repo_root/AGENTS.md";
     push @repo_lines, 'Active hook runtime profiles: `' . join(', ', @profile_ids) . '` from the installed Perl hook runtime.'
       if @profile_ids;
-    push @repo_lines, "Mirror refs detected (`github/*` or `gitlab/*`). Treat those branches as read-only mirrors and true-sync `mcr/main` from `" . ($mirror_main || 'github/mcr/main or gitlab/mcr/main') . "`, then `mcr/staging` from `mcr/main`, then `mcr/release` from `mcr/staging`, preserving only protected paths."
-      if @mirror_refs;
+    push @repo_lines, "Restricted mirror workflow detected (`$mirror_main` exists). On `mcr/main`, edits are limited to the repository-root allowlist unless deeper repo instructions expand scope."
+      if $restricted_mirror;
     push @repo_lines, 'Debian Salsa packaging mirror detected (`gitlab/*` + `pristine-tar`). Preserve packaging refs such as `pristine-tar`, `upstream/*`, and `debian/*` for rebuild/import workflows.'
       if $has_salsa_packaging;
     push @repo_lines, "Packaging refs preview: `" . preview_paths(\@packaging_refs) . "`"
       if $has_salsa_packaging && @packaging_refs;
+    push @repo_lines, "Current branch `$current` is not `mcr/main`; move authored changes to `mcr/main` before editing or finishing."
+      if $current ne 'mcr/main';
     push @repo_lines, "Current branch `$current` is a read-only mirror branch."
-      if $current =~ m{\A(?:github|gitlab)/};
+      if $restricted_mirror && $current =~ m{\A(?:github|gitlab)/};
     push @repo_lines, "`patches/release/` exists. Keep local patch work check-only with commands such as `git apply --check`, `scripts/release/check_release_patches.sh HEAD`, `git mcr-fork-check`, or `git mcr-fork-test`."
       if has_patch_release_dir($repo_root);
     my @runtime_lines = (
@@ -475,12 +509,14 @@ sub _user_prompt_context {
     }
     if ($prompt =~ /\b(github|gitlab|mirror|patch|patches|release|mcr\/)\b/i) {
         my @lines;
-        my @mirror_refs = list_mirror_refs($repo_root);
+        my $mirror_main = preferred_mirror_main_branch($repo_root);
+        my $restricted_mirror = length($mirror_main) ? 1 : 0;
         my $has_salsa_packaging = has_salsa_packaging_layout($repo_root);
-        if (@mirror_refs) {
-            push @lines, 'Mirror refs are present. Treat `github/*` and `gitlab/*` branches as read-only mirrors; true-sync `mcr/main` from `'
-              . (preferred_mirror_main_branch($repo_root) || 'github/mcr/main or gitlab/mcr/main')
-              . '`, then promote `mcr/staging` and `mcr/release` with the same protected-path contract.';
+        push @lines, 'Authored edits belong on `mcr/main` in every repository.';
+        if ($restricted_mirror) {
+            push @lines, 'Restricted mirror workflow detected via `'
+              . $mirror_main
+              . '`. On `mcr/main`, edits are limited to the repository-root allowlist unless deeper repo instructions expand scope.';
         }
         push @lines, '`gitlab/*` plus `pristine-tar` indicates a Debian Salsa packaging mirror; preserve `pristine-tar`, `upstream/*`, and `debian/*` refs for rebuild/import flows.'
           if $has_salsa_packaging;
@@ -556,9 +592,21 @@ sub _collect_generic_validation_issues {
     my ($repo_root, $changed_files, $evidence, $current) = @_;
     my @issues;
     my @patch_files = grep { /\.patch\z/ || m{\Apatches/release/} } @{$changed_files};
+    my $mirror_main = preferred_mirror_main_branch($repo_root);
+    my $restricted_mirror = length($mirror_main) ? 1 : 0;
 
-    if ($current =~ m{\A(?:github|gitlab)/} && @{$changed_files}) {
-        push @issues, "Current branch `$current` is a read-only mirror; move authored work to a non-mirror branch before finishing. Changed files: " . preview_paths($changed_files) . '.';
+    if ($current ne 'mcr/main' && @{$changed_files}) {
+        if ($restricted_mirror && $current =~ m{\A(?:github|gitlab)/}) {
+            push @issues, "Current branch `$current` is a read-only mirror; move authored work to `mcr/main` before finishing. Changed files: " . preview_paths($changed_files) . '.';
+        } else {
+            push @issues, "Authored changes are only allowed on `mcr/main`; current branch `$current` must be synchronized or moved before finishing. Changed files: " . preview_paths($changed_files) . '.';
+        }
+    }
+    if ($restricted_mirror && $current eq 'mcr/main' && @{$changed_files}) {
+        my @disallowed = _restricted_mirror_disallowed_paths($changed_files);
+        if (@disallowed) {
+            push @issues, "Restricted mirror workflow detected via `$mirror_main`. On `mcr/main`, only the repository-root allowlist may be edited unless deeper repo instructions expand scope. Disallowed changed files: " . preview_paths(\@disallowed) . '.';
+        }
     }
     if ((has_patch_release_dir($repo_root) || @patch_files) && !_has_any_evidence(
             $evidence,

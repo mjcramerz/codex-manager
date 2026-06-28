@@ -76,7 +76,7 @@ Use the device fingerprint and Android major version to align Google kernel and 
 Recommended approach:
 1) Record baseline branch/tag for Google kernel source.
 2) Record NetHunter builder and installer commit IDs.
-3) Keep one branch per porting campaign (`mcr/feature/nh-pixel9a-*`).
+3) Keep one checkpoint log per porting campaign and land authored edits on `mcr/main` only.
 4) Group commits by concern:
    - source/build fixes,
    - NetHunter-specific feature enablement,

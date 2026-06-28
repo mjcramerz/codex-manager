@@ -1534,17 +1534,21 @@ class Installer:
         for child in sorted(target.iterdir()):
             if not child.is_dir():
                 continue
-            dependency_block = dependency_blocks.get(child.name)
-            if dependency_block is None:
-                fail(f"installed skill directory has no metadata role mapping: {child}")
             openai_yaml = child / "agents" / "openai.yaml"
             if openai_yaml.is_file():
+                dependency_block = dependency_blocks.get(child.name)
+                if dependency_block is None:
+                    fail(f"installed skill directory has no metadata role mapping: {child}")
                 rewrite_openai_yaml_dependencies(
                     openai_yaml,
                     dependency_block,
                     self.dry_run,
                     write_file=lambda path, content: self._write_text_preserving_mode(path, content),
                 )
+                continue
+
+            if any(grandchild.is_dir() for grandchild in child.iterdir()):
+                self._rewrite_installed_skill_dependencies(child, dependency_blocks, skip_missing=skip_missing)
 
     def _sync_agent_skills_symlink(self) -> None:
         skills_root = Path(self.runtime_vars["CODEX_SKILLS"])
@@ -1872,13 +1876,20 @@ class Installer:
                 if not memories_src.is_dir():
                     fail(f"repo preserve source must be a directory: {memories_src}")
                 self._merge_missing_tree(memories_src, memories_dst)
+            self._strip_memories_git_metadata(memories_dst)
             return
         if memories_src.exists():
             if not memories_src.is_dir():
                 fail(f"repo preserve source must be a directory: {memories_src}")
             self._copy_tree(memories_src, memories_dst)
+            self._strip_memories_git_metadata(memories_dst)
             return
         self._mkdir_path(memories_dst)
+
+    def _strip_memories_git_metadata(self, memories_root: Path) -> None:
+        git_dir = memories_root / ".git"
+        if git_dir.exists() or git_dir.is_symlink():
+            self._remove_path_force(git_dir)
 
     def _sync_schema_helpers(self, launch_env: dict[str, str] | None = None) -> None:
         source_tool = self.repo_root / "src" / "misc" / SCHEMA_TOOL_SOURCE_FILENAME

@@ -173,10 +173,8 @@ sub preferred_mirror_main_branch {
     for my $candidate (
         'github/mcr/main',
         'gitlab/mcr/main',
-        'origin/github/mcr/main',
-        'origin/gitlab/mcr/main',
     ) {
-        return $candidate =~ s{\Aorigin/}{}r if $refs{$candidate};
+        return $candidate if $refs{$candidate};
     }
     return '';
 }

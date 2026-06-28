@@ -9,7 +9,7 @@ You must read only the smallest section that resolves the current task, follow t
 - Routing guide: `$CODEX_HOME/index/OVERVIEW.md`
 <!-- END:nav -->
 
-Canonical content: runtime skill roots under `$CODEX_SKILLS`, plugin skills under the managed runtime plugin root, and `$CODEX_HOME/.agents/plugins/marketplace.json` for marketplace mapping.
+Canonical content: runtime skill roots under `$CODEX_HOME/.agents/skills`, plugin skills under the managed runtime plugin root, and `$CODEX_HOME/.agents/plugins/marketplace.json` for marketplace mapping.
 
 ## You must use this file when
 - the task maps directly to a reusable skill
@@ -29,7 +29,7 @@ Canonical content: runtime skill roots under `$CODEX_SKILLS`, plugin skills unde
 - `$CODEX_HOME/docs/workflows/overview.md`
 - `$CODEX_HOME/index/pack/plans.md`
 - `$CODEX_HOME/snippets/OVERVIEW.md`
-- `$CODEX_SKILLS`
+- `$CODEX_HOME/.agents/skills`
 - the managed admin skill root
 - `$CODEX_HOME/.agents/plugins/marketplace.json`
 <!-- END:related -->

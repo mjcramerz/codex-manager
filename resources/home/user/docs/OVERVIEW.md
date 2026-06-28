@@ -34,6 +34,6 @@ You must read only the smallest section that resolves the current task, follow t
 
 ## You must maintain this file by following these rules
 - You must keep docs operational, concrete, and path-correct.
-- You must use `$CODEX_HOME`, `$CODEX_AGENTS`, and `$CODEX_SKILLS` runtime paths instead of repository-source paths unless the repo itself is the subject.
+- You must use `$CODEX_HOME`, `$CODEX_AGENTS`, and `$CODEX_HOME/.agents/skills` runtime paths instead of repository-source paths unless the repo itself is the subject.
 - You must keep prompt-file references centralized in `$CODEX_HOME/docs/create-prompts.md`.
 - You must keep documentation focused on stable pack surfaces; route memory-specific work through `$CODEX_HOME/memories/` when needed.

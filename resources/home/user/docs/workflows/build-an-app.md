@@ -53,11 +53,11 @@ You must read only the smallest section that resolves the current task, follow t
 - Lint, test, and audit gates with minimal permissions.
 
 ## Branching & release flow
-- Implement on `mcr/feature/<name>` and merge into `mcr/main` only after checks pass.
+- Implement directly on `mcr/main` only after checks and boundaries are clear.
 - Promote tested changes in order: `mcr/main -> mcr/staging -> mcr/release`.
-- In fork mode (`github/*` mirrors present), treat `github/*` as read-only and never implement directly on mirror branches.
-- In fork mode, sync `origin/github/mcr/main -> github/mcr/main -> mcr/main` before release patch checks.
-- In fork mode, run release patch checks on `mcr/main` only, then create test branches from synced `mcr/main`.
+- In the restricted mirror workflow (`github/mcr/main` or `gitlab/mcr/main` exists), treat `github/*` and `gitlab/*` as read-only and never implement directly on mirror branches.
+- In the restricted mirror workflow, sync mirror main into `mcr/main` before release patch checks.
+- In the restricted mirror workflow, run release patch checks on `mcr/main` only and keep `mcr/main` edits within the repository-root allowlist unless a deeper repo contract expands scope.
 - For GitLab-delivered GitHub releases, tag from the tip of `mcr/release` using your protected release tag contract.
 - You must keep delivery mutation order deterministic for release syncs: `checkout -> true sync -> version bump -> patch apply -> push` (with patches sourced from `patches/release/series`).
 

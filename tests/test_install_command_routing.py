@@ -1,3 +1,4 @@
+import subprocess
 import sys
 import tempfile
 import tomllib
@@ -242,6 +243,50 @@ class InstallConfigToleranceTests(unittest.TestCase):
             link_path = home_dir / ".agents" / "skills"
             self.assertTrue(link_path.is_symlink())
             self.assertEqual(link_path.resolve(strict=False), skills_dir.resolve(strict=False))
+
+    def test_sync_agent_skills_symlink_repoints_wrong_target(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            home_dir = Path(tmpdir) / "home"
+            skills_dir = Path(tmpdir) / "skills"
+            wrong_dir = Path(tmpdir) / "wrong-skills"
+            link_path = home_dir / ".agents" / "skills"
+            link_path.parent.mkdir(parents=True, exist_ok=True)
+            wrong_dir.mkdir(parents=True, exist_ok=True)
+            link_path.symlink_to(wrong_dir, target_is_directory=True)
+
+            installer = codex_install.Installer.__new__(codex_install.Installer)
+            installer.dry_run = False
+            installer.runtime_layout = None
+            installer.runtime_vars = {
+                "CODEX_HOME": str(home_dir),
+                "CODEX_SKILLS": str(skills_dir),
+            }
+            installer._needs_sudo_write = lambda _path: False
+
+            codex_install.Installer._sync_agent_skills_symlink(installer)
+
+            self.assertTrue(link_path.is_symlink())
+            self.assertEqual(link_path.resolve(strict=False), skills_dir.resolve(strict=False))
+
+    def test_rewrite_installed_skill_dependencies_recurses_namespace_dirs(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            target = Path(tmpdir) / "skills"
+            openai_yaml = target / "common" / "demo-skill" / "agents" / "openai.yaml"
+            openai_yaml.parent.mkdir(parents=True, exist_ok=True)
+            openai_yaml.write_text("interface:\n  display_name: Demo\n", encoding="utf-8")
+
+            installer = codex_install.Installer.__new__(codex_install.Installer)
+            installer.dry_run = False
+            installer._write_text_preserving_mode = lambda path, content: path.write_text(content, encoding="utf-8")
+
+            codex_install.Installer._rewrite_installed_skill_dependencies(
+                installer,
+                target,
+                {"demo-skill": "dependencies:\n  tools: []\n"},
+            )
+
+            rendered = openai_yaml.read_text(encoding="utf-8")
+            self.assertIn("dependencies:", rendered)
 
     def test_parse_launch_env_table_allows_missing_table(self) -> None:
         parsed = codex_install.parse_launch_env_table(
@@ -573,6 +618,42 @@ class HomeRuntimeRepoSyncTests(unittest.TestCase):
             installer._mkdir_path.assert_called_once_with(runtime_home / "memories")
             installer._copy_tree.assert_not_called()
             installer._merge_missing_tree.assert_not_called()
+
+    def test_seed_missing_home_runtime_state_from_repo_strips_memories_git_metadata_after_copy(self) -> None:
+        installer = codex_install.Installer.__new__(codex_install.Installer)
+        installer.dry_run = False
+        installer._needs_sudo_write = lambda _path: False
+        installer._run_command = lambda argv: subprocess.run(argv, check=True)
+        installer._run_with_sudo = Mock()
+
+        with tempfile.TemporaryDirectory() as runtime_dir, tempfile.TemporaryDirectory() as repo_dir:
+            runtime_home = Path(runtime_dir)
+            repo_home = Path(repo_dir)
+            (repo_home / "memories" / ".git").mkdir(parents=True)
+            (repo_home / "memories" / "raw_memories.md").write_text("notes\n", encoding="utf-8")
+
+            codex_install.Installer._seed_missing_home_runtime_state_from_repo(installer, repo_home, runtime_home)
+
+            self.assertTrue((runtime_home / "memories" / "raw_memories.md").is_file())
+            self.assertFalse((runtime_home / "memories" / ".git").exists())
+
+    def test_seed_missing_home_runtime_state_from_repo_strips_existing_memories_git_metadata(self) -> None:
+        installer = codex_install.Installer.__new__(codex_install.Installer)
+        installer.dry_run = False
+        installer._needs_sudo_write = lambda _path: False
+        installer._run_command = lambda argv: subprocess.run(argv, check=True)
+        installer._run_with_sudo = Mock()
+
+        with tempfile.TemporaryDirectory() as runtime_dir, tempfile.TemporaryDirectory() as repo_dir:
+            runtime_home = Path(runtime_dir)
+            repo_home = Path(repo_dir)
+            (runtime_home / "memories" / ".git").mkdir(parents=True)
+            (runtime_home / "memories" / "raw_memories.md").write_text("notes\n", encoding="utf-8")
+
+            codex_install.Installer._seed_missing_home_runtime_state_from_repo(installer, repo_home, runtime_home)
+
+            self.assertTrue((runtime_home / "memories" / "raw_memories.md").is_file())
+            self.assertFalse((runtime_home / "memories" / ".git").exists())
 
 
 if __name__ == "__main__":
