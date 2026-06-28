@@ -2560,7 +2560,8 @@ class Installer:
         backup_root = ensure_safe_absolute_path("CODEX_BACKUP_DIR", self.env["CODEX_BACKUP_DIR"])
         mcp_root = ensure_safe_absolute_path("CODEX_MCP_DIR", self.env["CODEX_MCP_DIR"])
         sqlite_home = ensure_safe_absolute_path("CODEX_SQLITE_HOME", self.runtime_vars["CODEX_SQLITE_HOME"])
-        preserve_roots = sorted({backup_root, mcp_root, sqlite_home}, key=lambda item: str(item))
+        auth_lookup = self._managed_auth_path()
+        preserve_roots = sorted({backup_root, mcp_root, sqlite_home, auth_lookup}, key=lambda item: str(item))
 
         self._log("creating nuke backup")
         self._backup_install_state(flow="uninstall")
@@ -2603,7 +2604,7 @@ class Installer:
             self._log("clearing managed secret-tool entries (best-effort)")
             self._clear_all_managed_secrets()
 
-        self._log("removing runtime paths (preserving backup/mcp/sqlite)")
+        self._log("removing runtime paths (preserving backup/mcp/sqlite/codex-login auth)")
         for target in sorted(target_paths, key=lambda item: (len(item.parts), str(item))):
             self._nuke_path_preserving(target, preserve_roots)
 

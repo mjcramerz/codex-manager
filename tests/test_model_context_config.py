@@ -72,6 +72,7 @@ class ModelContextConfigTests(unittest.TestCase):
 
         for name, (model_slug, catalog_path) in expected.items():
             payload = tomllib.loads((PROFILE_CONFIG_DIR / name).read_text(encoding="utf-8"))
+            self.assertNotIn("profile", payload)
             self.assertEqual(payload["model"], model_slug)
             self.assertEqual(payload["model_catalog_json"], catalog_path)
             self.assertIn("instruction_overrides", payload)

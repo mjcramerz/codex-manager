@@ -477,6 +477,28 @@ sub hook_catalog {
                 },
             },
             {
+                id      => 'memory',
+                matcher => '^memories(?:list|read|search)$',
+                label   => 'memory tool call',
+                events  => {
+                    PreToolUse => {
+                        script        => 'pre_tool_use.pl',
+                        timeout       => 20,
+                        statusMessage => 'Checking memory tool guardrails',
+                    },
+                    PermissionRequest => {
+                        script        => 'permission_request.pl',
+                        timeout       => 20,
+                        statusMessage => 'Checking memory tool approval scope',
+                    },
+                    PostToolUse => {
+                        script        => 'post_tool_use.pl',
+                        timeout       => 20,
+                        statusMessage => 'Reviewing memory tool follow-up',
+                    },
+                },
+            },
+            {
                 id      => 'generic',
                 matcher => $GENERIC_TOOL_MATCHER,
                 label   => 'tool call',

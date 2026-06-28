@@ -24,7 +24,8 @@
         "schema",
         "diff",
         "setup",
-        "audit"
+        "audit",
+        "perl"
       ],
       "skills": [
         "runtime-config",
@@ -32,7 +33,8 @@
         "setup-audit",
         "codex-manager",
         "codex-mcp",
-        "perl-hooks"
+        "perl-hooks",
+        "perl"
       ],
       "hooks": "./hooks.json",
       "apps": [],
@@ -45,7 +47,7 @@
       "interface": {
         "display_name": "Codex Runtime",
         "short_description": "Runtime config, schema diff, and setup audit",
-        "long_description": "Use this plugin for managed Codex runtime configuration, installer flow changes, codex-mcp alignment, hook-runtime updates, and setup audit work.",
+        "long_description": "Use this plugin for managed Codex runtime configuration, installer flow changes, codex-mcp alignment, hook-runtime updates, Perl helper work, and setup audit tasks.",
         "developer_name": "Codex Setup",
         "capabilities": [
           "Read",
@@ -59,16 +61,22 @@
     },
     "codex-repo": {
       "name": "codex-repo",
-      "description": "Codex source-tree implementation and runtime-contract work.",
+      "description": "Codex source-tree, Rust toolchain, and runtime-contract work.",
       "category": "Development",
       "keywords": [
         "codex",
         "repo",
-        "development"
+        "development",
+        "cargo",
+        "rustc",
+        "rustup"
       ],
       "skills": [
         "codex-repo",
-        "rust-cargo"
+        "rust-cargo",
+        "cargo",
+        "rustc",
+        "rustup"
       ],
       "hooks": "./hooks.json",
       "apps": [
@@ -89,15 +97,15 @@
       },
       "interface": {
         "display_name": "Codex Repo",
-        "short_description": "Codex source tree and runtime contracts",
-        "long_description": "Use this plugin when the task targets the active Codex source tree, runtime behavior, or plugin contracts.",
+        "short_description": "Codex source tree and Rust toolchain contracts",
+        "long_description": "Use this plugin when the task targets the active Codex source tree, Cargo workspaces, rustc or rustup policy, or runtime behavior contracts.",
         "developer_name": "Codex Setup",
         "capabilities": [
           "Interactive",
           "Read",
           "Write"
         ],
-        "default_prompt": "Use the Codex Repo plugin to inspect and modify the active Codex source tree with runtime awareness.",
+        "default_prompt": "Use the Codex Repo plugin to inspect and modify the active Codex source tree and Rust toolchain contracts.",
         "brand_color": "#2563EB"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
@@ -191,16 +199,25 @@
     },
     "gitlab": {
       "name": "gitlab",
-      "description": "GitLab CI/CD delivery and pipeline-hardening workflows.",
+      "description": "GitLab CI/CD, runner, GitOps, and build-infrastructure workflows.",
       "category": "Development",
       "keywords": [
         "gitlab",
         "development",
         "ci",
-        "cicd"
+        "cicd",
+        "runner",
+        "gitops",
+        "bazel",
+        "buildbuddy"
       ],
       "skills": [
-        "ci-gitlab-cicd"
+        "ci-gitlab-cicd",
+        "gitlab-cicd",
+        "gitlab-runner",
+        "bazel",
+        "buildbuddy",
+        "gitops"
       ],
       "hooks": "./hooks.json",
       "apps": [],
@@ -210,14 +227,14 @@
       },
       "interface": {
         "display_name": "GitLab",
-        "short_description": "GitLab CI/CD delivery workflows",
-        "long_description": "Use this plugin for GitLab CI/CD pipeline authoring, hardening, and delivery workflow changes.",
+        "short_description": "GitLab delivery, runner, and build workflows",
+        "long_description": "Use this plugin for GitLab CI/CD pipeline authoring, shared include contracts, runner service policy, GitOps promotion, and Bazel or BuildBuddy-backed build workflow changes.",
         "developer_name": "Codex Setup",
         "capabilities": [
           "Read",
           "Write"
         ],
-        "default_prompt": "Use the GitLab plugin for GitLab CI/CD pipeline authoring, hardening, and delivery workflow changes.",
+        "default_prompt": "Use the GitLab plugin for GitLab CI/CD, runner, GitOps, and build-infrastructure workflow changes.",
         "brand_color": "#FC6D26"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
@@ -898,9 +915,53 @@
       "homepage": "https://gitlab.com/computes/apps/codex-manager",
       "hooks": "./hooks.json"
     },
+    "desktop-wayland": {
+      "name": "desktop-wayland",
+      "description": "Debian Wayland desktop workflows for Labwc, Waybar, Wofi, Crystal Dock, and desktop launcher integration.",
+      "category": "Desktop",
+      "keywords": [
+        "desktop",
+        "wayland",
+        "debian",
+        "labwc",
+        "waybar",
+        "wofi",
+        "crystal-dock",
+        "dock",
+        "launcher"
+      ],
+      "skills": [
+        "desktop-wayland",
+        "desktop-entries",
+        "crystal-dock",
+        "labwc",
+        "waybar",
+        "wofi"
+      ],
+      "hooks": "./hooks.json",
+      "apps": [],
+      "mcp": [],
+      "author": {
+        "name": "Codex Setup"
+      },
+      "interface": {
+        "display_name": "Desktop Wayland",
+        "short_description": "Debian Wayland desktop, dock, and launcher workflows",
+        "long_description": "Use this plugin for Debian Wayland desktop sessions, Labwc compositor work, Waybar and Wofi behavior, Crystal Dock startup, and desktop launcher integration.",
+        "developer_name": "Codex Setup",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "default_prompt": "Use the Desktop Wayland plugin for Debian Wayland desktop, Labwc, Waybar, Wofi, Crystal Dock, and launcher workflow tasks.",
+        "brand_color": "#32CCA8"
+      },
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "homepage": "https://gitlab.com/computes/apps/codex-manager"
+    },
     "web-browser-linux": {
       "name": "web-browser-linux",
-      "description": "Linux desktop browser, browser-hardening, and supporting desktop workflow plugins.",
+      "description": "Linux browser hardening and browser-specific desktop workflows.",
       "category": "Desktop",
       "keywords": [
         "web",
@@ -908,16 +969,15 @@
         "linux",
         "desktop",
         "hardening",
-        "entries",
-        "librewolf"
+        "librewolf",
+        "mullvad",
+        "thorium"
       ],
       "skills": [
         "desktop-browser-hardening",
-        "desktop-entries",
         "desktop-librewolf",
         "desktop-mullvad-browser",
-        "desktop-thorium",
-        "desktop-wayland"
+        "desktop-thorium"
       ],
       "hooks": "./hooks.json",
       "apps": [],
@@ -927,14 +987,14 @@
       },
       "interface": {
         "display_name": "Web Browser Linux",
-        "short_description": "Linux desktop browsers and browser hardening",
-        "long_description": "Use this plugin for Linux desktop browser setup, browser hardening, desktop entries, and Wayland browser workflow support.",
+        "short_description": "Linux browser hardening and browser-specific workflows",
+        "long_description": "Use this plugin for Linux browser hardening, LibreWolf or Mullvad Browser setup, Thorium-specific tuning, and browser-focused desktop workflows.",
         "developer_name": "Codex Setup",
         "capabilities": [
           "Read",
           "Write"
         ],
-        "default_prompt": "Use the Web Browser Linux plugin for Linux desktop browsers, browser hardening, and related desktop workflow tasks.",
+        "default_prompt": "Use the Web Browser Linux plugin for Linux browser hardening and browser-specific desktop workflow tasks.",
         "brand_color": "#0EA5E9"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
@@ -1043,7 +1103,7 @@
     },
     "system-infra": {
       "name": "system-infra",
-      "description": "Host infrastructure workflows for boot, kernel, storage, tuning, logging, and base system automation.",
+      "description": "Host infrastructure workflows for boot, installer, storage, package publication, tuning, logging, and base system automation.",
       "category": "Infrastructure",
       "keywords": [
         "system",
@@ -1051,7 +1111,10 @@
         "infrastructure",
         "grub",
         "kernel",
-        "optimizations"
+        "optimizations",
+        "preseed",
+        "aptly",
+        "runner"
       ],
       "skills": [
         "infra-grub",
@@ -1062,7 +1125,9 @@
         "ops-logrotate",
         "os-debian-preseed",
         "perf-profiling",
-        "storage-filesystems"
+        "storage-filesystems",
+        "debian-preseed",
+        "aptly"
       ],
       "apps": [],
       "mcp": [],
@@ -1071,14 +1136,14 @@
       },
       "interface": {
         "display_name": "System Infra",
-        "short_description": "Host tuning, storage, and system automation",
-        "long_description": "Use this plugin for GRUB, kernel settings, sysctl, systemd, filesystems, performance tuning, Debian preseed, and host log rotation workflows.",
+        "short_description": "Host tuning, installer, and package-service automation",
+        "long_description": "Use this plugin for GRUB, kernel settings, sysctl, systemd, filesystems, Debian preseed, Aptly-backed package services, and host performance workflows.",
         "developer_name": "Codex Setup",
         "capabilities": [
           "Read",
           "Write"
         ],
-        "default_prompt": "Use the System Infra plugin for host tuning, storage, boot, kernel, and base system automation workflows.",
+        "default_prompt": "Use the System Infra plugin for unattended install, storage, boot, package-service, and host tuning workflows.",
         "brand_color": "#14B8A6"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
@@ -1250,14 +1315,16 @@
     },
     "cloudflare-workers": {
       "name": "cloudflare-workers",
-      "description": "Cloudflare Workers platform, Durable Objects, sandboxing, and Workers best-practice workflows.",
+      "description": "Cloudflare Workers platform, R2 publication, Durable Objects, sandboxing, and Workers best-practice workflows.",
       "category": "Infrastructure",
       "keywords": [
         "cloudflare",
         "workers",
         "durable-objects",
         "edge",
-        "performance"
+        "performance",
+        "r2",
+        "storage"
       ],
       "skills": [
         "cloudflare",
@@ -1266,7 +1333,8 @@
         "web-perf",
         "workers-best-practices",
         "cloudflare-git-delivery",
-        "aptly-r2"
+        "aptly-r2",
+        "cloudflare-r2"
       ],
       "apps": [],
       "mcp": [
@@ -1280,8 +1348,8 @@
       },
       "interface": {
         "display_name": "Cloudflare Workers",
-        "short_description": "Workers, Durable Objects, and edge-runtime workflows",
-        "long_description": "Use this plugin for Cloudflare Workers development plus the shared delivery workflows that keep Worker repos, R2 publication, and GitLab CI templates aligned.",
+        "short_description": "Workers, R2, Durable Objects, and edge-runtime workflows",
+        "long_description": "Use this plugin for Cloudflare Workers development, R2-backed artifact delivery, Durable Objects, bindings, and shared GitLab delivery workflows.",
         "developer_name": "Cloudflare",
         "capabilities": [
           "Read",

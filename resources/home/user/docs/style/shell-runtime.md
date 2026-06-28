@@ -7,6 +7,7 @@ You must read only the smallest section that resolves the current task, follow t
 - You must use `bash` for Bash-sensitive commands and Bash assets.
 - You must use `sh`/`dash` for POSIX-portable assets.
 - You must validate shell-specific files with the shell they claim to support.
+- You must prefer `bash -c` over `bash -lc` for Bash execution unless login-shell startup files are the explicit subject of the work.
 
 ## Deterministic execution defaults
 - You must prefer `LC_ALL=C` and `TZ=UTC` for reproducible command output.
@@ -18,6 +19,7 @@ You must read only the smallest section that resolves the current task, follow t
 - Refuse destructive operations on empty paths, `/`, or ambiguous globs.
 - You must use `--` before untrusted positionals where supported.
 - You must prefer explicit arrays or direct argv execution over shell-string construction.
+- Avoid `eval`, avoid command strings built from untrusted fragments, and do not reach for login shells just to make commands work.
 - Reparse structured files after mutation.
 
 ## Documentation scope

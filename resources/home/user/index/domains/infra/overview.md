@@ -6,7 +6,12 @@ You must read only the smallest section that resolves the current task, follow t
 ## Contents
 <!-- BEGIN:contents -->
 - `$CODEX_HOME/index/domains/infra/ansible.md` — Ansible (entrypoint)
+- `$CODEX_HOME/index/domains/infra/aptly.md` — Aptly (entrypoint)
+- `$CODEX_HOME/index/domains/infra/bazel.md` — Bazel (entrypoint)
+- `$CODEX_HOME/index/domains/infra/buildbuddy.md` — BuildBuddy (entrypoint)
+- `$CODEX_HOME/index/domains/infra/cloudflare-r2.md` — Cloudflare R2 (entrypoint)
 - `$CODEX_HOME/index/domains/infra/containers.md` — Containers workflow (entrypoint)
+- `$CODEX_HOME/index/domains/infra/gitops.md` — GitOps (entrypoint)
 - `$CODEX_HOME/index/domains/infra/kubernetes.md` — Kubernetes (entrypoint)
 - `$CODEX_HOME/index/domains/infra/proxmox.md` — Proxmox (entrypoint)
 - `$CODEX_HOME/index/domains/infra/terraform.md` — Terraform (entrypoint)
@@ -26,7 +31,12 @@ You must read only the smallest section that resolves the current task, follow t
 Entry points:
 - `$CODEX_HOME/index/domains/infra/tooling.md` — stable link to infrastructure tooling guidance (IaC, orchestration, virtualization).
 - `$CODEX_HOME/index/domains/infra/ansible.md` — stable link to Ansible guidance.
+- `$CODEX_HOME/index/domains/infra/aptly.md` — stable link to Aptly publication guidance.
+- `$CODEX_HOME/index/domains/infra/bazel.md` — stable link to Bazel guidance.
+- `$CODEX_HOME/index/domains/infra/buildbuddy.md` — stable link to BuildBuddy guidance.
+- `$CODEX_HOME/index/domains/infra/cloudflare-r2.md` — stable link to Cloudflare R2 publication guidance.
 - `$CODEX_HOME/index/domains/infra/containers.md` — stable link to container guidance and templates.
+- `$CODEX_HOME/index/domains/infra/gitops.md` — stable link to GitOps guidance.
 - `$CODEX_HOME/index/domains/infra/kubernetes.md` — stable link to Kubernetes guidance.
 - `$CODEX_HOME/index/domains/infra/proxmox.md` — stable link to Proxmox guidance.
 - `$CODEX_HOME/index/domains/infra/terraform.md` — stable link to Terraform guidance.

@@ -1,6 +1,6 @@
 ---
 name: rust-cargo
-description: Edit Rust/Cargo projects with explicit fmt, clippy, test, locked-build, and release packaging guidance.
+description: Edit Rust/Cargo projects with explicit Cargo, rustc, rustup, fmt, clippy, test, locked-build, and release packaging guidance.
 metadata:
   version: '1.0'
   short-description: Cargo workspace, release, and validation workflows
@@ -16,15 +16,15 @@ interface:
 ---
 
 ## Use this skill when
-- the task directly targets the rust-cargo repository/domain surface
-- repo contracts, CI, or runtime behavior must stay aligned with the active source tree
+- the task directly targets the Rust or Cargo repository/domain surface
+- repo contracts, CI, compiler, or toolchain behavior must stay aligned with the active source tree
 - validation evidence is needed for a cross-file operational change
 
 ## Workflow
 1) Read the repo anchors in `references/latest-sources.md`.
 2) Confirm the smallest affected surface before editing.
 3) Keep secrets, runtime-only state, and generated artifacts out of source-controlled changes.
-4) Run the narrowest syntax, unit, or contract checks that prove the change.
+4) Run the narrowest Cargo, rustc, or rustup checks that prove the change.
 
 ## Agent orchestration
 - Delegate read-only discovery only.
@@ -43,6 +43,10 @@ interface:
 - `$CODEX_HOME/plugins/cache/codex-local/codex-repo/local/skills/rust-cargo/scripts/skill_helper.py`
 
 ## References
+- `$CODEX_HOME/docs/lang/cargo.md`
+- `$CODEX_HOME/docs/lang/rustc.md`
+- `$CODEX_HOME/docs/lang/rustup.md`
+- `$CODEX_HOME/docs/workflows/rust-toolchain.md`
 - `$CODEX_HOME/docs/workflows/codex-manager.md`
 - `$CODEX_HOME/docs/workflows/cloudflare-delivery.md`
 - `$CODEX_HOME/docs/workflows/codex-mcp.md`

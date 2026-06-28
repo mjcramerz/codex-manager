@@ -153,6 +153,12 @@ sub runtime_config {
                                 '\bposttooluse\b',
                             ],
                             lines => [
+                                'Hook work should stay schema-first: emit only fields allowed by the event output schema, and prefer transcript-driven context over generic boilerplate.',
+                                'When describing the installed runtime, use `$CODEX_HOME/hooks.json`, `$CODEX_HOME/.hooks/scripts`, and `$CODEX_HOME/.hooks/modules` instead of repository source paths.',
+                                'Include the full hook context needed to resolve the task; do not omit relevant changed-file, validation, or next-step detail just for brevity.',
+                                'Installed home hook config lives at `$CODEX_HOME/hooks.json`.',
+                                'Installed hook entrypoints live under `$CODEX_HOME/.hooks/scripts`, and installed Perl hook modules live under `$CODEX_HOME/.hooks/modules`.',
+                                'Keep matcher groups mutually exclusive because Codex runs matching command hooks concurrently. `UserPromptSubmit` and `Stop` still self-filter inside the command.',
                                 'For hook-runtime work in `codex-manager`, inspect `resources/hooks/hooks.json`, `src/install/hooks_builder.py`, `src/install/hook_runtime_catalog.py`, and the hook tests in `tests/test_hook_runtime_modules.py`, `tests/test_hooks_builder.py`, and `tests/test_hooks_scripts.py`.',
                                 'When Perl hook modules change, run `perl -c` on touched `.pm` or `.pl` files in addition to the targeted Python hook tests.',
                             ],

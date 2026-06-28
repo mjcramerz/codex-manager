@@ -19,8 +19,13 @@ Use when:
 
 <!-- BEGIN:related -->
 Related:
+- `$CODEX_HOME/docs/lang/cargo.md`
 - `$CODEX_HOME/docs/lang/go.md`
 - `$CODEX_HOME/docs/lang/typescript.md`
 - `$CODEX_HOME/docs/lang/html.md`
+- `$CODEX_HOME/docs/lang/perl.md`
+- `$CODEX_HOME/docs/lang/rust.md`
+- `$CODEX_HOME/docs/lang/rustc.md`
+- `$CODEX_HOME/docs/lang/rustup.md`
 - `$CODEX_HOME/docs/style/overview.md`
 <!-- END:related -->

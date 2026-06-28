@@ -8,6 +8,7 @@ You must read only the smallest section that resolves the current task, follow t
 - `$CODEX_HOME/index/domains/system/bws-local.md` — Local BWS workflow (entrypoint)
 - `$CODEX_HOME/index/domains/system/debian-preseed.md` — Debian preseed workflow (entrypoint)
 - `$CODEX_HOME/index/domains/system/filesystems.md` — Filesystems workflow (entrypoint)
+- `$CODEX_HOME/index/domains/system/gitlab-runner.md` — GitLab Runner (entrypoint)
 - `$CODEX_HOME/index/domains/system/grub.md` — GRUB (entrypoint)
 - `$CODEX_HOME/index/domains/system/hardening.md` — System hardening (entrypoint)
 - `$CODEX_HOME/index/domains/system/kernel.md` — Kernel (entrypoint)
@@ -30,6 +31,7 @@ Entry points:
 - `$CODEX_HOME/index/domains/system/bws-local.md` — stable link to local Bitwarden Secrets Manager (BWS) guidance.
 - `$CODEX_HOME/index/domains/system/debian-preseed.md` — stable link to Debian preseed guidance.
 - `$CODEX_HOME/index/domains/system/filesystems.md` — stable link to filesystem guidance.
+- `$CODEX_HOME/index/domains/system/gitlab-runner.md` — stable link to GitLab Runner host guidance.
 - `$CODEX_HOME/index/domains/system/grub.md` — stable link to GRUB guidance.
 - `$CODEX_HOME/index/domains/system/kernel.md` — stable link to kernel build and config guidance.
 - `$CODEX_HOME/index/domains/system/optimizations.md` — stable link to host optimization guidance.

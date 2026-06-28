@@ -447,6 +447,26 @@ timeout = 20
 statusMessage = "Reviewing MCP follow-up"
 
 [[tool_profiles]]
+id = "memory"
+matcher = "^memories(?:list|read|search)$"
+label = "memory tool call"
+
+[tool_profiles.events.PreToolUse]
+script = "pre_tool_use.pl"
+timeout = 20
+statusMessage = "Checking memory tool guardrails"
+
+[tool_profiles.events.PermissionRequest]
+script = "permission_request.pl"
+timeout = 20
+statusMessage = "Checking memory tool approval scope"
+
+[tool_profiles.events.PostToolUse]
+script = "post_tool_use.pl"
+timeout = 20
+statusMessage = "Reviewing memory tool follow-up"
+
+[[tool_profiles]]
 id = "generic"
 matcher = "^(?:[^BEWabemsw].*|B(?:|[^a].*|a(?:|[^s].*|s(?:|[^h].*|h.+)))|E(?:|[^d].*|d(?:|[^i].*|i(?:|[^t].*|t.+)))|W(?:|[^r].*|r(?:|[^i].*|i(?:|[^t].*|t(?:|[^e].*|e.+))))|a(?:|[^p].*|p(?:|[^p].*|p(?:|[^l].*|l(?:|[^y].*|y(?:|[^_].*|_(?:|[^p].*|p(?:|[^a].*|a(?:|[^t].*|t(?:|[^c].*|c(?:|[^h].*|h.+))))))))))|b(?:|[^a].*|a(?:|[^s].*|s(?:|[^h].*|h.+)))|e(?:|[^dx].*|d(?:|[^i].*|i(?:|[^t].*|t.+))|x(?:|[^e].*|e(?:|[^c].*|c(?:|[^_].*|_(?:|[^c].*|c(?:|[^o].*|o(?:|[^m].*|m(?:|[^m].*|m(?:|[^a].*|a(?:|[^n].*|n(?:|[^d].*|d.+)))))))))))|m(?:|[^c].*|c(?:|[^p].*|p(?:|[^_].*|_(?:|[^_].*))))|s(?:|[^h].*|h(?:|[^e].*|e(?:|[^l].*|l(?:|[^l].*|l.+))))|w(?:|[^r].*|r(?:|[^i].*|i(?:|[^t].*|t(?:|[^e].*|e.+)))))$"
 label = "tool call"

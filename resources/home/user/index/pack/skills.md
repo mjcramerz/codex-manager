@@ -18,9 +18,10 @@ Canonical content: runtime skill roots under `$CODEX_HOME/.agents/skills`, plugi
 
 ## Current focus areas
 - Pack-maintenance skills: docs, index, prompts, rules, snippets, templates
-- Repo/runtime skills: `codex-manager`, `codex-mcp`, `perl-hooks`, `rust-cargo`
-- Cloudflare/delivery skills: `cloudflare`, `cloudflare-git-delivery`, `aptly-r2`
-- Debian install skills: `os-debian-preseed`
+- Repo/runtime skills: `codex-manager`, `codex-mcp`, `perl-hooks`, `perl`, `rust-cargo`, `cargo`, `rustc`, `rustup`
+- Cloudflare/delivery skills: `cloudflare`, `cloudflare-git-delivery`, `aptly-r2`, `aptly`, `cloudflare-r2`, `gitlab-cicd`, `gitlab-runner`, `gitops`, `bazel`, `buildbuddy`
+- Debian install skills: `os-debian-preseed`, `debian-preseed`
+- Desktop stack skills: `desktop-wayland`, `crystal-dock`, `labwc`, `waybar`, `wofi`
 - Language skills: `lang-perl`, `lang-rust`
 
 ## After that, you must check related files

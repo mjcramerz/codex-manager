@@ -138,6 +138,16 @@ def make_incomplete_codex_manager_repo(tmpdir: str) -> Path:
     return repo
 
 
+def make_generic_repo(tmpdir: str) -> Path:
+    repo = Path(tmpdir) / "workspace"
+    repo.mkdir()
+    init_git_repo(repo)
+    write_file(repo / "README.md", "# workspace\n")
+    subprocess.run(["git", "add", "."], cwd=repo, check=True)
+    subprocess.run(["git", "commit", "-qm", "init"], cwd=repo, check=True)
+    return repo
+
+
 class HookScriptTests(unittest.TestCase):
     maxDiff = None
 
@@ -392,6 +402,45 @@ class HookScriptTests(unittest.TestCase):
             self.assertIn("python3 -m compileall src tests", context)
             self.assertIn("python3 -m unittest discover -s tests", context)
 
+    def test_user_prompt_submit_does_not_inject_hook_runtime_boilerplate_for_unrelated_repos(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_generic_repo(tmpdir)
+
+            result = run_hook(
+                "user-prompt-submit",
+                {
+                    "cwd": str(repo),
+                    "prompt": "Audit the hooks manifest and validate the stop hook behavior.",
+                },
+            )
+
+            payload = json.loads(result.stdout)
+            context = payload["hookSpecificOutput"]["additionalContext"]
+            self.assertIn("Review requests should lead with concrete findings", context)
+            self.assertNotIn("$CODEX_HOME/hooks.json", context)
+            self.assertNotIn("$CODEX_HOME/.hooks/scripts", context)
+            self.assertNotIn("$CODEX_HOME/.hooks/modules", context)
+            self.assertNotIn("Hook work should stay schema-first", context)
+            self.assertNotIn("matcher groups mutually exclusive", context)
+
+    def test_user_prompt_submit_injects_bash_policy_for_shell_prompts(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_generic_repo(tmpdir)
+
+            result = run_hook(
+                "user-prompt-submit",
+                {
+                    "cwd": str(repo),
+                    "prompt": "Harden this bash wrapper and stop using bash -lc for the shell command path.",
+                },
+            )
+
+            payload = json.loads(result.stdout)
+            context = payload["hookSpecificOutput"]["additionalContext"]
+            self.assertIn("prefer explicit `bash -c` execution over `bash -lc`", context)
+            self.assertIn("avoid `eval`", context)
+            self.assertIn("`shellcheck`", context)
+
     def test_user_prompt_submit_routes_skill_and_plugin_dependency_work(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             repo = make_codex_manager_repo(tmpdir)
@@ -591,7 +640,7 @@ class HookScriptTests(unittest.TestCase):
             self.assertIn("Probe `podman ps`: failed (current system boot ID differs from cached boot ID).", context)
             self.assertIn("Probe `docker ps`: failed (Cannot connect to the Docker daemon).", context)
 
-    def test_pre_tool_use_memoriessearch_uses_generic_guardrails(self) -> None:
+    def test_pre_tool_use_memoriessearch_uses_memory_guardrails(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             repo = make_codex_manager_repo(tmpdir)
 
@@ -606,8 +655,31 @@ class HookScriptTests(unittest.TestCase):
 
             payload = json.loads(result.stdout)
             context = payload["hookSpecificOutput"]["additionalContext"]
-            self.assertIn("Pre-tool guardrails for `tool call` (`memoriessearch`):", context)
-            self.assertIn("Prefer deterministic inputs, bounded I/O, and the smallest reviewable mutation.", context)
+            self.assertIn("Pre-tool guardrails for `memory tool call` (`memoriessearch`):", context)
+            self.assertIn("Memory search is for continuity and prior decisions;", context)
+            self.assertIn("Prefer targeted hits in `MEMORY.md`", context)
+            self.assertIn("Treat memory as guidance: verify drift-prone facts", context)
+
+    def test_post_tool_use_memoriessearch_mentions_sqlite_state_follow_up(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_codex_manager_repo(tmpdir)
+
+            result = run_hook(
+                "post-tool-use",
+                {
+                    "cwd": str(repo),
+                    "tool_name": "memoriessearch",
+                    "tool_response": {
+                        "error": "memory lookup warning: state not found",
+                    },
+                },
+            )
+
+            payload = json.loads(result.stdout)
+            context = payload["hookSpecificOutput"]["additionalContext"]
+            self.assertIn("Post-tool follow-up for `memory tool call` (`memoriessearch`):", context)
+            self.assertIn("retry with narrower memory keywords", context)
+            self.assertIn("`$CODEX_SQLITE_HOME/state_*.*`", context)
 
     def test_user_prompt_submit_mentions_salsa_packaging_mirror_context(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

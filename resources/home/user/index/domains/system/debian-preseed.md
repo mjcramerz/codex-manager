@@ -21,7 +21,10 @@ Use when:
 Related:
 - `$CODEX_HOME/docs/workflows/debian-preseed.md`
 - `$CODEX_HOME/docs/virtualization/debian-preseed.md`
+- `$CODEX_HOME/docs/workflows/gitlab-runner.md`
+- `$CODEX_HOME/docs/desktop/wayland.md`
 - `$CODEX_HOME/templates/virtualization/debian-preseed`
 - `$CODEX_HOME/snippets/preseed/include.preseed.cfg`
 - You must use skill `os-debian-preseed`.
+- You must use skill `debian-preseed`.
 <!-- END:related -->

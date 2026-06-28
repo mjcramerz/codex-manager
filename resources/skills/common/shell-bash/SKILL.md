@@ -39,6 +39,7 @@ Use this skill whenever you need to:
 - Start scripts with strict mode (see `$CODEX_HOME/snippets/bash/strict.sh`).
 - No `eval`.
 - Quote expansions; use arrays for commands.
+- Prefer `bash -c` over `bash -lc` unless login-shell startup files are the explicit subject of the task.
 - Validate inputs; enforce usage/help; refuse ambiguous state.
 - Use `mktemp` + `trap` for temp files/dirs.
 - Never run network downloads without explicit approval + verification.

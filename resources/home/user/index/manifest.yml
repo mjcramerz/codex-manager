@@ -35,6 +35,12 @@ core:
       - skill:ci-github-actions
       - skill:ci-github-actions-fix
       - skill:ci-gitlab-cicd
+      - skill:gitlab-cicd
+      - skill:gitlab-runner
+      - skill:aptly
+      - skill:bazel
+      - skill:buildbuddy
+      - skill:gitops
       - skill:repo-ops
     metadata:
       version: '1.0'
@@ -665,6 +671,66 @@ domains:
         tags:
           - desktop
           - wayland
+    crystal-dock:
+      kind: entrypoint
+      description: stable link to Crystal Dock guidance.
+      entrypoint: $CODEX_HOME/index/domains/desktop/crystal-dock.md
+      canonical: $CODEX_HOME/docs/desktop/crystal-dock.md
+      related:
+        - $CODEX_HOME/docs/workflows/crystal-dock.md
+        - $CODEX_HOME/docs/desktop/labwc.md
+        - skill:crystal-dock
+      metadata:
+        version: '1.0'
+        short-description: Crystal Dock guidance
+        tags:
+          - desktop
+          - crystal-dock
+    labwc:
+      kind: entrypoint
+      description: stable link to Labwc compositor guidance.
+      entrypoint: $CODEX_HOME/index/domains/desktop/labwc.md
+      canonical: $CODEX_HOME/docs/desktop/labwc.md
+      related:
+        - $CODEX_HOME/docs/workflows/desktop-wayland.md
+        - $CODEX_HOME/docs/desktop/wayland.md
+        - skill:labwc
+      metadata:
+        version: '1.0'
+        short-description: Labwc compositor guidance
+        tags:
+          - desktop
+          - labwc
+    waybar:
+      kind: entrypoint
+      description: stable link to Waybar guidance.
+      entrypoint: $CODEX_HOME/index/domains/desktop/waybar.md
+      canonical: $CODEX_HOME/docs/desktop/waybar.md
+      related:
+        - $CODEX_HOME/docs/workflows/desktop-wayland.md
+        - $CODEX_HOME/docs/desktop/wayland.md
+        - skill:waybar
+      metadata:
+        version: '1.0'
+        short-description: Waybar guidance
+        tags:
+          - desktop
+          - waybar
+    wofi:
+      kind: entrypoint
+      description: stable link to Wofi guidance.
+      entrypoint: $CODEX_HOME/index/domains/desktop/wofi.md
+      canonical: $CODEX_HOME/docs/desktop/wofi.md
+      related:
+        - $CODEX_HOME/docs/workflows/desktop-wayland.md
+        - $CODEX_HOME/docs/desktop/wayland.md
+        - skill:wofi
+      metadata:
+        version: '1.0'
+        short-description: Wofi guidance
+        tags:
+          - desktop
+          - wofi
   infra:
     infra-tooling:
       kind: entrypoint
@@ -704,6 +770,66 @@ domains:
         tags:
           - infra
           - ansible
+    aptly:
+      kind: entrypoint
+      description: stable link to Aptly publication guidance.
+      entrypoint: $CODEX_HOME/index/domains/infra/aptly.md
+      canonical: $CODEX_HOME/docs/infra/aptly.md
+      related:
+        - $CODEX_HOME/docs/workflows/aptly.md
+        - $CODEX_HOME/docs/workflows/cloudflare-r2.md
+        - skill:aptly
+      metadata:
+        version: '1.0'
+        short-description: Aptly publication guidance
+        tags:
+          - infra
+          - aptly
+    bazel:
+      kind: entrypoint
+      description: stable link to Bazel guidance.
+      entrypoint: $CODEX_HOME/index/domains/infra/bazel.md
+      canonical: $CODEX_HOME/docs/infra/bazel.md
+      related:
+        - $CODEX_HOME/docs/workflows/bazel-buildbuddy.md
+        - $CODEX_HOME/docs/infra/buildbuddy.md
+        - skill:bazel
+      metadata:
+        version: '1.0'
+        short-description: Bazel guidance
+        tags:
+          - infra
+          - bazel
+    buildbuddy:
+      kind: entrypoint
+      description: stable link to BuildBuddy guidance.
+      entrypoint: $CODEX_HOME/index/domains/infra/buildbuddy.md
+      canonical: $CODEX_HOME/docs/infra/buildbuddy.md
+      related:
+        - $CODEX_HOME/docs/workflows/bazel-buildbuddy.md
+        - $CODEX_HOME/docs/infra/bazel.md
+        - skill:buildbuddy
+      metadata:
+        version: '1.0'
+        short-description: BuildBuddy guidance
+        tags:
+          - infra
+          - buildbuddy
+    cloudflare-r2:
+      kind: entrypoint
+      description: stable link to Cloudflare R2 guidance.
+      entrypoint: $CODEX_HOME/index/domains/infra/cloudflare-r2.md
+      canonical: $CODEX_HOME/docs/infra/cloudflare-r2.md
+      related:
+        - $CODEX_HOME/docs/workflows/cloudflare-r2.md
+        - $CODEX_HOME/docs/workflows/cloudflare-delivery.md
+        - skill:cloudflare-r2
+      metadata:
+        version: '1.0'
+        short-description: Cloudflare R2 guidance
+        tags:
+          - infra
+          - cloudflare-r2
     containers:
       kind: entrypoint
       description: stable link to container guidance and templates.
@@ -727,6 +853,21 @@ domains:
         tags:
           - infra
           - containers
+    gitops:
+      kind: entrypoint
+      description: stable link to GitOps guidance.
+      entrypoint: $CODEX_HOME/index/domains/infra/gitops.md
+      canonical: $CODEX_HOME/docs/infra/gitops.md
+      related:
+        - $CODEX_HOME/docs/workflows/gitops.md
+        - $CODEX_HOME/docs/workflows/gitlab-ci.md
+        - skill:gitops
+      metadata:
+        version: '1.0'
+        short-description: GitOps guidance
+        tags:
+          - infra
+          - gitops
     kubernetes:
       kind: entrypoint
       description: stable link to Kubernetes guidance.
@@ -866,12 +1007,29 @@ domains:
         - $CODEX_HOME/docs/style/perl.md
         - $CODEX_HOME/templates/perl/codex-hook-module/
         - skill:lang-perl
+        - skill:perl
       metadata:
         version: '1.0'
         short-description: Perl guidance
         tags:
           - lang
           - perl
+    cargo:
+      kind: entrypoint
+      description: stable link to Cargo guidance.
+      entrypoint: $CODEX_HOME/index/domains/lang/cargo.md
+      canonical: $CODEX_HOME/docs/lang/cargo.md
+      related:
+        - $CODEX_HOME/docs/lang/cargo.md
+        - $CODEX_HOME/docs/lang/rust.md
+        - $CODEX_HOME/docs/workflows/rust-toolchain.md
+        - skill:cargo
+      metadata:
+        version: '1.0'
+        short-description: Cargo guidance
+        tags:
+          - lang
+          - cargo
     rust:
       kind: entrypoint
       description: stable link to Rust guidance.
@@ -881,12 +1039,47 @@ domains:
         - $CODEX_HOME/docs/lang/rust.md
         - $CODEX_HOME/docs/style/rust.md
         - skill:lang-rust
+        - $CODEX_HOME/docs/lang/cargo.md
+        - $CODEX_HOME/docs/lang/rustc.md
+        - $CODEX_HOME/docs/lang/rustup.md
       metadata:
         version: '1.0'
         short-description: Rust guidance
         tags:
           - lang
           - rust
+    rustc:
+      kind: entrypoint
+      description: stable link to rustc guidance.
+      entrypoint: $CODEX_HOME/index/domains/lang/rustc.md
+      canonical: $CODEX_HOME/docs/lang/rustc.md
+      related:
+        - $CODEX_HOME/docs/lang/rustc.md
+        - $CODEX_HOME/docs/lang/rust.md
+        - $CODEX_HOME/docs/workflows/rust-toolchain.md
+        - skill:rustc
+      metadata:
+        version: '1.0'
+        short-description: rustc guidance
+        tags:
+          - lang
+          - rustc
+    rustup:
+      kind: entrypoint
+      description: stable link to rustup guidance.
+      entrypoint: $CODEX_HOME/index/domains/lang/rustup.md
+      canonical: $CODEX_HOME/docs/lang/rustup.md
+      related:
+        - $CODEX_HOME/docs/lang/rustup.md
+        - $CODEX_HOME/docs/lang/rust.md
+        - $CODEX_HOME/docs/workflows/rust-toolchain.md
+        - skill:rustup
+      metadata:
+        version: '1.0'
+        short-description: rustup guidance
+        tags:
+          - lang
+          - rustup
     typescript:
       kind: entrypoint
       description: stable link to TypeScript guidance.
@@ -1079,12 +1272,28 @@ domains:
         - $CODEX_HOME/templates/virtualization/debian-preseed/
         - $CODEX_HOME/snippets/preseed/include.preseed.cfg
         - skill:os-debian-preseed
+        - skill:debian-preseed
       metadata:
         version: '1.0'
         short-description: Debian preseed guidance
         tags:
           - system
           - debian-preseed
+    gitlab-runner:
+      kind: entrypoint
+      description: stable link to GitLab Runner guidance.
+      entrypoint: $CODEX_HOME/index/domains/system/gitlab-runner.md
+      canonical: $CODEX_HOME/docs/system/gitlab-runner.md
+      related:
+        - $CODEX_HOME/docs/workflows/gitlab-runner.md
+        - $CODEX_HOME/docs/workflows/gitlab-ci.md
+        - skill:gitlab-runner
+      metadata:
+        version: '1.0'
+        short-description: GitLab Runner guidance
+        tags:
+          - system
+          - gitlab-runner
     filesystems:
       kind: entrypoint
       description: stable link to filesystem guidance.

@@ -1,6 +1,6 @@
 ---
 name: aptly-r2
-description: Work in cf-aptly-r2 and its shared delivery contract across R2 bucket layout, Worker routing, signing assets, and GitLab CI templates.
+description: Work in Cloudflare R2-backed Aptly publication flows across bucket or prefix layout, Worker routing, signed assets, and shared GitLab delivery templates.
 metadata:
   version: '1.0'
   short-description: Aptly publication through R2 and Cloudflare Worker delivery
@@ -16,7 +16,7 @@ interface:
 ---
 
 ## Use this skill when
-- the task directly targets the aptly-r2 repository/domain surface
+- the task directly targets an Aptly-to-R2 publication surface
 - repo contracts, CI, or runtime behavior must stay aligned with the active source tree
 - validation evidence is needed for a cross-file operational change
 
@@ -24,7 +24,7 @@ interface:
 1) Read the repo anchors in `references/latest-sources.md`.
 2) Confirm the smallest affected surface before editing.
 3) Keep secrets, runtime-only state, and generated artifacts out of source-controlled changes.
-4) Run the narrowest syntax, unit, or contract checks that prove the change.
+4) Run the narrowest syntax, unit, or contract checks that prove the change across both publication and readback paths.
 
 ## Agent orchestration
 - Delegate read-only discovery only.
@@ -43,6 +43,8 @@ interface:
 - `$CODEX_HOME/plugins/cache/codex-local/cloudflare-workers/local/skills/aptly-r2/scripts/skill_helper.py`
 
 ## References
+- `$CODEX_HOME/docs/infra/aptly.md`
+- `$CODEX_HOME/docs/infra/cloudflare-r2.md`
 - `$CODEX_HOME/docs/workflows/codex-manager.md`
 - `$CODEX_HOME/docs/workflows/cloudflare-delivery.md`
 - `$CODEX_HOME/docs/workflows/codex-mcp.md`

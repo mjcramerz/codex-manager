@@ -112,8 +112,8 @@ print JSON::PP::encode_json({
         self.assertEqual(payload["semgrep_label"], "Semgrep MCP call")
         self.assertEqual(payload["generic_mcp_group"], "mcp")
         self.assertEqual(payload["generic_mcp_label"], "MCP tool call")
-        self.assertEqual(payload["memories_group"], "generic")
-        self.assertEqual(payload["memories_label"], "tool call")
+        self.assertEqual(payload["memories_group"], "memory")
+        self.assertEqual(payload["memories_label"], "memory tool call")
         self.assertEqual(payload["generic_group"], "generic")
         self.assertEqual(payload["generic_label"], "tool call")
 

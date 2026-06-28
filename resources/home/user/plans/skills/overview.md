@@ -17,7 +17,23 @@ You must read only the smallest section that resolves the current task, follow t
 - `$CODEX_HOME/plans/skills/skill-codex-mcp.md` — Plan
 - `$CODEX_HOME/plans/skills/skill-cloudflare-git-delivery.md` — Plan
 - `$CODEX_HOME/plans/skills/skill-aptly-r2.md` — Plan
+- `$CODEX_HOME/plans/skills/skill-aptly.md` — Plan
+- `$CODEX_HOME/plans/skills/skill-bazel.md` — Plan
+- `$CODEX_HOME/plans/skills/skill-buildbuddy.md` — Plan
+- `$CODEX_HOME/plans/skills/skill-crystal-dock.md` — Plan
+- `$CODEX_HOME/plans/skills/skill-cargo.md` — Plan
+- `$CODEX_HOME/plans/skills/skill-cloudflare-r2.md` — Plan
+- `$CODEX_HOME/plans/skills/skill-debian-preseed.md` — Plan
+- `$CODEX_HOME/plans/skills/skill-gitlab-cicd.md` — Plan
+- `$CODEX_HOME/plans/skills/skill-gitlab-runner.md` — Plan
+- `$CODEX_HOME/plans/skills/skill-gitops.md` — Plan
+- `$CODEX_HOME/plans/skills/skill-labwc.md` — Plan
+- `$CODEX_HOME/plans/skills/skill-perl.md` — Plan
 - `$CODEX_HOME/plans/skills/skill-rust-cargo.md` — Plan
+- `$CODEX_HOME/plans/skills/skill-rustc.md` — Plan
+- `$CODEX_HOME/plans/skills/skill-rustup.md` — Plan
+- `$CODEX_HOME/plans/skills/skill-waybar.md` — Plan
+- `$CODEX_HOME/plans/skills/skill-wofi.md` — Plan
 - `$CODEX_HOME/plans/skills/skill-perl-hooks.md` — Plan
 - `$CODEX_HOME/plans/skills/skill-os-debian-preseed.md` — Plan
 <!-- END:contents -->

@@ -20,6 +20,10 @@ Use when:
 <!-- BEGIN:related -->
 Related:
 - `$CODEX_HOME/docs/desktop/wayland.md`
+- `$CODEX_HOME/docs/desktop/labwc.md`
+- `$CODEX_HOME/docs/desktop/waybar.md`
+- `$CODEX_HOME/docs/desktop/wofi.md`
+- `$CODEX_HOME/docs/desktop/crystal-dock.md`
 - `$CODEX_HOME/docs/desktop/desktop-entries.md`
 - `$CODEX_HOME/docs/desktop/browsers.md`
 - `$CODEX_HOME/docs/workflows/desktop-wayland.md`

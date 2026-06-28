@@ -21,5 +21,9 @@ Use when:
 Related:
 - `$CODEX_HOME/docs/workflows/desktop-wayland.md`
 - `$CODEX_HOME/docs/desktop/overview.md`
+- `$CODEX_HOME/docs/desktop/labwc.md`
+- `$CODEX_HOME/docs/desktop/waybar.md`
+- `$CODEX_HOME/docs/desktop/wofi.md`
+- `$CODEX_HOME/docs/desktop/crystal-dock.md`
 - You must use skill `desktop-wayland`.
 <!-- END:related -->

@@ -30,8 +30,8 @@ Configure a minimal Wayland/Labwc desktop stack.
 - References
 
 ## Local implementation anchors
-- `$CODEX_HOME/plugins/cache/codex-local/web-browser-linux/local/skills/desktop-wayland/SKILL.md`
-- `$CODEX_HOME/plugins/cache/codex-local/web-browser-linux/local/skills/desktop-wayland/agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/desktop-wayland/local/skills/desktop-wayland/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/desktop-wayland/local/skills/desktop-wayland/agents/openai.yaml`
 
 ## External references
 - [Freedesktop Desktop Entry Specification](https://specifications.freedesktop.org/desktop-entry-spec/latest/) - Desktop launcher schema and semantics.

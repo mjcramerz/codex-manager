@@ -171,13 +171,12 @@ sub prompt_keyword_context_lines {
     return () if !length $prompt;
 
     my @lines;
+    if ($prompt =~ /\b(?:bash|shell script|shell runtime|shell wrapper|shell command)\b/i) {
+        push @lines, 'For Bash-sensitive work, prefer explicit `bash -c` execution over `bash -lc` unless login-shell startup files are the subject of the task.';
+        push @lines, 'Keep shell commands argv-safe: avoid `eval`, avoid interpolating untrusted input into shell strings, and validate with `bash -n` and `shellcheck` when available.';
+    }
     if ($prompt =~ /\b(?:build-src|build-install|build from source|build-codex\.sh|config\.schema\.json|release overlay)\b/i) {
         push @lines, 'Source-build requests in this repo should follow the upstream `scripts/release/build-codex.sh` contract, then validate the patched `config.schema.json` before changing local TOML knobs.';
-    }
-    if ($prompt =~ /\b(?:hook|hooks|perl|transcript|memory|compact|subagent)\b/i) {
-        push @lines, 'Hook work should stay schema-first: emit only fields allowed by the event output schema, and prefer transcript-driven context over generic boilerplate.';
-        push @lines, 'When describing the installed runtime, use `$CODEX_HOME/hooks.json`, `$CODEX_HOME/.hooks/scripts`, and `$CODEX_HOME/.hooks/modules` instead of repository source paths.';
-        push @lines, 'Include the full hook context needed to resolve the task; do not omit relevant changed-file, validation, or next-step detail just for brevity.';
     }
     if ($prompt =~ /\b(?:plugin|plugins|marketplace|skills|roles)\b/i) {
         push @lines, 'Plugin and skill work in this repo should keep runtime marketplace metadata, plugin bundle manifests, and generated `agents/openai.yaml` dependencies in sync.';

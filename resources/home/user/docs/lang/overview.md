@@ -15,12 +15,18 @@ You must read only the smallest section that resolves the current task, follow t
 - `$CODEX_HOME/docs/lang/html.md` — HTML
 - `$CODEX_HOME/docs/lang/perl.md` — Perl
 - `$CODEX_HOME/docs/lang/rust.md` — Rust
+- `$CODEX_HOME/docs/lang/cargo.md` — Cargo
+- `$CODEX_HOME/docs/lang/rustc.md` — rustc
+- `$CODEX_HOME/docs/lang/rustup.md` — rustup
 - `$CODEX_HOME/docs/lang/typescript.md` — TypeScript
 <!-- END:contents -->
 
 ## Quick map
 - Perl: hook runtime, install helpers, and deterministic CLI scripts
-- Rust: Cargo workspaces, release validation, and source-pack parity work
+- Rust: overall toolchain, release validation, and source-pack parity work
+- Cargo: workspace manifests, lockfiles, and command contracts
+- rustc: compiler targets, codegen flags, and artifact boundaries
+- rustup: channels, components, and repo-local toolchain overrides
 - Go: CLI/runtime helpers
 - TypeScript: tooling and web surfaces
 - HTML: static documents and semantic structure

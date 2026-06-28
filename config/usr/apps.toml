@@ -36,6 +36,7 @@ enabled = true
 "backend@codex-local" = { enabled = true }
 "frontend@codex-local" = { enabled = true }
 "design-ui@codex-local" = { enabled = true }
+"desktop-wayland@codex-local" = { enabled = true }
 "browser-automation@codex-local" = { enabled = true }
 "document-artifacts@codex-local" = { enabled = true }
 "adobe-acrobat@codex-local" = { enabled = true }

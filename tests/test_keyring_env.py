@@ -1056,6 +1056,67 @@ class InstallerManagedSecretsTests(unittest.TestCase):
             "secret-tool clear failed for mcp_servers.linear: exit code 1; continuing uninstall without removing that keyring entry"
         )
 
+    def test_uninstall_preserves_managed_auth_file(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            codex_root = root / "runtime"
+            system_dir = root / "system"
+            user_dir = root / "user"
+            share_dir = root / "share"
+            mcp_dir = root / "mcp"
+            backup_dir = root / "backup"
+            home_dir = root / "home"
+            agents_dir = root / "agents"
+            skills_dir = root / "skills"
+            log_dir = root / "logs"
+            sqlite_dir = root / "sqlite"
+            lookup_dir = codex_root / "lookup"
+            lookup_dir.mkdir(parents=True, exist_ok=True)
+            managed_auth = lookup_dir / "auth.toml"
+            managed_auth.write_text(
+                'version = 1\nservice = "codex-login"\n\n[codex_login."matthew@gmail.com"]\nCODEX_ACCESS_TOKEN = true\n',
+                encoding="utf-8",
+            )
+            doomed_file = codex_root / "tmp.txt"
+            doomed_file.write_text("remove me\n", encoding="utf-8")
+
+            for path in (system_dir, user_dir, share_dir, mcp_dir, backup_dir, home_dir, agents_dir, skills_dir, log_dir, sqlite_dir):
+                path.mkdir(parents=True, exist_ok=True)
+
+            installer = self._make_installer(
+                env={
+                    "CODEX_ROOT_DIR": str(codex_root),
+                    "CODEX_SYSTEM_DIR": str(system_dir),
+                    "CODEX_USER_DIR": str(user_dir),
+                    "CODEX_SHARE_DIR": str(share_dir),
+                    "CODEX_WRAPPER_DIR": str(share_dir / "wrappers"),
+                    "CODEX_MCP_DIR": str(mcp_dir),
+                    "CODEX_BACKUP_DIR": str(backup_dir),
+                },
+            )
+            installer.runtime_vars = {
+                "CODEX_HOME": str(home_dir),
+                "CODEX_AGENTS": str(agents_dir),
+                "CODEX_SKILLS": str(skills_dir),
+                "CODEX_LOG_DIR": str(log_dir),
+                "CODEX_SQLITE_HOME": str(sqlite_dir),
+            }
+            installer._log = lambda _message: None
+            installer._backup_install_state = lambda *, flow: None
+            installer._stage_mode = lambda: False
+            installer._managed_wrapper_targets_for_uninstall = lambda: set()
+            installer._path_profile_target = lambda: root / "profile.d" / "codex.sh"
+            installer._clear_all_managed_secrets = Mock()
+            installer.reset_environment = Mock()
+            installer._run_command = lambda args: subprocess.run(args, check=False)
+
+            codex_install.Installer.uninstall(installer)
+
+            self.assertTrue(managed_auth.exists())
+            self.assertFalse(doomed_file.exists())
+            installer._clear_all_managed_secrets.assert_called_once_with()
+            installer.reset_environment.assert_called_once_with()
+
     def test_verify_runtime_hook_assets_detects_missing_runtime_driver(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)

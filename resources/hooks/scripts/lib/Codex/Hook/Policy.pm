@@ -57,6 +57,10 @@ sub pre_tool_policy_lines {
     } elsif ($group eq 'mcp') {
         push @lines, '- Keep MCP calls narrow, with the smallest connector/tool scope that answers the current question.';
         push @lines, '- Avoid follow-up connector work that spends money, mutates external state, or widens access without an explicit user need.';
+    } elsif ($group eq 'memory') {
+        push @lines, '- Memory search is for continuity and prior decisions; start with the smallest specific keywords such as repo paths, feature names, rollout ids, or account names.';
+        push @lines, '- Prefer targeted hits in `MEMORY.md`, then follow only the cited rollout or skill files you need instead of broad rescans of all memory artifacts.';
+        push @lines, '- Treat memory as guidance: verify drift-prone facts against the current repo, runtime, or user message before acting on them.';
     } elsif ($group =~ /\Amcp_/) {
         push @lines, '- Keep MCP calls narrow, with the smallest connector/tool scope that answers the current question.';
         push @lines, '- Avoid follow-up connector work that spends money, mutates external state, or widens access without an explicit user need.';

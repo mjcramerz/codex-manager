@@ -499,14 +499,6 @@ sub _user_prompt_context {
     push @sections, $multi_agent if defined $multi_agent;
     push @sections, 'Review requests should lead with concrete findings ordered by severity, supported by file and line evidence plus explicit residual risks.'
       if $prompt =~ /\b(review|audit)\b/i;
-    if ($prompt =~ /\b(hook|hooks|manifest|sessionstart|userpromptsubmit|stop hook)\b/i) {
-        push @sections, join(
-            "\n",
-            'Installed home hook config lives at `$CODEX_HOME/hooks.json`.',
-            'Installed hook entrypoints live under `$CODEX_HOME/.hooks/scripts`, and installed Perl hook modules live under `$CODEX_HOME/.hooks/modules`.',
-            'Keep matcher groups mutually exclusive because Codex runs matching command hooks concurrently. `UserPromptSubmit` and `Stop` still self-filter inside the command.',
-        );
-    }
     if ($prompt =~ /\b(github|gitlab|mirror|patch|patches|release|mcr\/)\b/i) {
         my @lines;
         my $mirror_main = preferred_mirror_main_branch($repo_root);
@@ -787,6 +779,9 @@ sub _post_tool_use_context {
         push @lines, '- The edit result shows a failure or warning; inspect the exact patch boundary before attempting another mutation.';
     } elsif ($group eq 'mcp') {
         push @lines, '- The MCP response shows a failure or warning; keep the next connector call scoped to the failing server, tool, or argument.';
+    } elsif ($group eq 'memory') {
+        push @lines, '- The memory tool response shows a failure or warning; retry with narrower memory keywords tied to the exact repo path, feature name, rollout id, or account you need.';
+        push @lines, '- If the result still looks wrong, inspect `$CODEX_SQLITE_HOME/state_*.*` to confirm the local memory state the runtime is searching before widening the query.';
     } elsif ($group =~ /\Amcp_/) {
         push @lines, '- The MCP response shows a failure or warning; keep the next connector call scoped to the failing server, tool, or argument.';
         push @lines, map { "- $_" } mcp_post_tool_lines($tool_name);

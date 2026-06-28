@@ -31,6 +31,7 @@ If `$CODEX_HOME/AGENTS.md` confirms the active session is Bash, read `$CODEX_HOM
 
 ## Subprocess safety
 - **Never** build shell strings with untrusted input (avoid `bash -lc`, `sh -c`, `eval`).
+- Prefer `bash -c` over `bash -lc` unless login-shell startup files are the explicit subject of the task.
 - You must prefer exec-arg APIs and arrays:
   - `cmd=(rg --fixed-string -- "$pattern" "$path"); "${cmd[@]}"`
 - Set timeouts for network calls (or refuse network by default).

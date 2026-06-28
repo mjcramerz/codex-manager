@@ -23,6 +23,11 @@ Use when:
 Related:
 - `$CODEX_HOME/docs/workflows/github-actions.md`
 - `$CODEX_HOME/docs/workflows/gitlab-ci.md`
+- `$CODEX_HOME/docs/workflows/gitlab-runner.md`
+- `$CODEX_HOME/docs/workflows/aptly.md`
+- `$CODEX_HOME/docs/workflows/bazel-buildbuddy.md`
+- `$CODEX_HOME/docs/workflows/cloudflare-r2.md`
+- `$CODEX_HOME/docs/workflows/gitops.md`
 - `$CODEX_HOME/docs/workflows/release.md`
 - `$CODEX_HOME/templates/ci/github-actions`
 - `$CODEX_HOME/templates/ci/gitlab-ci`
@@ -30,5 +35,11 @@ Related:
 - You must use skill `ci-github-actions`.
 - You must use skill `ci-github-actions-fix`.
 - You must use skill `ci-gitlab-cicd`.
+- You must use skill `gitlab-cicd`.
+- You must use skill `gitlab-runner`.
+- You must use skill `aptly`.
+- You must use skill `bazel`.
+- You must use skill `buildbuddy`.
+- You must use skill `gitops`.
 - You must use skill `repo-ops`.
 <!-- END:related -->

@@ -4,43 +4,24 @@ status: active
 owner: Matthew Cramer
 tags:
 - skills
-- all
 - ci-gitlab-cicd
 - references
-- latest-sources-md
-- latest-sources
-- user
-- web
-updated: '2026-02-20'
+updated: '2026-06-28'
 ---
 # ci-gitlab-cicd reference bundle
 
-- Last refreshed: 2026-02-11 (UTC)
-- Freshness method: web.run lookups against primary vendor/project documentation roots.
+- Last refreshed: 2026-06-28 (UTC)
+- Freshness method: repo-adjacent local inspection plus primary vendor documentation.
 
 ## Skill purpose
-Build GitLab CI/CD pipelines with security gates, pinned images, and deterministic tooling.
-
-## SKILL.md coverage checklist
-- Use this skill when
-- Workflow
-- GitLab delivery contract
-- Agent orchestration
-- Validation and testing
-- Outputs
-- References
+Build deterministic GitLab pipelines with shared include and delivery discipline.
 
 ## Local implementation anchors
 - `$CODEX_HOME/plugins/cache/codex-local/gitlab/local/skills/ci-gitlab-cicd/SKILL.md`
 - `$CODEX_HOME/plugins/cache/codex-local/gitlab/local/skills/ci-gitlab-cicd/agents/openai.yaml`
 
 ## External references
-- [Git documentation](https://git-scm.com/doc) - Core git behavior and safe workflows.
-- [GitHub Actions docs](https://docs.github.com/actions) - Workflow syntax and security hardening.
-- [GitLab CI/CD docs](https://docs.gitlab.com/ci/) - Pipeline orchestration and variables.
-- [GitLab CI YAML reference](https://docs.gitlab.com/ee/ci/yaml/) - Deterministic pipeline key definitions.
-
-## Proof-of-concept prompts
-- Build a minimum viable runbook for `ci-gitlab-cicd` using the checklist above, then validate inputs, timeouts, and rollback notes.
-- Produce one positive-path and one negative-path test scenario aligned to `ci-gitlab-cicd` before finalizing changes.
-
+- [GitLab CI/CD docs](https://docs.gitlab.com/ci/) - Pipeline orchestration, includes, rules, and variables.
+- [GitLab CI YAML reference](https://docs.gitlab.com/ee/ci/yaml/) - Key-level syntax and behavior.
+- [GitLab Runner docs](https://docs.gitlab.com/runner/) - Runner and executor behavior that affects pipeline contracts.
+- [GitLab source repository](https://gitlab.com/gitlab-org/gitlab) - Official implementation context when documentation leaves behavior ambiguous.

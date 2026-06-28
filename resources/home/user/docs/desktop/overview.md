@@ -10,17 +10,22 @@ You must read only the smallest section that resolves the current task, follow t
 <!-- END:nav -->
 
 ## Scope
-- Wayland/labwc session setup
+- Wayland or Labwc session setup
 - greetd/regreet/cage launch surfaces
 - desktop-entry integration
+- launcher, bar, and dock behavior
 - hardened browser guidance
 
 ## Quick map
 - Wayland stack: `wayland.md`
+- Labwc compositor/session helpers: `labwc.md`
+- Waybar modules and restart behavior: `waybar.md`
+- Wofi launcher behavior: `wofi.md`
+- Crystal Dock startup and restart behavior: `crystal-dock.md`
 - Desktop entries: `desktop-entries.md`
 - Browser stack: `browsers.md`
 
 ## You must enforce these guardrails
-- You must keep configs minimal and versioned.
-- You must prefer Wayland-native flags and apps.
-- You must keep privilege boundaries explicit around polkit, launchers, and browser profile handling.
+- Keep configs minimal and versioned.
+- Prefer Wayland-native flags and apps.
+- Keep privilege boundaries explicit around polkit, launchers, bars, docks, and browser profile handling.

@@ -30,8 +30,8 @@ Create safe and consistent .desktop launchers.
 - References
 
 ## Local implementation anchors
-- `$CODEX_HOME/plugins/cache/codex-local/web-browser-linux/local/skills/desktop-entries/SKILL.md`
-- `$CODEX_HOME/plugins/cache/codex-local/web-browser-linux/local/skills/desktop-entries/agents/openai.yaml`
+- `$CODEX_HOME/plugins/cache/codex-local/desktop-wayland/local/skills/desktop-entries/SKILL.md`
+- `$CODEX_HOME/plugins/cache/codex-local/desktop-wayland/local/skills/desktop-entries/agents/openai.yaml`
 
 ## External references
 - [Freedesktop Desktop Entry Specification](https://specifications.freedesktop.org/desktop-entry-spec/latest/) - Desktop launcher schema and semantics.

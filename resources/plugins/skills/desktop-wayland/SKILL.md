@@ -25,12 +25,13 @@ interface:
 
 ## Use this skill when
 - setting up Labwc sessions
-- wiring waybar/kanshi/swaylock/wofi/greetd
+- wiring Waybar, Wofi, Kanshi, swaylock, greetd, Foot, Kitty, or dock helpers
+- checking autostart, restart, or fallback TTY behavior for a Wayland desktop stack
 
 ## Workflow
-1) Define required components
-2) Apply minimal configs
-3) Validate login and lock flows
+1) Define required session components and ownership boundaries.
+2) Apply minimal configs for Labwc, Waybar, Wofi, lock/idle, and greeter surfaces.
+3) Validate login, launcher, bar, dock, and lock flows with a fallback TTY available.
 
 ## Agent orchestration
 - Confirm that the request fits this skill and state boundaries if other skills are needed.
@@ -50,6 +51,9 @@ interface:
 
 ## References
 - `$CODEX_HOME/index/domains/desktop/wayland.md`
+- `$CODEX_HOME/docs/desktop/labwc.md`
+- `$CODEX_HOME/docs/desktop/waybar.md`
+- `$CODEX_HOME/docs/desktop/wofi.md`
 - `$CODEX_HOME/docs/desktop/wayland.md`
 - `$CODEX_HOME/docs/workflows/desktop-wayland.md`
 - `$CODEX_HOME/templates/desktop/wayland-skeleton/`

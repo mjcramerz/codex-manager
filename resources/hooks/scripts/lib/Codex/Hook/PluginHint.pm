@@ -158,7 +158,8 @@ sub _alias_tokens {
         'ai-media' => [qw(imagegen sora speech transcribe voice audio video)],
         'vercel' => [qw(vercel deploy preview production)],
         'hosting-platforms' => [qw(vercel render netlify hosting platform deploy)],
-        'web-browser-linux' => [qw(browser librewolf mullvad thorium wayland labwc desktop-entry)],
+        'desktop-wayland' => [qw(wayland debian labwc waybar wofi crystal-dock dock desktop-entry)],
+        'web-browser-linux' => [qw(browser librewolf mullvad thorium browser-hardening)],
         'iac' => [qw(terraform ansible iac infrastructure)],
         'containers' => [qw(docker podman compose buildx container)],
         'kubernetes' => [qw(kubernetes k8s helm manifest cluster)],
@@ -282,9 +283,13 @@ sub _bundle_guidance {
             '- Choose the host first (`vercel`, `render`, or `netlify`) before widening into deployment implementation details.',
             '- Keep comparisons concise and implementation steps provider-specific once a target platform is known.',
         ],
+        'desktop-wayland' => [
+            '- Keep Debian Wayland work tied to the exact desktop surface you are modifying: Labwc, Waybar, Wofi, Crystal Dock, or desktop launcher integration.',
+            '- Validate the touched compositor, dock, launcher, or desktop-entry boundary instead of broad session churn.',
+        ],
         'web-browser-linux' => [
-            '- Keep browser and desktop work tied to the exact browser, launcher, or Wayland workflow you are modifying.',
-            '- Validate the exact browser-hardening or desktop-entry target instead of broad desktop cleanup.',
+            '- Keep browser work tied to the exact browser or browser-hardening surface you are modifying.',
+            '- Validate the exact browser-hardening or browser-specific launcher target instead of broad desktop cleanup.',
         ],
         'iac' => [
             '- Anchor IaC work to the exact tool boundary (`terraform` or `ansible`) and the smallest module or role that owns the change.',
@@ -426,8 +431,11 @@ sub _bundle_bonus_score {
         'browser-automation' => [
             [ qr/\b(?:playwright|browser automation|screenshot|selector|electron)\b/, 6 ],
         ],
+        'desktop-wayland' => [
+            [ qr/\b(?:wayland|debian wayland|labwc|waybar|wofi|crystal dock|crystal-dock|dock|desktop entry)\b/, 6 ],
+        ],
         'web-browser-linux' => [
-            [ qr/\b(?:librewolf|mullvad browser|thorium|desktop entry|browser hardening|labwc|wayland)\b/, 6 ],
+            [ qr/\b(?:librewolf|mullvad browser|thorium|browser hardening)\b/, 6 ],
         ],
         'openai-apps' => [
             [ qr/\b(?:apps sdk|chatgpt app|widget|tool descriptor|component csp)\b/, 6 ],

@@ -5,6 +5,7 @@ Minimal configs for a Labwc‑based Wayland session.
 ## Outputs
 - `labwc/rc.xml`
 - `waybar/config.jsonc`
+- `waybar/style.css`
 - `kanshi/config`
 - `swaylock/config`
 - `wofi/config`
@@ -13,8 +14,8 @@ Minimal configs for a Labwc‑based Wayland session.
 
 ## Usage
 1) Copy configs into `~/.config/` (or `/etc/` for greetd).
-2) Adjust paths and commands for your system.
-3) Test with a fallback TTY available.
+2) Adjust Labwc keybindings, Waybar modules, Wofi launch commands, and greeter behavior for your system.
+3) Test login, launcher, bar, and lock flows with a fallback TTY available.
 
 ## Inputs
 - Destination repository path for this template.
@@ -28,4 +29,7 @@ Minimal configs for a Labwc‑based Wayland session.
 
 Related:
 - `$CODEX_HOME/docs/desktop/wayland.md`
+- `$CODEX_HOME/docs/desktop/labwc.md`
+- `$CODEX_HOME/docs/desktop/waybar.md`
+- `$CODEX_HOME/docs/desktop/wofi.md`
 - `$CODEX_HOME/docs/workflows/desktop-wayland.md`
