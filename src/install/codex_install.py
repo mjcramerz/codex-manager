@@ -15,7 +15,6 @@ from __future__ import annotations
 
 import argparse
 import copy
-import getpass
 import filecmp
 import getpass
 import hashlib
@@ -1182,11 +1181,23 @@ class Installer:
         if self.dry_run:
             print(f"[dry-run] copy {src} -> {dst}")
             return
+        try:
+            src_stat = src.stat()
+        except OSError:
+            src_stat = None
         if dst.is_file():
             try:
-                dst_mode = stat.S_IMODE(dst.stat().st_mode)
-                if dst_mode == mode and filecmp.cmp(src, dst, shallow=False):
-                    return
+                dst_stat = dst.stat()
+                dst_mode = stat.S_IMODE(dst_stat.st_mode)
+                if dst_mode == mode:
+                    if src_stat is not None:
+                        src_mtime_ns = getattr(src_stat, "st_mtime_ns", int(src_stat.st_mtime * 1_000_000_000))
+                        dst_mtime_ns = getattr(dst_stat, "st_mtime_ns", int(dst_stat.st_mtime * 1_000_000_000))
+                        if dst_stat.st_size == src_stat.st_size and dst_mtime_ns == src_mtime_ns:
+                            return
+                    if src_stat is None or dst_stat.st_size == src_stat.st_size:
+                        if filecmp.cmp(src, dst, shallow=False):
+                            return
             except OSError:
                 pass
         if self._needs_sudo_write(dst.parent):
@@ -1325,7 +1336,7 @@ class Installer:
         prompt = f"Enter {key} for mcp_servers.{server_name} (or 's' to skip): "
         while True:
             try:
-                value = getpass.getpass(prompt)
+                value = input(prompt)
             except (EOFError, KeyboardInterrupt):
                 print(file=sys.stderr)
                 return None
@@ -2630,10 +2641,9 @@ class Installer:
         single_line_pattern = re.compile(
             rf"^(\s*{re.escape(assignment_key)}\s*=\s*)(\"[^\"]*\"|'[^']*')(\s*(?:#.*)?)$"
         )
-        multiline_open_pattern = re.compile(
-            rf"^(\s*{re.escape(assignment_key)}\s*=\s*)\"\"\"(\s*(?:#.*)?)$"
+        multiline_start_pattern = re.compile(
+            rf"^(\s*{re.escape(assignment_key)}\s*=\s*)\"\"\"(.*)$"
         )
-        multiline_close_pattern = re.compile(r'^\"\"\"(\s*(?:#.*)?)$')
         current_table: list[str] = []
         for idx, line in enumerate(lines):
             parsed_table = self._parse_toml_table_path(line)
@@ -2649,23 +2659,30 @@ class Installer:
                 if text.endswith("\n"):
                     rendered += "\n"
                 return rendered, True
-            multiline_open = multiline_open_pattern.match(line)
-            if not multiline_open:
+            multiline_start = multiline_start_pattern.match(line)
+            if not multiline_start:
                 continue
             if '"""' in value:
                 fail(f"TOML multiline override for {key} contains triple quotes")
+            prefix = multiline_start.group(1)
+            initial_tail = multiline_start.group(2)
             end_idx: int | None = None
             closing_suffix = ""
-            for candidate_idx in range(idx + 1, len(lines)):
-                closing_match = multiline_close_pattern.match(lines[candidate_idx])
-                if closing_match is None:
-                    continue
-                end_idx = candidate_idx
-                closing_suffix = closing_match.group(1)
-                break
+            close_pos = initial_tail.find('"""')
+            if close_pos >= 0:
+                end_idx = idx
+                closing_suffix = initial_tail[close_pos + 3 :]
+            else:
+                for candidate_idx in range(idx + 1, len(lines)):
+                    close_pos = lines[candidate_idx].find('"""')
+                    if close_pos < 0:
+                        continue
+                    end_idx = candidate_idx
+                    closing_suffix = lines[candidate_idx][close_pos + 3 :]
+                    break
             if end_idx is None:
                 fail(f"unterminated TOML multiline string for {key}")
-            replacement = [f'{multiline_open.group(1)}"""']
+            replacement = [f'{prefix}"""']
             replacement.extend(value.splitlines())
             replacement.append(f'"""{closing_suffix}')
             lines[idx : end_idx + 1] = replacement

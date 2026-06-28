@@ -298,13 +298,13 @@ class InstallerManagedSecretsTests(unittest.TestCase):
         installer._warn_once = Mock()
         return installer
 
-    def test_prompt_managed_secret_value_uses_hidden_input(self) -> None:
+    def test_prompt_managed_secret_value_uses_visible_input(self) -> None:
         installer = self._make_installer()
 
         with (
             patch.object(sys.stdin, "isatty", return_value=True),
             patch.object(sys.stdout, "isatty", return_value=True),
-            patch("codex_install.getpass.getpass", return_value=" visible-secret ") as getpass_mock,
+            patch("builtins.input", return_value=" visible-secret ") as input_mock,
         ):
             value = codex_install.Installer._prompt_managed_secret_value(
                 installer,
@@ -313,7 +313,7 @@ class InstallerManagedSecretsTests(unittest.TestCase):
             )
 
         self.assertEqual(value, "visible-secret")
-        getpass_mock.assert_called_once_with(
+        input_mock.assert_called_once_with(
             "Enter VERCEL_API_TOKEN for mcp_servers.vercel (or 's' to skip): "
         )
 
@@ -323,7 +323,7 @@ class InstallerManagedSecretsTests(unittest.TestCase):
         with (
             patch.object(sys.stdin, "isatty", return_value=True),
             patch.object(sys.stdout, "isatty", return_value=True),
-            patch("codex_install.getpass.getpass", return_value="s"),
+            patch("builtins.input", return_value="s"),
         ):
             value = codex_install.Installer._prompt_managed_secret_value(
                 installer,
@@ -339,7 +339,7 @@ class InstallerManagedSecretsTests(unittest.TestCase):
         with (
             patch.object(sys.stdin, "isatty", return_value=True),
             patch.object(sys.stdout, "isatty", return_value=True),
-            patch("codex_install.getpass.getpass", side_effect=["", " retry-secret "]) as getpass_mock,
+            patch("builtins.input", side_effect=["", " retry-secret "]) as input_mock,
             patch("builtins.print") as print_mock,
         ):
             value = codex_install.Installer._prompt_managed_secret_value(
@@ -349,7 +349,7 @@ class InstallerManagedSecretsTests(unittest.TestCase):
             )
 
         self.assertEqual(value, "retry-secret")
-        self.assertEqual(getpass_mock.call_count, 2)
+        self.assertEqual(input_mock.call_count, 2)
         print_mock.assert_called_once_with(
             "[warn] VERCEL_API_TOKEN cannot be empty; enter a value or 's' to skip"
         )
@@ -642,6 +642,94 @@ class InstallerManagedSecretsTests(unittest.TestCase):
         self.assertEqual(rc, 0)
         self.assertEqual(run_mock.call_count, 2)
         self.assertEqual(run_mock.call_args_list[1].kwargs["input"], "token-b")
+
+    def test_codex_login_init_retries_store_with_bootstrap_session(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            lookup_dir = root / "lookup"
+            lookup_dir.mkdir(parents=True, exist_ok=True)
+            (lookup_dir / "auth.toml").write_text(
+                "\n".join(
+                    [
+                        "version = 1",
+                        'service = "codex-login"',
+                        "",
+                        '[codex_login."copilot@jcramer.sbs"]',
+                        "CODEX_ACCESS_TOKEN = true",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            failed_store = Mock(returncode=1, stdout="", stderr="secret-tool: The name is not activatable")
+            successful_store = Mock(returncode=0, stdout="", stderr="")
+
+            with (
+                patch.dict(os.environ, {"CODEX_ROOT_DIR": str(root)}, clear=False),
+                patch.object(sys.stdin, "isatty", return_value=True),
+                patch.object(sys.stderr, "isatty", return_value=True),
+                patch("lib.codex_login.getpass.getpass", return_value="token-1"),
+                patch(
+                    "lib.codex_login.shutil.which",
+                    side_effect=lambda name: {
+                        "secret-tool": "/usr/bin/secret-tool",
+                        "dbus-run-session": "/usr/bin/dbus-run-session",
+                        "gnome-keyring-daemon": "/usr/bin/gnome-keyring-daemon",
+                    }.get(name),
+                ),
+                patch("lib.codex_login.subprocess.run", side_effect=[failed_store, successful_store]) as run_mock,
+                patch("sys.stdout", new=io.StringIO()),
+            ):
+                rc = codex_login.main(["--init"])
+
+        self.assertEqual(rc, 0)
+        self.assertEqual(run_mock.call_count, 2)
+        self.assertEqual(run_mock.call_args_list[0].args[0][0], "/usr/bin/secret-tool")
+        self.assertEqual(run_mock.call_args_list[1].args[0][0], "/usr/bin/dbus-run-session")
+        self.assertEqual(run_mock.call_args_list[1].kwargs["input"], "token-1\n")
+
+    def test_codex_login_init_reports_secret_service_failure_when_bootstrap_unavailable(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            lookup_dir = root / "lookup"
+            lookup_dir.mkdir(parents=True, exist_ok=True)
+            (lookup_dir / "auth.toml").write_text(
+                "\n".join(
+                    [
+                        "version = 1",
+                        'service = "codex-login"',
+                        "",
+                        '[codex_login."copilot@jcramer.sbs"]',
+                        "CODEX_ACCESS_TOKEN = true",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            failed_store = Mock(returncode=1, stdout="", stderr="secret-tool: The name is not activatable")
+            class TtyStringIO(io.StringIO):
+                def isatty(self) -> bool:
+                    return True
+
+            with (
+                patch.dict(os.environ, {"CODEX_ROOT_DIR": str(root)}, clear=False),
+                patch.object(sys.stdin, "isatty", return_value=True),
+                patch("lib.codex_login.getpass.getpass", return_value="token-1"),
+                patch(
+                    "lib.codex_login.shutil.which",
+                    side_effect=lambda name: {
+                        "secret-tool": "/usr/bin/secret-tool",
+                        "dbus-run-session": "/usr/bin/dbus-run-session",
+                    }.get(name),
+                ),
+                patch("lib.codex_login.subprocess.run", return_value=failed_store),
+                patch("sys.stdout", new=io.StringIO()),
+                patch("sys.stderr", new=TtyStringIO()) as stderr,
+            ):
+                rc = codex_login.main(["--init"])
+
+        self.assertEqual(rc, 1)
+        self.assertIn("ensure a Secret Service is running", stderr.getvalue())
 
     def test_ensure_enabled_managed_secrets_prompts_and_stores_missing_values(self) -> None:
         installer = self._make_installer(

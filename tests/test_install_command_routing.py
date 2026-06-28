@@ -401,6 +401,46 @@ class InstallConfigToleranceTests(unittest.TestCase):
 
         self.assertIn('apply_patch_instructions_file = "./after.md"', rendered)
 
+    def test_instruction_override_rewrites_inline_multiline_string(self) -> None:
+        installer = codex_install.Installer.__new__(codex_install.Installer)
+        installer._warnings_emitted = set()
+        with patch.object(
+            installer,
+            "_instruction_file_overrides",
+            return_value={
+                "developer_instructions": "override line 1\noverride line 2",
+            },
+        ):
+            rendered = installer._apply_instruction_file_overrides(
+                "\n".join(
+                    [
+                        'developer_instructions = """1) existing line',
+                        '2) existing last line."""',
+                        "",
+                    ]
+                )
+            )
+
+        self.assertIn('developer_instructions = """\noverride line 1\noverride line 2\n"""', rendered)
+        self.assertNotIn("existing line", rendered)
+
+    def test_copy_file_skips_content_compare_when_metadata_matches(self) -> None:
+        installer = codex_install.Installer.__new__(codex_install.Installer)
+        installer.dry_run = False
+        installer._needs_sudo_write = lambda _path: False
+        installer._install_file_with_sudo = Mock()
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            src = root / "src.txt"
+            dst = root / "dst.txt"
+            src.write_text("same payload\n", encoding="utf-8")
+
+            codex_install.Installer._copy_file(installer, src, dst, mode=0o644)
+
+            with patch("codex_install.filecmp.cmp", side_effect=AssertionError("filecmp.cmp should not run")):
+                codex_install.Installer._copy_file(installer, src, dst, mode=0o644)
+
     def test_stage_setup_environment_writes_activation_script_only(self) -> None:
         installer = codex_install.Installer.__new__(codex_install.Installer)
         installer.stage_root = Path("/data/dryrun/codex")

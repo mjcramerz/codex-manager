@@ -32,6 +32,13 @@ LOGIN_ACCOUNT_PATTERN = re.compile(r"^[^\s\x00\r\n]+$")
 LOGIN_SECRET_NAME_PREFIX = "codex_login."
 LOGIN_SECRET_LABEL_PREFIX = "Codex login token"
 SECRET_TOOL_TIMEOUT_SECONDS = 20
+SECRET_TOOL_RETRY_ERROR_MARKERS = (
+    "the name is not activatable",
+    "cannot autolaunch dbus",
+    "could not connect",
+    "no such interface",
+    "operation not permitted",
+)
 
 
 class CodexLoginAuthConfig:
@@ -130,22 +137,83 @@ def _secret_tool_binary() -> str:
     return binary
 
 
-def _lookup_login_secret(config: CodexLoginAuthConfig, account_name: str) -> str:
-    binary = shutil.which("secret-tool")
-    if not binary:
-        return ""
-    lookup_name = _login_lookup_name(account_name)
+def _should_retry_secret_tool(details: str) -> bool:
+    normalized = details.strip().lower()
+    if not normalized:
+        return False
+    return any(marker in normalized for marker in SECRET_TOOL_RETRY_ERROR_MARKERS)
+
+
+def _run_secret_tool(
+    args: list[str],
+    *,
+    timeout_label: str,
+    failure_label: str,
+    input_text: str | None = None,
+) -> subprocess.CompletedProcess[str]:
+    binary = _secret_tool_binary()
+    command = [binary, *args]
     try:
         proc = subprocess.run(
-            [binary, "lookup", "service", config.service, "name", lookup_name],
+            command,
             check=False,
+            input=input_text,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
             timeout=SECRET_TOOL_TIMEOUT_SECONDS,
         )
     except subprocess.TimeoutExpired:
-        fail(f"secret-tool lookup timed out for {lookup_name}")
+        fail(f"secret-tool {timeout_label} timed out for {failure_label}")
+    except FileNotFoundError as exc:
+        fail(f"secret-tool {timeout_label} failed for {failure_label}: {exc}")
+
+    details = proc.stderr.strip() or proc.stdout.strip()
+    if proc.returncode == 0 or not _should_retry_secret_tool(details):
+        return proc
+
+    dbus_run_session = shutil.which("dbus-run-session")
+    gnome_keyring_daemon = shutil.which("gnome-keyring-daemon")
+    if not dbus_run_session or not gnome_keyring_daemon:
+        return proc
+
+    bootstrap_script = (
+        "set -eu\n"
+        "eval \"$(gnome-keyring-daemon --start --components=secrets 2>/dev/null)\"\n"
+        "exec \"$@\"\n"
+    )
+    retry_command = [
+        dbus_run_session,
+        "--",
+        "sh",
+        "-lc",
+        bootstrap_script,
+        "sh",
+        *command,
+    ]
+    try:
+        return subprocess.run(
+            retry_command,
+            check=False,
+            input=input_text,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=SECRET_TOOL_TIMEOUT_SECONDS,
+        )
+    except subprocess.TimeoutExpired:
+        fail(f"secret-tool {timeout_label} timed out for {failure_label}")
+    except FileNotFoundError as exc:
+        fail(f"secret-tool {timeout_label} failed for {failure_label}: {exc}")
+
+
+def _lookup_login_secret(config: CodexLoginAuthConfig, account_name: str) -> str:
+    lookup_name = _login_lookup_name(account_name)
+    proc = _run_secret_tool(
+        ["lookup", "service", config.service, "name", lookup_name],
+        timeout_label="lookup",
+        failure_label=lookup_name,
+    )
     if proc.returncode != 0:
         return ""
     return _normalize_access_token(proc.stdout)
@@ -154,28 +222,23 @@ def _lookup_login_secret(config: CodexLoginAuthConfig, account_name: str) -> str
 def _store_login_secret(config: CodexLoginAuthConfig, account_name: str, token: str) -> None:
     lookup_name = _login_lookup_name(account_name)
     normalized = _normalize_access_token(token)
-    try:
-        proc = subprocess.run(
-            [
-                _secret_tool_binary(),
-                "store",
-                f"--label={LOGIN_SECRET_LABEL_PREFIX}: {lookup_name} ({LOGIN_ENV_KEY})",
-                "service",
-                config.service,
-                "name",
-                lookup_name,
-            ],
-            check=False,
-            input=normalized + "\n",
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            timeout=SECRET_TOOL_TIMEOUT_SECONDS,
-        )
-    except subprocess.TimeoutExpired:
-        fail(f"secret-tool store timed out for {lookup_name}")
+    proc = _run_secret_tool(
+        [
+            "store",
+            f"--label={LOGIN_SECRET_LABEL_PREFIX}: {lookup_name} ({LOGIN_ENV_KEY})",
+            "service",
+            config.service,
+            "name",
+            lookup_name,
+        ],
+        timeout_label="store",
+        failure_label=lookup_name,
+        input_text=normalized + "\n",
+    )
     if proc.returncode != 0:
         details = proc.stderr.strip() or proc.stdout.strip() or f"exit code {proc.returncode}"
+        if _should_retry_secret_tool(details):
+            details += "; ensure a Secret Service is running or install gnome-keyring-daemon for retry bootstrap"
         fail(f"secret-tool store failed for {lookup_name}: {details}")
 
 

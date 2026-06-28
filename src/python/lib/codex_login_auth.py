@@ -65,46 +65,50 @@ def login_lookup_name(account_name: str) -> str:
     return f"{LOGIN_SECRET_NAME_PREFIX}{normalized}"
 
 
-def parse_login_auth_file(path: Path) -> CodexLoginAuthConfig:
-    if not path.is_file():
-        fail(f"missing login auth file: {path}")
+def parse_login_auth_text(text: str, source: str) -> CodexLoginAuthConfig:
     try:
-        payload = tomllib.loads(path.read_text(encoding="utf-8"))
+        payload = tomllib.loads(text)
     except tomllib.TOMLDecodeError as exc:
-        fail(f"invalid login auth file {path}: {exc}")
+        fail(f"invalid login auth file {source}: {exc}")
     if not isinstance(payload, dict):
-        fail(f"{path} must be a TOML object")
+        fail(f"{source} must be a TOML object")
 
     version = payload.get("version", 1)
     if version != 1:
-        fail(f"{path} must declare version = 1")
+        fail(f"{source} must declare version = 1")
 
     service = payload.get("service")
     if not isinstance(service, str):
-        fail(f"{path} must declare service = \"...\"")
-    normalized_service = _normalize_service(service, source=f"{path} service")
+        fail(f"{source} must declare service = \"...\"")
+    normalized_service = _normalize_service(service, source=f"{source} service")
 
     raw_accounts = payload.get("codex_login", {})
     if raw_accounts in (None, {}):
         return CodexLoginAuthConfig(service=normalized_service, accounts={})
     if not isinstance(raw_accounts, dict):
-        fail(f"{path} codex_login must be an object")
+        fail(f"{source} codex_login must be an object")
 
     parsed_accounts: dict[str, bool] = {}
     for account_name, raw_table in raw_accounts.items():
-        normalized_name = normalize_account_name(str(account_name), source=f"{path} codex_login")
+        normalized_name = normalize_account_name(str(account_name), source=f"{source} codex_login")
         if not isinstance(raw_table, dict) or not raw_table:
-            fail(f"{path} codex_login.{normalized_name} must be a non-empty table")
+            fail(f"{source} codex_login.{normalized_name} must be a non-empty table")
         if set(raw_table.keys()) != {LOGIN_ENV_KEY}:
-            fail(f"{path} codex_login.{normalized_name} must declare only {LOGIN_ENV_KEY}")
+            fail(f"{source} codex_login.{normalized_name} must declare only {LOGIN_ENV_KEY}")
         enabled = raw_table.get(LOGIN_ENV_KEY)
         if not isinstance(enabled, bool):
-            fail(f"{path} codex_login.{normalized_name}.{LOGIN_ENV_KEY} must be boolean")
+            fail(f"{source} codex_login.{normalized_name}.{LOGIN_ENV_KEY} must be boolean")
         if normalized_name in parsed_accounts:
-            fail(f"{path} reuses login account name: {normalized_name}")
+            fail(f"{source} reuses login account name: {normalized_name}")
         parsed_accounts[normalized_name] = enabled
 
     return CodexLoginAuthConfig(service=normalized_service, accounts=parsed_accounts)
+
+
+def parse_login_auth_file(path: Path) -> CodexLoginAuthConfig:
+    if not path.is_file():
+        fail(f"missing login auth file: {path}")
+    return parse_login_auth_text(path.read_text(encoding="utf-8"), str(path))
 
 
 def secret_tool_available() -> bool:
