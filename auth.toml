@@ -1,8 +1,38 @@
 version = 1
 service = "codex-login"
 
-#[codex_login."email@mail.se"]
-#CODEX_ACCESS_TOKEN = true
+[codex_login."copliot@jcramer.sbs"]
+CODEX_ACCESS_TOKEN = true
 
-#[codex_login."test@gmail.com"]
-#CODEX_ACCESS_TOKEN = true
+[codex_login."nikke@jcramer.sbs"]
+CODEX_ACCESS_TOKEN = true
+
+[codex_login."tolvis.nicko@jcramer.sbs"]
+CODEX_ACCESS_TOKEN = true
+
+[codex_login."thor.lundh@jcramer.xyz"]
+CODEX_ACCESS_TOKEN = true
+
+[codex_login."oskar@jcramer.sbs"]
+CODEX_ACCESS_TOKEN = true
+
+[codex_login."nerikes.allhanda@jcramer.sbs"]
+CODEX_ACCESS_TOKEN = true
+
+[codex_login."1email@mail.se"]
+CODEX_ACCESS_TOKEN = false
+
+[codex_login."2test@gmail.com"]
+CODEX_ACCESS_TOKEN = false
+
+[codex_login."3email@mail.se"]
+CODEX_ACCESS_TOKEN = false
+
+[codex_login."4test@gmail.com"]
+CODEX_ACCESS_TOKEN = false
+
+[codex_login."5email@mail.se"]
+CODEX_ACCESS_TOKEN = false
+
+[codex_login."6test@gmail.com"]
+CODEX_ACCESS_TOKEN = false

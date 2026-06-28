@@ -27,8 +27,9 @@ sub _trim {
 
 sub _truncate {
     my ($text, $limit) = @_;
-    $limit //= 180;
     $text = '' if !defined $text;
+    return $text if !defined $limit;
+    return $text if ref($limit) || $limit !~ /\A[0-9]+\z/ || $limit < 1;
     return $text if length($text) <= $limit;
     return substr($text, 0, $limit - 3) . '...';
 }

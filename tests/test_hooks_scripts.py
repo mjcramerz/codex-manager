@@ -401,7 +401,9 @@ class HookScriptTests(unittest.TestCase):
 
             payload = json.loads(result.stdout)
             context = payload["hookSpecificOutput"]["additionalContext"]
-            self.assertLess(len(context), 1800)
+            self.assertGreater(len(context), 1800)
+            self.assertIn("Warning: " + ("x" * 8000), context)
+            self.assertNotIn("Additional hook context omitted for brevity", context)
 
     def test_subagent_start_coordination_wrapper_includes_role_profile_context(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

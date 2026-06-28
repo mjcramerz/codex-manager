@@ -242,10 +242,27 @@ def _store_login_secret(config: CodexLoginAuthConfig, account_name: str, token: 
         fail(f"secret-tool store failed for {lookup_name}: {details}")
 
 
+def _clear_login_secret(config: CodexLoginAuthConfig, account_name: str) -> None:
+    lookup_name = _login_lookup_name(account_name)
+    proc = _run_secret_tool(
+        ["clear", "service", config.service, "name", lookup_name],
+        timeout_label="clear",
+        failure_label=lookup_name,
+    )
+    if proc.returncode == 0:
+        return
+    if proc.returncode == 1 and not lookup_login_secret(config, account_name):
+        return
+
+    details = proc.stderr.strip() or proc.stdout.strip() or f"exit code {proc.returncode}"
+    fail(f"secret-tool clear failed for {lookup_name}: {details}")
+
+
 parse_login_auth_file = _parse_login_auth_file
 secret_tool_available = _secret_tool_available
 lookup_login_secret = _lookup_login_secret
 store_login_secret = _store_login_secret
+clear_login_secret = _clear_login_secret
 
 
 def _installed_auth_path() -> Path:
@@ -282,6 +299,13 @@ def _stored_login_choices(config: CodexLoginAuthConfig) -> list[tuple[str, str]]
     return choices
 
 
+def _list_stored_logins(config: CodexLoginAuthConfig) -> int:
+    choices = _stored_login_choices(config)
+    for idx, (account_name, _token) in enumerate(choices, start=1):
+        print(f"{idx}) {account_name}")
+    return len(choices)
+
+
 def _select_login_choice(choices: Sequence[tuple[str, str]]) -> tuple[str, str]:
     if not sys.stdin.isatty() or not sys.stdout.isatty():
         fail("interactive terminal required to select a stored Codex login")
@@ -302,6 +326,22 @@ def _select_login_choice(choices: Sequence[tuple[str, str]]) -> tuple[str, str]:
         return choices[selected_index - 1]
 
 
+def _should_store_additional_login_token(account_name: str, has_existing_token: bool) -> bool:
+    if not has_existing_token:
+        return True
+
+    while True:
+        response = input(
+            f"An Access Token is already stored for {account_name}. "
+            "Add another token for this account? [y/N]: "
+        ).strip().lower()
+        if response in ("", "n", "no", "s", "skip"):
+            return False
+        if response in ("y", "yes"):
+            return True
+        print("[warn] enter 'y' to add another token or press Enter to skip")
+
+
 def _init_stored_logins(config: CodexLoginAuthConfig) -> int:
     enabled_accounts = config.enabled_accounts()
     if not enabled_accounts:
@@ -313,6 +353,11 @@ def _init_stored_logins(config: CodexLoginAuthConfig) -> int:
 
     stored = 0
     for account_name in enabled_accounts:
+        if not _should_store_additional_login_token(
+            account_name,
+            has_existing_token=bool(lookup_login_secret(config, account_name)),
+        ):
+            continue
         while True:
             token = getpass.getpass(f"Enter the Access Token for {account_name}: ").strip()
             if token.lower() == "s":
@@ -324,6 +369,23 @@ def _init_stored_logins(config: CodexLoginAuthConfig) -> int:
             stored += 1
             break
     return stored
+
+
+def _reset_stored_logins(config: CodexLoginAuthConfig, reset_target: str) -> int:
+    if not secret_tool_available():
+        fail("secret-tool is required but unavailable")
+
+    normalized_target = reset_target.strip().lower()
+    if normalized_target == "all":
+        account_names = sorted(config.accounts)
+    else:
+        account_names = [_normalize_account_name(reset_target)]
+
+    cleared = 0
+    for account_name in account_names:
+        clear_login_secret(config, account_name)
+        cleared += 1
+    return cleared
 
 
 def _login_with_token(codex_wrapper: Path, token: str) -> int:
@@ -357,8 +419,17 @@ def main(argv: list[str] | None = None) -> int:
             stored = _init_stored_logins(config)
             print(f"Stored {stored} Codex login token(s)")
             return 0
+        if args == ["--list"]:
+            config = _load_auth_config()
+            _list_stored_logins(config)
+            return 0
+        if len(args) == 2 and args[0] == "--reset":
+            config = _load_auth_config()
+            cleared = _reset_stored_logins(config, args[1])
+            print(f"Cleared {cleared} Codex login token entr{'y' if cleared == 1 else 'ies'}")
+            return 0
         if args:
-            fail("usage: codex-login")
+            fail("usage: codex-login [--init | --list | --reset all | --reset <account>]")
 
         codex_wrapper = _resolve_codex_wrapper(Path(__file__))
         config = _load_auth_config()

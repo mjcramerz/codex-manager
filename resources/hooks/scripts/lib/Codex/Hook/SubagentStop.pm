@@ -17,17 +17,9 @@ sub _trim {
     return $value;
 }
 
-sub _truncate {
-    my ($value, $limit) = @_;
-    $limit //= 180;
-    return '' if !defined $value;
-    return $value if length($value) <= $limit;
-    return substr($value, 0, $limit - 3) . '...';
-}
-
 sub _handoff_signal_lines {
     my ($message) = @_;
-    my $text = stringify_payload_text(value => $message, limit => 2000);
+    my $text = stringify_payload_text(value => $message);
     if (!length _trim($text)) {
         return (
             '- Last assistant message is empty; require an explicit subagent handoff before treating the work as complete.',
@@ -51,7 +43,7 @@ sub _handoff_signal_lines {
             && $text !~ /\b(?:test|tests|verify|validation|check|risk|blocker)\b/i) {
         push @lines, '- Last assistant message claims completion without clear validation or risk detail; parent should verify the close-out evidence explicitly.';
     }
-    push @lines, '- Last assistant message preview: ' . _truncate(_trim($text), 220) if !@lines;
+    push @lines, '- Last assistant message preview: ' . _trim($text) if !@lines;
     return @lines;
 }
 
@@ -69,7 +61,7 @@ sub stop_system_message {
     push @lines, '- The handoff must identify owned files, checks run, unresolved risks, and whether parent-side validation remains.';
     push @lines, _handoff_signal_lines($payload->{last_assistant_message});
 
-    my @transcript_lines = transcript_summary_lines(path => $transcript_path, max_bytes => 24_000);
+    my @transcript_lines = transcript_summary_lines(path => $transcript_path);
     if (@transcript_lines) {
         push @lines, 'Subagent transcript signals:';
         push @lines, map { "- $_" } @transcript_lines;

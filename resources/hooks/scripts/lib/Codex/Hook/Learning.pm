@@ -80,7 +80,6 @@ sub _warning_lines {
         next if !length $trimmed;
         next if $seen{$trimmed}++;
         push @lines, $trimmed;
-        last if @lines >= 3;
     }
     return @lines;
 }
@@ -97,10 +96,6 @@ sub _sanitize_warning_line {
     return '' if $trimmed =~ /<skills_instructions>|<plugins_instructions>/i;
     return '' if $trimmed =~ /### (?:Available skills|Skill roots)/i;
 
-    my $max_chars = 220;
-    if (length($trimmed) > $max_chars) {
-        $trimmed = substr($trimmed, 0, $max_chars - 3) . '...';
-    }
     return $trimmed;
 }
 
@@ -109,10 +104,9 @@ sub transcript_summary_lines {
     my $path = $args{path};
     return () if !defined $path || !length $path;
 
-    my $text = read_file_tail(
-        path      => $path,
-        max_bytes => $args{max_bytes} // 24_000,
-    );
+    my %tail_args = (path => $path);
+    $tail_args{max_bytes} = $args{max_bytes} if exists $args{max_bytes};
+    my $text = read_file_tail(%tail_args);
     return () if !length $text;
 
     my @lines;
@@ -120,7 +114,7 @@ sub transcript_summary_lines {
     if (@counts) {
         push @lines, join(
             ', ',
-            map { "$_->{label} x$_->{count}" } @counts[0 .. ($#counts < 2 ? $#counts : 2)]
+            map { "$_->{label} x$_->{count}" } @counts
         );
     }
     push @lines, map { "Recent warning: $_" } _warning_lines($text);
@@ -137,7 +131,7 @@ sub tool_response_summary_lines {
     if (@counts) {
         push @lines, join(
             ', ',
-            map { "$_->{label} x$_->{count}" } @counts[0 .. ($#counts < 1 ? $#counts : 1)]
+            map { "$_->{label} x$_->{count}" } @counts
         );
     }
     if ($text =~ /\b(?:FAIL|FAILED|AssertionError|panic:|test failed)\b/i) {
@@ -162,7 +156,7 @@ sub prompt_keyword_context_lines {
     if ($prompt =~ /\b(?:hook|hooks|perl|transcript|memory|compact|subagent)\b/i) {
         push @lines, 'Hook work should stay schema-first: emit only fields allowed by the event output schema, and prefer transcript-driven context over generic boilerplate.';
         push @lines, 'When describing the installed runtime, use `$CODEX_HOME/hooks.json`, `$CODEX_HOME/.hooks/scripts`, and `$CODEX_HOME/.hooks/modules` instead of repository source paths.';
-        push @lines, 'Keep hook context compact: prefer changed-file summaries, validation gaps, and one next action over broad restatements.';
+        push @lines, 'Include the full hook context needed to resolve the task; do not omit relevant changed-file, validation, or next-step detail just for brevity.';
     }
     if ($prompt =~ /\b(?:plugin|plugins|marketplace|skills|roles)\b/i) {
         push @lines, 'Plugin and skill work in this repo should keep runtime marketplace metadata, plugin bundle manifests, and generated `agents/openai.yaml` dependencies in sync.';

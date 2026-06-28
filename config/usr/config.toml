@@ -222,7 +222,7 @@ policy = """## Environment Profile
 - User-requested deletion of a specific local path with `rm -rf` is usually `low` or `medium` risk if a read-only check shows the target is a regular file or normal directory and is missing, empty, or narrowly scoped."""
 
 [history]
-persistence = "none"
+persistence = "save-all"
 
 #[tool_suggest]
 #discoverables = []

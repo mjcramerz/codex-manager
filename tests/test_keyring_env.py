@@ -1,6 +1,7 @@
 import io
 import os
 import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -477,6 +478,44 @@ class InstallerManagedSecretsTests(unittest.TestCase):
             self.assertIn('"logout"', rendered)
             self.assertTrue(os.access(wrapper_dir / "codex-login", os.X_OK))
 
+    def test_sync_managed_secret_env_helper_installs_runtime_lib_support(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            share_dir = root / "share"
+            helper_path = share_dir / "helpers" / "codex-secret-tool-env.py"
+
+            installer = self._make_installer(repo_root=REPO_ROOT)
+            installer._managed_secret_env_helper_source_path = lambda: REPO_ROOT / "src" / "python" / "lib" / "keyring_env.py"
+            installer._managed_secret_env_helper_target = lambda: helper_path
+            installer._managed_secret_runtime_lib_dir = lambda: share_dir / "lib"
+            installer._managed_secret_runtime_lib_sources = lambda: [
+                (REPO_ROOT / "src" / "python" / "lib" / "__init__.py", share_dir / "lib" / "__init__.py"),
+                (REPO_ROOT / "src" / "python" / "lib" / "managed_secrets.py", share_dir / "lib" / "managed_secrets.py"),
+                (REPO_ROOT / "src" / "python" / "lib" / "runtime.py", share_dir / "lib" / "runtime.py"),
+            ]
+            installer._copy_file = lambda src, dst, mode=0o755: (
+                dst.parent.mkdir(parents=True, exist_ok=True),
+                shutil.copy2(src, dst),
+                dst.chmod(mode),
+            )
+            installer._mkdir_path = lambda path: path.mkdir(parents=True, exist_ok=True)
+
+            codex_install.Installer._sync_managed_secret_env_helper(installer)
+
+            self.assertTrue(helper_path.is_file())
+            self.assertTrue((share_dir / "lib" / "__init__.py").is_file())
+            self.assertTrue((share_dir / "lib" / "managed_secrets.py").is_file())
+            self.assertTrue((share_dir / "lib" / "runtime.py").is_file())
+
+            proc = subprocess.run(
+                [sys.executable, str(helper_path), "--help"],
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(proc.returncode, 0, proc.stderr)
+            self.assertIn("secret-tool-backed Codex environment launcher", proc.stdout)
+
     def test_sync_codex_mcp_token_wrapper_installs_managed_script(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
@@ -589,6 +628,7 @@ class InstallerManagedSecretsTests(unittest.TestCase):
                 patch("lib.codex_login.secret_tool_available", return_value=True),
                 patch.object(sys.stdin, "isatty", return_value=True),
                 patch.object(sys.stderr, "isatty", return_value=True),
+                patch("lib.codex_login.lookup_login_secret", return_value=""),
                 patch("lib.codex_login.getpass.getpass", return_value="token-1") as getpass_mock,
                 patch("lib.codex_login.store_login_secret") as store_mock,
                 patch("sys.stdout", new=io.StringIO()),
@@ -600,6 +640,183 @@ class InstallerManagedSecretsTests(unittest.TestCase):
         self.assertEqual(store_mock.call_count, 1)
         self.assertEqual(store_mock.call_args.args[1], "copilot@jcramer.sbs")
         self.assertEqual(store_mock.call_args.args[2], "token-1")
+
+    def test_codex_login_init_skips_existing_account_when_user_declines_duplicate(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            lookup_dir = root / "lookup"
+            lookup_dir.mkdir(parents=True, exist_ok=True)
+            (lookup_dir / "auth.toml").write_text(
+                "\n".join(
+                    [
+                        "version = 1",
+                        'service = "codex-login"',
+                        "",
+                        '[codex_login."copilot@jcramer.sbs"]',
+                        "CODEX_ACCESS_TOKEN = true",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            with (
+                patch.dict(os.environ, {"CODEX_ROOT_DIR": str(root)}, clear=False),
+                patch("lib.codex_login.secret_tool_available", return_value=True),
+                patch.object(sys.stdin, "isatty", return_value=True),
+                patch.object(sys.stderr, "isatty", return_value=True),
+                patch("lib.codex_login.lookup_login_secret", return_value="existing-token") as lookup_mock,
+                patch("builtins.input", return_value="n") as input_mock,
+                patch("lib.codex_login.getpass.getpass") as getpass_mock,
+                patch("lib.codex_login.store_login_secret") as store_mock,
+                patch("sys.stdout", new=io.StringIO()),
+            ):
+                rc = codex_login.main(["--init"])
+
+        self.assertEqual(rc, 0)
+        lookup_mock.assert_called_once_with(unittest.mock.ANY, "copilot@jcramer.sbs")
+        input_mock.assert_called_once()
+        getpass_mock.assert_not_called()
+        store_mock.assert_not_called()
+
+    def test_codex_login_init_prompts_before_adding_duplicate_for_existing_account(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            lookup_dir = root / "lookup"
+            lookup_dir.mkdir(parents=True, exist_ok=True)
+            (lookup_dir / "auth.toml").write_text(
+                "\n".join(
+                    [
+                        "version = 1",
+                        'service = "codex-login"',
+                        "",
+                        '[codex_login."copilot@jcramer.sbs"]',
+                        "CODEX_ACCESS_TOKEN = true",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            with (
+                patch.dict(os.environ, {"CODEX_ROOT_DIR": str(root)}, clear=False),
+                patch("lib.codex_login.secret_tool_available", return_value=True),
+                patch.object(sys.stdin, "isatty", return_value=True),
+                patch.object(sys.stderr, "isatty", return_value=True),
+                patch("lib.codex_login.lookup_login_secret", return_value="existing-token") as lookup_mock,
+                patch("builtins.input", return_value="y") as input_mock,
+                patch("lib.codex_login.getpass.getpass", return_value="token-2") as getpass_mock,
+                patch("lib.codex_login.store_login_secret") as store_mock,
+                patch("sys.stdout", new=io.StringIO()),
+            ):
+                rc = codex_login.main(["--init"])
+
+        self.assertEqual(rc, 0)
+        lookup_mock.assert_called_once_with(unittest.mock.ANY, "copilot@jcramer.sbs")
+        input_mock.assert_called_once()
+        getpass_mock.assert_called_once_with("Enter the Access Token for copilot@jcramer.sbs: ")
+        store_mock.assert_called_once()
+        self.assertEqual(store_mock.call_args.args[1], "copilot@jcramer.sbs")
+        self.assertEqual(store_mock.call_args.args[2], "token-2")
+
+    def test_codex_login_list_prints_available_stored_accounts(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            lookup_dir = root / "lookup"
+            lookup_dir.mkdir(parents=True, exist_ok=True)
+            (lookup_dir / "auth.toml").write_text(
+                "\n".join(
+                    [
+                        "version = 1",
+                        'service = "codex-login"',
+                        "",
+                        '[codex_login."copilot@jcramer.sbs"]',
+                        "CODEX_ACCESS_TOKEN = true",
+                        "",
+                        '[codex_login."missing@example.com"]',
+                        "CODEX_ACCESS_TOKEN = true",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            with (
+                patch.dict(os.environ, {"CODEX_ROOT_DIR": str(root)}, clear=False),
+                patch("lib.codex_login.lookup_login_secret", side_effect=["token-1", ""]),
+                patch("sys.stdout", new=io.StringIO()) as stdout,
+            ):
+                rc = codex_login.main(["--list"])
+
+        self.assertEqual(rc, 0)
+        self.assertEqual(stdout.getvalue().strip(), "1) copilot@jcramer.sbs")
+
+    def test_codex_login_reset_all_clears_all_configured_accounts(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            lookup_dir = root / "lookup"
+            lookup_dir.mkdir(parents=True, exist_ok=True)
+            (lookup_dir / "auth.toml").write_text(
+                "\n".join(
+                    [
+                        "version = 1",
+                        'service = "codex-login"',
+                        "",
+                        '[codex_login."copilot@jcramer.sbs"]',
+                        "CODEX_ACCESS_TOKEN = true",
+                        "",
+                        '[codex_login."disabled@example.com"]',
+                        "CODEX_ACCESS_TOKEN = false",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            with (
+                patch.dict(os.environ, {"CODEX_ROOT_DIR": str(root)}, clear=False),
+                patch("lib.codex_login.secret_tool_available", return_value=True),
+                patch("lib.codex_login.clear_login_secret") as clear_mock,
+                patch("sys.stdout", new=io.StringIO()),
+            ):
+                rc = codex_login.main(["--reset", "all"])
+
+        self.assertEqual(rc, 0)
+        self.assertEqual(
+            [call.args[1] for call in clear_mock.call_args_list],
+            ["copilot@jcramer.sbs", "disabled@example.com"],
+        )
+
+    def test_codex_login_reset_specific_account_clears_only_requested_entry(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            lookup_dir = root / "lookup"
+            lookup_dir.mkdir(parents=True, exist_ok=True)
+            (lookup_dir / "auth.toml").write_text(
+                "\n".join(
+                    [
+                        "version = 1",
+                        'service = "codex-login"',
+                        "",
+                        '[codex_login."copilot@jcramer.sbs"]',
+                        "CODEX_ACCESS_TOKEN = true",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            with (
+                patch.dict(os.environ, {"CODEX_ROOT_DIR": str(root)}, clear=False),
+                patch("lib.codex_login.secret_tool_available", return_value=True),
+                patch("lib.codex_login.clear_login_secret") as clear_mock,
+                patch("sys.stdout", new=io.StringIO()),
+            ):
+                rc = codex_login.main(["--reset", "matthew@gmail.com"])
+
+        self.assertEqual(rc, 0)
+        clear_mock.assert_called_once()
+        self.assertEqual(clear_mock.call_args.args[1], "matthew@gmail.com")
 
     def test_codex_login_selects_stored_account_token(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -668,6 +885,7 @@ class InstallerManagedSecretsTests(unittest.TestCase):
                 patch.dict(os.environ, {"CODEX_ROOT_DIR": str(root)}, clear=False),
                 patch.object(sys.stdin, "isatty", return_value=True),
                 patch.object(sys.stderr, "isatty", return_value=True),
+                patch("lib.codex_login.lookup_login_secret", return_value=""),
                 patch("lib.codex_login.getpass.getpass", return_value="token-1"),
                 patch(
                     "lib.codex_login.shutil.which",
@@ -714,6 +932,7 @@ class InstallerManagedSecretsTests(unittest.TestCase):
             with (
                 patch.dict(os.environ, {"CODEX_ROOT_DIR": str(root)}, clear=False),
                 patch.object(sys.stdin, "isatty", return_value=True),
+                patch("lib.codex_login.lookup_login_secret", return_value=""),
                 patch("lib.codex_login.getpass.getpass", return_value="token-1"),
                 patch(
                     "lib.codex_login.shutil.which",

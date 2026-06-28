@@ -186,14 +186,15 @@ sub run_command {
 sub read_file_tail {
     my (%args) = @_;
     my $path = $args{path};
-    my $max_bytes = $args{max_bytes} // 120_000;
     return '' if !defined $path || !length $path;
     return '' if !-f $path;
-    return '' if ref($max_bytes) || $max_bytes !~ /\A[0-9]+\z/ || $max_bytes < 1 || $max_bytes > 5_000_000;
+    my $has_limit = exists $args{max_bytes};
+    my $max_bytes = $args{max_bytes};
+    return '' if $has_limit && (ref($max_bytes) || $max_bytes !~ /\A[0-9]+\z/ || $max_bytes < 1);
 
     open my $fh, '<:raw', $path or return '';
     my $size = -s $fh;
-    if (defined $size && $size > $max_bytes) {
+    if ($has_limit && defined $size && $size > $max_bytes) {
         seek $fh, $size - $max_bytes, 0 or return '';
     }
     local $/;

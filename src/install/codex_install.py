@@ -694,6 +694,18 @@ class Installer:
     def _managed_secret_env_helper_target(self) -> Path:
         return self._helpers_dir() / "codex-secret-tool-env.py"
 
+    def _managed_secret_runtime_lib_dir(self) -> Path:
+        return self._share_dir() / "lib"
+
+    def _managed_secret_runtime_lib_sources(self) -> list[tuple[Path, Path]]:
+        source_root = self.repo_root / "src" / "python" / "lib"
+        target_root = self._managed_secret_runtime_lib_dir()
+        return [
+            (source_root / "__init__.py", target_root / "__init__.py"),
+            (source_root / "managed_secrets.py", target_root / "managed_secrets.py"),
+            (source_root / "runtime.py", target_root / "runtime.py"),
+        ]
+
     def _codex_login_wrapper_source_path(self) -> Path:
         return self.repo_root / "src" / "python" / "lib" / "codex_login.py"
 
@@ -1857,6 +1869,9 @@ class Installer:
             self._managed_secret_env_helper_target(),
             mode=0o755,
         )
+        self._mkdir_path(self._managed_secret_runtime_lib_dir())
+        for source, target in self._managed_secret_runtime_lib_sources():
+            self._copy_file(source, target, mode=0o644)
 
     def _sync_codex_login_wrapper(self) -> None:
         self._copy_file(

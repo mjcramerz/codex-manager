@@ -21,7 +21,7 @@ config = [
 ]
 
 [skills.bundled]
-enabled = true
+enabled = false
 
 # runtime features
 [features]

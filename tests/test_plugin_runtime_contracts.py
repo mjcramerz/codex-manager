@@ -33,6 +33,7 @@ APPS_TOML_PATH = REPO_ROOT / "config" / "usr" / "apps.toml"
 REQUIREMENTS_TOML_PATH = REPO_ROOT / "config" / "vendor" / "requirements.toml"
 SKILLS_METADATA_PATH = REPO_ROOT / "resources" / "skills" / "metadata.json"
 SECRETS_TOML_PATH = REPO_ROOT / "secrets.toml"
+AGENTS_CONFIG_DIR = REPO_ROOT / "config" / "agents"
 REQUIRED_GLOBAL_MCP = set(REQUIRED_SHARED_MCP_REFS)
 
 
@@ -202,6 +203,23 @@ class PluginRuntimeContractsTests(unittest.TestCase):
         self.assertIsInstance(marketplace, dict)
         self.assertEqual(marketplace.get("source_type"), "local")
         self.assertEqual(marketplace.get("source"), "${CODEX_HOME}")
+
+    def test_apps_config_enables_bundled_plugin_skills_by_default(self) -> None:
+        apps_payload = load_apps_payload()
+        skills = apps_payload.get("skills", {})
+        self.assertIsInstance(skills, dict)
+        bundled = skills.get("bundled", {})
+        self.assertIsInstance(bundled, dict)
+        self.assertIs(bundled.get("enabled"), True)
+
+    def test_agent_configs_disable_bundled_plugin_skills_by_default(self) -> None:
+        for agent_path in sorted(AGENTS_CONFIG_DIR.glob("*.toml")):
+            payload = parse_toml_file(agent_path)
+            skills = payload.get("skills", {})
+            self.assertIsInstance(skills, dict, agent_path.name)
+            bundled = skills.get("bundled", {})
+            self.assertIsInstance(bundled, dict, agent_path.name)
+            self.assertIs(bundled.get("enabled"), False, agent_path.name)
 
     def test_effective_plugins_inventory_warns_when_required_global_shared_mcp_refs_missing(self) -> None:
         inventory = parse_json_file(PLUGINS_MANIFEST_PATH)

@@ -101,7 +101,7 @@ sub _status_snapshot {
         $snapshot{counts}{renamed}++ if $x eq 'R' || $y eq 'R';
         $snapshot{counts}{conflicts}++ if $x eq 'U' || $y eq 'U' || ($x eq 'A' && $y eq 'A') || ($x eq 'D' && $y eq 'D');
     }
-    $snapshot{counts}{preview} = [ @preview[0 .. ($#preview < 5 ? $#preview : 5)] ] if @preview;
+    $snapshot{counts}{preview} = [ @preview ] if @preview;
     return $STATUS_CACHE{$repo_root} = \%snapshot;
 }
 
@@ -213,7 +213,6 @@ sub summarize_worktree {
 
 sub preview_paths {
     my ($paths, $limit) = @_;
-    $limit //= 4;
     return 'none' if ref($paths) ne 'ARRAY' || !@{$paths};
     my @unique;
     my %seen;
@@ -221,11 +220,14 @@ sub preview_paths {
         next if !$path || $seen{$path}++;
         push @unique, $path;
     }
-    my $last = $#unique < $limit - 1 ? $#unique : $limit - 1;
-    my $rendered = join(', ', @unique[0 .. $last]);
-    my $remaining = @unique - ($last + 1);
-    $rendered .= " (+$remaining more)" if $remaining > 0;
-    return $rendered;
+    if (defined $limit && $limit =~ /\A[0-9]+\z/ && $limit > 0 && @unique > $limit) {
+        my $last = $limit - 1;
+        my $rendered = join(', ', @unique[0 .. $last]);
+        my $remaining = @unique - ($last + 1);
+        $rendered .= " (+$remaining more)" if $remaining > 0;
+        return $rendered;
+    }
+    return join(', ', @unique);
 }
 
 sub has_patch_release_dir {

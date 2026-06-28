@@ -239,6 +239,71 @@ print JSON::PP::encode_json(\@lines);
             self.assertNotIn("skills_instructions", rendered)
             self.assertNotIn("base_instructions", rendered)
 
+    def test_driver_join_sections_keeps_full_context_without_brevity_omission(self) -> None:
+        code = r'''
+use Codex::Hook::Driver ();
+my $first = join("\n", map { "- first $_" } 1..180);
+my $second = join("\n", map { "- second $_" } 1..180);
+my $joined = Codex::Hook::Driver::_join_sections($first, $second);
+print JSON::PP::encode_json($joined);
+'''
+        proc = run_perl(code)
+        payload = json.loads(proc.stdout)
+        self.assertIn("- first 1", payload)
+        self.assertIn("- second 180", payload)
+        self.assertNotIn("omitted for brevity", payload)
+
+    def test_repo_preview_paths_returns_full_list_when_no_limit_requested(self) -> None:
+        code = r'''
+use Codex::Hook::Repo qw(preview_paths);
+print JSON::PP::encode_json(preview_paths(['a', 'b', 'c', 'd', 'e']));
+'''
+        proc = run_perl(code)
+        self.assertEqual(json.loads(proc.stdout), "a, b, c, d, e")
+
+    def test_runner_read_file_tail_reads_full_file_without_default_cap(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            transcript_path = Path(tmpdir) / "transcript.txt"
+            transcript_path.write_text("x" * 150_000 + "END", encoding="utf-8")
+
+            code = r'''
+use Codex::Hook::Runner qw(read_file_tail);
+my $text = read_file_tail(path => $ARGV[0]);
+print JSON::PP::encode_json({ length => length($text), tail => substr($text, -3) });
+'''
+            proc = run_perl(code, str(transcript_path))
+            payload = json.loads(proc.stdout)
+            self.assertEqual(payload["length"], 150_003)
+            self.assertEqual(payload["tail"], "END")
+
+    def test_transcript_summary_keeps_all_warning_lines_without_truncation(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            transcript_path = Path(tmpdir) / "transcript.jsonl"
+            long_warning = "Warning: " + ("x" * 260) + " END"
+            transcript_path.write_text(
+                "\n".join(
+                    [
+                        "Warning: first warning",
+                        "Warning: second warning",
+                        "Warning: third warning",
+                        long_warning,
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            code = r'''
+use Codex::Hook::Learning qw(transcript_summary_lines);
+my @lines = transcript_summary_lines(path => $ARGV[0]);
+print JSON::PP::encode_json(\@lines);
+'''
+            proc = run_perl(code, str(transcript_path))
+            payload = json.loads(proc.stdout)
+            warning_lines = [line for line in payload if line.startswith("Recent warning: ")]
+            self.assertEqual(len(warning_lines), 4)
+            self.assertTrue(any("END" in line for line in warning_lines))
+
     def test_repo_reuses_cached_git_calls_within_one_process(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             repo = Path(tmpdir) / "repo"

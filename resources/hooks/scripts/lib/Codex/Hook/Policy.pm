@@ -24,7 +24,7 @@ sub destructive_command_reason {
     my $tool_name = $args{tool_name} // '';
     my $tool_input = $args{tool_input};
     return undef if $tool_name !~ /(?:\Aexec_command\z|\Aapply_patch\z|\b(?:shell|bash|write)\b)/i;
-    my $text = stringify_payload_text(value => $tool_input, limit => 2000);
+    my $text = stringify_payload_text(value => $tool_input);
     return undef if !defined $text || !length $text;
 
     return 'PreToolUse rejected a destructive `git reset --hard` path. Use a non-destructive alternative unless the user explicitly requested that exact operation.'

@@ -61,10 +61,6 @@ use Codex::Hook::ToolProfile qw(
 
 our @EXPORT_OK = qw(run_event);
 
-our $MAX_CONTEXT_CHARS = 1800;
-our $TRANSCRIPT_TAIL_BYTES = 24000;
-our $MAX_COMMAND_PREVIEW = 4;
-
 sub _load_input {
     local $/;
     my $raw = <STDIN>;
@@ -89,9 +85,8 @@ sub _join_sections {
     my @filtered = grep { defined($_) && length($_) } @sections;
     return undef if !@filtered;
 
-    my $result = '';
-    my $omitted = 0;
     my %seen_bullets;
+    my @rendered_sections;
     for my $section (@filtered) {
         my @section_lines;
         for my $line (split /\n/, $section) {
@@ -105,46 +100,25 @@ sub _join_sections {
             push @section_lines, $normalized;
         }
         next if !@section_lines;
-        $section = join("\n", @section_lines);
-        my $section_prefix = length($result) ? "\n\n" : '';
-        my $full_candidate = $result . $section_prefix . $section;
-        if (length($full_candidate) <= $MAX_CONTEXT_CHARS) {
-            $result = $full_candidate;
-            next;
-        }
-
-        my $partial = '';
-        for my $line (split /\n/, $section) {
-            my $line_prefix = length($partial) ? "\n" : '';
-            my $candidate = $result . $section_prefix . $partial . $line_prefix . $line;
-            last if length($candidate) > $MAX_CONTEXT_CHARS;
-            $partial .= $line_prefix . $line;
-        }
-        $result .= $section_prefix . $partial if length $partial;
-        $omitted = 1;
-        last;
+        push @rendered_sections, join("\n", @section_lines);
     }
-
-    if ($omitted) {
-        my $notice = "\n\n- Additional hook context omitted for brevity.";
-        if (length($result . $notice) <= $MAX_CONTEXT_CHARS) {
-            $result .= $notice;
-        }
-    }
-    return $result;
+    return undef if !@rendered_sections;
+    return join("\n\n", @rendered_sections);
 }
 
 sub _format_item_list {
     my ($items, $limit) = @_;
-    $limit //= $MAX_COMMAND_PREVIEW;
     return '' if ref($items) ne 'ARRAY' || !@{$items};
     my @values = grep { defined($_) && length($_) } @{$items};
     return '' if !@values;
-    my $last = $#values < $limit - 1 ? $#values : $limit - 1;
-    my $rendered = '`' . join('`, `', @values[0 .. $last]) . '`';
-    my $remaining = @values - ($last + 1);
-    $rendered .= " (+$remaining more)" if $remaining > 0;
-    return $rendered;
+    if (defined $limit && $limit =~ /\A[0-9]+\z/ && $limit > 0 && @values > $limit) {
+        my $last = $limit - 1;
+        my $rendered = '`' . join('`, `', @values[0 .. $last]) . '`';
+        my $remaining = @values - ($last + 1);
+        $rendered .= " (+$remaining more)" if $remaining > 0;
+        return $rendered;
+    }
+    return '`' . join('`, `', @values) . '`';
 }
 
 sub _glob_regex {
@@ -386,7 +360,7 @@ sub _session_start_context {
       if @mirror_refs;
     push @summary, '- Debian Salsa packaging mirror detected (`gitlab/*` + `pristine-tar`). Preserve packaging refs such as `pristine-tar`, `upstream/*`, and `debian/*` for rebuild/import workflows.'
       if $has_salsa_packaging;
-    push @summary, "- Packaging refs preview: `" . preview_paths(\@packaging_refs, 3) . "`"
+    push @summary, "- Packaging refs preview: `" . preview_paths(\@packaging_refs) . "`"
       if $has_salsa_packaging && @packaging_refs;
     push @summary, "- Current branch `$current` is a read-only mirror branch."
       if $current =~ m{\A(?:github|gitlab)/};
@@ -528,8 +502,8 @@ sub _user_prompt_context {
 
 sub _validation_evidence {
     my ($payload) = @_;
-    my $last = stringify_payload_text(value => $payload->{last_assistant_message}, limit => 2000);
-    my $tail = read_file_tail(path => $payload->{transcript_path}, max_bytes => $TRANSCRIPT_TAIL_BYTES);
+    my $last = stringify_payload_text(value => $payload->{last_assistant_message});
+    my $tail = read_file_tail(path => $payload->{transcript_path});
     return join("\n", grep { defined($_) && length($_) } ($last, $tail));
 }
 
@@ -715,7 +689,7 @@ sub _pre_tool_use_context {
         repo_has_patch_release => defined $repo_root && has_patch_release_dir($repo_root),
         tool_name              => $tool_name,
     );
-    my $rendered_input = stringify_payload_text(value => $tool_input, limit => 2000);
+    my $rendered_input = stringify_payload_text(value => $tool_input);
     if (length $rendered_input) {
         my @learned = tool_response_summary_lines(text => $rendered_input);
         if (@learned) {
@@ -738,7 +712,7 @@ sub _post_tool_use_context {
     my $tool_name = $payload->{tool_name} // 'tool';
     my $label = tool_group_label($tool_name);
     my $group = tool_group_name($tool_name);
-    my $rendered = stringify_payload_text(value => $payload->{tool_response}, limit => 4000);
+    my $rendered = stringify_payload_text(value => $payload->{tool_response});
     return undef if $rendered !~ /\b(error|failed|exception|permission denied|not found|timed out|warning)\b/i;
 
     my @lines = ("Post-tool follow-up for `$label` (`$tool_name`):");
