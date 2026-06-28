@@ -4,6 +4,7 @@ import copy
 import re
 from pathlib import Path
 from typing import Any
+from typing import Callable
 
 from common import _first_unresolved_codex_placeholder_in_object
 from common import ensure_https_url
@@ -185,6 +186,7 @@ def rewrite_runtime_plugin_skill_dependencies(
     mcp_payload: dict[str, Any],
     *,
     dry_run: bool,
+    write_file: Callable[[Path, str], None] | None = None,
 ) -> None:
     shared_refs = list(inventory_payload.get("shared_mcp", {}).get("refs", []))
     plugins_table = inventory_payload.get("plugins")
@@ -223,4 +225,4 @@ def rewrite_runtime_plugin_skill_dependencies(
         skill_path = runtime_skills_dir / skill_name / "agents" / "openai.yaml"
         if not skill_path.is_file():
             continue
-        rewrite_openai_yaml_dependencies(skill_path, dependency_block, dry_run)
+        rewrite_openai_yaml_dependencies(skill_path, dependency_block, dry_run, write_file=write_file)

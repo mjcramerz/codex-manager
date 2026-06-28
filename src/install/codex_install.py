@@ -1169,6 +1169,15 @@ class Installer:
             path.write_text(content, encoding="utf-8")
             os.chmod(path, mode)
 
+    def _write_text_preserving_mode(self, path: Path, content: str, *, default_mode: int = 0o644) -> None:
+        mode = default_mode
+        try:
+            if path.is_file():
+                mode = stat.S_IMODE(path.stat().st_mode) or default_mode
+        except OSError:
+            mode = default_mode
+        self._write_file(path, content, mode=mode)
+
     def _copy_file(self, src: Path, dst: Path, mode: int = 0o644) -> None:
         if self.dry_run:
             print(f"[dry-run] copy {src} -> {dst}")
@@ -1499,7 +1508,12 @@ class Installer:
                     continue
                 openai_yaml = child / "agents" / "openai.yaml"
                 if openai_yaml.is_file():
-                    rewrite_openai_yaml_dependencies(openai_yaml, dependency_block, self.dry_run)
+                    rewrite_openai_yaml_dependencies(
+                        openai_yaml,
+                        dependency_block,
+                        self.dry_run,
+                        write_file=lambda path, content: self._write_text_preserving_mode(path, content),
+                    )
 
     def _rewrite_skill_group_dependencies_only(
         self,
@@ -1534,7 +1548,12 @@ class Installer:
                     continue
                 openai_yaml = child / "agents" / "openai.yaml"
                 if openai_yaml.is_file():
-                    rewrite_openai_yaml_dependencies(openai_yaml, dependency_block, self.dry_run)
+                    rewrite_openai_yaml_dependencies(
+                        openai_yaml,
+                        dependency_block,
+                        self.dry_run,
+                        write_file=lambda path, content: self._write_text_preserving_mode(path, content),
+                    )
 
     def _sync_instruction_assets(self) -> None:
         self._sync_tree_filtered(

@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import re
 import shutil
+import stat
 from pathlib import Path
 from typing import Any
 
@@ -733,12 +734,22 @@ def sync_runtime_plugin_bundle(installer: Any, source_root: Path, target_root: P
         target_skill_dir = runtime_skills_dir / skill_path.name
         installer._sync_tree(skill_path, target_skill_dir, mirror_deletions=True)
 
+    def write_runtime_skill_file(path: Path, content: str) -> None:
+        mode = 0o644
+        try:
+            if path.is_file():
+                mode = stat.S_IMODE(path.stat().st_mode) or mode
+        except OSError:
+            mode = 0o644
+        installer._write_file(path, content, mode=mode)
+
     rewrite_runtime_plugin_skill_dependencies(
         runtime_skills_dir,
         bundle,
         installer.effective_plugins_metadata_payload,
         installer.mcp_payload,
         dry_run=installer.dry_run,
+        write_file=write_runtime_skill_file,
     )
 
     installer._write_file(plugin_dir / "plugin.json", render_runtime_plugin_manifest(bundle))

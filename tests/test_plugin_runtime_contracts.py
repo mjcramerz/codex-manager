@@ -332,6 +332,39 @@ class PluginRuntimeContractsTests(unittest.TestCase):
                     dry_run=False,
                 )
 
+    def test_plugin_skill_dependencies_support_explicit_writer(self) -> None:
+        apps_payload = load_apps_payload()
+        inventory_payload = load_effective_plugins_inventory()
+        bundles = {bundle.name: bundle for bundle in load_plugin_bundles()}
+        bundle = bundles["hosting-platforms"]
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            runtime_skills_dir = Path(tmpdir)
+            expected_paths: set[Path] = set()
+            for skill_name in bundle.skills:
+                openai_yaml = runtime_skills_dir / skill_name / "agents" / "openai.yaml"
+                openai_yaml.parent.mkdir(parents=True, exist_ok=True)
+                openai_yaml.write_text("name: test\npolicy:\n  mode: safe\n", encoding="utf-8")
+                expected_paths.add(openai_yaml)
+
+            written_paths: list[Path] = []
+
+            def record_write(path: Path, content: str) -> None:
+                written_paths.append(path)
+                self.assertIn("dependencies:", content)
+
+            with patch.object(Path, "write_text", side_effect=AssertionError("direct Path.write_text should not be used")):
+                rewrite_runtime_plugin_skill_dependencies(
+                    runtime_skills_dir,
+                    bundle,
+                    inventory_payload,
+                    apps_payload,
+                    dry_run=False,
+                    write_file=record_write,
+                )
+
+        self.assertEqual(set(written_paths), expected_paths)
+
     def test_runtime_plugin_bundle_sync_reuses_skill_dirs_and_prunes_only_extras(self) -> None:
         apps_payload = load_apps_payload()
         inventory_payload = load_effective_plugins_inventory()
@@ -346,6 +379,7 @@ class PluginRuntimeContractsTests(unittest.TestCase):
                 self.dry_run = False
                 self.sync_calls: list[tuple[Path, Path, bool]] = []
                 self.removed_paths: list[Path] = []
+                self.written_paths: list[Path] = []
 
             def _mkdir_path(self, path: Path) -> None:
                 path.mkdir(parents=True, exist_ok=True)
@@ -359,11 +393,15 @@ class PluginRuntimeContractsTests(unittest.TestCase):
 
             def _sync_tree(self, src: Path, dst: Path, *, mirror_deletions: bool) -> None:
                 self.sync_calls.append((src, dst, mirror_deletions))
-                dst.mkdir(parents=True, exist_ok=True)
+                agents_dir = dst / "agents"
+                agents_dir.mkdir(parents=True, exist_ok=True)
+                (agents_dir / "openai.yaml").write_text("name: test\npolicy:\n  mode: safe\n", encoding="utf-8")
 
-            def _write_file(self, path: Path, content: str) -> None:
+            def _write_file(self, path: Path, content: str, mode: int = 0o644) -> None:
+                self.written_paths.append(path)
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text(content, encoding="utf-8")
+                path.chmod(mode)
 
             def _copy_file(self, src: Path, dst: Path, *, mode: int | None = None) -> None:
                 dst.parent.mkdir(parents=True, exist_ok=True)
@@ -392,6 +430,7 @@ class PluginRuntimeContractsTests(unittest.TestCase):
             self.assertTrue(all(mirror_deletions for _, _, mirror_deletions in installer.sync_calls))
             self.assertIn(obsolete, installer.removed_paths)
             self.assertNotIn(runtime_skills_dir / bundle.skills[0], installer.removed_paths)
+            self.assertIn(runtime_skills_dir / bundle.skills[0] / "agents" / "openai.yaml", installer.written_paths)
             self.assertTrue((target_root / ".codex-plugin" / "plugin.json").is_file())
 
     def test_plugin_manifest_rejects_invalid_brand_color(self) -> None:

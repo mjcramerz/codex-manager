@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 from typing import Any
+from typing import Callable
 
 from common import fail
 
@@ -76,7 +77,12 @@ def render_dependency_block(role_tools: list[str], mcp_servers: dict[str, Any]) 
     return "\n".join(lines) + "\n"
 
 
-def rewrite_openai_yaml_dependencies(path: Path, dependency_block: str, dry_run: bool) -> None:
+def rewrite_openai_yaml_dependencies(
+    path: Path,
+    dependency_block: str,
+    dry_run: bool,
+    write_file: Callable[[Path, str], None] | None = None,
+) -> None:
     raw = path.read_text(encoding="utf-8")
     lines = raw.splitlines()
 
@@ -107,6 +113,9 @@ def rewrite_openai_yaml_dependencies(path: Path, dependency_block: str, dry_run:
         return
     if dry_run:
         print(f"[dry-run] update dependencies in {path}")
+        return
+    if write_file is not None:
+        write_file(path, rendered)
         return
     path.write_text(rendered, encoding="utf-8")
 
