@@ -1114,8 +1114,25 @@ class InstallerManagedSecretsTests(unittest.TestCase):
 
             self.assertTrue(managed_auth.exists())
             self.assertFalse(doomed_file.exists())
-            installer._clear_all_managed_secrets.assert_called_once_with()
+            installer._clear_all_managed_secrets.assert_not_called()
             installer.reset_environment.assert_called_once_with()
+
+    def test_prepare_runtime_refresh_base_does_not_clear_managed_secrets(self) -> None:
+        installer = self._make_installer()
+        installer._log = lambda _message: None
+        installer._backup_install_state = lambda *, flow: None
+        installer._ensure_runtime_directories = Mock()
+        installer._sync_managed_secrets_file = Mock()
+        installer._sync_managed_auth_file = Mock()
+        installer._stage_mode = lambda: False
+        installer._ensure_enabled_managed_secrets = Mock()
+        installer._secure_exec_directories = Mock()
+        installer._clear_all_managed_secrets = Mock()
+
+        codex_install.Installer._prepare_runtime_refresh_base(installer, flow="install")
+
+        installer._ensure_enabled_managed_secrets.assert_called_once_with()
+        installer._clear_all_managed_secrets.assert_not_called()
 
     def test_verify_runtime_hook_assets_detects_missing_runtime_driver(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

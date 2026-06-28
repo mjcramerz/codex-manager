@@ -154,6 +154,32 @@ class RuntimePackDocsContractTests(unittest.TestCase):
             for needle in banned:
                 self.assertNotIn(needle, text, f"{path} still contains repo-source path {needle!r}")
 
+    def test_agent_facing_docs_avoid_secret_tool_cleanup_instructions(self) -> None:
+        forbidden = (
+            "secret-tool clear service codex-mcp",
+            "managed MCP keyring cleanup",
+            "keyring deletion behavior",
+            "teardown/idempotency",
+            "keyring absence",
+            "## Operator workflows",
+            "For workstation rollout",
+            "For host migration",
+            "This document is for local hosts only.",
+            "assign post-rollout owner",
+        )
+        files = [
+            HOME_ROOT / "docs" / "workflows" / "codex-manager.md",
+            HOME_ROOT / "docs" / "security" / "secrets.md",
+            HOME_ROOT / "docs" / "workflows" / "bws-local.md",
+            HOME_ROOT / "docs" / "security" / "bitwarden-secrets-local.md",
+            HOME_ROOT / "plans" / "workflows" / "workflow-bws-local.md",
+            HOME_ROOT / "plans" / "skills" / "skill-bws-local.md",
+        ]
+        for path in files:
+            text = path.read_text(encoding="utf-8")
+            for needle in forbidden:
+                self.assertNotIn(needle, text, f"{path} still contains cleanup guidance {needle!r}")
+
     def test_repo_write_contract_requires_mcr_main_and_restricted_mirror_allowlist(self) -> None:
         agents = (HOME_ROOT / "AGENTS.md").read_text(encoding="utf-8")
         self.assertIn("You must allow authored file edits only on `mcr/main`.", agents)

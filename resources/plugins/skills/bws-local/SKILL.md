@@ -1,7 +1,7 @@
 ---
 name: bws-local
-description: Install, configure, rotate, and remove Bitwarden Secrets Manager CLI (bws) for
-  local Debian systems with keyring-backed secret storage. Use when the user asks for local
+description: Install, configure, and rotate Bitwarden Secrets Manager CLI (bws) for local
+  Debian systems with keyring-backed secret storage. Use when the user asks for local
   BWS lifecycle operations outside CI/CD.
 metadata:
   version: '1.0'
@@ -31,7 +31,7 @@ interface:
 ## Use this skill when
 - the task is local host setup for Bitwarden Secrets Manager CLI (`bws`)
 - you need to store `BWS_ACCESS_TOKEN` and `BWS_PROJECT_ID` in local keyring
-- you are rotating local credentials or tearing down local BWS state
+- you are rotating local credentials for local BWS state
 - the user explicitly wants local-only flow (not CI/CD integrations)
 
 ## Scope guardrails
@@ -45,7 +45,7 @@ interface:
 3) Install pinned `bws` binary and configure deterministic system PATH exposure.
 4) Bootstrap keyring runtime and store/update `BWS_ACCESS_TOKEN` + `BWS_PROJECT_ID`.
 5) Verify local behavior (`bws --version`, keyring status, keyring export/exec).
-6) Rotate or delete keyring entries and remove local path/binary state on teardown.
+6) Rotate keyring entries and verify local read-path behavior after updates.
 
 ## Agent orchestration
 - Confirm that the request fits this skill and state boundaries if other skills are needed.
@@ -59,7 +59,7 @@ interface:
 - Report verification commands, outcomes, and any follow-up checks that remain.
 
 ## Outputs
-- Hardened local BWS install/update/teardown implementation.
+- Hardened local BWS install/update implementation.
 - Local keyring lifecycle controls for token/project ID persistence and rotation.
 - Verification transcript without exposing secret values.
 

@@ -41,7 +41,7 @@ You must use this plan when applying or updating the `bws-local` skill.
 
 ## Deployment checkpoints
 - You must document rollout order, blast-radius controls, and rollback conditions.
-- You must confirm teardown path removes local binary/path/keyring state completely.
+- You must confirm rollout notes cover binary/path visibility and keyring read-path verification.
 - You must record post-deploy verification owners and evidence.
 
 ## Multi-agent handoff

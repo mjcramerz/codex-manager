@@ -25,10 +25,10 @@ You must use this plan when following `$CODEX_HOME/docs/workflows/bws-local.md`.
 [ ] Validate host prerequisites and trust boundaries for local BWS usage.
 [ ] Execute install and system PATH setup with explicit privilege boundaries.
 [ ] Store/rotate keyring entries and validate read path.
-[ ] Run teardown/idempotency checks and capture non-secret evidence.
+[ ] Run install/read-path verification checks and capture non-secret evidence.
 
 ## Testing and validation
-- You must run workflow-defined checks for install, keyring update/status, and cleanup.
+- You must run workflow-defined checks for install, keyring update/status, and read-path verification.
 
 ## Security checkpoints
 - You must confirm token and project ID values are never printed or copied into logs/notes.
@@ -42,8 +42,7 @@ You must use this plan when following `$CODEX_HOME/docs/workflows/bws-local.md`.
 
 ## Deployment checkpoints
 - Roll out in deterministic order: install -> keyring update -> verification.
-- You must capture rollback path: nuke flow and revalidation of keyring absence.
-- You must assign post-rollout owner for periodic token rotation and keyring hygiene checks.
+- You must record the follow-up verification cadence for periodic token rotation and keyring read-path checks.
 
 ## Multi-agent handoff
 - Coordinator hands off host assumptions and expected final local state.
@@ -53,7 +52,7 @@ You must use this plan when following `$CODEX_HOME/docs/workflows/bws-local.md`.
 ## Risks and edge cases
 - Headless DBus sessions may require explicit session bootstrap before keyring operations.
 - Mixed shell startup behavior can delay PATH visibility until a new shell session.
-- Running teardown as root directly requires explicit keyring user targeting.
+- Root-invoked workflows can target the wrong keyring user without explicit owner mapping.
 
 ## Examples
 

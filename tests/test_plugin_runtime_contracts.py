@@ -686,6 +686,17 @@ class PluginRuntimeContractsTests(unittest.TestCase):
         for metadata_path in sorted((REPO_ROOT / "resources" / "plugins" / "skills").glob("*/metadata.json")):
             validate_plugin_skill_metadata(metadata_path.parent)
 
+    def test_bws_local_skill_avoids_teardown_cleanup_language(self) -> None:
+        skill_path = REPO_ROOT / "resources" / "plugins" / "skills" / "bws-local" / "SKILL.md"
+        metadata_path = REPO_ROOT / "resources" / "plugins" / "skills" / "bws-local" / "metadata.json"
+        skill_text = skill_path.read_text(encoding="utf-8")
+        metadata_text = metadata_path.read_text(encoding="utf-8")
+
+        self.assertNotIn("tearing down local BWS state", skill_text)
+        self.assertNotIn("delete keyring entries", skill_text)
+        self.assertNotIn("teardown", skill_text)
+        self.assertNotIn('"Install, configure, rotate, and remove', metadata_text)
+
     def test_plugin_skill_metadata_rejects_localhost_reference(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             skill_dir = Path(tmpdir) / "sample-skill"

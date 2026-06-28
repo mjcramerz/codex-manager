@@ -13,7 +13,6 @@ Purpose: tell the Codex coding agent how to use `docs/security/secrets.md` as a 
 - For managed MCP config, keep `bearer_token_env_var` on URL transports only; stdio / `command` transports must use wrapper `env_vars` instead.
 - You must treat `secrets.toml` as the managed-secret allow-list: only entries set to `true` are exported into runtime wrapper launches.
 - For stdio / `command` MCP servers, any keyring-backed token must appear both in that server's `env_vars` list and under the matching server name in `secrets.toml`.
-- During `nuke`, clear keyring-backed managed MCP secrets on a best-effort basis and never let already-missing entries block runtime cleanup.
 
 
 ## Navigation
@@ -24,7 +23,7 @@ Purpose: tell the Codex coding agent how to use `docs/security/secrets.md` as a 
 <!-- END:nav -->
 
 
-## Operator workflows
+## Runtime workflows
 
 ### `codex-login`
 - You must use `codex-login` from PATH for Codex access-token login; the default managed wrapper path is `/data/bin/codex-login`.
@@ -82,8 +81,6 @@ unset CONTEXT7_API_KEY
 - If a key exists but is disabled, the wrapper exits with `Please enable secret first and try again later`.
 - Writing a new value for the same `service` + `name` pair is enough; the next wrapper launch picks it up automatically.
 - Disable runtime injection by setting the matching entry in `/data/codex/lookup/secrets.toml` to `false`.
-- If the token should no longer remain in the local keyring, clear it explicitly, for example `secret-tool clear service codex-mcp name mcp_servers.context7`.
-- `nuke` attempts managed MCP keyring cleanup on a best-effort basis; already-missing entries must not block runtime cleanup.
 
 Patterns:
 - Python: load via pydantic-settings; validate at startup.

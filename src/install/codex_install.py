@@ -2598,11 +2598,7 @@ class Installer:
         target_paths.update(self._managed_wrapper_targets_for_uninstall())
         target_paths.add(self._path_profile_target())
 
-        if self._stage_mode():
-            self._log("skipping managed secret-tool cleanup for staged dry-run uninstall")
-        else:
-            self._log("clearing managed secret-tool entries (best-effort)")
-            self._clear_all_managed_secrets()
+        self._log("preserving managed secret-tool entries during uninstall")
 
         self._log("removing runtime paths (preserving backup/mcp/sqlite/codex-login auth)")
         for target in sorted(target_paths, key=lambda item: (len(item.parts), str(item))):

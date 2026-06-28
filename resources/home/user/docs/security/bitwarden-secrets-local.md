@@ -28,15 +28,14 @@ Guidance for using BWS on local Debian systems with OS keyring storage.
 3) Store `BWS_ACCESS_TOKEN` and `BWS_PROJECT_ID` in keyring.
 4) Retrieve values on demand via keyring-aware helper commands.
 5) Rotate keyring entries when credentials change.
-6) Tear down by deleting binary/path hooks and keyring entries.
 
 ## Operational checks
 - `bws --version` resolves from PATH in a new shell session.
-- Keyring status checks pass after install and fail after nuke.
+- Keyring status checks pass after install and after rotation updates.
 - No secret values appear in command output, shell history, or logs.
 
 ## Local vs CI/CD
-- This document is for local hosts only.
+- Use this document only when the task targets a local host.
 - For CI-oriented BWS patterns, use `$CODEX_HOME/docs/security/bitwarden-secrets.md`.
 
 See also:

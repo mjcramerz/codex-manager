@@ -17,7 +17,7 @@ You must read only the smallest section that resolves the current task, follow t
 - You must use `$CODEX_HOME/plans/workflows/workflow-bws-local.md`.
 
 ## Scope
-- In scope: local installation, PATH wiring, keyring storage, token rotation, and local teardown.
+- In scope: local installation, PATH wiring, keyring storage, and token rotation.
 - Out of scope: CI/CD secret injection, hosted runner setup, and GitHub/GitLab pipeline wiring.
 
 ## Skill routing
@@ -30,7 +30,6 @@ You must read only the smallest section that resolves the current task, follow t
 4) Store `BWS_ACCESS_TOKEN` and `BWS_PROJECT_ID` in local keyring only.
 5) Verify local read path (`bws --version`, keyring status, local command execution).
 6) Rotate keyring values on token/project changes.
-7) Tear down cleanly by removing binary, path hooks, and keyring entries.
 
 ## Operational guidance
 - You must keep token material out of shell history and logs.
@@ -45,13 +44,12 @@ You must read only the smallest section that resolves the current task, follow t
 
 ## Testing checkpoints
 - You must validate syntax/static checks for shell scripts before execution.
-- Test install, update-keyring, keyring-status, and nuke flows in a non-prod shell session.
-- You must confirm keyring deletion behavior is deterministic and idempotent.
+- Test install, update-keyring, keyring-status, and read-path flows in a non-prod shell session.
 
 ## Deployment checkpoints
-- For workstation rollout, sequence install -> keyring update -> verification in one session.
-- For host migration, export only required env metadata (never secret values) and re-enroll keyring at destination.
-- Track rollback steps for binary/path/keyring state and verify rollback immediately.
+- Sequence local changes as install -> keyring update -> verification in one session.
+- When the task includes host migration, move only required env metadata (never secret values) and re-enroll keyring at destination.
+- Track follow-up verification steps for binary/path visibility and keyring read-path checks.
 
 ## Multi-agent handoff
 - Planner provides target host baseline (Debian version, shell, privilege model) and stop conditions.

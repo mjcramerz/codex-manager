@@ -25,7 +25,7 @@ You must start with `$CODEX_HOME/plans/workflows/workflow-codex-manager.md` befo
 - You must keep `install`, `runtime`, `runtime-home`, `runtime-skills`, `runtime-instructions`, and `nuke` idempotent for already-applied or already-removed runtime state.
 - `make install` must act as both fresh install and in-place upgrade, without requiring a separate upgrade command.
 - `nuke` must remove managed shell/profile exports for future sessions and clearly note that the current shell keeps already-exported `CODEX_*` values until refresh.
-- Managed `secret-tool` cleanup during `nuke` is best-effort; missing keyring entries must not block filesystem cleanup.
+- Managed `secret-tool` tokens are preserved across `install` and `nuke`; do not plan runtime cleanup around keyring deletion.
 - `bearer_token_env_var` is URL-only MCP config. Stdio / `command` servers must use `env_vars` instead.
 
 ## Validation ladder
