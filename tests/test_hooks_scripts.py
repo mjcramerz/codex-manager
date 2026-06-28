@@ -575,6 +575,58 @@ class HookScriptTests(unittest.TestCase):
 
         self.assertEqual(result.stdout.strip(), "")
 
+    def test_plugin_prompt_hook_prefers_github_over_codex_repo_for_github_work(self) -> None:
+        prompt = "Address the GitHub PR review comments and Actions failure."
+
+        github = run_plugin_prompt_hook(
+            "github",
+            {
+                "cwd": ".",
+                "prompt": prompt,
+            },
+        )
+        codex_repo = run_plugin_prompt_hook(
+            "codex-repo",
+            {
+                "cwd": ".",
+                "prompt": prompt,
+            },
+        )
+
+        github_payload = json.loads(github.stdout)
+        self.assertIn("GitHub plugin context:", github_payload["hookSpecificOutput"]["additionalContext"])
+        self.assertEqual(codex_repo.stdout.strip(), "")
+
+    def test_plugin_prompt_hook_prefers_hosting_platforms_for_multi_provider_prompt(self) -> None:
+        prompt = "Compare Vercel and Render hosting options for this app before deploying."
+
+        hosting = run_plugin_prompt_hook(
+            "hosting-platforms",
+            {
+                "cwd": ".",
+                "prompt": prompt,
+            },
+        )
+        vercel = run_plugin_prompt_hook(
+            "vercel",
+            {
+                "cwd": ".",
+                "prompt": prompt,
+            },
+        )
+        render = run_plugin_prompt_hook(
+            "render",
+            {
+                "cwd": ".",
+                "prompt": prompt,
+            },
+        )
+
+        hosting_payload = json.loads(hosting.stdout)
+        self.assertIn("Hosting Platforms plugin context:", hosting_payload["hookSpecificOutput"]["additionalContext"])
+        self.assertEqual(vercel.stdout.strip(), "")
+        self.assertEqual(render.stdout.strip(), "")
+
     def test_stop_blocks_perl_changes_without_perl_validation_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             repo = make_codex_manager_repo(tmpdir)

@@ -87,6 +87,45 @@ sub _plugin_mcp_servers {
     return sort grep { length($_) } keys %{ $payload->{mcpServers} };
 }
 
+sub _installed_plugin_catalog {
+    my $home = _trim($ENV{CODEX_HOME});
+    return {} if !length($home);
+    my $cache_root = File::Spec->catdir($home, 'plugins', 'cache');
+    return {} if !-d $cache_root;
+
+    my %catalog;
+    opendir my $mdh, $cache_root or return {};
+    my @marketplaces = sort grep {
+        $_ ne '.'
+          && $_ ne '..'
+          && -d File::Spec->catdir($cache_root, $_)
+    } readdir $mdh;
+    closedir $mdh;
+
+    for my $marketplace (@marketplaces) {
+        my $marketplace_root = File::Spec->catdir($cache_root, $marketplace);
+        opendir my $pdh, $marketplace_root or next;
+        my @plugins = sort grep {
+            $_ ne '.'
+              && $_ ne '..'
+              && -d File::Spec->catdir($marketplace_root, $_, 'local')
+        } readdir $pdh;
+        closedir $pdh;
+
+        for my $bundle (@plugins) {
+            next if exists $catalog{$bundle};
+            my $root = File::Spec->catdir($marketplace_root, $bundle, 'local');
+            my $manifest = _read_json_object(File::Spec->catfile($root, '.codex-plugin', 'plugin.json'));
+            next if ref($manifest) ne 'HASH';
+            $catalog{$bundle} = {
+                root     => $root,
+                manifest => $manifest,
+            };
+        }
+    }
+    return \%catalog;
+}
+
 sub _manifest_keywords {
     my ($manifest) = @_;
     return () if ref($manifest) ne 'HASH';
@@ -144,6 +183,16 @@ sub _alias_tokens {
         'netlify' => [qw(netlify deploy site)],
     );
     return @{ $aliases{$bundle} || [] };
+}
+
+sub _normalize_signal {
+    my ($value) = @_;
+    $value = lc _trim($value);
+    return '' if !length($value);
+    $value =~ s/[^a-z0-9]+/ /g;
+    $value =~ s/\s+/ /g;
+    $value =~ s/^\s+|\s+$//g;
+    return $value;
 }
 
 sub _bundle_guidance {
@@ -330,26 +379,12 @@ sub _bundle_guidance {
 }
 
 sub _signal_tokens {
-    my ($bundle, $manifest, $root) = @_;
+    my ($bundle, $manifest, $root, $sources) = @_;
     my %seen;
     my @tokens;
-    my @sources = (
-        $bundle,
-        _trim($manifest->{name}),
-        _trim((ref($manifest->{interface}) eq 'HASH' ? $manifest->{interface}->{displayName} : undef)),
-        _manifest_keywords($manifest),
-        _child_dirs($root, 'skills'),
-        _plugin_apps($root),
-        _plugin_mcp_servers($root),
-        _alias_tokens($bundle),
-    );
-    for my $raw (@sources) {
+    for my $raw (@{$sources || []}) {
         next if !defined $raw || ref($raw);
-        my $value = lc _trim($raw);
-        next if !length($value);
-        $value =~ s/[^a-z0-9]+/ /g;
-        $value =~ s/\s+/ /g;
-        $value =~ s/^\s+|\s+$//g;
+        my $value = _normalize_signal($raw);
         next if !length($value) || length($value) < 3;
         next if $seen{$value}++;
         push @tokens, $value;
@@ -357,27 +392,137 @@ sub _signal_tokens {
     return @tokens;
 }
 
-sub _prompt_matches_bundle {
-    my ($prompt, $bundle, $manifest, $root) = @_;
-    return 0 if !length($prompt);
-
-    my $normalized = lc($prompt);
-    $normalized =~ s/[^a-z0-9]+/ /g;
-    $normalized =~ s/\s+/ /g;
-
-    my @tokens = _signal_tokens($bundle, $manifest, $root);
-    return 0 if !@tokens;
-
+sub _score_token_group {
+    my ($normalized_prompt, $weight, @tokens) = @_;
     my $score = 0;
+    my $matched = 0;
     for my $token (@tokens) {
         next if !length($token);
-        if ($normalized =~ /\b\Q$token\E\b/) {
-            my $weight = scalar(split / /, $token);
-            $score += $weight > 0 ? $weight : 1;
-            return 1 if $score >= 2;
+        next if $normalized_prompt !~ /\b\Q$token\E\b/;
+        my $width = scalar grep { length($_) } split / /, $token;
+        $score += $weight + ($width > 1 ? $width - 1 : 0);
+        $matched++;
+    }
+    return ($score, $matched);
+}
+
+sub _bundle_bonus_score {
+    my ($bundle, $normalized_prompt) = @_;
+    my %checks = (
+        'hosting-platforms' => [
+            [ qr/\b(?:vercel|render|netlify)\b.*\b(?:vercel|render|netlify)\b/, 8 ],
+            [ qr/\b(?:compare|choice|choose|best|hosting|platform)\b/, 4 ],
+        ],
+        'docs-research' => [
+            [ qr/\b(?:compare|research|reference|citations?|official docs|implementation notes)\b/, 5 ],
+        ],
+        'cloudflare-agents' => [
+            [ qr/\b(?:agents sdk|agent sdk|remote mcp server|mcp server|websocket|workflow)\b/, 6 ],
+        ],
+        'wrangler' => [
+            [ qr/\bwrangler\b/, 6 ],
+            [ qr/\b(?:deploy|publish|secret|tail|dev)\b/, 3 ],
+        ],
+        'browser-automation' => [
+            [ qr/\b(?:playwright|browser automation|screenshot|selector|electron)\b/, 6 ],
+        ],
+        'web-browser-linux' => [
+            [ qr/\b(?:librewolf|mullvad browser|thorium|desktop entry|browser hardening|labwc|wayland)\b/, 6 ],
+        ],
+        'openai-apps' => [
+            [ qr/\b(?:apps sdk|chatgpt app|widget|tool descriptor|component csp)\b/, 6 ],
+        ],
+    );
+    my $score = 0;
+    for my $entry (@{ $checks{$bundle} || [] }) {
+        my ($regex, $weight) = @{$entry};
+        $score += $weight if $normalized_prompt =~ $regex;
+    }
+    return $score;
+}
+
+sub _bundle_match_score {
+    my ($bundle, $normalized_prompt, $manifest, $root) = @_;
+    return 0 if !length($normalized_prompt);
+
+    my @primary = _signal_tokens(
+        $bundle,
+        $manifest,
+        $root,
+        [
+            $bundle,
+            _trim($manifest->{name}),
+            _trim((ref($manifest->{interface}) eq 'HASH' ? $manifest->{interface}->{displayName} : undef)),
+        ],
+    );
+    my @apps_mcp = _signal_tokens(
+        $bundle,
+        $manifest,
+        $root,
+        [
+            _plugin_apps($root),
+            _plugin_mcp_servers($root),
+        ],
+    );
+    my @skills = _signal_tokens(
+        $bundle,
+        $manifest,
+        $root,
+        [ _child_dirs($root, 'skills') ],
+    );
+    my @aliases = _signal_tokens(
+        $bundle,
+        $manifest,
+        $root,
+        [ _alias_tokens($bundle) ],
+    );
+    my @keywords = _signal_tokens(
+        $bundle,
+        $manifest,
+        $root,
+        [ _manifest_keywords($manifest) ],
+    );
+
+    my ($primary_score, $primary_hits) = _score_token_group($normalized_prompt, 10, @primary);
+    my ($apps_mcp_score, $apps_mcp_hits) = _score_token_group($normalized_prompt, 9, @apps_mcp);
+    my ($skills_score, $skills_hits) = _score_token_group($normalized_prompt, 7, @skills);
+    my ($alias_score, $alias_hits) = _score_token_group($normalized_prompt, 6, @aliases);
+    my ($keyword_score, $keyword_hits) = _score_token_group($normalized_prompt, 4, @keywords);
+
+    my $hit_count = $primary_hits + $apps_mcp_hits + $skills_hits + $alias_hits + $keyword_hits;
+    return 0 if !$hit_count;
+
+    return $primary_score
+      + $apps_mcp_score
+      + $skills_score
+      + $alias_score
+      + $keyword_score
+      + _bundle_bonus_score($bundle, $normalized_prompt);
+}
+
+sub _strongest_bundle {
+    my ($prompt, $catalog) = @_;
+    my $normalized_prompt = _normalize_signal($prompt);
+    return ('', 0) if !length($normalized_prompt);
+
+    my $best_bundle = '';
+    my $best_score = 0;
+    for my $bundle (sort keys %{ $catalog || {} }) {
+        my $entry = $catalog->{$bundle};
+        next if ref($entry) ne 'HASH';
+        my $score = _bundle_match_score(
+            $bundle,
+            $normalized_prompt,
+            $entry->{manifest},
+            $entry->{root},
+        );
+        next if $score <= 0;
+        if (!length($best_bundle) || $score > $best_score || ($score == $best_score && $bundle lt $best_bundle)) {
+            $best_bundle = $bundle;
+            $best_score = $score;
         }
     }
-    return 0;
+    return ($best_bundle, $best_score);
 }
 
 sub plugin_prompt_context {
@@ -386,10 +531,13 @@ sub plugin_prompt_context {
     my $prompt = _trim($args{prompt});
     return undef if !length($bundle) || !length($prompt);
 
-    my ($root, $manifest) = _plugin_manifest($bundle);
-    return undef if !length($root) || ref($manifest) ne 'HASH';
-    return undef if !_prompt_matches_bundle($prompt, $bundle, $manifest, $root);
+    my $catalog = _installed_plugin_catalog();
+    my $entry = $catalog->{$bundle};
+    return undef if ref($entry) ne 'HASH';
+    my ($winner, $winner_score) = _strongest_bundle($prompt, $catalog);
+    return undef if !length($winner) || $winner ne $bundle || $winner_score <= 0;
 
+    my $manifest = $entry->{manifest};
     my $name = _trim($manifest->{name}) || $bundle;
     my $description = _trim($manifest->{description});
     my $interface = ref($manifest->{interface}) eq 'HASH' ? $manifest->{interface} : {};
