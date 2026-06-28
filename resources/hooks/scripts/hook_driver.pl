@@ -3,7 +3,21 @@ use strict;
 use warnings;
 
 use FindBin qw($Bin);
-use lib "$Bin/lib";
+use Cwd qw(abs_path);
+use File::Spec;
+
+BEGIN {
+    my @candidates = (
+        File::Spec->catdir($Bin, "..", "modules"),
+        File::Spec->catdir($Bin, "lib"),
+    );
+    for my $candidate (@candidates) {
+        my $resolved = abs_path($candidate);
+        next if !defined $resolved || !-d $resolved;
+        unshift @INC, $resolved;
+        last;
+    }
+}
 
 use Codex::Hook::Driver qw(run_event);
 use Codex::Hook::Output qw(emit_payload json_true);

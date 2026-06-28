@@ -63,6 +63,7 @@ our @EXPORT_OK = qw(run_event);
 
 our $MAX_CONTEXT_CHARS = 1800;
 our $TRANSCRIPT_TAIL_BYTES = 24000;
+our $MAX_COMMAND_PREVIEW = 4;
 
 sub _load_input {
     local $/;
@@ -90,7 +91,21 @@ sub _join_sections {
 
     my $result = '';
     my $omitted = 0;
+    my %seen_bullets;
     for my $section (@filtered) {
+        my @section_lines;
+        for my $line (split /\n/, $section) {
+            next if !defined $line;
+            my $normalized = $line;
+            $normalized =~ s/^\s+|\s+$//g;
+            next if !length $normalized;
+            if ($normalized =~ /^-\s+/) {
+                next if $seen_bullets{$normalized}++;
+            }
+            push @section_lines, $normalized;
+        }
+        next if !@section_lines;
+        $section = join("\n", @section_lines);
         my $section_prefix = length($result) ? "\n\n" : '';
         my $full_candidate = $result . $section_prefix . $section;
         if (length($full_candidate) <= $MAX_CONTEXT_CHARS) {
@@ -117,6 +132,19 @@ sub _join_sections {
         }
     }
     return $result;
+}
+
+sub _format_item_list {
+    my ($items, $limit) = @_;
+    $limit //= $MAX_COMMAND_PREVIEW;
+    return '' if ref($items) ne 'ARRAY' || !@{$items};
+    my @values = grep { defined($_) && length($_) } @{$items};
+    return '' if !@values;
+    my $last = $#values < $limit - 1 ? $#values : $limit - 1;
+    my $rendered = '`' . join('`, `', @values[0 .. $last]) . '`';
+    my $remaining = @values - ($last + 1);
+    $rendered .= " (+$remaining more)" if $remaining > 0;
+    return $rendered;
 }
 
 sub _glob_regex {
@@ -271,13 +299,13 @@ sub _environment_lines {
     my ($report) = @_;
     return () if ref($report) ne 'HASH';
     my @lines = ('Local environment signals:');
-    push @lines, '- Required commands available: `' . join('`, `', @{ $report->{required_available} }) . '`.'
+    push @lines, '- Required commands available: ' . _format_item_list($report->{required_available}, 6) . '.'
       if ref($report->{required_available}) eq 'ARRAY' && @{ $report->{required_available} };
-    push @lines, '- Required commands missing: `' . join('`, `', @{ $report->{required_missing} }) . '`.'
+    push @lines, '- Required commands missing: ' . _format_item_list($report->{required_missing}, 6) . '.'
       if ref($report->{required_missing}) eq 'ARRAY' && @{ $report->{required_missing} };
-    push @lines, '- Optional commands available: `' . join('`, `', @{ $report->{optional_available} }) . '`.'
+    push @lines, '- Optional commands available: ' . _format_item_list($report->{optional_available}) . '.'
       if ref($report->{optional_available}) eq 'ARRAY' && @{ $report->{optional_available} };
-    push @lines, '- Optional commands missing: `' . join('`, `', @{ $report->{optional_missing} }) . '`.'
+    push @lines, '- Optional commands missing: ' . _format_item_list($report->{optional_missing}) . '.'
       if ref($report->{optional_missing}) eq 'ARRAY' && @{ $report->{optional_missing} };
     if (ref($report->{probes}) eq 'ARRAY') {
         for my $probe (@{ $report->{probes} }) {
@@ -339,8 +367,10 @@ sub _session_start_context {
         repo_id                 => length($profile_id) ? $profile_id : ($repo_root =~ s{.*/}{}r),
         repo_name               => ($repo_root =~ s{.*/}{}r),
         repo_root               => $repo_root,
-        runtime_hooks_dir       => '$CODEX_HOME/hooks',
-        runtime_hooks_driver_path => '$CODEX_HOME/hooks/scripts/hook_driver.pl',
+        runtime_hooks_dir       => '$CODEX_HOME/.hooks',
+        runtime_hooks_driver_path => '$CODEX_HOME/.hooks/scripts/hook_driver.pl',
+        runtime_hooks_modules_dir => '$CODEX_HOME/.hooks/modules',
+        runtime_hooks_config_path => '$CODEX_HOME/hooks.json',
     );
 
     my @summary = (
@@ -424,8 +454,10 @@ sub _user_prompt_context {
         repo_id                 => defined($primary) ? ($primary->{id} // ($repo_root =~ s{.*/}{}r)) : ($repo_root =~ s{.*/}{}r),
         repo_name               => ($repo_root =~ s{.*/}{}r),
         repo_root               => $repo_root,
-        runtime_hooks_dir       => '$CODEX_HOME/hooks',
-        runtime_hooks_driver_path => '$CODEX_HOME/hooks/scripts/hook_driver.pl',
+        runtime_hooks_dir       => '$CODEX_HOME/.hooks',
+        runtime_hooks_driver_path => '$CODEX_HOME/.hooks/scripts/hook_driver.pl',
+        runtime_hooks_modules_dir => '$CODEX_HOME/.hooks/modules',
+        runtime_hooks_config_path => '$CODEX_HOME/hooks.json',
     );
 
     my @sections;
@@ -445,8 +477,8 @@ sub _user_prompt_context {
     if ($prompt =~ /\b(hook|hooks|manifest|sessionstart|userpromptsubmit|stop hook)\b/i) {
         push @sections, join(
             "\n",
-            'Hook wiring stays inline in `config/usr/apps.toml` and installs into `$CODEX_HOME/config.toml`.',
-            'Perl modules under `resources/hooks/scripts/lib/Codex/Hook/` are the runtime source of truth; do not reintroduce manifest-driven `hooks.json` generation.',
+            'Installed home hook config lives at `$CODEX_HOME/hooks.json`.',
+            'Installed hook entrypoints live under `$CODEX_HOME/.hooks/scripts`, and installed Perl hook modules live under `$CODEX_HOME/.hooks/modules`.',
             'Keep matcher groups mutually exclusive because Codex runs matching command hooks concurrently. `UserPromptSubmit` and `Stop` still self-filter inside the command.',
         );
     }
@@ -504,6 +536,8 @@ sub _validation_evidence {
 sub _has_skip_rationale {
     my ($text) = @_;
     return 0 if !defined $text || !length($text);
+    return 1 if $text =~ /\b(could not run|couldn't run|unable to run|did not run|didn't run|cannot run|can't run|blocked)\b.*\bbecause\b/i;
+    return 0 if $text !~ /\b(?:test|tests|verify|verification|validate|validation|check|checks|lint|shellcheck|ruff|mypy|eslint|clippy|taplo|py_compile|compileall|pytest|unittest|prove|perl -c)\b/i;
     return $text =~ /\b(could not run|couldn't run|unable to run|did not run|didn't run|skipped|cannot run|can't run|not run|not executed|permission boundary|permission denied|requires approval|sandbox|tool unavailable|command not found|not installed|missing dependency|out of scope)\b/i;
 }
 
@@ -547,12 +581,16 @@ sub _collect_generic_validation_issues {
     }
 
     my @python_files = grep { /\.py\z/ } @{$changed_files};
+    my @perl_files = grep { /\.(?:pl|pm)\z/ } @{$changed_files};
     my @shell_files = grep { /\.(sh|bash|zsh)\z/ } @{$changed_files};
     my @json_files = grep { /\.json\z/ } @{$changed_files};
     my @toml_files = grep { /\.toml\z/ } @{$changed_files};
 
     if (@python_files && !_has_any_evidence($evidence, [ qr/\bpython3? -m (py_compile|compileall|pytest|unittest)\b/, qr/\bpytest\b/ ])) {
         push @issues, 'Python changes (' . preview_paths(\@python_files) . ') need `python3 -m py_compile <file>` or a targeted unittest/pytest command.';
+    }
+    if (@perl_files && !_has_any_evidence($evidence, [ qr/\bperl\s+-c\b/, qr/\bprove\b/, qr/\bperlcritic\b/ ])) {
+        push @issues, 'Perl changes (' . preview_paths(\@perl_files) . ') need `perl -c <file>` or targeted `prove` coverage.';
     }
     if (@shell_files && !_has_any_evidence($evidence, [ qr/\bshellcheck\b/, qr/\bbash -n\b/, qr/\bzsh -n\b/, qr/\b(?:sh|dash) -n\b/ ])) {
         push @issues, 'Shell changes (' . preview_paths(\@shell_files) . ') need `bash -n` and/or `shellcheck` coverage.';
@@ -633,8 +671,10 @@ sub _stop_common {
         repo_id                 => defined($primary) ? ($primary->{id} // ($repo_root =~ s{.*/}{}r)) : ($repo_root =~ s{.*/}{}r),
         repo_name               => ($repo_root =~ s{.*/}{}r),
         repo_root               => $repo_root,
-        runtime_hooks_dir       => '$CODEX_HOME/hooks',
-        runtime_hooks_driver_path => '$CODEX_HOME/hooks/scripts/hook_driver.pl',
+        runtime_hooks_dir       => '$CODEX_HOME/.hooks',
+        runtime_hooks_driver_path => '$CODEX_HOME/.hooks/scripts/hook_driver.pl',
+        runtime_hooks_modules_dir => '$CODEX_HOME/.hooks/modules',
+        runtime_hooks_config_path => '$CODEX_HOME/hooks.json',
     );
     my @mirror_refs = list_mirror_refs($repo_root);
     my @issues = _collect_generic_validation_issues($repo_root, \@changed_files, $evidence, $current);

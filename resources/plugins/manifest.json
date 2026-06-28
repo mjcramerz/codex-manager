@@ -34,6 +34,7 @@
         "codex-mcp",
         "perl-hooks"
       ],
+      "hooks": "./hooks.json",
       "apps": [],
       "mcp": [
         "openaiDeveloperDocs"
@@ -69,6 +70,7 @@
         "codex-repo",
         "rust-cargo"
       ],
+      "hooks": "./hooks.json",
       "apps": [
         {
           "name": "github",
@@ -116,6 +118,7 @@
         "openai-docs",
         "chatgpt-apps"
       ],
+      "hooks": "./hooks.json",
       "apps": [],
       "mcp": [
         "openaiDeveloperDocs"
@@ -159,6 +162,7 @@
         "gh-fix-ci",
         "yeet"
       ],
+      "hooks": "./hooks.json",
       "apps": [
         {
           "name": "github",
@@ -198,6 +202,7 @@
       "skills": [
         "ci-gitlab-cicd"
       ],
+      "hooks": "./hooks.json",
       "apps": [],
       "mcp": [],
       "author": {
@@ -258,7 +263,8 @@
         "terms_of_service_url": "https://linear.app/terms",
         "default_prompt": "Use Linear context to triage or update relevant issues for this task, with clear next actions.",
         "brand_color": "#222326"
-      }
+      },
+      "hooks": "./hooks.json"
     },
     "google-calendar": {
       "name": "google-calendar",
@@ -301,7 +307,8 @@
         "terms_of_service_url": "https://policies.google.com/terms",
         "default_prompt": "Use Google Calendar to summarize my day, find availability this week, and schedule, update, or cancel the right event.",
         "brand_color": "#4285F4"
-      }
+      },
+      "hooks": "./hooks.json"
     },
     "notion": {
       "name": "notion",
@@ -346,7 +353,8 @@
         "brand_color": "#111827"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
-      "homepage": "https://developers.notion.com/"
+      "homepage": "https://developers.notion.com/",
+      "hooks": "./hooks.json"
     },
     "obsidian": {
       "name": "obsidian",
@@ -386,7 +394,8 @@
         "brand_color": "#7C3AED"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
-      "homepage": "https://obsidian.md/"
+      "homepage": "https://obsidian.md/",
+      "hooks": "./hooks.json"
     },
     "health-planning": {
       "name": "health-planning",
@@ -420,7 +429,8 @@
         "brand_color": "#16A34A"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
-      "homepage": "https://gitlab.com/computes/apps/codex-manager"
+      "homepage": "https://gitlab.com/computes/apps/codex-manager",
+      "hooks": "./hooks.json"
     },
     "backend": {
       "name": "backend",
@@ -461,7 +471,8 @@
         "brand_color": "#2563EB"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
-      "homepage": "https://gitlab.com/computes/apps/codex-manager"
+      "homepage": "https://gitlab.com/computes/apps/codex-manager",
+      "hooks": "./hooks.json"
     },
     "frontend": {
       "name": "frontend",
@@ -505,7 +516,8 @@
         "brand_color": "#F97316"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
-      "homepage": "https://gitlab.com/computes/apps/codex-manager"
+      "homepage": "https://gitlab.com/computes/apps/codex-manager",
+      "hooks": "./hooks.json"
     },
     "design-ui": {
       "name": "design-ui",
@@ -539,7 +551,8 @@
         "brand_color": "#8B5CF6"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
-      "homepage": "https://gitlab.com/computes/apps/codex-manager"
+      "homepage": "https://gitlab.com/computes/apps/codex-manager",
+      "hooks": "./hooks.json"
     },
     "browser-automation": {
       "name": "browser-automation",
@@ -576,7 +589,8 @@
         "brand_color": "#0EA5E9"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
-      "homepage": "https://gitlab.com/computes/apps/codex-manager"
+      "homepage": "https://gitlab.com/computes/apps/codex-manager",
+      "hooks": "./hooks.json"
     },
     "document-artifacts": {
       "name": "document-artifacts",
@@ -615,7 +629,8 @@
         "brand_color": "#A855F7"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
-      "homepage": "https://gitlab.com/computes/apps/codex-manager"
+      "homepage": "https://gitlab.com/computes/apps/codex-manager",
+      "hooks": "./hooks.json"
     },
     "adobe-acrobat": {
       "name": "adobe-acrobat",
@@ -663,7 +678,8 @@
         "privacy_policy_url": "https://www.adobe.com/privacy/policy.html",
         "terms_of_service_url": "https://www.adobe.com/legal/terms.html"
       },
-      "repository": "https://gitlab.com/computes/apps/codex-manager"
+      "repository": "https://gitlab.com/computes/apps/codex-manager",
+      "hooks": "./hooks.json"
     },
     "adobe-photoshop": {
       "name": "adobe-photoshop",
@@ -708,7 +724,8 @@
         "terms_of_service_url": "https://www.adobe.com/legal/terms.html",
         "default_prompt": "Use the Adobe Photoshop plugin to retouch, stylize, and export images with explicit output requirements.",
         "brand_color": "#001E36"
-      }
+      },
+      "hooks": "./hooks.json"
     },
     "adobe-express": {
       "name": "adobe-express",
@@ -753,7 +770,8 @@
         "terms_of_service_url": "https://www.adobe.com/legal/terms.html",
         "default_prompt": "Use the Adobe Express plugin to create and iterate social and marketing graphics with explicit size and format targets.",
         "brand_color": "#5D3BFF"
-      }
+      },
+      "hooks": "./hooks.json"
     },
     "ai-media": {
       "name": "ai-media",
@@ -791,7 +809,8 @@
         "brand_color": "#10A37F"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
-      "homepage": "https://platform.openai.com/docs/guides"
+      "homepage": "https://platform.openai.com/docs/guides",
+      "hooks": "./hooks.json"
     },
     "vercel": {
       "name": "vercel",
@@ -838,7 +857,8 @@
         "terms_of_service_url": "https://vercel.com/legal/terms",
         "default_prompt": "Use the Vercel plugin for Vercel deployment workflows.",
         "brand_color": "#111827"
-      }
+      },
+      "hooks": "./hooks.json"
     },
     "hosting-platforms": {
       "name": "hosting-platforms",
@@ -875,7 +895,8 @@
         "brand_color": "#0F766E"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
-      "homepage": "https://gitlab.com/computes/apps/codex-manager"
+      "homepage": "https://gitlab.com/computes/apps/codex-manager",
+      "hooks": "./hooks.json"
     },
     "web-browser-linux": {
       "name": "web-browser-linux",
@@ -898,6 +919,7 @@
         "desktop-thorium",
         "desktop-wayland"
       ],
+      "hooks": "./hooks.json",
       "apps": [],
       "mcp": [],
       "author": {
@@ -950,7 +972,8 @@
         "brand_color": "#0F766E"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
-      "homepage": "https://gitlab.com/computes/apps/codex-manager"
+      "homepage": "https://gitlab.com/computes/apps/codex-manager",
+      "hooks": "./hooks.json"
     },
     "containers": {
       "name": "containers",
@@ -982,7 +1005,8 @@
         "brand_color": "#2563EB"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
-      "homepage": "https://gitlab.com/computes/apps/codex-manager"
+      "homepage": "https://gitlab.com/computes/apps/codex-manager",
+      "hooks": "./hooks.json"
     },
     "kubernetes": {
       "name": "kubernetes",
@@ -1014,7 +1038,8 @@
         "brand_color": "#1D4ED8"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
-      "homepage": "https://kubernetes.io/docs/"
+      "homepage": "https://kubernetes.io/docs/",
+      "hooks": "./hooks.json"
     },
     "system-infra": {
       "name": "system-infra",
@@ -1057,7 +1082,8 @@
         "brand_color": "#14B8A6"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
-      "homepage": "https://gitlab.com/computes/apps/codex-manager"
+      "homepage": "https://gitlab.com/computes/apps/codex-manager",
+      "hooks": "./hooks.json"
     },
     "virtualization": {
       "name": "virtualization",
@@ -1093,7 +1119,8 @@
         "brand_color": "#0EA5E9"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
-      "homepage": "https://gitlab.com/computes/apps/codex-manager"
+      "homepage": "https://gitlab.com/computes/apps/codex-manager",
+      "hooks": "./hooks.json"
     },
     "observability": {
       "name": "observability",
@@ -1130,7 +1157,8 @@
         "brand_color": "#EAB308"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
-      "homepage": "https://gitlab.com/computes/apps/codex-manager"
+      "homepage": "https://gitlab.com/computes/apps/codex-manager",
+      "hooks": "./hooks.json"
     },
     "security-controls": {
       "name": "security-controls",
@@ -1176,7 +1204,8 @@
         "brand_color": "#DC2626"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
-      "homepage": "https://gitlab.com/computes/apps/codex-manager"
+      "homepage": "https://gitlab.com/computes/apps/codex-manager",
+      "hooks": "./hooks.json"
     },
     "security-labs": {
       "name": "security-labs",
@@ -1216,7 +1245,8 @@
         "brand_color": "#991B1B"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
-      "homepage": "https://gitlab.com/computes/apps/codex-manager"
+      "homepage": "https://gitlab.com/computes/apps/codex-manager",
+      "hooks": "./hooks.json"
     },
     "cloudflare-workers": {
       "name": "cloudflare-workers",
@@ -1261,7 +1291,8 @@
         "brand_color": "#F97316"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
-      "homepage": "https://developers.cloudflare.com/workers/"
+      "homepage": "https://developers.cloudflare.com/workers/",
+      "hooks": "./hooks.json"
     },
     "wrangler": {
       "name": "wrangler",
@@ -1300,7 +1331,8 @@
         "brand_color": "#F97316"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
-      "homepage": "https://developers.cloudflare.com/workers/wrangler/"
+      "homepage": "https://developers.cloudflare.com/workers/wrangler/",
+      "hooks": "./hooks.json"
     },
     "cloudflare-agents": {
       "name": "cloudflare-agents",
@@ -1339,7 +1371,8 @@
         "brand_color": "#F97316"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
-      "homepage": "https://developers.cloudflare.com/agents/"
+      "homepage": "https://developers.cloudflare.com/agents/",
+      "hooks": "./hooks.json"
     },
     "huggingface": {
       "name": "huggingface",
@@ -1387,7 +1420,8 @@
         "brand_color": "#FF9D00"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
-      "homepage": "https://huggingface.co/docs"
+      "homepage": "https://huggingface.co/docs",
+      "hooks": "./hooks.json"
     },
     "docs-research": {
       "name": "docs-research",
@@ -1426,7 +1460,8 @@
         "brand_color": "#0EA5E9"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
-      "homepage": "https://gitlab.com/computes/apps/codex-manager"
+      "homepage": "https://gitlab.com/computes/apps/codex-manager",
+      "hooks": "./hooks.json"
     },
     "stripe": {
       "name": "stripe",
@@ -1474,7 +1509,8 @@
         "terms_of_service_url": "https://stripe.com/legal/ssa",
         "default_prompt": "Use the Stripe plugin for Stripe payments, billing, invoices, subscriptions, and webhook workflows.",
         "brand_color": "#635BFF"
-      }
+      },
+      "hooks": "./hooks.json"
     },
     "microsoft-learn": {
       "name": "microsoft-learn",
@@ -1511,7 +1547,8 @@
         "brand_color": "#2563EB"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
-      "homepage": "https://learn.microsoft.com/"
+      "homepage": "https://learn.microsoft.com/",
+      "hooks": "./hooks.json"
     },
     "jina-ai": {
       "name": "jina-ai",
@@ -1548,7 +1585,8 @@
         "brand_color": "#0EA5E9"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
-      "homepage": "https://jina.ai/"
+      "homepage": "https://jina.ai/",
+      "hooks": "./hooks.json"
     },
     "atlassian": {
       "name": "atlassian",
@@ -1585,7 +1623,8 @@
         "brand_color": "#1D4ED8"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
-      "homepage": "https://developer.atlassian.com/cloud/"
+      "homepage": "https://developer.atlassian.com/cloud/",
+      "hooks": "./hooks.json"
     },
     "figma": {
       "name": "figma",
@@ -1633,7 +1672,8 @@
         "terms_of_service_url": "https://www.figma.com/legal/tos/",
         "default_prompt": "Use the Figma plugin for Figma MCP design handoff and implementation work.",
         "brand_color": "#A259FF"
-      }
+      },
+      "hooks": "./hooks.json"
     },
     "vercel-ui": {
       "name": "vercel-ui",
@@ -1669,7 +1709,8 @@
         "brand_color": "#111827"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
-      "homepage": "https://vercel.com/blog"
+      "homepage": "https://vercel.com/blog",
+      "hooks": "./hooks.json"
     },
     "winui": {
       "name": "winui",
@@ -1705,7 +1746,8 @@
         "brand_color": "#2563EB"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
-      "homepage": "https://learn.microsoft.com/windows/apps/winui/"
+      "homepage": "https://learn.microsoft.com/windows/apps/winui/",
+      "hooks": "./hooks.json"
     },
     "render": {
       "name": "render",
@@ -1740,7 +1782,8 @@
         "brand_color": "#46E3B7"
       },
       "repository": "https://gitlab.com/computes/apps/codex-manager",
-      "homepage": "https://render.com/docs"
+      "homepage": "https://render.com/docs",
+      "hooks": "./hooks.json"
     },
     "netlify": {
       "name": "netlify",
@@ -1784,7 +1827,8 @@
         "terms_of_service_url": "https://www.netlify.com/legal/terms-of-use/",
         "default_prompt": "Use the Netlify plugin for Netlify deployment and site-linking workflows.",
         "brand_color": "#00AD9F"
-      }
+      },
+      "hooks": "./hooks.json"
     }
   }
 }

@@ -13,6 +13,7 @@ HOOK_SCRIPT_NAME_PATTERN = r"^[A-Za-z0-9_.-]+\.pl$"
 SUPPORTED_SINGLETON_HOOK_EVENTS = ("SessionStart", "UserPromptSubmit", "PreCompact", "PostCompact", "Stop")
 SINGLETON_MATCHER_SUPPORTED_EVENTS = frozenset({"SessionStart"})
 SUPPORTED_TOOL_HOOK_EVENTS = ("PreToolUse", "PermissionRequest", "PostToolUse")
+HOOK_COMMAND_PREFIX = "perl ${CODEX_HOME}/.hooks/scripts/"
 
 
 def hook_manifest_path(repo_root: Path | None = None) -> Path:
@@ -247,7 +248,7 @@ def build_singleton_hook_groups(
         "hooks": [
             {
                 "type": "command",
-                "command": f"perl ${{CODEX_HOME}}/hooks/scripts/{event_payload['script']}",
+                "command": f"{HOOK_COMMAND_PREFIX}{event_payload['script']}",
                 "timeout": event_payload["timeout"],
                 "statusMessage": event_payload["statusMessage"],
             }
@@ -275,7 +276,7 @@ def build_tool_hook_groups(
                 "hooks": [
                     {
                         "type": "command",
-                        "command": f"perl ${{CODEX_HOME}}/hooks/scripts/{event_payload['script']}",
+                        "command": f"{HOOK_COMMAND_PREFIX}{event_payload['script']}",
                         "timeout": event_payload["timeout"],
                         "statusMessage": event_payload["statusMessage"],
                     }
@@ -306,7 +307,7 @@ def build_subagent_hook_groups(
                 "hooks": [
                     {
                         "type": "command",
-                        "command": f"perl ${{CODEX_HOME}}/hooks/scripts/{profile[script_key]}",
+                        "command": f"{HOOK_COMMAND_PREFIX}{profile[script_key]}",
                         "timeout": timeout,
                         "statusMessage": f"{verb} {profile['status_label']} subagent {suffix}",
                     }

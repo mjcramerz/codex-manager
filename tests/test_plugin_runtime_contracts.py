@@ -30,6 +30,7 @@ from skills import role_tools_from_skills  # noqa: E402
 
 PLUGINS_MANIFEST_PATH = REPO_ROOT / "resources" / "plugins" / "manifest.json"
 APPS_TOML_PATH = REPO_ROOT / "config" / "usr" / "apps.toml"
+REQUIREMENTS_TOML_PATH = REPO_ROOT / "config" / "vendor" / "requirements.toml"
 SKILLS_METADATA_PATH = REPO_ROOT / "resources" / "skills" / "metadata.json"
 SECRETS_TOML_PATH = REPO_ROOT / "secrets.toml"
 REQUIRED_GLOBAL_MCP = set(REQUIRED_SHARED_MCP_REFS)
@@ -44,6 +45,10 @@ def load_effective_plugins_inventory() -> dict:
 
 def load_apps_payload() -> dict:
     return parse_toml_file(APPS_TOML_PATH)
+
+
+def load_requirements_payload() -> dict:
+    return parse_toml_file(REQUIREMENTS_TOML_PATH)
 
 
 def load_plugin_bundles():
@@ -70,6 +75,81 @@ def dependency_values(path: Path) -> set[str]:
 
 
 class PluginRuntimeContractsTests(unittest.TestCase):
+    def test_all_plugins_declare_hook_bundles(self) -> None:
+        bundles = {bundle.name: bundle for bundle in load_plugin_bundles()}
+        for plugin_name, bundle in bundles.items():
+            self.assertEqual(bundle.hooks_file, "./hooks.json", plugin_name)
+
+    def test_requirements_pin_integrations_on(self) -> None:
+        requirements = load_requirements_payload()
+        self.assertFalse(requirements["allow_managed_hooks_only"])
+        self.assertEqual(requirements["allowed_approvals_reviewers"], ["user", "auto_review"])
+        features = requirements["features"]
+        for key in (
+            "apps",
+            "hooks",
+            "plugins",
+            "memories",
+            "multi_agent",
+            "browser_use",
+            "browser_use_external",
+            "computer_use",
+            "in_app_browser",
+            "plugin_sharing",
+            "tool_suggest",
+            "tool_search",
+            "search_tool",
+            "enable_mcp_apps",
+            "skill_mcp_dependency_install",
+        ):
+            self.assertIs(features.get(key), True, key)
+
+    def test_requirements_enable_all_manifest_app_ids(self) -> None:
+        inventory = load_effective_plugins_inventory()
+        requirements = load_requirements_payload()
+        apps_table = requirements.get("apps", {})
+        self.assertIsInstance(apps_table, dict)
+
+        expected_ids: set[str] = set()
+        for payload in inventory["plugins"].values():
+            for app in payload.get("apps", []):
+                if isinstance(app, str):
+                    expected_ids.add(app)
+                elif isinstance(app, dict):
+                    expected_ids.add(str(app.get("id", app.get("name", ""))).strip())
+
+        for app_id in sorted(expected_ids):
+            self.assertIn(app_id, apps_table, app_id)
+            self.assertIs(apps_table[app_id]["enabled"], True, app_id)
+
+    def test_requirements_allow_all_plugin_bundled_mcp_servers(self) -> None:
+        inventory = load_effective_plugins_inventory()
+        requirements = load_requirements_payload()
+        top_level_mcp = requirements.get("mcp_servers", {})
+        plugin_table = requirements.get("plugins", {})
+        self.assertIsInstance(top_level_mcp, dict)
+        self.assertIsInstance(plugin_table, dict)
+
+        for plugin_name, payload in inventory["plugins"].items():
+            expected_servers = []
+            for server in payload.get("mcp", []):
+                if isinstance(server, str):
+                    expected_servers.append(server)
+                elif isinstance(server, dict):
+                    expected_servers.append(str(server.get("name", "")).strip())
+            expected_servers = [server for server in expected_servers if server]
+            if not expected_servers:
+                continue
+            self.assertIn(plugin_name, plugin_table, plugin_name)
+            managed_servers = plugin_table[plugin_name]["mcp_servers"]
+            for server_name in expected_servers:
+                self.assertIn(server_name, managed_servers, f"{plugin_name}:{server_name}")
+                self.assertEqual(
+                    managed_servers[server_name]["identity"],
+                    top_level_mcp[server_name]["identity"],
+                    f"{plugin_name}:{server_name}",
+                )
+
     def test_apps_payload_carries_supported_env_vars_for_managed_secret_servers(self) -> None:
         apps_payload = load_apps_payload()
         vendor_payload = parse_toml_file(REPO_ROOT / "config" / "vendor" / "mcp.toml")
@@ -284,6 +364,12 @@ class PluginRuntimeContractsTests(unittest.TestCase):
             def _write_file(self, path: Path, content: str) -> None:
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text(content, encoding="utf-8")
+
+            def _copy_file(self, src: Path, dst: Path, *, mode: int | None = None) -> None:
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(src, dst)
+                if mode is not None:
+                    dst.chmod(mode)
 
         with tempfile.TemporaryDirectory() as tmpdir:
             target_root = Path(tmpdir) / "plugin" / "local"

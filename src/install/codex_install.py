@@ -267,7 +267,6 @@ class Installer:
         self.mcp_path = self.repo_layout.vendor_mcp_path
         self.skills_path = self.repo_layout.skills_metadata_path
         self.plugins_path = self.repo_layout.user_apps_path
-        self.hooks_path = self.repo_layout.user_hooks_path
         self.plugins_json_path = self.repo_layout.plugins_inventory_path
         self.user_env_path = self.repo_layout.user_env_path
         self.sandbox_path = self.repo_layout.user_policy_path
@@ -282,7 +281,6 @@ class Installer:
         self.mcp_payload: dict[str, Any] = {}
         self.skills_payload: dict[str, Any] = {}
         self.plugins_payload: dict[str, Any] = {}
-        self.hooks_payload: dict[str, Any] = {}
         self.plugins_metadata_payload: dict[str, Any] = {}
         self.effective_plugins_metadata_payload: dict[str, Any] = {}
         self.secrets_config: ManagedSecretsConfig | None = None
@@ -353,7 +351,6 @@ class Installer:
         mcp_payload_raw = parse_toml_file(self.mcp_path)
         self.skills_payload = parse_json_file(self.skills_path)
         self.plugins_payload = parse_toml_file(self.plugins_path) if self.plugins_path.is_file() else {}
-        self.hooks_payload = parse_toml_file(self.hooks_path)
         if self.plugins_json_path.is_file():
             try:
                 self.plugins_metadata_payload = json.loads(self.plugins_json_path.read_text(encoding="utf-8"))
@@ -427,11 +424,11 @@ class Installer:
             self.repo_layout.user_pref_path,
             self.repo_layout.user_env_path,
             self.repo_layout.user_apps_path,
-            self.repo_layout.user_hooks_path,
             self.repo_layout.user_policy_path,
             self.repo_layout.home_user_dir,
             self.repo_layout.hooks_dir,
             self.repo_layout.hooks_scripts_dir,
+            self.repo_layout.hooks_manifest_path,
             self.repo_layout.hooks_dir / "schema" / "generated",
             self._hooks_runtime_config_source_path(),
             self.repo_layout.instructions_dir,
@@ -524,9 +521,8 @@ class Installer:
         if self.sandbox_path.is_file():
             parse_toml_file(self.sandbox_path)
         validate_hooks_config(
-            self.repo_layout.user_hooks_path,
+            self._hooks_config_source_path(),
             self._hooks_source_dir(),
-            hooks_payload=self.hooks_payload.get("hooks") if isinstance(self.hooks_payload, dict) else None,
         )
         validate_agent_role_contracts(self.repo_layout.agents_config_dir, self.repo_layout.user_apps_path)
         self._validate_managed_secrets_config()
@@ -759,8 +755,9 @@ class Installer:
         return self._codex_user_dir() / "instructions"
 
     def _runtime_home_dir(self) -> Path:
-        if self.runtime_layout is not None:
-            return self.runtime_layout.home_dir
+        runtime_layout = getattr(self, "runtime_layout", None)
+        if runtime_layout is not None:
+            return runtime_layout.home_dir
         return ensure_safe_absolute_path("CODEX_HOME", self.runtime_vars["CODEX_HOME"])
 
     def _runtime_plugins_dir(self) -> Path:
@@ -779,15 +776,25 @@ class Installer:
         return self._runtime_plugin_marketplace_dir() / "marketplace.json"
 
     def _runtime_hooks_dir(self) -> Path:
-        if self.runtime_layout is not None:
-            return self.runtime_layout.hooks_dir
-        return self._runtime_home_dir() / "hooks"
+        runtime_layout = getattr(self, "runtime_layout", None)
+        if runtime_layout is not None:
+            return runtime_layout.hooks_dir
+        return self._runtime_home_dir() / ".hooks"
+
+    def _runtime_hooks_config_path(self) -> Path:
+        runtime_layout = getattr(self, "runtime_layout", None)
+        if runtime_layout is not None:
+            return runtime_layout.hooks_config_path
+        return self._runtime_home_dir() / "hooks.json"
 
     def _runtime_hooks_scripts_dir(self) -> Path:
         return self._runtime_hooks_dir() / "scripts"
 
     def _runtime_hidden_hooks_dir(self) -> Path:
-        return self._runtime_home_dir() / ".hooks"
+        return self._runtime_hooks_dir()
+
+    def _runtime_hooks_lib_dir(self) -> Path:
+        return self._runtime_hidden_hooks_dir() / "modules"
 
     def _runtime_hooks_schema_dir(self) -> Path:
         return self._runtime_hidden_hooks_dir() / "schema" / "generated"
@@ -944,11 +951,41 @@ class Installer:
     def _hooks_source_dir(self) -> Path:
         return self.repo_layout.hooks_scripts_dir
 
+    def _hooks_lib_source_dir(self) -> Path:
+        return self.repo_layout.hooks_scripts_dir / "lib"
+
+    def _hooks_config_source_path(self) -> Path:
+        return self.repo_layout.hooks_manifest_path
+
     def _hooks_schema_source_dir(self) -> Path:
         return self.repo_layout.hooks_dir / "schema" / "generated"
 
     def _hooks_runtime_config_source_path(self) -> Path:
         return self.repo_layout.hooks_scripts_dir / "lib" / "Codex" / "Hook" / "RuntimeConfig.pm"
+
+    def _render_hooks_config_payload(self) -> dict[str, Any]:
+        source_path = self._hooks_config_source_path()
+        payload = parse_json_file(source_path)
+        hooks = validate_hooks_config(
+            source_path,
+            self._hooks_source_dir(),
+            hooks_payload=payload.get("hooks"),
+        )
+        payload["hooks"] = hooks
+        rendered = resolve_object_placeholders(
+            copy.deepcopy(payload),
+            self.variables,
+            str(source_path),
+        )
+        return rendered
+
+    def _materialize_hooks_config(self) -> None:
+        rendered = json.dumps(self._render_hooks_config_payload(), indent=2) + "\n"
+        self._materialize_rendered_text(
+            self._runtime_hooks_config_path(),
+            rendered,
+            dry_run_message="materialize runtime hooks config into",
+        )
 
     def _render_user_fragment(self, path: Path) -> str:
         return _replace_known_placeholders_outside_toml_multiline_strings(
@@ -1574,12 +1611,20 @@ class Installer:
             skip_root_toml=False,
             mirror_deletions=True,
         )
+        self._remove_path_force(self._runtime_hooks_scripts_dir() / "lib")
+        self._sync_tree_filtered(
+            self._hooks_lib_source_dir(),
+            self._runtime_hooks_lib_dir(),
+            skip_root_toml=False,
+            mirror_deletions=True,
+        )
         self._sync_tree_filtered(
             self._hooks_schema_source_dir(),
             self._runtime_hooks_schema_dir(),
             skip_root_toml=False,
             mirror_deletions=True,
         )
+        self._materialize_hooks_config()
 
     def _sync_tree_filtered(
         self,
@@ -1824,13 +1869,34 @@ class Installer:
 
     def _verify_runtime_hook_assets(self) -> None:
         runtime_scripts_dir = self._runtime_hooks_scripts_dir()
-        runtime_schema_dir = self._runtime_hooks_schema_dir()
         runtime_driver = runtime_scripts_dir / "hook_driver.pl"
         if not runtime_driver.is_file():
             fail(f"missing runtime hook driver: {runtime_driver}")
 
+        runtime_lib_dir = self._runtime_hooks_lib_dir()
+        runtime_schema_dir = self._runtime_hooks_schema_dir()
+        runtime_hooks_config_path = self._runtime_hooks_config_path()
+        if not runtime_hooks_config_path.is_file():
+            fail(f"missing runtime hooks config: {runtime_hooks_config_path}")
+
+        source_script_files = sorted(
+            path.name for path in self._hooks_source_dir().glob("*.pl") if path.is_file()
+        )
+        runtime_script_files = sorted(
+            path.name for path in runtime_scripts_dir.glob("*.pl") if path.is_file()
+        )
+        if source_script_files != runtime_script_files:
+            missing = sorted(set(source_script_files) - set(runtime_script_files))
+            unexpected = sorted(set(runtime_script_files) - set(source_script_files))
+            details: list[str] = []
+            if missing:
+                details.append(f"missing files: {', '.join(missing)}")
+            if unexpected:
+                details.append(f"unexpected files: {', '.join(unexpected)}")
+            fail(f"runtime hook scripts drift detected at {runtime_scripts_dir} ({'; '.join(details)})")
+
         checks = (
-            ("runtime hook scripts", self._hooks_source_dir(), runtime_scripts_dir),
+            ("runtime hook Perl libs", self._hooks_lib_source_dir(), runtime_lib_dir),
             ("runtime hook schemas", self._hooks_schema_source_dir(), runtime_schema_dir),
         )
         for label, source_root, runtime_root in checks:
@@ -1853,6 +1919,11 @@ class Installer:
                 fail(f"runtime hook schema is not valid JSON: {schema_path}: {exc}")
             if not isinstance(payload, dict):
                 fail(f"runtime hook schema must be a JSON object: {schema_path}")
+
+        expected_hooks_payload = self._render_hooks_config_payload()
+        actual_hooks_payload = parse_json_file(runtime_hooks_config_path)
+        if actual_hooks_payload != expected_hooks_payload:
+            fail(f"runtime hooks config drift detected at {runtime_hooks_config_path}")
 
     def _verify_lookup_assets(self) -> None:
         secrets_path = self._managed_secrets_path()
@@ -2648,7 +2719,6 @@ class Installer:
         ):
             rendered = self._append_compiled_fragment(rendered, self._render_user_fragment(path))
         rendered = self._append_compiled_fragment(rendered, self._render_home_apps_fragment())
-        rendered = self._append_compiled_fragment(rendered, self._render_home_hooks_fragment())
         rendered = self._append_compiled_fragment(
             rendered,
             self._render_user_fragment(self.repo_layout.user_policy_path),
@@ -2744,13 +2814,6 @@ class Installer:
         payload["marketplaces"] = marketplaces
         return payload
 
-    def _resolved_user_hooks_payload(self) -> dict[str, Any]:
-        return resolve_object_placeholders(
-            copy.deepcopy(self.hooks_payload),
-            self.variables,
-            "config/usr/hooks.toml",
-        )
-
     def _render_home_apps_fragment(self) -> str:
         apps_payload = self._resolved_user_apps_payload()
         home_mcp_servers = apps_payload.get("mcp_servers", {})
@@ -2772,10 +2835,6 @@ class Installer:
                     f"{server_name} does not define command or url; leaving that entry unchanged"
                 )
         return self._render_toml_document(apps_payload)
-
-    def _render_home_hooks_fragment(self) -> str:
-        hooks_payload = self._resolved_user_hooks_payload()
-        return self._render_toml_document(hooks_payload)
 
     def _rendered_text_is_current(self, path: Path, rendered: str, *, mode: int) -> bool:
         if path.exists() and not path.is_file():

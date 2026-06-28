@@ -10,27 +10,27 @@ if str(INSTALL_SRC) not in sys.path:
     sys.path.insert(0, str(INSTALL_SRC))
 
 from common import InstallError  # noqa: E402
-from common import parse_toml_file  # noqa: E402
+from common import parse_json_file  # noqa: E402
 from hooks_builder import validate_hooks_config  # noqa: E402
 from tests.hook_table_assertions import assert_expected_inline_hooks  # noqa: E402
 
 
-HOOKS_TOML_PATH = REPO_ROOT / "config" / "usr" / "hooks.toml"
+HOOKS_JSON_PATH = REPO_ROOT / "resources" / "hooks" / "hooks.json"
 HOOK_SCRIPTS_DIR = REPO_ROOT / "resources" / "hooks" / "scripts"
 
 
 def _hooks_payload() -> dict:
-    hooks_payload = parse_toml_file(HOOKS_TOML_PATH)
+    hooks_payload = parse_json_file(HOOKS_JSON_PATH)
     hooks = hooks_payload.get("hooks")
     if not isinstance(hooks, dict):
-        raise AssertionError("hooks payload is missing a hooks table")
+        raise AssertionError("hooks payload is missing a hooks object")
     return hooks
 
 
 class HookBuilderTests(unittest.TestCase):
     def test_validate_hooks_config_accepts_repo_layout(self) -> None:
         hooks = validate_hooks_config(
-            HOOKS_TOML_PATH,
+            HOOKS_JSON_PATH,
             HOOK_SCRIPTS_DIR,
             hooks_payload=_hooks_payload(),
         )
@@ -41,21 +41,21 @@ class HookBuilderTests(unittest.TestCase):
         hooks["PreToolUse"][0]["matcher"] = "^shell$"
 
         with self.assertRaisesRegex(InstallError, r"hooks\.PreToolUse\[0\]\.matcher must be"):
-            validate_hooks_config(HOOKS_TOML_PATH, HOOK_SCRIPTS_DIR, hooks_payload=hooks)
+            validate_hooks_config(HOOKS_JSON_PATH, HOOK_SCRIPTS_DIR, hooks_payload=hooks)
 
     def test_validate_hooks_config_rejects_subagent_command_drift(self) -> None:
         hooks = copy.deepcopy(_hooks_payload())
         hooks["SubagentStop"][0]["hooks"][0]["command"] = "perl ${CODEX_HOME}/hooks/scripts/subagent_stop.pl"
 
         with self.assertRaisesRegex(InstallError, r"hooks\.SubagentStop\[0\]\.hooks\[0\]\.command must be"):
-            validate_hooks_config(HOOKS_TOML_PATH, HOOK_SCRIPTS_DIR, hooks_payload=hooks)
+            validate_hooks_config(HOOKS_JSON_PATH, HOOK_SCRIPTS_DIR, hooks_payload=hooks)
 
     def test_validate_hooks_config_rejects_timeout_drift(self) -> None:
         hooks = copy.deepcopy(_hooks_payload())
         hooks["PostToolUse"][1]["hooks"][0]["timeout"] = 99
 
         with self.assertRaisesRegex(InstallError, r"hooks\.PostToolUse\[1\]\.hooks\[0\]\.timeout must be"):
-            validate_hooks_config(HOOKS_TOML_PATH, HOOK_SCRIPTS_DIR, hooks_payload=hooks)
+            validate_hooks_config(HOOKS_JSON_PATH, HOOK_SCRIPTS_DIR, hooks_payload=hooks)
 
     def test_generic_matchers_avoid_unsupported_lookaround_tokens(self) -> None:
         hooks = _hooks_payload()

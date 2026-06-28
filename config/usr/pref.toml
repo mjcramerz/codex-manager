@@ -50,4 +50,7 @@ enabled = false
 [feedback]
 enabled = false
 
-#[desktop]
+[desktop]
+# Desktop app settings are an opaque Codex-owned table in 0.142.0.
+# Keep the table present in the merged user config so machine-local desktop keys
+# can live under `[desktop]` without requiring installer changes.

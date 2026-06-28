@@ -35,6 +35,14 @@ sub _pattern_catalog {
             label => 'missing commands or dependencies',
             regex => qr/\b(?:command not found|not installed|no such file or directory|missing required command)\b/i,
         },
+        {
+            label => 'auth or network boundaries',
+            regex => qr/\b(?:401|403|forbidden|unauthorized|certificate|tls|ssl|dns|network access|connection refused|name or service not known)\b/i,
+        },
+        {
+            label => 'config or syntax failures',
+            regex => qr/\b(?:TOMLDecodeError|JSONDecodeError|invalid JSON|invalid TOML|syntax error|perl -c|py_compile|compileall)\b/i,
+        },
     );
 }
 
@@ -153,6 +161,8 @@ sub prompt_keyword_context_lines {
     }
     if ($prompt =~ /\b(?:hook|hooks|perl|transcript|memory|compact|subagent)\b/i) {
         push @lines, 'Hook work should stay schema-first: emit only fields allowed by the event output schema, and prefer transcript-driven context over generic boilerplate.';
+        push @lines, 'When describing the installed runtime, use `$CODEX_HOME/hooks.json`, `$CODEX_HOME/.hooks/scripts`, and `$CODEX_HOME/.hooks/modules` instead of repository source paths.';
+        push @lines, 'Keep hook context compact: prefer changed-file summaries, validation gaps, and one next action over broad restatements.';
     }
     if ($prompt =~ /\b(?:plugin|plugins|marketplace|skills|roles)\b/i) {
         push @lines, 'Plugin and skill work in this repo should keep runtime marketplace metadata, plugin bundle manifests, and generated `agents/openai.yaml` dependencies in sync.';

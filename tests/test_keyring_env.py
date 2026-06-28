@@ -754,7 +754,7 @@ class InstallerManagedSecretsTests(unittest.TestCase):
             root = Path(tmpdir)
             source_scripts = REPO_ROOT / "resources" / "hooks" / "scripts"
             source_schemas = REPO_ROOT / "resources" / "hooks" / "schema" / "generated"
-            runtime_scripts = root / "home" / "hooks" / "scripts"
+            runtime_scripts = root / "home" / ".hooks" / "scripts"
             runtime_schemas = root / "home" / ".hooks" / "schema" / "generated"
             shutil.copytree(source_scripts, runtime_scripts)
             shutil.copytree(source_schemas, runtime_schemas)

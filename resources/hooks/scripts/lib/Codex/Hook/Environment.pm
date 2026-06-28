@@ -62,12 +62,22 @@ sub stringify_payload_text {
     my $value = $args{value};
     return '' if !defined $value;
     return _truncate($value, $args{limit}) if !ref($value);
+    if (ref($value) eq 'ARRAY') {
+        my @parts = grep { defined($_) && !ref($_) && length _trim($_) } @{$value};
+        return _truncate(join(' ', @parts), $args{limit}) if @parts;
+    }
 
     if (ref($value) eq 'HASH') {
         my @parts;
         for my $key (qw(cmd command stdout stderr text reason stopReason message)) {
             my $item = $value->{$key};
-            next if !defined $item || ref($item) || !length _trim($item);
+            next if !defined $item;
+            if (ref($item) eq 'ARRAY') {
+                my @values = grep { defined($_) && !ref($_) && length _trim($_) } @{$item};
+                push @parts, "$key: " . join(' ', @values) if @values;
+                next;
+            }
+            next if ref($item) || !length _trim($item);
             push @parts, "$key: " . _trim($item);
         }
         if (@parts) {

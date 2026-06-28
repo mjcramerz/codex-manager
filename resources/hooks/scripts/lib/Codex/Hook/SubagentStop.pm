@@ -44,6 +44,13 @@ sub _handoff_signal_lines {
     if ($text =~ /\b(?:touched|changed|modified|files?|paths?)\b/i) {
         push @lines, '- Last assistant message appears to mention file ownership; parent should reconcile it against current git status.';
     }
+    if ($text !~ /\b(?:owned files|checks run|validation|risk|risks|follow-up|followup|blocker|blocked)\b/i) {
+        push @lines, '- Last assistant message is missing a structured handoff; parent should require owned files, checks run, and residual risks before closing the task.';
+    }
+    if ($text =~ /\b(?:done|complete|completed|finished)\b/i
+            && $text !~ /\b(?:test|tests|verify|validation|check|risk|blocker)\b/i) {
+        push @lines, '- Last assistant message claims completion without clear validation or risk detail; parent should verify the close-out evidence explicitly.';
+    }
     push @lines, '- Last assistant message preview: ' . _truncate(_trim($text), 220) if !@lines;
     return @lines;
 }

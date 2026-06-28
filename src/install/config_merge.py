@@ -61,7 +61,6 @@ def _user_fragment_paths(layout: RepoLayout) -> list[Path]:
         layout.user_features_path,
         layout.user_memory_path,
         layout.user_apps_path,
-        layout.user_hooks_path,
         layout.user_policy_path,
     ]
 

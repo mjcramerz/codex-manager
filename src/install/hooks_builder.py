@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import re
-import tomllib
 from pathlib import Path
 from typing import Any
 
 from common import fail
+from common import parse_json_file
 from hook_runtime_catalog import build_singleton_hook_groups
 from hook_runtime_catalog import build_subagent_hook_groups
 from hook_runtime_catalog import build_tool_hook_groups
@@ -86,7 +86,7 @@ SUBAGENT_MATCHER_EVENTS = frozenset({"SubagentStart", "SubagentStop"})
 MATCHER_UNSUPPORTED_EVENTS = frozenset({"UserPromptSubmit", "Stop", "PreCompact", "PostCompact"})
 GROUP_ALLOWED_KEYS = frozenset({"matcher", "hooks"})
 HANDLER_ALLOWED_KEYS = frozenset({"type", "command", "timeout", "statusMessage"})
-HOOK_SCRIPT_COMMAND_PATTERN = r"\$\{CODEX_HOME\}/hooks/scripts/([A-Za-z0-9_.-]+\.pl)\b"
+HOOK_SCRIPT_COMMAND_PATTERN = r"\$\{CODEX_HOME\}/\.hooks/scripts/([A-Za-z0-9_.-]+\.pl)\b"
 
 
 def _validate_expected_group_layout(
@@ -109,7 +109,7 @@ def _validate_expected_group_layout(
     elif matcher != expected_group.matcher:
         fail(
             f"{group_label}.matcher must be `{expected_group.matcher}` "
-            f"to keep the inline hook layout aligned with the runtime contract"
+            f"to keep the hooks.json layout aligned with the runtime contract"
         )
 
     handlers = group.get("hooks")
@@ -127,36 +127,28 @@ def _validate_expected_group_layout(
     if handler.get("command") != expected_group.handler.command:
         fail(
             f"{group_label}.hooks[0].command must be `{expected_group.handler.command}` "
-            f"to keep the inline hook layout aligned with the runtime contract"
+            f"to keep the hooks.json layout aligned with the runtime contract"
         )
     if handler.get("timeout") != expected_group.handler.timeout:
         fail(
             f"{group_label}.hooks[0].timeout must be `{expected_group.handler.timeout}` "
-            f"to keep the inline hook layout aligned with the runtime contract"
+            f"to keep the hooks.json layout aligned with the runtime contract"
         )
     if handler.get("statusMessage") != expected_group.handler.status_message:
         fail(
             f"{group_label}.hooks[0].statusMessage must be `{expected_group.handler.status_message}` "
-            f"to keep the inline hook layout aligned with the runtime contract"
+            f"to keep the hooks.json layout aligned with the runtime contract"
         )
 
 
 def _load_hooks_payload(hooks_path: Path) -> dict[str, Any]:
-    if not hooks_path.is_file():
-        fail(f"missing TOML file: {hooks_path}")
-    try:
-        payload = tomllib.loads(hooks_path.read_text(encoding="utf-8"))
-    except (OSError, tomllib.TOMLDecodeError) as exc:
-        fail(f"invalid TOML at {hooks_path}: {exc}")
-    if not isinstance(payload, dict):
-        fail(f"invalid TOML payload shape at {hooks_path}")
-    return payload
+    return parse_json_file(hooks_path)
 
 
 def _hooks_table(payload: dict[str, Any], *, path_label: str) -> dict[str, Any]:
     hooks = payload.get("hooks")
     if not isinstance(hooks, dict) or not hooks:
-        fail(f"{path_label} must define a non-empty [hooks] table")
+        fail(f"{path_label} must define a non-empty hooks object")
     missing = sorted(set(SUPPORTED_HOOK_EVENTS) - set(hooks))
     if missing:
         fail(f"{path_label} is missing supported hook events: {', '.join(missing)}")

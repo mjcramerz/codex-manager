@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "env CODEX_HOOK_PLUGIN_BUNDLE=cloudflare-agents perl ${CODEX_HOME}/.hooks/scripts/plugin_prompt_submit.pl",
+            "timeout": 10,
+            "statusMessage": "Injecting Cloudflare Agents plugin context"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -30,6 +30,23 @@ DEFAULT_PROMPT_MAX_ITEMS = 3
 INTERFACE_CAPABILITY_VALUES = {"Interactive", "Read", "Write"}
 HEX_COLOR_PATTERN = re.compile(r"^#[0-9A-Fa-f]{6}$")
 PLUGIN_SKILL_REFERENCE_PLACEHOLDER_MARKERS = ("${", "<", ">", ":fileKey", ":fileName", "{", "}")
+PLUGIN_HOOK_EVENTS = frozenset(
+    {
+        "SessionStart",
+        "UserPromptSubmit",
+        "PreCompact",
+        "PostCompact",
+        "Stop",
+        "PreToolUse",
+        "PermissionRequest",
+        "PostToolUse",
+        "SubagentStart",
+        "SubagentStop",
+    }
+)
+PLUGIN_HOOK_GROUP_ALLOWED_KEYS = frozenset({"matcher", "hooks"})
+PLUGIN_HOOK_HANDLER_ALLOWED_KEYS = frozenset({"type", "command", "commandWindows", "command_windows", "timeout", "statusMessage"})
+PLUGIN_HOOK_HOME_SCRIPT_PATTERN = re.compile(r"\$\{CODEX_HOME\}/\.hooks/scripts/([A-Za-z0-9_.-]+\.pl)\b")
 
 
 def _warn(message: str) -> None:
@@ -59,6 +76,80 @@ def plugin_skill_source_path(repo_root: Path, inventory_path: Path, skill_name: 
     if not skill_path.is_dir():
         fail(f"plugin skill source not found for {skill_name}: {skill_path}")
     return skill_path
+
+
+def plugin_hook_source_path(
+    repo_root: Path,
+    inventory_path: Path,
+    bundle_name: str,
+    hooks_file: str,
+) -> tuple[str, Path]:
+    normalized = _normalize_skill_asset_reference(hooks_file)
+    if not normalized:
+        fail(
+            f"{inventory_path} plugin.hooks for {bundle_name} must be a relative plugin path starting with ./"
+        )
+    source_root = repo_root / "resources" / "plugins" / "hooks" / bundle_name
+    source_path = (source_root / normalized).resolve(strict=False)
+    if not is_within(source_path, source_root.resolve(strict=False)):
+        fail(f"{inventory_path} plugin.hooks for {bundle_name} escapes resources/plugins/hooks/{bundle_name}")
+    if not source_path.is_file():
+        fail(f"{inventory_path} plugin.hooks source is missing for {bundle_name}: {source_path}")
+    return normalized, source_path
+
+
+def validate_plugin_hook_file(
+    repo_root: Path,
+    inventory_path: Path,
+    bundle_name: str,
+    hooks_path: Path,
+) -> None:
+    payload = parse_json_file(hooks_path)
+    hooks = payload.get("hooks")
+    if not isinstance(hooks, dict) or not hooks:
+        fail(f"{inventory_path} plugin.hooks for {bundle_name} must define a non-empty hooks object")
+
+    for event_name, groups in hooks.items():
+        if event_name not in PLUGIN_HOOK_EVENTS:
+            fail(f"{inventory_path} plugin.hooks for {bundle_name} contains unsupported event: {event_name}")
+        if not isinstance(groups, list) or not groups:
+            fail(f"{inventory_path} plugin.hooks for {bundle_name} event {event_name} must be a non-empty list")
+        for group_index, group in enumerate(groups):
+            label = f"{inventory_path} plugin.hooks for {bundle_name} {event_name}[{group_index}]"
+            if not isinstance(group, dict):
+                fail(f"{label} must be an object")
+            unknown_group_keys = sorted(set(group) - set(PLUGIN_HOOK_GROUP_ALLOWED_KEYS))
+            if unknown_group_keys:
+                fail(f"{label} contains unsupported keys: {', '.join(unknown_group_keys)}")
+            matcher = group.get("matcher")
+            if matcher is not None and (not isinstance(matcher, str) or not matcher.strip()):
+                fail(f"{label}.matcher must be a non-empty string when provided")
+            handlers = group.get("hooks")
+            if not isinstance(handlers, list) or not handlers:
+                fail(f"{label}.hooks must be a non-empty list")
+            for handler_index, handler in enumerate(handlers):
+                handler_label = f"{label}.hooks[{handler_index}]"
+                if not isinstance(handler, dict):
+                    fail(f"{handler_label} must be an object")
+                unknown_handler_keys = sorted(set(handler) - set(PLUGIN_HOOK_HANDLER_ALLOWED_KEYS))
+                if unknown_handler_keys:
+                    fail(f"{handler_label} contains unsupported keys: {', '.join(unknown_handler_keys)}")
+                if handler.get("type") != "command":
+                    fail(f"{handler_label}.type must be command")
+                command = handler.get("command")
+                if not isinstance(command, str) or not command.strip():
+                    fail(f"{handler_label}.command must be a non-empty string")
+                timeout = handler.get("timeout")
+                if timeout is not None and (not isinstance(timeout, int) or isinstance(timeout, bool) or timeout < 1 or timeout > 600):
+                    fail(f"{handler_label}.timeout must be an integer between 1 and 600")
+                status_message = handler.get("statusMessage")
+                if status_message is not None and (not isinstance(status_message, str) or not status_message.strip()):
+                    fail(f"{handler_label}.statusMessage must be a non-empty string when provided")
+                script_match = PLUGIN_HOOK_HOME_SCRIPT_PATTERN.search(command)
+                if script_match is not None:
+                    script_path = repo_root / "resources" / "hooks" / "scripts" / script_match.group(1)
+                    if not script_path.is_file():
+                        fail(f"{handler_label}.command references missing installed home hook script: {script_path}")
 
 
 def validate_plugin_skill_metadata(skill_path: Path) -> None:
@@ -487,6 +578,25 @@ def plugin_manifest_bundles(
         if enabled_only and not enabled:
             continue
 
+        hook_file = _optional_string(
+            payload.get("hooks"),
+            label=f"{plugins_metadata_path} plugin.hooks for {bundle_name}",
+        )
+        if hook_file is not None:
+            normalized_hook_file, source_hook_path = plugin_hook_source_path(
+                repo_root,
+                plugins_metadata_path,
+                bundle_name,
+                hook_file,
+            )
+            validate_plugin_hook_file(
+                repo_root,
+                plugins_metadata_path,
+                bundle_name,
+                source_hook_path,
+            )
+            hook_file = f"./{normalized_hook_file}"
+
         entries.append(
             PluginBundleSpec(
                 name=bundle_name,
@@ -523,10 +633,7 @@ def plugin_manifest_bundles(
                     author.get("url"),
                     label=f"{plugins_metadata_path} plugin.author.url for {bundle_name}",
                 ),
-                hooks_file=_optional_string(
-                    payload.get("hooks"),
-                    label=f"{plugins_metadata_path} plugin.hooks for {bundle_name}",
-                ),
+                hooks_file=hook_file,
                 display_name=display_name,
                 short_description=short_description,
                 long_description=_optional_string(
@@ -604,6 +711,17 @@ def sync_runtime_plugin_bundle(installer: Any, source_root: Path, target_root: P
     installer._mkdir_path(plugin_dir)
     runtime_skills_dir = target_root / "skills"
     installer._mkdir_path(runtime_skills_dir)
+    previous_manifest_path = plugin_dir / "plugin.json"
+    previous_hooks_path: Path | None = None
+    if previous_manifest_path.is_file():
+        try:
+            previous_manifest = json.loads(previous_manifest_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            previous_manifest = {}
+        previous_hooks = previous_manifest.get("hooks")
+        normalized_previous = _normalize_skill_asset_reference(previous_hooks) if isinstance(previous_hooks, str) else None
+        if normalized_previous:
+            previous_hooks_path = target_root / normalized_previous
 
     existing_skill_dirs = {path.name for path in runtime_skills_dir.iterdir() if path.is_dir()} if runtime_skills_dir.exists() else set()
     desired_skill_dirs = {plugin_skill_source_path(installer.repo_root, installer.plugins_json_path, skill_source).name for skill_source in bundle.skills}
@@ -624,6 +742,18 @@ def sync_runtime_plugin_bundle(installer: Any, source_root: Path, target_root: P
     )
 
     installer._write_file(plugin_dir / "plugin.json", render_runtime_plugin_manifest(bundle))
+    if bundle.hooks_file:
+        normalized_hooks_path, source_hooks_path = plugin_hook_source_path(
+            installer.repo_root,
+            installer.plugins_json_path,
+            bundle.name,
+            bundle.hooks_file,
+        )
+        if previous_hooks_path is not None and previous_hooks_path != target_root / normalized_hooks_path:
+            installer._remove_path_force(previous_hooks_path)
+        installer._copy_file(source_hooks_path, target_root / normalized_hooks_path, mode=0o644)
+    elif previous_hooks_path is not None:
+        installer._remove_path_force(previous_hooks_path)
     if bundle.mcp_servers:
         installer._write_file(target_root / ".mcp.json", render_runtime_plugin_mcp(bundle))
     else:

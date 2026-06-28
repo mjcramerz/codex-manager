@@ -30,31 +30,32 @@ sub _lines {
 
 sub _selected_role_names {
     my ($prompt) = @_;
-    my @names = ('planner');
-    push @names, 'delegator'
+    my %scores = (
+        planner => 2,
+    );
+    $scores{delegator} += 3
       if $prompt =~ /\b(?:delegate|delegation|spawn_agent|spawn_agents_on_csv|handoff|assign)\b/i;
-    push @names, 'orchestrator'
+    $scores{orchestrator} += 3
       if $prompt =~ /\b(?:orchestrat|wait_agent|resume_agent|close_agent|fanout|parallel agents?)\b/i;
-    push @names, 'analyst'
+    $scores{analyst} += 2
       if $prompt =~ /\b(?:analysis|analy[sz]e|compare|reconcile)\b/i;
-    push @names, 'synthesizer'
+    $scores{synthesizer} += 2
       if $prompt =~ /\b(?:synthes|merge|summari[sz]e|combine|converge)\b/i;
-    push @names, 'explorer'
+    $scores{explorer} += 2
       if $prompt =~ /\b(?:explore|research|investigat|survey)\b/i;
-    push @names, 'tester'
+    $scores{tester} += 2
       if $prompt =~ /\b(?:test|tests|verify|validation|check)\b/i;
-    if (@names == 1) {
-        push @names, qw(delegator orchestrator);
+
+    if (!grep { $_ > 2 } values %scores) {
+        $scores{delegator} += 1;
+        $scores{orchestrator} += 1;
     }
 
-    my @unique;
-    my %seen;
-    for my $name (@names) {
-        next if !defined $name || !length $name || $seen{$name}++;
-        push @unique, $name;
-        last if @unique >= 5;
-    }
-    return @unique;
+    my @ordered = sort {
+        $scores{$b} <=> $scores{$a}
+          || $a cmp $b
+    } grep { $scores{$_} > 0 } keys %scores;
+    return @ordered[0 .. ($#ordered < 4 ? $#ordered : 4)];
 }
 
 sub _role_catalog {

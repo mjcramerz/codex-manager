@@ -15,14 +15,25 @@ allowed_web_search_modes = ["disabled", "cached", "live"]
 enforce_residency = "us"
 
 # Feature requirements that must stay enabled in managed installs.
-#[features]
-#plugins = true
-#memories = true
-#
-# Alias accepted by the local Codex requirements loader.
-#[feature_requirements]
-#plugins = true
-#memories = true
+allow_managed_hooks_only = false
+allowed_approvals_reviewers = ["user", "auto_review"]
+
+[features]
+apps = true
+hooks = true
+plugins = true
+memories = true
+multi_agent = true
+browser_use = true
+browser_use_external = true
+computer_use = true
+in_app_browser = true
+plugin_sharing = true
+tool_suggest = true
+tool_search = true
+search_tool = true
+enable_mcp_apps = true
+skill_mcp_dependency_install = true
 
 # Identity pins for managed MCP servers.
 # Each managed MCP requirement supports exactly one identity table:
@@ -120,6 +131,128 @@ command = "$CODEX_MCP_DIR/wrappers/mcp-time-wrapper.sh"
 
 [mcp_servers.vercel.identity]
 url = "https://mcp.vercel.com"
+
+# Managed app allowlist.
+
+[apps."asdk_app_691f1f8f72408191afdbbdf8242bdf86"]
+enabled = true
+
+[apps."connector_68df038e0ba48191908c8434991bbac2"]
+enabled = true
+
+[apps."connector_690a90ec05c881918afb6a55dc9bbaa1"]
+enabled = true
+
+[apps."connector_690ab09fa43c8191bca40280e4563238"]
+enabled = true
+
+[apps."connector_69312da8e4dc81919370cb86fd172b6c"]
+enabled = true
+
+[apps."connector_6938a61c70f88191bbdca2dedb90d08b"]
+enabled = true
+
+[apps."connector_6938a7d323f48191aeabaf579802bf45"]
+enabled = true
+
+[apps."connector_947e0d954944416db111db556030eea6"]
+enabled = true
+
+[apps."github"]
+enabled = true
+
+[apps."linear"]
+enabled = true
+
+[apps."notion"]
+enabled = true
+
+# Plugin-bundled MCP allowlists.
+
+[plugins."atlassian".mcp_servers."atlassian".identity]
+url = "https://mcp.atlassian.com/v1/mcp"
+
+[plugins."backend".mcp_servers."microsoft-learn".identity]
+url = "https://learn.microsoft.com/api/mcp"
+
+[plugins."cloudflare-agents".mcp_servers."cloudflare-api".identity]
+url = "https://mcp.cloudflare.com/mcp"
+
+[plugins."cloudflare-agents".mcp_servers."cloudflare-docs".identity]
+url = "https://docs.mcp.cloudflare.com/mcp"
+
+[plugins."cloudflare-workers".mcp_servers."cloudflare-api".identity]
+url = "https://mcp.cloudflare.com/mcp"
+
+[plugins."cloudflare-workers".mcp_servers."cloudflare-bindings".identity]
+url = "https://bindings.mcp.cloudflare.com/mcp"
+
+[plugins."cloudflare-workers".mcp_servers."cloudflare-docs".identity]
+url = "https://docs.mcp.cloudflare.com/mcp"
+
+[plugins."cloudflare-workers".mcp_servers."cloudflare-observability".identity]
+url = "https://observability.mcp.cloudflare.com/mcp"
+
+[plugins."codex-repo".mcp_servers."openaiDeveloperDocs".identity]
+url = "https://developers.openai.com/mcp"
+
+[plugins."codex-runtime".mcp_servers."openaiDeveloperDocs".identity]
+url = "https://developers.openai.com/mcp"
+
+[plugins."docs-research".mcp_servers."jina-ai".identity]
+url = "https://mcp.jina.ai/v1"
+
+[plugins."docs-research".mcp_servers."microsoft-learn".identity]
+url = "https://learn.microsoft.com/api/mcp"
+
+[plugins."docs-research".mcp_servers."openaiDeveloperDocs".identity]
+url = "https://developers.openai.com/mcp"
+
+[plugins."figma".mcp_servers."figma".identity]
+url = "https://mcp.figma.com/mcp"
+
+[plugins."frontend".mcp_servers."jina-ai".identity]
+url = "https://mcp.jina.ai/v1"
+
+[plugins."hosting-platforms".mcp_servers."render".identity]
+url = "https://mcp.render.com/mcp"
+
+[plugins."hosting-platforms".mcp_servers."vercel".identity]
+url = "https://mcp.vercel.com"
+
+[plugins."huggingface".mcp_servers."huggingface".identity]
+url = "https://huggingface.co/mcp?login"
+
+[plugins."jina-ai".mcp_servers."jina-ai".identity]
+url = "https://mcp.jina.ai/v1"
+
+[plugins."microsoft-learn".mcp_servers."microsoft-learn".identity]
+url = "https://learn.microsoft.com/api/mcp"
+
+[plugins."openai-apps".mcp_servers."openaiDeveloperDocs".identity]
+url = "https://developers.openai.com/mcp"
+
+[plugins."render".mcp_servers."render".identity]
+url = "https://mcp.render.com/mcp"
+
+[plugins."stripe".mcp_servers."stripe".identity]
+url = "https://mcp.stripe.com"
+
+[plugins."vercel".mcp_servers."vercel".identity]
+url = "https://mcp.vercel.com"
+
+[plugins."winui".mcp_servers."microsoft-learn".identity]
+url = "https://learn.microsoft.com/api/mcp"
+
+[plugins."wrangler".mcp_servers."cloudflare-api".identity]
+url = "https://mcp.cloudflare.com/mcp"
+
+[plugins."wrangler".mcp_servers."cloudflare-builds".identity]
+url = "https://builds.mcp.cloudflare.com/mcp"
+
+[plugins."wrangler".mcp_servers."cloudflare-docs".identity]
+url = "https://docs.mcp.cloudflare.com/mcp"
+
 
 # Command policy rules applied by the runtime guard.
 # Supported keys:

@@ -19,6 +19,7 @@ class RepoLayout:
     home_user_dir: Path
     hooks_dir: Path
     hooks_scripts_dir: Path
+    hooks_manifest_path: Path
     instructions_dir: Path
     instructions_default_metadata_path: Path
     instructions_agents_metadata_path: Path
@@ -40,7 +41,6 @@ class RepoLayout:
     user_pref_path: Path
     user_env_path: Path
     user_apps_path: Path
-    user_hooks_path: Path
     user_policy_path: Path
 
     @classmethod
@@ -68,6 +68,7 @@ class RepoLayout:
             home_user_dir=home_dir / "user",
             hooks_dir=hooks_dir,
             hooks_scripts_dir=hooks_dir / "scripts",
+            hooks_manifest_path=hooks_dir / "hooks.json",
             instructions_dir=instructions_dir,
             instructions_default_metadata_path=instructions_dir / "default" / "metadata.json",
             instructions_agents_metadata_path=instructions_dir / "agents" / "metadata.json",
@@ -89,7 +90,6 @@ class RepoLayout:
             user_pref_path=user_dir / "pref.toml",
             user_env_path=user_dir / "env.toml",
             user_apps_path=user_dir / "apps.toml",
-            user_hooks_path=user_dir / "hooks.toml",
             user_policy_path=user_dir / "policy.toml",
         )
 
@@ -99,6 +99,7 @@ class RuntimeLayout:
     home_dir: Path
     home_config_path: Path
     hooks_dir: Path
+    hooks_config_path: Path
     agents_dir: Path
     skills_dir: Path
     system_dir: Path
@@ -119,7 +120,8 @@ class RuntimeLayout:
         return cls(
             home_dir=home_dir,
             home_config_path=home_dir / "config.toml",
-            hooks_dir=home_dir / "hooks",
+            hooks_dir=home_dir / ".hooks",
+            hooks_config_path=home_dir / "hooks.json",
             agents_dir=agents_dir,
             skills_dir=skills_dir,
             system_dir=system_dir,

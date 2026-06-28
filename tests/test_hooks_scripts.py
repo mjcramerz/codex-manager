@@ -16,23 +16,27 @@ if str(INSTALL_SRC) not in sys.path:
     sys.path.insert(0, str(INSTALL_SRC))
 
 from common import parse_toml_file
+from common import parse_json_file
 from tests.hook_table_assertions import assert_expected_inline_hooks
 
 
 def _prepare_runtime_hook_dir(tmpdir: str) -> tuple[Path, Path]:
     runtime_root = Path(tmpdir)
-    rendered_driver_path = runtime_root / "hook_driver.pl"
+    hidden_root = runtime_root / ".hooks"
+    scripts_root = hidden_root / "scripts"
+    modules_root = hidden_root / "modules"
+    rendered_driver_path = scripts_root / "hook_driver.pl"
+    scripts_root.mkdir(parents=True, exist_ok=True)
     rendered_driver_path.write_text(HOOK_DRIVER.read_text(encoding="utf-8"), encoding="utf-8")
     rendered_driver_path.chmod(0o755)
 
-    runtime_lib = runtime_root / "lib"
-    shutil.copytree(HOOK_DRIVER.parent / "lib", runtime_lib, dirs_exist_ok=True)
+    shutil.copytree(HOOK_DRIVER.parent / "lib", modules_root, dirs_exist_ok=True)
     schema_src = REPO_ROOT / "resources" / "hooks" / "schema"
-    shutil.copytree(schema_src, runtime_root / "schema", dirs_exist_ok=True)
+    shutil.copytree(schema_src, hidden_root / "schema", dirs_exist_ok=True)
     for script in (HOOK_DRIVER.parent).glob("*.pl"):
         if script.name == "hook_driver.pl":
             continue
-        target = runtime_root / script.name
+        target = scripts_root / script.name
         shutil.copy2(script, target)
         target.chmod(0o755)
     return runtime_root, rendered_driver_path
@@ -62,13 +66,29 @@ def run_hook_wrapper(wrapper_name: str, payload: dict, *, env: dict[str, str] | 
         if env:
             merged_env.update(env)
         return subprocess.run(
-            ["perl", str(runtime_root / wrapper_name)],
+            ["perl", str(runtime_root / ".hooks" / "scripts" / wrapper_name)],
             input=json.dumps(payload),
             text=True,
             capture_output=True,
             check=True,
             cwd=runtime_root,
             env=merged_env,
+        )
+
+
+def run_plugin_prompt_hook(bundle_name: str, payload: dict) -> subprocess.CompletedProcess[str]:
+    with tempfile.TemporaryDirectory() as tmpdir:
+        runtime_root, _rendered_driver_path = _prepare_runtime_hook_dir(tmpdir)
+        env = dict(os.environ)
+        env["CODEX_HOOK_PLUGIN_BUNDLE"] = bundle_name
+        return subprocess.run(
+            ["perl", str(runtime_root / ".hooks" / "scripts" / "plugin_prompt_submit.pl")],
+            input=json.dumps(payload),
+            text=True,
+            capture_output=True,
+            check=True,
+            cwd=runtime_root,
+            env=env,
         )
 
 
@@ -121,8 +141,8 @@ def make_incomplete_codex_manager_repo(tmpdir: str) -> Path:
 class HookScriptTests(unittest.TestCase):
     maxDiff = None
 
-    def test_hooks_toml_carries_full_runtime_hook_table(self) -> None:
-        payload = parse_toml_file(REPO_ROOT / "config" / "usr" / "hooks.toml")
+    def test_hooks_json_carries_full_runtime_hook_table(self) -> None:
+        payload = parse_json_file(REPO_ROOT / "resources" / "hooks" / "hooks.json")
         hooks = payload.get("hooks")
         assert_expected_inline_hooks(self, hooks)
 
@@ -323,8 +343,10 @@ class HookScriptTests(unittest.TestCase):
             payload = json.loads(result.stdout)
             context = payload["hookSpecificOutput"]["additionalContext"]
             self.assertIn("Review requests should lead with concrete findings", context)
-            self.assertIn("Hook wiring stays inline in `config/usr/apps.toml`", context)
-            self.assertIn("runtime source of truth", context)
+            self.assertIn("$CODEX_HOME/hooks.json", context)
+            self.assertIn("$CODEX_HOME/.hooks/scripts", context)
+            self.assertIn("$CODEX_HOME/.hooks/modules", context)
+            self.assertNotIn("resources/hooks/scripts/lib/Codex/Hook", context)
             self.assertIn("python3 -m compileall src tests", context)
             self.assertIn("python3 -m unittest discover -s tests", context)
 
@@ -512,6 +534,68 @@ class HookScriptTests(unittest.TestCase):
             context = payload["hookSpecificOutput"]["additionalContext"]
             self.assertIn("Debian Salsa packaging mirror", context)
             self.assertIn("`pristine-tar`, `upstream/*`, and `debian/*`", context)
+
+    def test_plugin_prompt_hook_emits_github_context_for_matching_prompt(self) -> None:
+        result = run_plugin_prompt_hook(
+            "github",
+            {
+                "cwd": ".",
+                "prompt": "Address the GitHub PR review comments and Actions failure.",
+            },
+        )
+
+        payload = json.loads(result.stdout)
+        context = payload["hookSpecificOutput"]["additionalContext"]
+        self.assertIn("GitHub plugin context:", context)
+        self.assertIn("`gh` auth", context)
+        self.assertLess(len(context), 600)
+
+    def test_plugin_prompt_hook_emits_linear_context_for_matching_prompt(self) -> None:
+        result = run_plugin_prompt_hook(
+            "linear",
+            {
+                "cwd": ".",
+                "prompt": "Update the Linear issue status and roadmap milestone for this task.",
+            },
+        )
+
+        payload = json.loads(result.stdout)
+        context = payload["hookSpecificOutput"]["additionalContext"]
+        self.assertIn("Linear plugin context:", context)
+        self.assertIn("issue", context.lower())
+
+    def test_plugin_prompt_hook_stays_silent_for_unmatched_prompt(self) -> None:
+        result = run_plugin_prompt_hook(
+            "linear",
+            {
+                "cwd": ".",
+                "prompt": "Explain the memory extraction settings.",
+            },
+        )
+
+        self.assertEqual(result.stdout.strip(), "")
+
+    def test_stop_blocks_perl_changes_without_perl_validation_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_codex_manager_repo(tmpdir)
+            write_file(
+                repo / "resources" / "hooks" / "scripts" / "lib" / "Codex" / "Hook" / "Extra.pm",
+                "package Codex::Hook::Extra;\n1;\n",
+            )
+
+            result = run_hook(
+                "stop",
+                {
+                    "cwd": str(repo),
+                    "last_assistant_message": "Updated the Perl hook module and finished the change.",
+                    "stop_hook_active": False,
+                },
+            )
+
+            payload = json.loads(result.stdout)
+            self.assertEqual(payload["decision"], "block")
+            self.assertIn("Perl changes", payload["reason"])
+            self.assertIn("perl -c <file>", payload["reason"])
 
     def test_pre_tool_use_shell_command_is_disabled(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

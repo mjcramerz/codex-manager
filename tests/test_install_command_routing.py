@@ -15,7 +15,6 @@ if str(INSTALL_SRC) not in sys.path:
 
 import codex_install  # noqa: E402
 from common import resolve_placeholders  # noqa: E402
-from tests.hook_table_assertions import assert_expected_inline_hooks  # noqa: E402
 
 
 class InstallCommandRoutingTests(unittest.TestCase):
@@ -208,7 +207,7 @@ class InstallCommandRoutingTests(unittest.TestCase):
 
 class InstallConfigToleranceTests(unittest.TestCase):
     def test_resolve_placeholders_allows_literal_regex_dollar(self) -> None:
-        rendered = resolve_placeholders("^(startup|resume|clear|compact)$", {}, "config/usr/hooks.toml.hooks.SessionStart.matcher")
+        rendered = resolve_placeholders("^(startup|resume|clear|compact)$", {}, "resources/hooks/hooks.json.hooks.SessionStart[0].matcher")
         self.assertEqual(rendered, "^(startup|resume|clear|compact)$")
 
     def test_home_bundle_keeps_plugins_hooks_and_skills(self) -> None:
@@ -232,14 +231,13 @@ class InstallConfigToleranceTests(unittest.TestCase):
         )
         self.assertEqual(parsed, {})
 
-    def test_home_config_render_merges_full_hooks_table(self) -> None:
+    def test_home_config_render_omits_inline_hooks_table(self) -> None:
         installer = codex_install.Installer.__new__(codex_install.Installer)
         installer.repo_root = REPO_ROOT
         installer.repo_layout = codex_install.RepoLayout.from_repo_root(REPO_ROOT)
         installer._warnings_emitted = set()
         installer._warn_once = lambda _message: None
         installer.plugins_payload = codex_install.parse_toml_file(installer.repo_layout.user_apps_path)
-        installer.hooks_payload = codex_install.parse_toml_file(installer.repo_layout.user_hooks_path)
 
         env = codex_install.parse_env_file(REPO_ROOT / ".env")
         vars_payload = codex_install.parse_toml_file(REPO_ROOT / "vars.toml")
@@ -260,9 +258,34 @@ class InstallConfigToleranceTests(unittest.TestCase):
             rendered = installer._render_user_config_toml("", Path(runtime_vars["CODEX_HOME"]) / "config.toml")
 
         payload = tomllib.loads(rendered)
-        hooks = payload.get("hooks")
-        assert_expected_inline_hooks(self, hooks)
+        self.assertNotIn("hooks", payload)
         self.assertNotIn("hooks", installer.plugins_payload)
+
+    def test_render_hooks_config_materializes_runtime_paths(self) -> None:
+        installer = codex_install.Installer.__new__(codex_install.Installer)
+        installer.repo_root = REPO_ROOT
+        installer.repo_layout = codex_install.RepoLayout.from_repo_root(REPO_ROOT)
+        installer.plugins_payload = codex_install.parse_toml_file(installer.repo_layout.user_apps_path)
+
+        env = codex_install.parse_env_file(REPO_ROOT / ".env")
+        vars_payload = codex_install.parse_toml_file(REPO_ROOT / "vars.toml")
+        global_vars = codex_install.parse_variable_table(
+            vars_payload,
+            path_label="vars.toml",
+            table_name="global_variables",
+            item_label="global variable",
+        )
+        runtime_vars = codex_install.derive_runtime_globals_from_env(env)
+        sqlite_home = global_vars.get("CODEX_SQLITE_HOME", "").strip()
+        if sqlite_home:
+            runtime_vars["CODEX_SQLITE_HOME"] = sqlite_home
+        installer.variables = dict(env)
+        installer.variables.update(runtime_vars)
+
+        payload = installer._render_hooks_config_payload()
+        session_start = payload["hooks"]["SessionStart"][0]["hooks"][0]["command"]
+        self.assertIn(f"perl {runtime_vars['CODEX_HOME']}/.hooks/scripts/session_start.pl", session_start)
+        self.assertNotIn("${CODEX_HOME}", session_start)
 
     def test_home_config_render_includes_local_runtime_marketplace(self) -> None:
         installer = codex_install.Installer.__new__(codex_install.Installer)
@@ -271,7 +294,6 @@ class InstallConfigToleranceTests(unittest.TestCase):
         installer._warnings_emitted = set()
         installer._warn_once = lambda _message: None
         installer.plugins_payload = codex_install.parse_toml_file(installer.repo_layout.user_apps_path)
-        installer.hooks_payload = codex_install.parse_toml_file(installer.repo_layout.user_hooks_path)
         installer.effective_plugins_metadata_payload = codex_install.effective_plugins_inventory_payload(
             codex_install.parse_json_file(installer.repo_layout.plugins_inventory_path),
             installer.repo_layout.plugins_inventory_path,
@@ -301,6 +323,36 @@ class InstallConfigToleranceTests(unittest.TestCase):
         self.assertIsInstance(marketplaces, dict)
         self.assertEqual(marketplaces["codex-local"]["source_type"], "local")
         self.assertEqual(marketplaces["codex-local"]["source"], runtime_vars["CODEX_HOME"])
+
+    def test_home_config_render_includes_explicit_desktop_table(self) -> None:
+        installer = codex_install.Installer.__new__(codex_install.Installer)
+        installer.repo_root = REPO_ROOT
+        installer.repo_layout = codex_install.RepoLayout.from_repo_root(REPO_ROOT)
+        installer._warnings_emitted = set()
+        installer._warn_once = lambda _message: None
+        installer.plugins_payload = codex_install.parse_toml_file(installer.repo_layout.user_apps_path)
+
+        env = codex_install.parse_env_file(REPO_ROOT / ".env")
+        vars_payload = codex_install.parse_toml_file(REPO_ROOT / "vars.toml")
+        global_vars = codex_install.parse_variable_table(
+            vars_payload,
+            path_label="vars.toml",
+            table_name="global_variables",
+            item_label="global variable",
+        )
+        runtime_vars = codex_install.derive_runtime_globals_from_env(env)
+        sqlite_home = global_vars.get("CODEX_SQLITE_HOME", "").strip()
+        if sqlite_home:
+            runtime_vars["CODEX_SQLITE_HOME"] = sqlite_home
+        installer.variables = dict(env)
+        installer.variables.update(runtime_vars)
+
+        with patch.object(installer, "_instruction_file_overrides", return_value={}):
+            rendered = installer._render_user_config_toml("", Path(runtime_vars["CODEX_HOME"]) / "config.toml")
+
+        payload = tomllib.loads(rendered)
+        self.assertIn("desktop", payload)
+        self.assertEqual(payload["desktop"], {})
 
     def test_instruction_override_missing_key_warns_without_blocking(self) -> None:
         installer = codex_install.Installer.__new__(codex_install.Installer)

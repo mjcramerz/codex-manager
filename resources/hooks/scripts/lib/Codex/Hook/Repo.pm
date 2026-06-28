@@ -222,7 +222,10 @@ sub preview_paths {
         push @unique, $path;
     }
     my $last = $#unique < $limit - 1 ? $#unique : $limit - 1;
-    return join(', ', @unique[0 .. $last]);
+    my $rendered = join(', ', @unique[0 .. $last]);
+    my $remaining = @unique - ($last + 1);
+    $rendered .= " (+$remaining more)" if $remaining > 0;
+    return $rendered;
 }
 
 sub has_patch_release_dir {
