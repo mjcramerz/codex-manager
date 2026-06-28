@@ -51,6 +51,21 @@ class AgentRoleContractsTests(unittest.TestCase):
             with self.subTest(path=path.name):
                 tomllib.loads(path.read_text(encoding="utf-8"))
 
+    def test_runtime_skill_roots_use_single_flat_codex_skills_path(self) -> None:
+        apps_payload = tomllib.loads(APPS_TOML_PATH.read_text(encoding="utf-8"))
+        self.assertEqual(
+            apps_payload.get("skills", {}).get("config"),
+            [{"enabled": True, "path": "${CODEX_SKILLS}"}],
+        )
+
+        for path in sorted(AGENTS_DIR.glob("*.toml")):
+            payload = tomllib.loads(path.read_text(encoding="utf-8"))
+            with self.subTest(path=path.name):
+                self.assertEqual(
+                    payload.get("skills", {}).get("config"),
+                    [{"enabled": True, "path": "${CODEX_SKILLS}"}],
+                )
+
 
 if __name__ == "__main__":
     unittest.main()

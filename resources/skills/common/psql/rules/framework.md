@@ -16,6 +16,6 @@ updated: '2026-03-11'
 # DB PSQL Framework
 
 - Skill: `psql`
-- Source of truth: `$CODEX_SKILLS/common/psql/SKILL.md`
-- Runtime agent config: `$CODEX_SKILLS/common/psql/agents/openai.yaml`
-- Supporting docs: `$CODEX_SKILLS/common/psql/references/`
+- Source of truth: `$CODEX_SKILLS/psql/SKILL.md`
+- Runtime agent config: `$CODEX_SKILLS/psql/agents/openai.yaml`
+- Supporting docs: `$CODEX_SKILLS/psql/references/`

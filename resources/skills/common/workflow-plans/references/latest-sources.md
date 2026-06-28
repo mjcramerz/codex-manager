@@ -42,8 +42,8 @@ Generate a plan for how an agent should accomplish a complex coding task. Use wh
 - Overview plan body template
 
 ## Local implementation anchors
-- `$CODEX_SKILLS/common/workflow-plans/SKILL.md`
-- `$CODEX_SKILLS/common/workflow-plans/agents/openai.yaml`
+- `$CODEX_SKILLS/workflow-plans/SKILL.md`
+- `$CODEX_SKILLS/workflow-plans/agents/openai.yaml`
 
 ## External references
 - [Project management lifecycle overview](https://www.atlassian.com/work-management/project-management/project-life-cycle) - Planning phases and execution checkpoints.

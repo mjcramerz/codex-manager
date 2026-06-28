@@ -32,8 +32,8 @@ Write robust zsh scripts, wrappers, and shell integrations.
 - References
 
 ## Local implementation anchors
-- `$CODEX_SKILLS/common/shell-zsh/SKILL.md`
-- `$CODEX_SKILLS/common/shell-zsh/agents/openai.yaml`
+- `$CODEX_SKILLS/shell-zsh/SKILL.md`
+- `$CODEX_SKILLS/shell-zsh/agents/openai.yaml`
 
 ## External references
 - [Zsh manual](https://zsh.sourceforge.io/Doc/) - Core shell semantics, options, completion, and startup behavior.

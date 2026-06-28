@@ -30,8 +30,8 @@ Write portable POSIX/BusyBox sh scripts with safe defaults.
 - References
 
 ## Local implementation anchors
-- `$CODEX_SKILLS/common/shell-sh/SKILL.md`
-- `$CODEX_SKILLS/common/shell-sh/agents/openai.yaml`
+- `$CODEX_SKILLS/shell-sh/SKILL.md`
+- `$CODEX_SKILLS/shell-sh/agents/openai.yaml`
 
 ## External references
 - [POSIX Shell Command Language](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html) - Portable shell behavior requirements.

@@ -12,5 +12,5 @@ updated: '2026-03-12'
 
 - Skill: `mcp-integration-audit`
 - Category: `AUDIT`
-- Source of truth: `$CODEX_SKILLS/audit/mcp-integration-audit/SKILL.md`
-- Runtime agent config: `$CODEX_SKILLS/audit/mcp-integration-audit/agents/openai.yaml`
+- Source of truth: `$CODEX_SKILLS/mcp-integration-audit/SKILL.md`
+- Runtime agent config: `$CODEX_SKILLS/mcp-integration-audit/agents/openai.yaml`

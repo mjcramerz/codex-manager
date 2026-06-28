@@ -16,6 +16,6 @@ updated: '2026-03-11'
 # DB Redis CLI Framework
 
 - Skill: `redis-cli`
-- Source of truth: `$CODEX_SKILLS/common/redis-cli/SKILL.md`
-- Runtime agent config: `$CODEX_SKILLS/common/redis-cli/agents/openai.yaml`
-- Supporting docs: `$CODEX_SKILLS/common/redis-cli/references/`
+- Source of truth: `$CODEX_SKILLS/redis-cli/SKILL.md`
+- Runtime agent config: `$CODEX_SKILLS/redis-cli/agents/openai.yaml`
+- Supporting docs: `$CODEX_SKILLS/redis-cli/references/`

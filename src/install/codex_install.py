@@ -116,6 +116,7 @@ from skills import render_dependency_block
 from skills import iter_skill_groups
 from skills import rewrite_openai_yaml_dependencies
 from skills import role_tools_from_skills
+from skills import runtime_skill_roles_by_dirname
 from skills import validate_openai_yaml_mcp_dependencies
 from source_build import SourceBuildError
 from source_build import build_from_settings
@@ -780,6 +781,11 @@ class Installer:
         if self.runtime_layout is not None:
             return self.runtime_layout.plugin_marketplace_dir
         return self._runtime_home_dir() / ".agents" / "plugins"
+
+    def _runtime_agent_skills_path(self) -> Path:
+        if self.runtime_layout is not None:
+            return self.runtime_layout.agent_skills_path
+        return self._runtime_home_dir() / ".agents" / "skills"
 
     def _runtime_plugin_marketplace_path(self) -> Path:
         if self.runtime_layout is not None:
@@ -1501,16 +1507,77 @@ class Installer:
         system_skills_root = normalize_path(self.env["CODEX_SYSTEM_DIR"]) / "skills"
         return is_within(normalize_path(str(target)), system_skills_root)
 
+    def _skill_dependency_blocks_by_runtime_dir(self) -> dict[str, str]:
+        mcp_servers = self.mcp_payload.get("mcp_servers", {})
+        if not isinstance(mcp_servers, dict):
+            fail("vendor MCP payload is missing mcp_servers")
+
+        dependency_blocks: dict[str, str] = {}
+        for runtime_dirname, role_name in runtime_skill_roles_by_dirname(self.skills_payload).items():
+            role_tools = role_tools_from_skills(self.skills_payload, role_name)
+            dependency_blocks[runtime_dirname] = render_dependency_block(role_tools, mcp_servers)
+        return dependency_blocks
+
+    def _rewrite_installed_skill_dependencies(
+        self,
+        target: Path,
+        dependency_blocks: dict[str, str],
+        *,
+        skip_missing: bool = False,
+    ) -> None:
+        if not target.is_dir():
+            if skip_missing or self.dry_run:
+                print(f"[dry-run] skip dependency rewrite for missing target {target}")
+                return
+            fail(f"group target directory missing for dependency rewrite: {target}")
+
+        for child in sorted(target.iterdir()):
+            if not child.is_dir():
+                continue
+            dependency_block = dependency_blocks.get(child.name)
+            if dependency_block is None:
+                fail(f"installed skill directory has no metadata role mapping: {child}")
+            openai_yaml = child / "agents" / "openai.yaml"
+            if openai_yaml.is_file():
+                rewrite_openai_yaml_dependencies(
+                    openai_yaml,
+                    dependency_block,
+                    self.dry_run,
+                    write_file=lambda path, content: self._write_text_preserving_mode(path, content),
+                )
+
+    def _sync_agent_skills_symlink(self) -> None:
+        skills_root = Path(self.runtime_vars["CODEX_SKILLS"])
+        link_path = self._runtime_agent_skills_path()
+
+        self._mkdir_path(skills_root)
+        self._mkdir_path(link_path.parent)
+
+        if link_path.is_symlink():
+            if link_path.resolve(strict=False) == skills_root.resolve(strict=False):
+                return
+            self._remove_path_force(link_path)
+        elif link_path.exists():
+            self._remove_path_force(link_path)
+
+        if self.dry_run:
+            print(f"[dry-run] ln -s {skills_root} {link_path}")
+            return
+
+        if self._needs_sudo_write(link_path.parent):
+            self._run_with_sudo(["ln", "-sfn", str(skills_root), str(link_path)])
+            return
+
+        link_path.symlink_to(skills_root, target_is_directory=True)
+
     def _sync_skill_groups(self, *, user_only: bool = False, system_only: bool = False) -> None:
         if user_only and system_only:
             fail("skill group sync cannot be both user_only and system_only")
         groups = iter_skill_groups(self.skills_payload)
-        mcp_servers = self.mcp_payload.get("mcp_servers", {})
+        dependency_blocks = self._skill_dependency_blocks_by_runtime_dir()
         for group in groups:
             if not bool(group.get("enabled", True)):
                 continue
-            role_name = str(group.get("role", "")).strip()
-            role_tools = role_tools_from_skills(self.skills_payload, role_name)
             target = self._resolve_group_target_path(group)
             if user_only and not self._is_user_skill_target(target):
                 continue
@@ -1518,25 +1585,7 @@ class Installer:
                 continue
             source = self._resolve_group_source_path(group)
             self._sync_tree(source, target, mirror_deletions=True)
-
-            dependency_block = render_dependency_block(role_tools, mcp_servers)
-            if not target.is_dir():
-                if self.dry_run:
-                    print(f"[dry-run] skip dependency rewrite for missing target {target}")
-                    continue
-                fail(f"group target directory missing after sync: {target}")
-
-            for child in sorted(target.iterdir()):
-                if not child.is_dir():
-                    continue
-                openai_yaml = child / "agents" / "openai.yaml"
-                if openai_yaml.is_file():
-                    rewrite_openai_yaml_dependencies(
-                        openai_yaml,
-                        dependency_block,
-                        self.dry_run,
-                        write_file=lambda path, content: self._write_text_preserving_mode(path, content),
-                    )
+            self._rewrite_installed_skill_dependencies(target, dependency_blocks)
 
     def _rewrite_skill_group_dependencies_only(
         self,
@@ -1548,35 +1597,16 @@ class Installer:
         if user_only and system_only:
             fail("dependency rewrite cannot be both user_only and system_only")
         groups = iter_skill_groups(self.skills_payload)
-        mcp_servers = self.mcp_payload.get("mcp_servers", {})
+        dependency_blocks = self._skill_dependency_blocks_by_runtime_dir()
         for group in groups:
             if not bool(group.get("enabled", True)):
                 continue
-            role_name = str(group.get("role", "")).strip()
-            role_tools = role_tools_from_skills(self.skills_payload, role_name)
             target = self._resolve_group_target_path(group)
             if user_only and not self._is_user_skill_target(target):
                 continue
             if system_only and not self._is_system_skill_target(target):
                 continue
-            dependency_block = render_dependency_block(role_tools, mcp_servers)
-            if not target.is_dir():
-                if skip_missing or self.dry_run:
-                    print(f"[dry-run] skip dependency rewrite for missing target {target}")
-                    continue
-                fail(f"group target directory missing for dependency rewrite: {target}")
-
-            for child in sorted(target.iterdir()):
-                if not child.is_dir():
-                    continue
-                openai_yaml = child / "agents" / "openai.yaml"
-                if openai_yaml.is_file():
-                    rewrite_openai_yaml_dependencies(
-                        openai_yaml,
-                        dependency_block,
-                        self.dry_run,
-                        write_file=lambda path, content: self._write_text_preserving_mode(path, content),
-                    )
+            self._rewrite_installed_skill_dependencies(target, dependency_blocks, skip_missing=skip_missing)
 
     def _sync_instruction_assets(self) -> None:
         self._sync_tree_filtered(
@@ -3253,6 +3283,8 @@ class Installer:
         self._materialize_profile_config_paths(source_dir=profiles_src)
         self._log("rendering CODEX_AGENTS/*.toml with runtime paths")
         self._materialize_agent_config_paths(source_dir=agents_src)
+        self._log("linking CODEX_HOME/.agents/skills to CODEX_SKILLS")
+        self._sync_agent_skills_symlink()
 
     def apply_home_bundle(self) -> None:
         self.apply_home()
@@ -3291,6 +3323,8 @@ class Installer:
         self._mkdir_path(Path(self.runtime_vars["CODEX_SKILLS"]))
         self._log("syncing user skill groups")
         self._sync_skill_groups(user_only=True)
+        self._log("linking CODEX_HOME/.agents/skills to CODEX_SKILLS")
+        self._sync_agent_skills_symlink()
 
     def apply_apps(self) -> None:
         self._log("validating comprehensive plugin inventory")

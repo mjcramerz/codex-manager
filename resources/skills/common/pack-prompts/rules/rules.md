@@ -15,6 +15,6 @@ updated: '2026-02-20'
 # PACK-Prompts Rules
 
 ## Required checks
-- Follow the workflow in `$CODEX_SKILLS/common/pack-prompts/SKILL.md`.
-- Prefer deterministic scripts in `$CODEX_SKILLS/common/pack-prompts/scripts/`.
-- Use references in `$CODEX_SKILLS/common/pack-prompts/references/` for factual guidance.
+- Follow the workflow in `$CODEX_SKILLS/pack-prompts/SKILL.md`.
+- Prefer deterministic scripts in `$CODEX_SKILLS/pack-prompts/scripts/`.
+- Use references in `$CODEX_SKILLS/pack-prompts/references/` for factual guidance.

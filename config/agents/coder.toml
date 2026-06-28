@@ -17,7 +17,7 @@ developer_instructions = """1) Follow $CODEX_HOME/AGENTS.md, then $CODEX_HOME/me
 
 [skills]
 config = [
-  { path = "${CODEX_SKILLS}/common", enabled = true },
+  { path = "${CODEX_SKILLS}", enabled = true },
 ]
 
 [skills.bundled]

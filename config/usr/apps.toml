@@ -8,8 +8,7 @@ open_world_enabled = true
 # skills
 [skills]
 config = [
-  { enabled = true, path = "${CODEX_SKILLS}/common" },
-  { enabled = true, path = "${CODEX_SKILLS}/audit" },
+  { enabled = true, path = "${CODEX_SKILLS}" },
 ]
 include_instructions = true
 

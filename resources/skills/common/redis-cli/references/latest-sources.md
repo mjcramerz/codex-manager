@@ -31,9 +31,9 @@ Inspect and operate Redis safely with the redis-cli shell.
 - References
 
 ## Local implementation anchors
-- `$CODEX_SKILLS/common/redis-cli/SKILL.md`
-- `$CODEX_SKILLS/common/redis-cli/agents/openai.yaml`
-- `$CODEX_SKILLS/common/redis-cli/references/command-catalog.md`
+- `$CODEX_SKILLS/redis-cli/SKILL.md`
+- `$CODEX_SKILLS/redis-cli/agents/openai.yaml`
+- `$CODEX_SKILLS/redis-cli/references/command-catalog.md`
 
 ## External references
 - [redis-cli documentation](https://redis.io/docs/latest/develop/tools/cli/) - Connection flags, shell modes, and diagnostics.

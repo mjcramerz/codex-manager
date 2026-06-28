@@ -223,6 +223,26 @@ class InstallConfigToleranceTests(unittest.TestCase):
         apply_apps.assert_called_once_with()
         apply_skills.assert_called_once_with()
 
+    def test_sync_agent_skills_symlink_points_home_agents_to_runtime_skills(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            home_dir = Path(tmpdir) / "home"
+            skills_dir = Path(tmpdir) / "skills"
+
+            installer = codex_install.Installer.__new__(codex_install.Installer)
+            installer.dry_run = False
+            installer.runtime_layout = None
+            installer.runtime_vars = {
+                "CODEX_HOME": str(home_dir),
+                "CODEX_SKILLS": str(skills_dir),
+            }
+            installer._needs_sudo_write = lambda _path: False
+
+            codex_install.Installer._sync_agent_skills_symlink(installer)
+
+            link_path = home_dir / ".agents" / "skills"
+            self.assertTrue(link_path.is_symlink())
+            self.assertEqual(link_path.resolve(strict=False), skills_dir.resolve(strict=False))
+
     def test_parse_launch_env_table_allows_missing_table(self) -> None:
         parsed = codex_install.parse_launch_env_table(
             {},

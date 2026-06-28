@@ -15,6 +15,6 @@ updated: '2026-06-03'
 # Shell Zsh Rules
 
 ## Required checks
-- Follow the workflow in `$CODEX_SKILLS/common/shell-zsh/SKILL.md`.
-- Prefer deterministic scripts in `$CODEX_SKILLS/common/shell-zsh/scripts/`.
-- Use references in `$CODEX_SKILLS/common/shell-zsh/references/` for factual guidance.
+- Follow the workflow in `$CODEX_SKILLS/shell-zsh/SKILL.md`.
+- Prefer deterministic scripts in `$CODEX_SKILLS/shell-zsh/scripts/`.
+- Use references in `$CODEX_SKILLS/shell-zsh/references/` for factual guidance.

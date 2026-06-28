@@ -32,8 +32,8 @@ Create or update execpolicy rules and guidance under $CODEX_HOME/rules/. Use whe
 - References
 
 ## Local implementation anchors
-- `$CODEX_SKILLS/common/pack-rules/SKILL.md`
-- `$CODEX_SKILLS/common/pack-rules/agents/openai.yaml`
+- `$CODEX_SKILLS/pack-rules/SKILL.md`
+- `$CODEX_SKILLS/pack-rules/agents/openai.yaml`
 
 ## External references
 - [YAML 1.2 specification](https://yaml.org/spec/1.2.2/) - Manifest syntax and deterministic formatting rules.

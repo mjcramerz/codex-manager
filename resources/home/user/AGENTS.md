@@ -51,8 +51,10 @@ This contract applies to `$CODEX_HOME` and every child path unless a deeper `AGE
 - You must inspect the current branch before mutating a repository.
 - You must treat branches named `gitlab/*` and `github/*` as fork or mirror branches that are read-only by default.
 - You must not make direct code edits on those fork or mirror branches.
-- You must treat `mcr/main` as the only writable branch for the restricted fork workflow described here.
-- When you are on `mcr/main`, you may edit only the following repository-root surfaces unless a deeper repo contract explicitly grants more:
+- If a repository contains either `gitlab/mcr/main` or `github/mcr/main`, you must treat that repository as using the restricted mirror workflow described here.
+- In that restricted mirror workflow, `mcr/main` is the only writable branch, and it is writable only through the repository-root allowlist below unless a deeper repo contract explicitly grants more.
+- A repository that does not contain `gitlab/mcr/main` or `github/mcr/main` is not subject to this restricted `mcr/main` allowlist rule.
+- When you are on `mcr/main` in a repository that contains `gitlab/mcr/main` or `github/mcr/main`, you may edit only the following repository-root surfaces unless a deeper repo contract explicitly grants more:
   - `AGENTS.override.md`
   - `.gitlab-ci.yml`
   - `.cirrus.yml`
@@ -72,7 +74,7 @@ This contract applies to `$CODEX_HOME` and every child path unless a deeper `AGE
   - `.bazelignore`
   - `.bazelrc`
   - `bazel/*`
-- If the user asks for code changes outside that allowlist while you are on a fork or mirror workflow, you must stop, explain the boundary, and require a writable branch or repo contract before continuing.
+- If the user asks for code changes outside that allowlist while you are on `mcr/main` in a repository that contains `gitlab/mcr/main` or `github/mcr/main`, you must stop, explain the boundary, and require a writable branch or repo contract before continuing.
 
 ## Debian packaging rule
 - If a repository root contains `debian/`, you must treat that repository as a Debian package source tree.

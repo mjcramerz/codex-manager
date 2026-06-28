@@ -31,9 +31,9 @@ Inspect, query, and maintain SQLite databases safely with the sqlite3 CLI.
 - References
 
 ## Local implementation anchors
-- `$CODEX_SKILLS/common/sqlite3/SKILL.md`
-- `$CODEX_SKILLS/common/sqlite3/agents/openai.yaml`
-- `$CODEX_SKILLS/common/sqlite3/references/command-catalog.md`
+- `$CODEX_SKILLS/sqlite3/SKILL.md`
+- `$CODEX_SKILLS/sqlite3/agents/openai.yaml`
+- `$CODEX_SKILLS/sqlite3/references/command-catalog.md`
 
 ## External references
 - [SQLite Command Line Shell](https://sqlite.org/cli.html) - Authoritative sqlite3 shell flags, dot commands, and import/export behavior.

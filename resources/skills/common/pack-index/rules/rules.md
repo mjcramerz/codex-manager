@@ -15,6 +15,6 @@ updated: '2026-02-20'
 # PACK-Index Rules
 
 ## Required checks
-- Follow the workflow in `$CODEX_SKILLS/common/pack-index/SKILL.md`.
-- Prefer deterministic scripts in `$CODEX_SKILLS/common/pack-index/scripts/`.
-- Use references in `$CODEX_SKILLS/common/pack-index/references/` for factual guidance.
+- Follow the workflow in `$CODEX_SKILLS/pack-index/SKILL.md`.
+- Prefer deterministic scripts in `$CODEX_SKILLS/pack-index/scripts/`.
+- Use references in `$CODEX_SKILLS/pack-index/references/` for factual guidance.

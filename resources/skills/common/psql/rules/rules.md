@@ -15,8 +15,8 @@ updated: '2026-03-11'
 # DB PSQL Rules
 
 ## Required checks
-- Follow the workflow in `$CODEX_SKILLS/common/psql/SKILL.md`.
-- Prefer deterministic scripts in `$CODEX_SKILLS/common/psql/scripts/`.
-- Use references in `$CODEX_SKILLS/common/psql/references/` for factual guidance.
+- Follow the workflow in `$CODEX_SKILLS/psql/SKILL.md`.
+- Prefer deterministic scripts in `$CODEX_SKILLS/psql/scripts/`.
+- Use references in `$CODEX_SKILLS/psql/references/` for factual guidance.
 - Prefer `psql -X` and `ON_ERROR_STOP` for non-interactive commands.
 - Apply timeouts and transaction boundaries before exploratory writes.

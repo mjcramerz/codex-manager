@@ -83,6 +83,8 @@ class RuntimeReferenceContractTests(unittest.TestCase):
             "$CODEX_HOME/skills/",
             "$CODEX_SKILLS/GIT/",
             "$CODEX_SKILLS/NOTE/",
+            "$CODEX_SKILLS/common/",
+            "$CODEX_SKILLS/audit/",
         )
         offenders = []
         for root in roots:

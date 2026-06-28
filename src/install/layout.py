@@ -101,6 +101,7 @@ class RuntimeLayout:
     hooks_dir: Path
     hooks_config_path: Path
     agents_dir: Path
+    agent_skills_path: Path
     skills_dir: Path
     system_dir: Path
     system_config_path: Path
@@ -123,6 +124,7 @@ class RuntimeLayout:
             hooks_dir=home_dir / ".hooks",
             hooks_config_path=home_dir / "hooks.json",
             agents_dir=agents_dir,
+            agent_skills_path=home_dir / ".agents" / "skills",
             skills_dir=skills_dir,
             system_dir=system_dir,
             system_config_path=system_dir / "config.toml",

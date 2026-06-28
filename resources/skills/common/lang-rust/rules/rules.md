@@ -15,6 +15,6 @@ updated: '2026-02-20'
 # LANG-Rust Rules
 
 ## Required checks
-- Follow the workflow in `$CODEX_SKILLS/common/lang-rust/SKILL.md`.
-- Prefer deterministic scripts in `$CODEX_SKILLS/common/lang-rust/scripts/`.
-- Use references in `$CODEX_SKILLS/common/lang-rust/references/` for factual guidance.
+- Follow the workflow in `$CODEX_SKILLS/lang-rust/SKILL.md`.
+- Prefer deterministic scripts in `$CODEX_SKILLS/lang-rust/scripts/`.
+- Use references in `$CODEX_SKILLS/lang-rust/references/` for factual guidance.

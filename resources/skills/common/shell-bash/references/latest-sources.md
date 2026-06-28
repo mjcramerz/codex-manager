@@ -37,8 +37,8 @@ Write production-grade Bash: strict mode, safe subprocess usage, portability, ro
 - References in this pack
 
 ## Local implementation anchors
-- `$CODEX_SKILLS/common/shell-bash/SKILL.md`
-- `$CODEX_SKILLS/common/shell-bash/agents/openai.yaml`
+- `$CODEX_SKILLS/shell-bash/SKILL.md`
+- `$CODEX_SKILLS/shell-bash/agents/openai.yaml`
 
 ## External references
 - [GNU Bash manual](https://man7.org/linux/man-pages/man1/bash.1.html) - Bash scripting semantics and safety notes.

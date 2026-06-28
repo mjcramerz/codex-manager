@@ -64,7 +64,7 @@ interface:
 - Long examples stay in `references/`, not the main body.
 
 ## Validation commands
-- `python3 "$CODEX_SKILLS/common/pack-skills/scripts/package_skill.py" <path/to/skill>` (optional packaging flow)
+- `python3 "$CODEX_SKILLS/pack-skills/scripts/package_skill.py" <path/to/skill>` (optional packaging flow)
 
 ## Agent orchestration
 - Delegate only read-only audits (section consistency, trigger-drift checks).

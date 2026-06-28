@@ -12,5 +12,5 @@ updated: '2026-03-12'
 
 - Skill: `cli-design`
 - Category: `COMMON`
-- Source of truth: `$CODEX_SKILLS/common/cli-design/SKILL.md`
-- Runtime agent config: `$CODEX_SKILLS/common/cli-design/agents/openai.yaml`
+- Source of truth: `$CODEX_SKILLS/cli-design/SKILL.md`
+- Runtime agent config: `$CODEX_SKILLS/cli-design/agents/openai.yaml`

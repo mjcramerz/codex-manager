@@ -16,6 +16,6 @@ updated: '2026-02-20'
 # PACK-Snippets Framework
 
 - Skill: `pack-snippets`
-- Source of truth: `$CODEX_SKILLS/common/pack-snippets/SKILL.md`
-- Runtime agent config: `$CODEX_SKILLS/common/pack-snippets/agents/openai.yaml`
-- Supporting docs: `$CODEX_SKILLS/common/pack-snippets/references/`
+- Source of truth: `$CODEX_SKILLS/pack-snippets/SKILL.md`
+- Runtime agent config: `$CODEX_SKILLS/pack-snippets/agents/openai.yaml`
+- Supporting docs: `$CODEX_SKILLS/pack-snippets/references/`

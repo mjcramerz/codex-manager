@@ -40,30 +40,17 @@
   },
   "groups": [
     {
-      "name": "user_common",
+      "name": "user_skills",
       "namespace": "common",
       "role": "common",
-      "runtime_path": "${CODEX_SKILLS}/common",
+      "runtime_path": "${CODEX_SKILLS}",
+      "source_path": "common",
       "enabled": true,
-      "short_description": "Common runtime skills available to the default coding profile.",
-      "default_prompt": "Use the common runtime skill set for general coding tasks.",
+      "short_description": "Runtime skills installed into the shared user skills root.",
+      "default_prompt": "Use the installed runtime skill set for coding, review, and investigation tasks.",
       "interface": {
-        "display_name": "User Common",
-        "short_description": "Common runtime skills."
-      },
-      "scope": "user"
-    },
-    {
-      "name": "user_audit",
-      "namespace": "audit",
-      "role": "audit",
-      "runtime_path": "${CODEX_SKILLS}/audit",
-      "enabled": true,
-      "short_description": "Read-heavy audit skills available to review-focused roles.",
-      "default_prompt": "Use the audit runtime skill set for review and investigation tasks.",
-      "interface": {
-        "display_name": "User Audit",
-        "short_description": "Audit-focused runtime skills."
+        "display_name": "User Skills",
+        "short_description": "Shared user runtime skills."
       },
       "scope": "user"
     }
@@ -75,14 +62,14 @@
         "count": 7,
         "role": "audit",
         "groups": [
-          "user_audit"
+          "user_skills"
         ]
       },
       "common": {
         "count": 26,
         "role": "common",
         "groups": [
-          "user_common"
+          "user_skills"
         ]
       }
     }
@@ -94,14 +81,14 @@
         "namespace": "audit",
         "role": "audit",
         "groups": [
-          "user_audit"
+          "user_skills"
         ],
         "description": "Audit config fragments, merge order, placeholder materialization, and policy drift with concrete risk calls and validation follow-up. Use when the user asks to review config layout, runtime overlays, or managed configuration contracts.",
-        "skill_path": "audit/config-audit",
-        "skill_file": "audit/config-audit/SKILL.md",
-        "metadata_file": "audit/config-audit/metadata.json",
-        "agent_file": "audit/config-audit/agents/openai.yaml",
-        "references_file": "audit/config-audit/references/latest-sources.md",
+        "skill_path": "common/config-audit",
+        "skill_file": "common/config-audit/SKILL.md",
+        "metadata_file": "common/config-audit/metadata.json",
+        "agent_file": "common/config-audit/agents/openai.yaml",
+        "references_file": "common/config-audit/references/latest-sources.md",
         "short_description": "Audit config merge order, placeholders, and policy drift",
         "default_prompt": "Act as the \"AUDIT-Config\" specialist for \"Audit config merge order, placeholders, and policy drift\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
         "tags": [
@@ -140,14 +127,14 @@
         "namespace": "audit",
         "role": "audit",
         "groups": [
-          "user_audit"
+          "user_skills"
         ],
         "description": "Review dependency surfaces for upgrade risk, auth coupling, supply-chain exposure, and missing pinning or verification steps. Use when the user asks for dependency audits, risk summaries, or release hardening reviews.",
-        "skill_path": "audit/dependency-risk-review",
-        "skill_file": "audit/dependency-risk-review/SKILL.md",
-        "metadata_file": "audit/dependency-risk-review/metadata.json",
-        "agent_file": "audit/dependency-risk-review/agents/openai.yaml",
-        "references_file": "audit/dependency-risk-review/references/latest-sources.md",
+        "skill_path": "common/dependency-risk-review",
+        "skill_file": "common/dependency-risk-review/SKILL.md",
+        "metadata_file": "common/dependency-risk-review/metadata.json",
+        "agent_file": "common/dependency-risk-review/agents/openai.yaml",
+        "references_file": "common/dependency-risk-review/references/latest-sources.md",
         "short_description": "Audit dependency risk, pinning, and supply-chain exposure",
         "default_prompt": "Act as the \"AUDIT-Dependency Risk\" specialist for \"Audit dependency risk, pinning, and supply-chain exposure\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
         "tags": [
@@ -187,14 +174,14 @@
         "namespace": "audit",
         "role": "audit",
         "groups": [
-          "user_audit"
+          "user_skills"
         ],
         "description": "Review startup, resume, and stop hooks for schema compliance, blocking behavior, repo-context quality, and validation-gate correctness. Use when the user asks to audit hook UX, guardrails, or lifecycle automation.",
-        "skill_path": "audit/hook-behavior-audit",
-        "skill_file": "audit/hook-behavior-audit/SKILL.md",
-        "metadata_file": "audit/hook-behavior-audit/metadata.json",
-        "agent_file": "audit/hook-behavior-audit/agents/openai.yaml",
-        "references_file": "audit/hook-behavior-audit/references/latest-sources.md",
+        "skill_path": "common/hook-behavior-audit",
+        "skill_file": "common/hook-behavior-audit/SKILL.md",
+        "metadata_file": "common/hook-behavior-audit/metadata.json",
+        "agent_file": "common/hook-behavior-audit/agents/openai.yaml",
+        "references_file": "common/hook-behavior-audit/references/latest-sources.md",
         "short_description": "Audit startup/resume/stop hooks and lifecycle guardrails",
         "default_prompt": "Act as the \"AUDIT-Hook Behavior\" specialist for \"Audit startup/resume/stop hooks and lifecycle guardrails\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
         "tags": [
@@ -233,14 +220,14 @@
         "namespace": "audit",
         "role": "audit",
         "groups": [
-          "user_audit"
+          "user_skills"
         ],
         "description": "Review install, home-sync, admin, upgrade, and cleanup flows for regressions, permission boundaries, and preserved-state drift. Use when the user asks for installer audits or rollout safety reviews.",
-        "skill_path": "audit/installer-regression-audit",
-        "skill_file": "audit/installer-regression-audit/SKILL.md",
-        "metadata_file": "audit/installer-regression-audit/metadata.json",
-        "agent_file": "audit/installer-regression-audit/agents/openai.yaml",
-        "references_file": "audit/installer-regression-audit/references/latest-sources.md",
+        "skill_path": "common/installer-regression-audit",
+        "skill_file": "common/installer-regression-audit/SKILL.md",
+        "metadata_file": "common/installer-regression-audit/metadata.json",
+        "agent_file": "common/installer-regression-audit/agents/openai.yaml",
+        "references_file": "common/installer-regression-audit/references/latest-sources.md",
         "short_description": "Audit installer flows for regressions and permission drift",
         "default_prompt": "Act as the \"AUDIT-Installer Regression\" specialist for \"Audit installer flows for regressions and permission drift\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
         "tags": [
@@ -279,14 +266,14 @@
         "namespace": "audit",
         "role": "audit",
         "groups": [
-          "user_audit"
+          "user_skills"
         ],
         "description": "Audit MCP server coverage, auth behavior, timeout settings, dependency wiring, and plugin/skill binding correctness. Use when the user asks to review MCP integrations, remote server definitions, or tool exposure policies.",
-        "skill_path": "audit/mcp-integration-audit",
-        "skill_file": "audit/mcp-integration-audit/SKILL.md",
-        "metadata_file": "audit/mcp-integration-audit/metadata.json",
-        "agent_file": "audit/mcp-integration-audit/agents/openai.yaml",
-        "references_file": "audit/mcp-integration-audit/references/latest-sources.md",
+        "skill_path": "common/mcp-integration-audit",
+        "skill_file": "common/mcp-integration-audit/SKILL.md",
+        "metadata_file": "common/mcp-integration-audit/metadata.json",
+        "agent_file": "common/mcp-integration-audit/agents/openai.yaml",
+        "references_file": "common/mcp-integration-audit/references/latest-sources.md",
         "short_description": "Audit MCP auth, timeouts, and dependency wiring",
         "default_prompt": "Act as the \"AUDIT-MCP Integration\" specialist for \"Audit MCP auth, timeouts, and dependency wiring\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
         "tags": [
@@ -325,14 +312,14 @@
         "namespace": "audit",
         "role": "audit",
         "groups": [
-          "user_audit"
+          "user_skills"
         ],
         "description": "Perform high-rigor code review focused on correctness, regressions, security, performance, and test coverage. Use when the user asks for a review, audit, risk assessment, or PR quality gate.",
-        "skill_path": "audit/quality-code-review",
-        "skill_file": "audit/quality-code-review/SKILL.md",
-        "metadata_file": "audit/quality-code-review/metadata.json",
-        "agent_file": "audit/quality-code-review/agents/openai.yaml",
-        "references_file": "audit/quality-code-review/references/latest-sources.md",
+        "skill_path": "common/quality-code-review",
+        "skill_file": "common/quality-code-review/SKILL.md",
+        "metadata_file": "common/quality-code-review/metadata.json",
+        "agent_file": "common/quality-code-review/agents/openai.yaml",
+        "references_file": "common/quality-code-review/references/latest-sources.md",
         "short_description": "High-rigor code review skill: intent alignment, correctness, security, performance, and reproducibility checks with actionable output",
         "default_prompt": "Act as the \"QUALITY-Code Review\" specialist for \"High-rigor code review skill: intent alignment, correctness, security, performance, and reproducibility checks with actionable output\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
         "tags": [
@@ -373,14 +360,14 @@
         "namespace": "audit",
         "role": "audit",
         "groups": [
-          "user_audit"
+          "user_skills"
         ],
         "description": "Audit skill metadata, routing coverage, namespace structure, and plugin bundle assignments for drift or missing capability coverage. Use when the user asks to review skill catalogs, plugin manifests, or routing quality.",
-        "skill_path": "audit/skill-catalog-audit",
-        "skill_file": "audit/skill-catalog-audit/SKILL.md",
-        "metadata_file": "audit/skill-catalog-audit/metadata.json",
-        "agent_file": "audit/skill-catalog-audit/agents/openai.yaml",
-        "references_file": "audit/skill-catalog-audit/references/latest-sources.md",
+        "skill_path": "common/skill-catalog-audit",
+        "skill_file": "common/skill-catalog-audit/SKILL.md",
+        "metadata_file": "common/skill-catalog-audit/metadata.json",
+        "agent_file": "common/skill-catalog-audit/agents/openai.yaml",
+        "references_file": "common/skill-catalog-audit/references/latest-sources.md",
         "short_description": "Audit skill metadata, routing coverage, and bundle mapping",
         "default_prompt": "Act as the \"AUDIT-Skill Catalog\" specialist for \"Audit skill metadata, routing coverage, and bundle mapping\". Deliver focused, deterministic results with minimal, reviewable changes and explicit assumptions. Validate untrusted inputs and bounded I/O, run the narrowest relevant checks, and report concrete actions, evidence, and residual risks.",
         "tags": [
@@ -421,7 +408,7 @@
         "namespace": "common",
         "role": "common",
         "groups": [
-          "user_common"
+          "user_skills"
         ],
         "description": "Decompose multi-agent coding work into owned slices, reconcile findings, and manage validation handoff without duplicating effort. Use when tasks need parallel explorers, workers, or staged integration.",
         "skill_path": "common/agent-orchestration",
@@ -467,7 +454,7 @@
         "namespace": "common",
         "role": "common",
         "groups": [
-          "user_common"
+          "user_skills"
         ],
         "description": "Design and refactor CLI commands, flags, subcommands, help text, and exit-code semantics with deterministic contracts. Use when the user asks for command-line UX, parser refactors, or safer automation interfaces.",
         "skill_path": "common/cli-design",
@@ -514,7 +501,7 @@
         "namespace": "common",
         "role": "common",
         "groups": [
-          "user_common"
+          "user_skills"
         ],
         "description": "Edit and validate JSON, YAML, and TOML with schema-aware, minimal-diff changes and deterministic formatting decisions. Use when the task centers on structured config, manifests, metadata catalogs, or payload transformation.",
         "skill_path": "common/data-json",
@@ -562,7 +549,7 @@
         "namespace": "common",
         "role": "common",
         "groups": [
-          "user_common"
+          "user_skills"
         ],
         "description": "Build and maintain Go modules with idiomatic structure, dependency management, testing, and secure defaults. Use when the user asks for Go implementation, refactoring, or module/tooling fixes.",
         "skill_path": "common/lang-go",
@@ -607,7 +594,7 @@
         "namespace": "common",
         "role": "common",
         "groups": [
-          "user_common"
+          "user_skills"
         ],
         "description": "Build Perl modules, hook handlers, and deterministic CLI helpers with strict validation and testing guidance.",
         "skill_path": "common/lang-perl",
@@ -654,7 +641,7 @@
         "namespace": "common",
         "role": "common",
         "groups": [
-          "user_common"
+          "user_skills"
         ],
         "description": "Build and refactor Python modules, CLIs, automation, and packaging with typing, testing, and safe I/O defaults. Use when the user asks for Python implementation, refactoring, packaging, or runtime-automation changes.",
         "skill_path": "common/lang-python",
@@ -701,7 +688,7 @@
         "namespace": "common",
         "role": "common",
         "groups": [
-          "user_common"
+          "user_skills"
         ],
         "description": "Build Rust workspaces with cargo fmt, clippy, locked builds, and targeted test guidance.",
         "skill_path": "common/lang-rust",
@@ -748,7 +735,7 @@
         "namespace": "common",
         "role": "common",
         "groups": [
-          "user_common"
+          "user_skills"
         ],
         "description": "Implement and refactor TypeScript projects with strict typing, tsconfig hygiene, and safe build defaults. Use when the user asks for TypeScript code, type errors, or project configuration changes.",
         "skill_path": "common/lang-typescript",
@@ -793,7 +780,7 @@
         "namespace": "common",
         "role": "common",
         "groups": [
-          "user_common"
+          "user_skills"
         ],
         "description": "Create or update pack documentation and workflows under $CODEX_HOME/docs/. Use when adding new guides, updating doc indexes, or aligning docs with prompts, templates, and skills.",
         "skill_path": "common/pack-docs",
@@ -839,7 +826,7 @@
         "namespace": "common",
         "role": "common",
         "groups": [
-          "user_common"
+          "user_skills"
         ],
         "description": "Maintain and update the pack routing index, including $CODEX_HOME/index/manifest.yml, $CODEX_HOME/index/ entrypoints, and generated $CODEX_HOME/INDEX.md. Use when adding/removing entrypoints, updating related links, or regenerating index artifacts.",
         "skill_path": "common/pack-index",
@@ -885,7 +872,7 @@
         "namespace": "common",
         "role": "common",
         "groups": [
-          "user_common"
+          "user_skills"
         ],
         "description": "Create or update runtime prompt assets under $CODEX_HOME/.prompt/. Use when refining prompt contracts, adding operator-local prompt files, or improving prompt-maintenance assets.",
         "skill_path": "common/pack-prompts",
@@ -930,7 +917,7 @@
         "namespace": "common",
         "role": "common",
         "groups": [
-          "user_common"
+          "user_skills"
         ],
         "description": "Create or update execpolicy rules and guidance under $CODEX_HOME/rules/. Use when adding new rule files, adjusting ordering, or updating execpolicy documentation and index links.",
         "skill_path": "common/pack-rules",
@@ -976,7 +963,7 @@
         "namespace": "common",
         "role": "common",
         "groups": [
-          "user_common"
+          "user_skills"
         ],
         "description": "Create or update Codex skills (SKILL.md, metadata, triggers, and bundled resources) with pack-compliant structure. Use when the user asks to add a new skill, tune skill triggering, or improve skill assets/scripts/references.",
         "skill_path": "common/pack-skills",
@@ -1022,7 +1009,7 @@
         "namespace": "common",
         "role": "common",
         "groups": [
-          "user_common"
+          "user_skills"
         ],
         "description": "Create or update hardened snippets under $CODEX_HOME/snippets/. Use when adding reusable patterns, updating snippet catalogs, or wiring snippets into docs and indexes.",
         "skill_path": "common/pack-snippets",
@@ -1067,7 +1054,7 @@
         "namespace": "common",
         "role": "common",
         "groups": [
-          "user_common"
+          "user_skills"
         ],
         "description": "Create or update pack templates under $CODEX_HOME/templates/. Use when adding scaffolds, adjusting template READMEs, or wiring template references into docs and indexes.",
         "skill_path": "common/pack-templates",
@@ -1112,7 +1099,7 @@
         "namespace": "common",
         "role": "common",
         "groups": [
-          "user_common"
+          "user_skills"
         ],
         "description": "Design and refactor parsers, tokenizers, grammars, AST transforms, and syntax-error handling with explicit contracts and bounded input handling. Use when the user asks about parsing, grammar changes, query languages, or text-to-structure conversion.",
         "skill_path": "common/parser-design",
@@ -1160,7 +1147,7 @@
         "namespace": "common",
         "role": "common",
         "groups": [
-          "user_common"
+          "user_skills"
         ],
         "description": "Inspect, query, and maintain PostgreSQL databases safely with the `psql` CLI. Use when the task involves schema inspection, bounded reporting, transaction-safe migrations, or planner analysis.",
         "skill_path": "common/psql",
@@ -1208,7 +1195,7 @@
         "namespace": "common",
         "role": "common",
         "groups": [
-          "user_common"
+          "user_skills"
         ],
         "description": "Inspect and operate Redis safely with the `redis-cli` shell. Use when the task involves keyspace inspection, TTL analysis, operational checks, or bounded remediation against Redis instances.",
         "skill_path": "common/redis-cli",
@@ -1256,7 +1243,7 @@
         "namespace": "common",
         "role": "common",
         "groups": [
-          "user_common"
+          "user_skills"
         ],
         "description": "Implement repository automation in Bash for safe git operations, release scripts, and CI helper tooling. Use when the user asks for shell-based repo ops, automation scripts, or release hygiene tasks.",
         "skill_path": "common/repo-bash-ops",
@@ -1305,7 +1292,7 @@
         "namespace": "common",
         "role": "common",
         "groups": [
-          "user_common"
+          "user_skills"
         ],
         "description": "Plan and implement safe repository operations, git automation, release workflows, and CI helper tooling with deterministic contracts. Use when the user asks for repo automation, release hygiene, branch promotion, or tooling that touches git state.",
         "skill_path": "common/repo-ops",
@@ -1355,7 +1342,7 @@
         "namespace": "common",
         "role": "common",
         "groups": [
-          "user_common"
+          "user_skills"
         ],
         "description": "Write production-grade Bash scripts using Bash-specific features (arrays, [[ tests ]], pipefail) with robust error handling. Use when the runtime is Bash and the user needs Bash-focused automation or hardening.",
         "skill_path": "common/shell-bash",
@@ -1402,7 +1389,7 @@
         "namespace": "common",
         "role": "common",
         "groups": [
-          "user_common"
+          "user_skills"
         ],
         "description": "Write portable POSIX sh scripts that run correctly under `/bin/sh`, `dash`, and BusyBox `ash`. Use when portability and minimal shell assumptions matter.",
         "skill_path": "common/shell-sh",
@@ -1449,7 +1436,7 @@
         "namespace": "common",
         "role": "common",
         "groups": [
-          "user_common"
+          "user_skills"
         ],
         "description": "Write and review zsh-specific shell code, wrappers, and runtime integrations. Use when the confirmed runtime is zsh or when wrapper semantics, completion behavior, globbing, or zsh startup files matter.",
         "skill_path": "common/shell-zsh",
@@ -1496,7 +1483,7 @@
         "namespace": "common",
         "role": "common",
         "groups": [
-          "user_common"
+          "user_skills"
         ],
         "description": "Inspect, query, and maintain SQLite databases safely with the `sqlite3` CLI. Use when the task involves local database files, schema analysis, ad hoc reporting, or transaction-safe maintenance.",
         "skill_path": "common/sqlite3",
@@ -1544,7 +1531,7 @@
         "namespace": "common",
         "role": "common",
         "groups": [
-          "user_common"
+          "user_skills"
         ],
         "description": "Choose narrow, risk-based verification plans and turn code changes into targeted tests, sanity checks, and regression coverage. Use when the task is ambiguous, high-impact, or needs a concrete validation plan before editing.",
         "skill_path": "common/test-strategy",
@@ -1591,7 +1578,7 @@
         "namespace": "common",
         "role": "common",
         "groups": [
-          "user_common"
+          "user_skills"
         ],
         "description": "Generate concise execution plans for multi-step or ambiguous engineering tasks with milestones, risks, and validation checkpoints. Use when the user asks for a plan, roadmap, or phased implementation strategy.",
         "skill_path": "common/workflow-plans",

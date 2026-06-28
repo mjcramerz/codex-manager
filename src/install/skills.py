@@ -29,6 +29,48 @@ def iter_skill_groups(skills_payload: dict[str, Any]) -> list[dict[str, Any]]:
     return [group for group in groups if isinstance(group, dict)]
 
 
+def iter_skill_entries(skills_payload: dict[str, Any]) -> list[dict[str, Any]]:
+    skills = skills_payload.get("skills")
+    if not isinstance(skills, dict) or not skills:
+        fail(f"{SKILLS_MANIFEST_LABEL} missing skills definitions")
+
+    entries: list[dict[str, Any]] = []
+    for namespace, namespace_entries in skills.items():
+        if not isinstance(namespace, str) or not namespace.strip():
+            fail(f"{SKILLS_MANIFEST_LABEL} contains invalid skills namespace")
+        if not isinstance(namespace_entries, list):
+            fail(f"{SKILLS_MANIFEST_LABEL} skills.{namespace} must be a list")
+        for entry in namespace_entries:
+            if not isinstance(entry, dict):
+                fail(f"{SKILLS_MANIFEST_LABEL} skills.{namespace} entries must be objects")
+            entries.append(entry)
+    return entries
+
+
+def runtime_skill_roles_by_dirname(skills_payload: dict[str, Any]) -> dict[str, str]:
+    role_map: dict[str, str] = {}
+    for entry in iter_skill_entries(skills_payload):
+        raw_skill_path = entry.get("skill_path")
+        if not isinstance(raw_skill_path, str) or not raw_skill_path.strip():
+            fail(f"{SKILLS_MANIFEST_LABEL} skill entry missing skill_path: {entry}")
+        runtime_dirname = Path(raw_skill_path.strip()).name
+        if not runtime_dirname:
+            fail(f"{SKILLS_MANIFEST_LABEL} skill entry has invalid skill_path: {raw_skill_path}")
+
+        role_name = str(entry.get("role", "")).strip()
+        if not role_name:
+            fail(f"{SKILLS_MANIFEST_LABEL} skill entry missing role: {entry}")
+
+        previous_role = role_map.get(runtime_dirname)
+        if previous_role is not None and previous_role != role_name:
+            fail(
+                f"{SKILLS_MANIFEST_LABEL} maps runtime skill directory {runtime_dirname} "
+                f"to multiple roles ({previous_role}, {role_name})"
+            )
+        role_map[runtime_dirname] = role_name
+    return role_map
+
+
 def role_tools_from_skills(skills_payload: dict[str, Any], role_name: str) -> list[str]:
     role_table = skills_payload.get("roles")
     if not isinstance(role_table, dict):

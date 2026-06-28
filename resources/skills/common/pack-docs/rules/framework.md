@@ -16,6 +16,6 @@ updated: '2026-02-20'
 # PACK-Docs Framework
 
 - Skill: `pack-docs`
-- Source of truth: `$CODEX_SKILLS/common/pack-docs/SKILL.md`
-- Runtime agent config: `$CODEX_SKILLS/common/pack-docs/agents/openai.yaml`
-- Supporting docs: `$CODEX_SKILLS/common/pack-docs/references/`
+- Source of truth: `$CODEX_SKILLS/pack-docs/SKILL.md`
+- Runtime agent config: `$CODEX_SKILLS/pack-docs/agents/openai.yaml`
+- Supporting docs: `$CODEX_SKILLS/pack-docs/references/`

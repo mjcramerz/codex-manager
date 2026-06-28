@@ -15,6 +15,6 @@ updated: '2026-02-20'
 # Quality Code Review Framework
 
 - Skill: `quality-code-review`
-- Source of truth: `$CODEX_SKILLS/audit/quality-code-review/SKILL.md`
-- Runtime agent config: `$CODEX_SKILLS/audit/quality-code-review/agents/openai.yaml`
-- Supporting docs: `$CODEX_SKILLS/audit/quality-code-review/references/`
+- Source of truth: `$CODEX_SKILLS/quality-code-review/SKILL.md`
+- Runtime agent config: `$CODEX_SKILLS/quality-code-review/agents/openai.yaml`
+- Supporting docs: `$CODEX_SKILLS/quality-code-review/references/`

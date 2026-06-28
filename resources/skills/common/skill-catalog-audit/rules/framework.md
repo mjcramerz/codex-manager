@@ -12,5 +12,5 @@ updated: '2026-03-12'
 
 - Skill: `skill-catalog-audit`
 - Category: `AUDIT`
-- Source of truth: `$CODEX_SKILLS/audit/skill-catalog-audit/SKILL.md`
-- Runtime agent config: `$CODEX_SKILLS/audit/skill-catalog-audit/agents/openai.yaml`
+- Source of truth: `$CODEX_SKILLS/skill-catalog-audit/SKILL.md`
+- Runtime agent config: `$CODEX_SKILLS/skill-catalog-audit/agents/openai.yaml`

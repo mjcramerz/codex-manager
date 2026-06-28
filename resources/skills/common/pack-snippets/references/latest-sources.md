@@ -30,8 +30,8 @@ Create or update hardened snippets under $CODEX_HOME/snippets/. Use when adding 
 - References
 
 ## Local implementation anchors
-- `$CODEX_SKILLS/common/pack-snippets/SKILL.md`
-- `$CODEX_SKILLS/common/pack-snippets/agents/openai.yaml`
+- `$CODEX_SKILLS/pack-snippets/SKILL.md`
+- `$CODEX_SKILLS/pack-snippets/agents/openai.yaml`
 
 ## External references
 - [YAML 1.2 specification](https://yaml.org/spec/1.2.2/) - Manifest syntax and deterministic formatting rules.

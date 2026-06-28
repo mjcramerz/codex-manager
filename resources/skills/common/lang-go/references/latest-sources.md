@@ -30,8 +30,8 @@ Build Go modules with safe defaults and testing guidance.
 - References
 
 ## Local implementation anchors
-- `$CODEX_SKILLS/common/lang-go/SKILL.md`
-- `$CODEX_SKILLS/common/lang-go/agents/openai.yaml`
+- `$CODEX_SKILLS/lang-go/SKILL.md`
+- `$CODEX_SKILLS/lang-go/agents/openai.yaml`
 
 ## External references
 - [Go documentation](https://go.dev/doc/) - Go language and toolchain references.

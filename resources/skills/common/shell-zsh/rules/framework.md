@@ -16,6 +16,6 @@ updated: '2026-06-03'
 # Shell Zsh Framework
 
 - Skill: `shell-zsh`
-- Source of truth: `$CODEX_SKILLS/common/shell-zsh/SKILL.md`
-- Runtime agent config: `$CODEX_SKILLS/common/shell-zsh/agents/openai.yaml`
-- Supporting docs: `$CODEX_SKILLS/common/shell-zsh/references/`
+- Source of truth: `$CODEX_SKILLS/shell-zsh/SKILL.md`
+- Runtime agent config: `$CODEX_SKILLS/shell-zsh/agents/openai.yaml`
+- Supporting docs: `$CODEX_SKILLS/shell-zsh/references/`

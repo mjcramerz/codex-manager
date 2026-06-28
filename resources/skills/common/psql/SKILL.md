@@ -61,5 +61,5 @@ interface:
 
 ## References
 - `$CODEX_HOME/UNIX.md`
-- `$CODEX_SKILLS/common/psql/references/latest-sources.md`
-- `$CODEX_SKILLS/common/psql/references/command-catalog.md`
+- `$CODEX_SKILLS/psql/references/latest-sources.md`
+- `$CODEX_SKILLS/psql/references/command-catalog.md`

@@ -16,6 +16,6 @@ updated: '2026-02-20'
 # PACK-Skills Framework
 
 - Skill: `pack-skills`
-- Source of truth: `$CODEX_SKILLS/common/pack-skills/SKILL.md`
-- Runtime agent config: `$CODEX_SKILLS/common/pack-skills/agents/openai.yaml`
-- Supporting docs: `$CODEX_SKILLS/common/pack-skills/references/`
+- Source of truth: `$CODEX_SKILLS/pack-skills/SKILL.md`
+- Runtime agent config: `$CODEX_SKILLS/pack-skills/agents/openai.yaml`
+- Supporting docs: `$CODEX_SKILLS/pack-skills/references/`

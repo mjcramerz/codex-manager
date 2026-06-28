@@ -30,8 +30,8 @@ Create or update pack documentation and workflows under $CODEX_HOME/docs/. Use w
 - References
 
 ## Local implementation anchors
-- `$CODEX_SKILLS/common/pack-docs/SKILL.md`
-- `$CODEX_SKILLS/common/pack-docs/agents/openai.yaml`
+- `$CODEX_SKILLS/pack-docs/SKILL.md`
+- `$CODEX_SKILLS/pack-docs/agents/openai.yaml`
 
 ## External references
 - [YAML 1.2 specification](https://yaml.org/spec/1.2.2/) - Manifest syntax and deterministic formatting rules.

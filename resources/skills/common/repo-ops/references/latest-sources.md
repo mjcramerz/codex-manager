@@ -32,8 +32,8 @@ Repo operations workflow safety across git automation, branch promotion, release
 - References
 
 ## Local implementation anchors
-- `$CODEX_SKILLS/common/repo-ops/SKILL.md`
-- `$CODEX_SKILLS/common/repo-ops/agents/openai.yaml`
+- `$CODEX_SKILLS/repo-ops/SKILL.md`
+- `$CODEX_SKILLS/repo-ops/agents/openai.yaml`
 
 ## External references
 - [Git documentation](https://git-scm.com/doc) - Core git behavior and safe workflows.

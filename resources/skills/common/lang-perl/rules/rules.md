@@ -15,6 +15,6 @@ updated: '2026-02-20'
 # LANG-Perl Rules
 
 ## Required checks
-- Follow the workflow in `$CODEX_SKILLS/common/lang-perl/SKILL.md`.
-- Prefer deterministic scripts in `$CODEX_SKILLS/common/lang-perl/scripts/`.
-- Use references in `$CODEX_SKILLS/common/lang-perl/references/` for factual guidance.
+- Follow the workflow in `$CODEX_SKILLS/lang-perl/SKILL.md`.
+- Prefer deterministic scripts in `$CODEX_SKILLS/lang-perl/scripts/`.
+- Use references in `$CODEX_SKILLS/lang-perl/references/` for factual guidance.
