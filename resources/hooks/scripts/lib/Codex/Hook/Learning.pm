@@ -13,6 +13,14 @@ our @EXPORT_OK = qw(
   transcript_summary_lines
 );
 
+sub _truncate_line {
+    my ($text, $limit) = @_;
+    $text = '' if !defined $text;
+    $limit = 240 if !defined $limit || $limit !~ /\A[0-9]+\z/ || $limit < 1;
+    return $text if length($text) <= $limit;
+    return substr($text, 0, $limit - 3) . '...';
+}
+
 sub _pattern_catalog {
     return (
         {
@@ -70,16 +78,21 @@ sub _match_counts {
 }
 
 sub _warning_lines {
-    my ($text) = @_;
+    my (%args) = @_;
+    my $text = $args{text};
     return () if !defined $text || !length $text;
+    my $max_lines = $args{max_lines};
+    my $max_chars = $args{max_chars};
 
     my @lines;
     my %seen;
     for my $line (split /\n/, $text) {
         my $trimmed = _sanitize_warning_line($line);
         next if !length $trimmed;
+        $trimmed = _truncate_line($trimmed, $max_chars);
         next if $seen{$trimmed}++;
         push @lines, $trimmed;
+        last if defined $max_lines && $max_lines =~ /\A[0-9]+\z/ && $max_lines > 0 && @lines >= $max_lines;
     }
     return @lines;
 }
@@ -112,12 +125,16 @@ sub transcript_summary_lines {
     my @lines;
     my @counts = _match_counts($text);
     if (@counts) {
-        push @lines, join(
+        push @lines, 'Signal counts: ' . join(
             ', ',
             map { "$_->{label} x$_->{count}" } @counts
         );
     }
-    push @lines, map { "Recent warning: $_" } _warning_lines($text);
+    push @lines, map { "Representative warning: $_" } _warning_lines(
+        text      => $text,
+        max_lines => 3,
+        max_chars => 220,
+    );
     return @lines;
 }
 
@@ -140,7 +157,11 @@ sub tool_response_summary_lines {
     if ($text =~ /\b(?:shellcheck|ruff|mypy|eslint|clippy|taplo|yamllint)\b/i) {
         push @lines, 'Tool output contains lint or static-analysis signals; tighten the next step to the reported file and line before widening scope.';
     }
-    push @lines, map { "Observed: $_" } _warning_lines($text);
+    push @lines, map { "Observed: $_" } _warning_lines(
+        text      => $text,
+        max_lines => 5,
+        max_chars => 220,
+    );
     return @lines;
 }
 

@@ -300,9 +300,9 @@ print JSON::PP::encode_json(\@lines);
 '''
             proc = run_perl(code, str(transcript_path))
             payload = json.loads(proc.stdout)
-            warning_lines = [line for line in payload if line.startswith("Recent warning: ")]
-            self.assertEqual(len(warning_lines), 4)
-            self.assertTrue(any("END" in line for line in warning_lines))
+            warning_lines = [line for line in payload if line.startswith("Representative warning: ")]
+            self.assertEqual(len(warning_lines), 3)
+            self.assertNotIn(long_warning, "\n".join(payload))
 
     def test_repo_reuses_cached_git_calls_within_one_process(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

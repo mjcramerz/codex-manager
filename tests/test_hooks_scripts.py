@@ -171,7 +171,38 @@ class HookScriptTests(unittest.TestCase):
             payload = json.loads(result.stdout)
             context = payload["hookSpecificOutput"]["additionalContext"]
             self.assertIn("Active hook runtime profiles: `codex-manager`", context)
+            self.assertIn("Installed hook runtime:", context)
+            self.assertIn("Hook pack context:", context)
             self.assertIn("Repo role: Codex installer and runtime-configuration source tree.", context)
+            self.assertIn("$CODEX_HOME/hooks.json", context)
+            self.assertIn("$CODEX_HOME/.hooks/scripts", context)
+            self.assertIn("$CODEX_HOME/.hooks/modules", context)
+            self.assertIn("resources/skills/metadata.json", context)
+            self.assertIn("resources/plugins/manifest.json", context)
+
+    def test_session_start_surfaces_hook_changed_area_and_worktree_summary_on_startup(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_codex_manager_repo(tmpdir)
+            write_file(
+                repo / "resources" / "hooks" / "scripts" / "lib" / "Codex" / "Hook" / "Extra.pm",
+                "package Codex::Hook::Extra;\n1;\n",
+            )
+
+            result = run_hook(
+                "session-start",
+                {
+                    "cwd": str(repo),
+                    "source": "startup",
+                },
+            )
+
+            payload = json.loads(result.stdout)
+            context = payload["hookSpecificOutput"]["additionalContext"]
+            self.assertIn("Worktree state:", context)
+            self.assertIn("Changed areas:", context)
+            self.assertIn("`hooks`", context)
+            self.assertIn("Worktree summary:", context)
+            self.assertIn("Changed files preview:", context)
 
     def test_session_start_requires_full_match_contract_for_repo_profile(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -347,8 +378,30 @@ class HookScriptTests(unittest.TestCase):
             self.assertIn("$CODEX_HOME/.hooks/scripts", context)
             self.assertIn("$CODEX_HOME/.hooks/modules", context)
             self.assertNotIn("resources/hooks/scripts/lib/Codex/Hook", context)
+            self.assertIn("resources/hooks/hooks.json", context)
             self.assertIn("python3 -m compileall src tests", context)
             self.assertIn("python3 -m unittest discover -s tests", context)
+
+    def test_user_prompt_submit_routes_skill_and_plugin_dependency_work(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo = make_codex_manager_repo(tmpdir)
+
+            result = run_hook(
+                "user-prompt-submit",
+                {
+                    "cwd": str(repo),
+                    "prompt": "Fix plugin skill availability and keep dependencies.tools aligned for bundled skills.",
+                },
+            )
+
+            payload = json.loads(result.stdout)
+            context = payload["hookSpecificOutput"]["additionalContext"]
+            self.assertIn("src/install/skills.py", context)
+            self.assertIn("src/install/apps_config.py", context)
+            self.assertIn("src/install/plugins.py", context)
+            self.assertIn("resources/skills/metadata.json", context)
+            self.assertIn("resources/plugins/manifest.json", context)
+            self.assertIn("agents/openai.yaml", context)
 
     def test_user_prompt_submit_includes_shared_multi_agent_guidance(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -401,8 +454,14 @@ class HookScriptTests(unittest.TestCase):
 
             payload = json.loads(result.stdout)
             context = payload["hookSpecificOutput"]["additionalContext"]
-            self.assertGreater(len(context), 1800)
-            self.assertIn("Warning: " + ("x" * 8000), context)
+            self.assertIn("Resume transcript signals:", context)
+            self.assertIn("Hook pack context:", context)
+            self.assertIn("Resume scope:", context)
+            self.assertGreater(len(context), 400)
+            self.assertNotIn(giant_warning, context)
+            self.assertIn("Signal counts:", context)
+            self.assertIn("Representative warning: Warning:", context)
+            self.assertLess(len(context), 1800)
             self.assertNotIn("Additional hook context omitted for brevity", context)
 
     def test_subagent_start_coordination_wrapper_includes_role_profile_context(self) -> None:

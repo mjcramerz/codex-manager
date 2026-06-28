@@ -106,6 +106,21 @@ sub _join_sections {
     return join("\n\n", @rendered_sections);
 }
 
+sub _section {
+    my ($header, @lines) = @_;
+    return undef if !defined $header || !length $header;
+    my @rendered;
+    for my $line (@lines) {
+        next if !defined $line;
+        my $trimmed = $line;
+        $trimmed =~ s/^\s+|\s+$//g;
+        next if !length $trimmed;
+        push @rendered, ($trimmed =~ /^-\s+/ ? $trimmed : "- $trimmed");
+    }
+    return undef if !@rendered;
+    return join("\n", $header, @rendered);
+}
+
 sub _format_item_list {
     my ($items, $limit) = @_;
     return '' if ref($items) ne 'ARRAY' || !@{$items};
@@ -347,52 +362,54 @@ sub _session_start_context {
         runtime_hooks_config_path => '$CODEX_HOME/hooks.json',
     );
 
-    my @summary = (
-        "Repository context for `$values{repo_name}`:",
-        "- Repo root: `$repo_root`",
-        "- Current branch: `$current`",
+    my @repo_lines = (
+        "Repo root: `$repo_root`",
+        "Current branch: `$current`",
     );
-    push @summary, "- Root instructions: follow the repo-root `AGENTS.md`, plus any deeper `AGENTS.md` files under touched paths."
+    push @repo_lines, "Root instructions: follow the repo-root `AGENTS.md`, plus any deeper `AGENTS.md` files under touched paths."
       if -f "$repo_root/AGENTS.md";
-    push @summary, '- Active hook runtime profiles: `' . join(', ', @profile_ids) . '` from the installed Perl hook runtime.'
+    push @repo_lines, 'Active hook runtime profiles: `' . join(', ', @profile_ids) . '` from the installed Perl hook runtime.'
       if @profile_ids;
-    push @summary, "- Mirror refs detected (`github/*` or `gitlab/*`). Treat those branches as read-only mirrors and true-sync `mcr/main` from `" . ($mirror_main || 'github/mcr/main or gitlab/mcr/main') . "`, then `mcr/staging` from `mcr/main`, then `mcr/release` from `mcr/staging`, preserving only protected paths."
+    push @repo_lines, "Mirror refs detected (`github/*` or `gitlab/*`). Treat those branches as read-only mirrors and true-sync `mcr/main` from `" . ($mirror_main || 'github/mcr/main or gitlab/mcr/main') . "`, then `mcr/staging` from `mcr/main`, then `mcr/release` from `mcr/staging`, preserving only protected paths."
       if @mirror_refs;
-    push @summary, '- Debian Salsa packaging mirror detected (`gitlab/*` + `pristine-tar`). Preserve packaging refs such as `pristine-tar`, `upstream/*`, and `debian/*` for rebuild/import workflows.'
+    push @repo_lines, 'Debian Salsa packaging mirror detected (`gitlab/*` + `pristine-tar`). Preserve packaging refs such as `pristine-tar`, `upstream/*`, and `debian/*` for rebuild/import workflows.'
       if $has_salsa_packaging;
-    push @summary, "- Packaging refs preview: `" . preview_paths(\@packaging_refs) . "`"
+    push @repo_lines, "Packaging refs preview: `" . preview_paths(\@packaging_refs) . "`"
       if $has_salsa_packaging && @packaging_refs;
-    push @summary, "- Current branch `$current` is a read-only mirror branch."
+    push @repo_lines, "Current branch `$current` is a read-only mirror branch."
       if $current =~ m{\A(?:github|gitlab)/};
-    push @summary, "- `patches/release/` exists. Keep local patch work check-only with commands such as `git apply --check`, `scripts/release/check_release_patches.sh HEAD`, `git mcr-fork-check`, or `git mcr-fork-test`."
+    push @repo_lines, "`patches/release/` exists. Keep local patch work check-only with commands such as `git apply --check`, `scripts/release/check_release_patches.sh HEAD`, `git mcr-fork-check`, or `git mcr-fork-test`."
       if has_patch_release_dir($repo_root);
-    if (@changed_areas) {
-        push @summary, "- Current changed areas:";
-        push @summary, map { "- `$_`" } @changed_areas;
-    }
+    my @runtime_lines = (
+        "Config: `$values{runtime_hooks_config_path}`",
+        "Entrypoints: `$values{runtime_hooks_dir}/scripts`",
+        "Modules: `$values{runtime_hooks_modules_dir}`",
+    );
+    my @worktree_lines;
+    push @worktree_lines, 'Changed areas: `' . join('`, `', @changed_areas) . '`.' if @changed_areas;
     my @environment_lines = _environment_lines($environment);
-    push @summary, @environment_lines if @environment_lines;
-    if (($payload->{source} // '') eq 'resume' && @changed_files) {
+    if (@changed_files && (($payload->{source} // '') eq 'resume' || @changed_areas)) {
         my @bits;
         for my $label (qw(staged unstaged untracked deleted renamed conflicts)) {
             my $value = int($worktree->{$label} // 0);
             push @bits, "$label=$value" if $value > 0;
         }
-        push @summary, "- Worktree summary: " . join(', ', @bits) if @bits;
+        push @worktree_lines, 'Worktree summary: ' . join(', ', @bits) if @bits;
         if (ref($worktree->{preview}) eq 'ARRAY' && @{$worktree->{preview}}) {
-            push @summary, "- Changed files preview: `" . preview_paths($worktree->{preview}) . "`";
+            push @worktree_lines, 'Changed files preview: `' . preview_paths($worktree->{preview}) . '`';
         }
     }
     my $source_name = lc($payload->{source} // '');
     my @recurring = $source_name eq 'resume'
       ? transcript_summary_lines(path => $payload->{transcript_path})
       : ();
-    if (@recurring) {
-        push @summary, '- Recent recurring signals from the session transcript:';
-        push @summary, map { "- $_" } @recurring;
-    }
 
-    my @sections = (join("\n", @summary));
+    my @sections;
+    push @sections, _section("Repository context for `$values{repo_name}`:", @repo_lines);
+    push @sections, _section('Installed hook runtime:', @runtime_lines);
+    push @sections, _section('Worktree state:', @worktree_lines) if @worktree_lines;
+    push @sections, join("\n", @environment_lines) if @environment_lines;
+    push @sections, _section('Resume transcript signals:', @recurring) if @recurring;
     my $index = 0;
     for my $block (_manifest_block_entries($manifest, \@profiles, 'session_start')) {
         my @lines = $source_name eq 'resume'
@@ -400,7 +417,7 @@ sub _session_start_context {
           : _format_lines($block->{startup_context} || [], \%values);
         next if !@lines;
         my $header = $index++ == 0 ? 'Hook pack context:' : "Repository profile `$values{repo_id}`:";
-        push @sections, join("\n", $header, map { "- $_" } @lines);
+        push @sections, _section($header, @lines);
     }
     return _join_sections(@sections);
 }

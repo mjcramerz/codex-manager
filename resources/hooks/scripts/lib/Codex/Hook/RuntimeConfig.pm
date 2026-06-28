@@ -75,8 +75,45 @@ sub runtime_config {
                         path_globs => ['src/install/**', 'Makefile'],
                     },
                     {
-                        label      => 'runtime',
-                        path_globs => ['resources/**', 'tests/**'],
+                        label      => 'hooks',
+                        path_globs => [
+                            'resources/hooks/**',
+                            'src/install/hook_runtime_catalog.py',
+                            'src/install/hooks_builder.py',
+                            'tests/test_hook_runtime_modules.py',
+                            'tests/test_hooks_builder.py',
+                            'tests/test_hooks_scripts.py',
+                        ],
+                    },
+                    {
+                        label      => 'skills',
+                        path_globs => [
+                            'resources/skills/**',
+                            'src/install/skills.py',
+                            'tests/test_skill_catalog_contract.py',
+                        ],
+                    },
+                    {
+                        label      => 'plugins',
+                        path_globs => [
+                            'resources/plugins/**',
+                            'src/install/apps_config.py',
+                            'src/install/plugin_bundles.py',
+                            'src/install/plugins.py',
+                            'tests/test_plugin_runtime_contracts.py',
+                        ],
+                    },
+                    {
+                        label      => 'runtime-config',
+                        path_globs => [
+                            'config/usr/**',
+                            'config/vendor/**',
+                            'config/agents/**',
+                        ],
+                    },
+                    {
+                        label      => 'runtime-tests',
+                        path_globs => ['tests/**'],
                     },
                     {
                         label      => 'agents',
@@ -86,15 +123,51 @@ sub runtime_config {
                 session_start => {
                     startup_context => [
                         'Repo role: Codex installer and runtime-configuration source tree.',
-                        'Edit mainly in `src/install/**`, `config/usr/apps.toml`, `config/usr/*`, `config/vendor/*`, `config/agents/*.toml`, and `resources/**`.',
-                        'Run `python3 -m compileall src tests` and `python3 -m unittest discover -s tests` for installer/runtime changes.',
+                        'Edit scope: `src/install/**`, `config/usr/apps.toml`, `config/usr/*`, `config/vendor/*`, `config/agents/*.toml`, and `resources/**`.',
+                        'Hooks source of truth: `resources/hooks/hooks.json`, `resources/hooks/scripts/lib/Codex/Hook/**`, `src/install/hooks_builder.py`, and `src/install/hook_runtime_catalog.py`.',
+                        'Skills/plugins source of truth: `resources/skills/metadata.json`, `resources/plugins/manifest.json`, and the installer rewrite logic that manages rendered `agents/openai.yaml` tool dependencies.',
+                        'Validation baseline: run `python3 -m compileall src tests` and `python3 -m unittest discover -s tests` for installer/runtime changes.',
                     ],
                     resume_context => [
-                        'Resume in `src/install/**`, `config/usr/**`, `config/vendor/**`, `config/agents/**`, `resources/**`, and `tests/**`.',
+                        'Resume scope: `src/install/**`, `config/usr/**`, `config/vendor/**`, `config/agents/**`, `resources/**`, and `tests/**`.',
+                        'Resume checklist: re-check hook, skill, and plugin source-of-truth files before patching rendered runtime outputs.',
+                        'Resume validation: keep transcript-derived context concise, then rerun the narrowest syntax and unit checks for the touched hook or installer surface.',
                     ],
                 },
                 user_prompt_submit => {
                     rules => [
+                        {
+                            patterns => [
+                                '\bhook\b',
+                                '\bhooks\b',
+                                '\bsession[- ]start\b',
+                                '\bstart hook\b',
+                                '\bstop hook\b',
+                                '\buserpromptsubmit\b',
+                                '\bpermissionrequest\b',
+                                '\bpretooluse\b',
+                                '\bposttooluse\b',
+                            ],
+                            lines => [
+                                'For hook-runtime work in `codex-manager`, inspect `resources/hooks/hooks.json`, `src/install/hooks_builder.py`, `src/install/hook_runtime_catalog.py`, and the hook tests in `tests/test_hook_runtime_modules.py`, `tests/test_hooks_builder.py`, and `tests/test_hooks_scripts.py`.',
+                                'When Perl hook modules change, run `perl -c` on touched `.pm` or `.pl` files in addition to the targeted Python hook tests.',
+                            ],
+                        },
+                        {
+                            patterns => [
+                                '\bskill\b',
+                                '\bskills\b',
+                                '\bplugin\b',
+                                '\bplugins\b',
+                                '\bmarketplace\b',
+                                '\bopenai\.yaml\b',
+                                '\bdependencies\.tools\b',
+                            ],
+                            lines => [
+                                'For skill and plugin availability work, keep `src/install/skills.py`, `src/install/apps_config.py`, `src/install/plugins.py`, `src/install/plugin_bundles.py`, `resources/skills/metadata.json`, `resources/plugins/manifest.json`, and the rendered `agents/openai.yaml` tool dependencies aligned.',
+                                'Validate skill/plugin changes with `python3 -m unittest tests.test_skill_catalog_contract tests.test_plugin_runtime_contracts` plus any touched hook tests.',
+                            ],
+                        },
                         {
                             patterns => [
                                 '\binstall\b',
