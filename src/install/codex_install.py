@@ -74,7 +74,6 @@ from hooks_builder import validate_hooks_config
 from layout import RepoLayout
 from layout import RuntimeLayout
 from plugin_bundles import PluginBundleSpec
-from plugin_bundles import render_runtime_plugin_marketplace
 from plugin_bundles import runtime_marketplace_source_path
 from apps_config import effective_plugins_inventory_payload
 from agent_role_contracts import validate_agent_role_contracts
@@ -106,11 +105,13 @@ from plugins import PLUGINS_BUNDLE_PATTERN
 from plugins import PLUGINS_MANIFEST_VERSION
 from plugins import PLUGINS_MARKETPLACE_PATTERN
 from plugins import local_plugin_bundle_dirs
+from plugins import plugin_manifest_additional_marketplaces
 from plugins import plugin_manifest_bundles
 from plugins import plugin_manifest_marketplace_name
 from plugins import plugin_skill_source_path
 from plugins import sync_local_plugins
 from plugins import sync_runtime_plugin_bundle
+from plugins import sync_runtime_plugin_marketplace
 from plugins import validate_plugin_bundle_inventory
 from skills import render_dependency_block
 from skills import iter_skill_groups
@@ -2897,8 +2898,18 @@ class Installer:
         if not isinstance(runtime_home, str) or not runtime_home:
             fail("CODEX_HOME must be available before rendering marketplaces")
 
-        entry["source_type"] = "local"
-        entry["source"] = runtime_home
+        source_type = str(entry.get("source_type", "")).strip()
+        if not source_type:
+            source_type = "local"
+        if source_type != "local":
+            fail(f"config/usr/apps.toml marketplaces.{marketplace_name}.source_type must be local")
+
+        source = entry.get("source")
+        if not isinstance(source, str) or not source.strip():
+            source = f"{runtime_home}/marketplaces/{marketplace_name}"
+
+        entry["source_type"] = source_type
+        entry["source"] = source.strip()
         marketplaces[marketplace_name] = entry
         payload["marketplaces"] = marketplaces
         return payload
@@ -3434,6 +3445,8 @@ class Installer:
         active_entries = self._plugin_manifest_bundles(enabled_only=True)
         if not active_entries:
             fail("resources/plugins/manifest.json did not render any enabled plugin bundles")
+        all_entries = self._plugin_manifest_bundles(enabled_only=False)
+        bundles_by_name = {entry.name: entry for entry in all_entries}
 
         enabled_plugin_ids = self._enabled_plugin_ids_from_home_payload(home_payload)
         rendered_plugin_ids = {entry.plugin_id for entry in active_entries}
@@ -3456,30 +3469,23 @@ class Installer:
             fail(f"compiled home config missing [marketplaces.{marketplace_name}] section")
         if marketplace_entry.get("source_type") != "local":
             fail(f"compiled home config marketplaces.{marketplace_name}.source_type must be local")
-        if marketplace_entry.get("source") != self.runtime_vars["CODEX_HOME"]:
+        expected_primary_source = f"{self.runtime_vars['CODEX_HOME']}/marketplaces/{marketplace_name}"
+        if marketplace_entry.get("source") != expected_primary_source:
             fail(
                 f"compiled home config marketplaces.{marketplace_name}.source must equal "
-                f"{self.runtime_vars['CODEX_HOME']}"
+                f"{expected_primary_source}"
             )
+
+        sync_runtime_plugin_marketplace(
+            self,
+            self.repo_layout.plugins_skills_dir,
+            output_root,
+            marketplace_name,
+            active_entries,
+        )
 
         runtime_plugins_root = output_root / "plugins" / "cache" / marketplace_name
         marketplace_path = output_root / ".agents" / "plugins" / "marketplace.json"
-        self._mkdir_path(runtime_plugins_root)
-        self._mkdir_path(marketplace_path.parent)
-
-        for bundle in active_entries:
-            sync_runtime_plugin_bundle(
-                self,
-                self.repo_layout.plugins_skills_dir,
-                runtime_plugins_root / bundle.name / "local",
-                bundle,
-            )
-
-        self._write_file(
-            marketplace_path,
-            render_runtime_plugin_marketplace(marketplace_name, active_entries),
-        )
-
         marketplace_payload = parse_json_file(marketplace_path)
         if marketplace_payload.get("name") != marketplace_name:
             fail(f"{marketplace_path} marketplace name does not match manifest marketplace_name")
@@ -3558,6 +3564,105 @@ class Installer:
                     fail(f"{app_path} app ids do not match rendered plugin inventory for {bundle.name}")
             elif app_path.exists():
                 fail(f"{app_path} should not exist for plugin without apps: {bundle.name}")
+
+        primary_marketplace_root = output_root / "marketplaces" / marketplace_name
+        sync_runtime_plugin_marketplace(
+            self,
+            self.repo_layout.plugins_skills_dir,
+            primary_marketplace_root,
+            marketplace_name,
+            active_entries,
+        )
+
+        primary_marketplace_path = primary_marketplace_root / ".agents" / "plugins" / "marketplace.json"
+        primary_payload = parse_json_file(primary_marketplace_path)
+        if primary_payload.get("name") != marketplace_name:
+            fail(f"{primary_marketplace_path} marketplace name does not match manifest marketplace_name")
+        primary_plugins = primary_payload.get("plugins")
+        if not isinstance(primary_plugins, list):
+            fail(f"{primary_marketplace_path} plugins must be a list")
+        if len(primary_plugins) != len(active_entries):
+            fail(f"{primary_marketplace_path} plugin count does not match enabled bundle count")
+
+        expected_primary_names = {entry.name for entry in active_entries}
+        actual_primary_names: set[str] = set()
+        for plugin_entry in primary_plugins:
+            if not isinstance(plugin_entry, dict):
+                fail(f"{primary_marketplace_path} plugin entries must be objects")
+            plugin_name = str(plugin_entry.get("name", "")).strip()
+            if plugin_name not in expected_primary_names:
+                fail(f"{primary_marketplace_path} contains unknown plugin entry: {plugin_name}")
+            source = plugin_entry.get("source")
+            if not isinstance(source, dict):
+                fail(f"{primary_marketplace_path} plugin source must be an object for {plugin_name}")
+            if source.get("source") != "local":
+                fail(f"{primary_marketplace_path} plugin source must be local for {plugin_name}")
+            expected_path = runtime_marketplace_source_path(marketplace_name, plugin_name)
+            if source.get("path") != expected_path:
+                fail(f"{primary_marketplace_path} plugin source path is invalid for {plugin_name}")
+            actual_primary_names.add(plugin_name)
+        if actual_primary_names != expected_primary_names:
+            fail(f"{primary_marketplace_path} marketplace entries do not match enabled bundles")
+
+        additional_marketplaces = plugin_manifest_additional_marketplaces(
+            self.effective_plugins_metadata_payload,
+            self.plugins_json_path,
+        )
+        for additional_name, selected_plugins in additional_marketplaces.items():
+            additional_entry = marketplaces.get(additional_name)
+            if not isinstance(additional_entry, dict):
+                fail(f"compiled home config missing [marketplaces.{additional_name}] section")
+            if additional_entry.get("source_type") != "local":
+                fail(f"compiled home config marketplaces.{additional_name}.source_type must be local")
+            expected_source = f"{self.runtime_vars['CODEX_HOME']}/marketplaces/{additional_name}"
+            if additional_entry.get("source") != expected_source:
+                fail(
+                    f"compiled home config marketplaces.{additional_name}.source must equal "
+                    f"{expected_source}"
+                )
+
+            additional_root = output_root / "marketplaces" / additional_name
+            additional_bundles = [bundles_by_name[plugin_name] for plugin_name in selected_plugins]
+            sync_runtime_plugin_marketplace(
+                self,
+                self.repo_layout.plugins_skills_dir,
+                additional_root,
+                additional_name,
+                additional_bundles,
+            )
+
+            additional_marketplace_path = additional_root / ".agents" / "plugins" / "marketplace.json"
+            additional_payload = parse_json_file(additional_marketplace_path)
+            if additional_payload.get("name") != additional_name:
+                fail(
+                    f"{additional_marketplace_path} marketplace name does not match "
+                    f"additional marketplace {additional_name}"
+                )
+            additional_plugins = additional_payload.get("plugins")
+            if not isinstance(additional_plugins, list):
+                fail(f"{additional_marketplace_path} plugins must be a list")
+            if len(additional_plugins) != len(additional_bundles):
+                fail(f"{additional_marketplace_path} plugin count does not match selected bundle count")
+
+            expected_additional_names = {bundle.name for bundle in additional_bundles}
+            actual_additional_names: set[str] = set()
+            for plugin_entry in additional_plugins:
+                if not isinstance(plugin_entry, dict):
+                    fail(f"{additional_marketplace_path} plugin entries must be objects")
+                plugin_name = str(plugin_entry.get("name", "")).strip()
+                if plugin_name not in expected_additional_names:
+                    fail(f"{additional_marketplace_path} contains unknown plugin entry: {plugin_name}")
+                source = plugin_entry.get("source")
+                if not isinstance(source, dict):
+                    fail(f"{additional_marketplace_path} plugin source must be an object for {plugin_name}")
+                if source.get("source") != "local":
+                    fail(f"{additional_marketplace_path} plugin source must be local for {plugin_name}")
+                expected_path = runtime_marketplace_source_path(additional_name, plugin_name)
+                if source.get("path") != expected_path:
+                    fail(f"{additional_marketplace_path} plugin source path is invalid for {plugin_name}")
+                actual_additional_names.add(plugin_name)
+            if actual_additional_names != expected_additional_names:
+                fail(f"{additional_marketplace_path} marketplace entries do not match selected bundles")
 
 
 def parse_args() -> argparse.Namespace:

@@ -9,7 +9,7 @@ You must start with `$CODEX_HOME/plans/workflows/workflow-codex-manager.md` befo
 - Compiled agent and system config: `$CODEX_AGENTS/*.toml`, `/etc/codex/config.toml`, `/etc/codex/requirements.toml`
 - Runtime-home pack: `$CODEX_HOME/**`
 - Hook runtime source: `$CODEX_HOME/hooks/scripts/lib/Codex/Hook/**`
-- Skills and plugin marketplace: `$CODEX_HOME/.agents/skills/**`, `$CODEX_HOME/plugins/cache/**`, `$CODEX_HOME/.agents/plugins/marketplace.json`
+- Skills and plugin marketplace: `$CODEX_HOME/.agents/skills/**`, `$CODEX_HOME/plugins/cache/**`, `$CODEX_HOME/.agents/plugins/marketplace.json`, and any configured local marketplace roots such as `$CODEX_HOME/marketplaces/*/.agents/plugins/marketplace.json`
 
 ## Cross-repo alignment
 - You must check `codex-mcp` when MCP launcher/runtime expectations change.

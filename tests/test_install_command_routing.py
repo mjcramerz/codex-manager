@@ -387,7 +387,14 @@ class InstallConfigToleranceTests(unittest.TestCase):
         marketplaces = payload.get("marketplaces", {})
         self.assertIsInstance(marketplaces, dict)
         self.assertEqual(marketplaces["codex-local"]["source_type"], "local")
-        self.assertEqual(marketplaces["codex-local"]["source"], runtime_vars["CODEX_HOME"])
+        self.assertEqual(
+            marketplaces["codex-local"]["source"],
+            f"{runtime_vars['CODEX_HOME']}/marketplaces/codex-local",
+        )
+        self.assertEqual(marketplaces["openai-curated"]["source_type"], "git")
+        self.assertEqual(marketplaces["openai-curated"]["source"], "https://github.com/openai/plugins")
+        self.assertEqual(marketplaces["openai-curated"]["ref"], "main")
+        self.assertEqual(marketplaces["openai-curated"]["sparse_paths"], [".agents", "plugins"])
 
     def test_home_config_render_includes_explicit_desktop_table(self) -> None:
         installer = codex_install.Installer.__new__(codex_install.Installer)

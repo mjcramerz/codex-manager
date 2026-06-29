@@ -41,6 +41,18 @@ def _string_list(value: Any, *, label: str) -> list[str]:
     return rendered
 
 
+def _unique_string_list(value: Any, *, label: str) -> list[str]:
+    rendered = _string_list(value, label=label)
+    unique: list[str] = []
+    seen: set[str] = set()
+    for item in rendered:
+        if item in seen:
+            fail(f"{label} duplicate entry: {item}")
+        seen.add(item)
+        unique.append(item)
+    return unique
+
+
 def _apps_list(value: Any, *, label: str) -> list[dict[str, str]]:
     if not isinstance(value, list):
         fail(f"{label} must be a list")
@@ -139,6 +151,9 @@ def effective_plugins_inventory_payload(
         fail(f"{inventory_path} must be a non-empty object")
     if base_inventory_payload.get("version") != PLUGIN_INVENTORY_VERSION:
         fail(f"{inventory_path} must declare version = {PLUGIN_INVENTORY_VERSION}")
+    marketplace_name = str(base_inventory_payload.get("marketplace_name", "")).strip()
+    if not PLUGIN_KEY_PATTERN.fullmatch(marketplace_name):
+        fail(f"{inventory_path} marketplace_name must be a valid plugin marketplace key")
     plugins_table = base_inventory_payload.get("plugins")
     if not isinstance(plugins_table, dict) or not plugins_table:
         fail(f"{inventory_path} must declare a non-empty plugins object")
@@ -176,6 +191,37 @@ def effective_plugins_inventory_payload(
             entry_name = _plugin_mcp_name(entry, label=f"{inventory_path} plugin.{key}.mcp")
             if entry_name in shared_refs:
                 fail(f"{inventory_path} plugin.{key}.mcp duplicates shared MCP server: {entry_name}")
+
+    additional_marketplaces = rendered.get("additional_marketplaces", {})
+    if additional_marketplaces in (None, {}):
+        rendered["additional_marketplaces"] = {}
+        return rendered
+    if not isinstance(additional_marketplaces, dict):
+        fail(f"{inventory_path} additional_marketplaces must be an object")
+
+    known_plugins = set(rendered["plugins"].keys())
+    normalized_marketplaces: dict[str, dict[str, list[str]]] = {}
+    for additional_name, payload in additional_marketplaces.items():
+        if not isinstance(additional_name, str) or not PLUGIN_KEY_PATTERN.fullmatch(additional_name):
+            fail(f"{inventory_path} additional marketplace name is invalid: {additional_name}")
+        if additional_name == marketplace_name:
+            fail(f"{inventory_path} additional_marketplaces must not redefine marketplace_name: {additional_name}")
+        if not isinstance(payload, dict):
+            fail(f"{inventory_path} additional_marketplaces.{additional_name} must be an object")
+        plugin_names = _unique_string_list(
+            payload.get("plugins", []),
+            label=f"{inventory_path} additional_marketplaces.{additional_name}.plugins",
+        )
+        if not plugin_names:
+            fail(f"{inventory_path} additional_marketplaces.{additional_name}.plugins must not be empty")
+        missing_plugins = sorted(set(plugin_names) - known_plugins)
+        if missing_plugins:
+            fail(
+                f"{inventory_path} additional_marketplaces.{additional_name}.plugins "
+                f"references unknown plugins: {', '.join(missing_plugins)}"
+            )
+        normalized_marketplaces[additional_name] = {"plugins": plugin_names}
+    rendered["additional_marketplaces"] = normalized_marketplaces
     return rendered
 
 

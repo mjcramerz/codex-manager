@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from common import ensure_https_url
+from common import ensure_safe_absolute_path
 from common import fail
 from common import is_within
 from common import parse_json_file
@@ -68,6 +69,42 @@ def plugin_manifest_marketplace_name(inventory_payload: dict[str, Any], inventor
     if not PLUGINS_MARKETPLACE_PATTERN.fullmatch(marketplace_name):
         fail(f"{inventory_path} must declare a valid marketplace_name")
     return marketplace_name
+
+
+def plugin_manifest_additional_marketplaces(
+    inventory_payload: dict[str, Any],
+    inventory_path: Path,
+) -> dict[str, list[str]]:
+    additional = inventory_payload.get("additional_marketplaces", {})
+    if additional in (None, {}):
+        return {}
+    if not isinstance(additional, dict):
+        fail(f"{inventory_path} additional_marketplaces must be an object")
+
+    rendered: dict[str, list[str]] = {}
+    for marketplace_name, payload in additional.items():
+        if not isinstance(marketplace_name, str) or not PLUGINS_MARKETPLACE_PATTERN.fullmatch(marketplace_name):
+            fail(f"{inventory_path} additional marketplace name is invalid: {marketplace_name}")
+        if not isinstance(payload, dict):
+            fail(f"{inventory_path} additional_marketplaces.{marketplace_name} must be an object")
+        plugin_names = _string_list(
+            payload.get("plugins", []),
+            label=f"{inventory_path} additional_marketplaces.{marketplace_name}.plugins",
+        )
+        if not plugin_names:
+            fail(f"{inventory_path} additional_marketplaces.{marketplace_name}.plugins must not be empty")
+        deduped: list[str] = []
+        seen: set[str] = set()
+        for plugin_name in plugin_names:
+            if plugin_name in seen:
+                fail(
+                    f"{inventory_path} additional_marketplaces.{marketplace_name}.plugins "
+                    f"contains duplicate plugin: {plugin_name}"
+                )
+            seen.add(plugin_name)
+            deduped.append(plugin_name)
+        rendered[marketplace_name] = deduped
+    return rendered
 
 
 def plugin_skill_source_path(repo_root: Path, inventory_path: Path, skill_name: str) -> Path:
@@ -775,26 +812,26 @@ def sync_runtime_plugin_bundle(installer: Any, source_root: Path, target_root: P
         installer._remove_path_force(target_root / ".app.json")
 
 
-def sync_local_plugins(installer: Any) -> None:
-    source_root = installer._plugins_source_dir()
-    runtime_plugins_dir = installer._runtime_plugins_dir()
-    runtime_marketplace_path = installer._runtime_plugin_marketplace_path()
-
-    installer._mkdir_path(runtime_plugins_dir)
-    installer._mkdir_path(runtime_marketplace_path.parent)
-    all_entries = validate_plugin_bundle_inventory(installer, source_root)
-    active_entries = [entry for entry in all_entries if entry.enabled]
-    marketplace_name = plugin_manifest_marketplace_name(installer.effective_plugins_metadata_payload, installer.plugins_json_path)
-    bundle_dirs = {entry.name for entry in active_entries}
-    runtime_marketplace_plugins_dir = runtime_plugins_dir / marketplace_name
+def sync_runtime_plugin_marketplace(
+    installer: Any,
+    source_root: Path,
+    marketplace_root: Path,
+    marketplace_name: str,
+    bundles: list[PluginBundleSpec],
+) -> None:
+    runtime_marketplace_plugins_dir = marketplace_root / "plugins" / "cache" / marketplace_name
+    runtime_marketplace_path = marketplace_root / ".agents" / "plugins" / "marketplace.json"
 
     installer._mkdir_path(runtime_marketplace_plugins_dir)
+    installer._mkdir_path(runtime_marketplace_path.parent)
+
+    bundle_dirs = {entry.name for entry in bundles}
     if runtime_marketplace_plugins_dir.exists():
         for child in sorted(runtime_marketplace_plugins_dir.iterdir(), key=lambda item: item.name):
             if child.name not in bundle_dirs:
                 installer._remove_path_force(child)
 
-    for bundle in active_entries:
+    for bundle in bundles:
         sync_runtime_plugin_bundle(
             installer,
             source_root,
@@ -804,5 +841,90 @@ def sync_local_plugins(installer: Any) -> None:
 
     installer._write_file(
         runtime_marketplace_path,
-        render_runtime_plugin_marketplace(marketplace_name, active_entries),
+        render_runtime_plugin_marketplace(marketplace_name, bundles),
     )
+
+
+def sync_local_plugins(installer: Any) -> None:
+    source_root = installer._plugins_source_dir()
+    all_entries = validate_plugin_bundle_inventory(installer, source_root)
+    active_entries = [entry for entry in all_entries if entry.enabled]
+    bundles_by_name = {entry.name: entry for entry in all_entries}
+    marketplace_name = plugin_manifest_marketplace_name(installer.effective_plugins_metadata_payload, installer.plugins_json_path)
+    home_root = installer._runtime_home_dir()
+    sync_runtime_plugin_marketplace(
+        installer,
+        source_root,
+        home_root,
+        marketplace_name,
+        active_entries,
+    )
+
+    apps_payload = installer._resolved_user_apps_payload()
+    marketplaces = apps_payload.get("marketplaces", {})
+    if marketplaces in (None, {}):
+        marketplaces = {}
+    if not isinstance(marketplaces, dict):
+        fail("config/usr/apps.toml marketplaces must be an object")
+
+    primary_marketplace_entry = marketplaces.get(marketplace_name)
+    if not isinstance(primary_marketplace_entry, dict):
+        fail(f"config/usr/apps.toml marketplaces.{marketplace_name} must be an object")
+    if primary_marketplace_entry.get("source_type") != "local":
+        fail(f"config/usr/apps.toml marketplaces.{marketplace_name}.source_type must be local")
+    primary_source_value = primary_marketplace_entry.get("source")
+    if not isinstance(primary_source_value, str) or not primary_source_value.strip():
+        fail(f"config/usr/apps.toml marketplaces.{marketplace_name}.source must be a non-empty string")
+    primary_marketplace_root = ensure_safe_absolute_path(
+        f"config/usr/apps.toml marketplaces.{marketplace_name}.source",
+        primary_source_value,
+    )
+
+    additional_marketplaces = plugin_manifest_additional_marketplaces(
+        installer.effective_plugins_metadata_payload,
+        installer.plugins_json_path,
+    )
+    managed_roots = {home_root.resolve(strict=False)}
+    normalized_primary_root = primary_marketplace_root.resolve(strict=False)
+    if normalized_primary_root not in managed_roots:
+        managed_roots.add(normalized_primary_root)
+        sync_runtime_plugin_marketplace(
+            installer,
+            source_root,
+            primary_marketplace_root,
+            marketplace_name,
+            active_entries,
+        )
+    for additional_name, selected_plugins in additional_marketplaces.items():
+        if additional_name == marketplace_name:
+            fail(
+                f"{installer.plugins_json_path} additional marketplaces must not reuse "
+                f"the primary marketplace name: {additional_name}"
+            )
+        marketplace_entry = marketplaces.get(additional_name)
+        if not isinstance(marketplace_entry, dict):
+            fail(f"config/usr/apps.toml marketplaces.{additional_name} must be an object")
+        if marketplace_entry.get("source_type") != "local":
+            fail(f"config/usr/apps.toml marketplaces.{additional_name}.source_type must be local")
+        source_value = marketplace_entry.get("source")
+        if not isinstance(source_value, str) or not source_value.strip():
+            fail(f"config/usr/apps.toml marketplaces.{additional_name}.source must be a non-empty string")
+        marketplace_root = ensure_safe_absolute_path(
+            f"config/usr/apps.toml marketplaces.{additional_name}.source",
+            source_value,
+        )
+        normalized_root = marketplace_root.resolve(strict=False)
+        if normalized_root in managed_roots:
+            fail(
+                f"config/usr/apps.toml marketplaces.{additional_name}.source must not reuse "
+                "another managed marketplace root"
+            )
+        managed_roots.add(normalized_root)
+        selected_bundles = [bundles_by_name[plugin_name] for plugin_name in selected_plugins]
+        sync_runtime_plugin_marketplace(
+            installer,
+            source_root,
+            marketplace_root,
+            additional_name,
+            selected_bundles,
+        )

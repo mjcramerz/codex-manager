@@ -5,9 +5,13 @@ You must use this guide when working with runtime plugin bundles inside an insta
 
 ## What exists at runtime
 - Plugin enablement lives in `$CODEX_HOME/config.toml` under `[plugins]`.
-- Marketplace metadata lives in `$CODEX_HOME/.agents/plugins/marketplace.json`.
+- Each local marketplace root carries its own `.agents/plugins/marketplace.json`.
+- The configured `codex-local` marketplace root lives at `$CODEX_HOME/marketplaces/codex-local/`.
+- Additional configured Git marketplaces can point at external plugin repos such as the official `openai-curated` source at `https://github.com/openai/plugins`.
+- The managed in-place runtime snapshot still lives at `$CODEX_HOME/.agents/plugins/marketplace.json`.
 - Installed plugin bundles live under `$CODEX_HOME/plugins/cache/<marketplace>/<plugin>/local/`.
-- Marketplace source paths must resolve from `$CODEX_HOME/.agents/plugins/marketplace.json` back to `$CODEX_HOME/plugins/cache/<marketplace>/<plugin>/local/`.
+- Marketplace source paths must resolve from a marketplace root's `.agents/plugins/marketplace.json`
+  back to that root's `plugins/cache/<marketplace>/<plugin>/local/`.
 - Plugin bundle ids use `<plugin>@<marketplace>`.
 
 ## Current high-value bundles
@@ -31,11 +35,14 @@ You must use this guide when working with runtime plugin bundles inside an insta
 
 ## Runtime checks
 - Inspect enabled plugins with `rg -n "^\[plugins\]" "$CODEX_HOME/config.toml"` and `rg -n "enabled =" "$CODEX_HOME/config.toml"`.
+- Inspect the configured `codex-local` marketplace with `python3 -m json.tool "$CODEX_HOME/marketplaces/codex-local/.agents/plugins/marketplace.json"`.
+- Inspect configured Git marketplace sources with `rg -n "^\[marketplaces\." "$CODEX_HOME/config.toml"`.
 - Inspect the marketplace with `python3 -m json.tool "$CODEX_HOME/.agents/plugins/marketplace.json"`.
 - Inspect one installed bundle with `find "$CODEX_HOME/plugins/cache" -maxdepth 5 -type f | sort`.
 
 ## Related runtime paths
 - `$CODEX_HOME/config.toml`
+- `$CODEX_HOME/marketplaces/codex-local/.agents/plugins/marketplace.json`
 - `$CODEX_HOME/.agents/plugins/marketplace.json`
 - `$CODEX_HOME/plugins/cache/`
 - `$CODEX_HOME/index/pack/plugins.md`

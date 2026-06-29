@@ -471,4 +471,10 @@ tool_timeout_sec = 180
 
 [marketplaces.codex-local]
 source_type = "local"
-source = "${CODEX_HOME}"
+source = "${CODEX_HOME}/marketplaces/codex-local"
+
+[marketplaces.openai-curated]
+source_type = "git"
+source = "https://github.com/openai/plugins"
+ref = "main"
+sparse_paths = [".agents", "plugins"]

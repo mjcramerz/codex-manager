@@ -18,7 +18,9 @@ from apps_config import rewrite_runtime_plugin_skill_dependencies  # noqa: E402
 from common import InstallError  # noqa: E402
 from common import parse_json_file  # noqa: E402
 from common import parse_toml_file  # noqa: E402
+from codex_install import Installer  # noqa: E402
 from plugins import DEFAULT_PROMPT_MAX_CHARS  # noqa: E402
+from plugins import plugin_manifest_additional_marketplaces  # noqa: E402
 from plugins import plugin_manifest_bundles  # noqa: E402
 from plugins import sync_runtime_plugin_bundle  # noqa: E402
 from plugins import validate_plugin_skill_metadata  # noqa: E402
@@ -202,7 +204,46 @@ class PluginRuntimeContractsTests(unittest.TestCase):
         marketplace = marketplaces.get(inventory["marketplace_name"])
         self.assertIsInstance(marketplace, dict)
         self.assertEqual(marketplace.get("source_type"), "local")
-        self.assertEqual(marketplace.get("source"), "${CODEX_HOME}")
+        self.assertEqual(
+            marketplace.get("source"),
+            f"${{CODEX_HOME}}/marketplaces/{inventory['marketplace_name']}",
+        )
+
+    def test_installer_preserves_configured_primary_marketplace_source(self) -> None:
+        installer = Installer(repo_root=REPO_ROOT, dry_run=True)
+        installer.load()
+        installer.validate()
+        payload = installer._resolved_user_apps_payload()
+        marketplace = payload["marketplaces"][load_effective_plugins_inventory()["marketplace_name"]]
+        self.assertEqual(marketplace["source_type"], "local")
+        self.assertEqual(
+            marketplace["source"],
+            "/data/codex/usr/home/marketplaces/codex-local",
+        )
+
+    def test_installer_preserves_configured_git_marketplace_source(self) -> None:
+        installer = Installer(repo_root=REPO_ROOT, dry_run=True)
+        installer.load()
+        installer.validate()
+        payload = installer._resolved_user_apps_payload()
+        marketplace = payload["marketplaces"]["openai-curated"]
+        self.assertEqual(marketplace["source_type"], "git")
+        self.assertEqual(marketplace["source"], "https://github.com/openai/plugins")
+        self.assertEqual(marketplace["ref"], "main")
+        self.assertEqual(marketplace["sparse_paths"], [".agents", "plugins"])
+
+    def test_apps_payload_declares_local_runtime_marketplaces_for_additional_catalogs(self) -> None:
+        apps_payload = load_apps_payload()
+        inventory = load_effective_plugins_inventory()
+        marketplaces = apps_payload.get("marketplaces", {})
+        self.assertIsInstance(marketplaces, dict)
+
+        additional_marketplaces = plugin_manifest_additional_marketplaces(inventory, PLUGINS_MANIFEST_PATH)
+        for marketplace_name in sorted(additional_marketplaces):
+            marketplace = marketplaces.get(marketplace_name)
+            self.assertIsInstance(marketplace, dict)
+            self.assertEqual(marketplace.get("source_type"), "local")
+            self.assertEqual(marketplace.get("source"), f"${{CODEX_HOME}}/marketplaces/{marketplace_name}")
 
     def test_apps_config_enables_bundled_plugin_skills_by_default(self) -> None:
         apps_payload = load_apps_payload()
@@ -547,6 +588,11 @@ class PluginRuntimeContractsTests(unittest.TestCase):
         for plugin_name, payload in inventory["plugins"].items():
             self.assertTrue(payload.get("homepage"), f"{plugin_name} is missing homepage")
 
+    def test_current_plugin_manifest_declares_no_additional_marketplaces(self) -> None:
+        inventory = load_effective_plugins_inventory()
+        additional_marketplaces = plugin_manifest_additional_marketplaces(inventory, PLUGINS_MANIFEST_PATH)
+        self.assertEqual(additional_marketplaces, {})
+
     def test_rendered_marketplace_includes_optional_interface_urls(self) -> None:
         bundles = load_plugin_bundles()
         marketplace_name = load_effective_plugins_inventory()["marketplace_name"]
@@ -610,7 +656,7 @@ class PluginRuntimeContractsTests(unittest.TestCase):
         bundles = load_plugin_bundles()
         marketplace_name = load_effective_plugins_inventory()["marketplace_name"]
         payload = json.loads(render_runtime_plugin_marketplace(marketplace_name, bundles))
-        runtime_marketplace_root = Path("/data/codex/usr/home")
+        runtime_marketplace_root = Path("/data/codex/usr/home/marketplaces") / marketplace_name
         runtime_plugins_dir = Path("/data/codex/usr/home/plugins/cache")
 
         for entry in payload["plugins"]:
@@ -621,7 +667,7 @@ class PluginRuntimeContractsTests(unittest.TestCase):
             resolved = (runtime_marketplace_root / expected_relative).resolve()
             self.assertEqual(
                 resolved,
-                runtime_plugins_dir / marketplace_name / plugin_name / "local",
+                runtime_marketplace_root / "plugins" / "cache" / marketplace_name / plugin_name / "local",
             )
 
     def test_rendered_plugin_manifest_preserves_site_facing_interface_metadata(self) -> None:

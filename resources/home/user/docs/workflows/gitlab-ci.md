@@ -29,7 +29,7 @@ You must read only the smallest section that resolves the current task, follow t
 - You must treat `GL_CICD_SHARED_PROJ` as a pre-existing GitLab CI/CD variable, not a value set inside the consumer `.gitlab-ci.yml`.
 - Top-level includes resolve before pipeline-local variables, so `GL_CICD_SHARED_PROJ` must already exist as a project, group, or instance CI variable.
 - Keep consumer `.gitlab-ci.yml` files thin and explicit about protected refs, runner classes, images, and variable overrides.
-- Shared policy layers commonly include `/policy/jobs.yml` and `/bws/common.yml`; domain-specific includes should stay explicit (for example shared publish, deploy, or CI image layers).
+- Shared policy layers commonly include `/policy/jobs.yml`, `/policy/build.yml`, and `/bws/common.yml`; domain-specific includes should stay explicit (for example shared publish, deploy, or CI image layers).
 - For GitLab-to-GitHub delivery, consumers should include `/github/validate.yml` and `/github/push.yml` through `GL_CICD_SHARED_PROJ` and allow shared internals such as `/github/version.yml`, `/patches/patches.yml`, and `/github/visibility.yml` to remain centralized.
 
 ## Delivery behavior
@@ -42,7 +42,8 @@ You must read only the smallest section that resolves the current task, follow t
 - Pin container images by digest; avoid `:latest`.
 - Pin language toolchains and use lockfiles.
 - Prefer deterministic install commands such as `cargo --locked`, `npm ci`, and other lockfile-enforcing variants.
-- Keep CI command variables (`CI_VERIFY_COMMAND`, `CI_TEST_COMMAND`, `CI_BUILD_COMMAND`, `CI_STAGE_COMMAND`, `CI_PUBLISH_COMMAND`) explicit when a pipeline delegates repo-local behavior to scripts or Make targets.
+- Keep CI command variables (`CI_VERIFY_COMMAND`, `CI_TEST_COMMAND`, `CI_BUILD_COMMAND`, `CI_STAGE_COMMAND`) explicit when a pipeline delegates repo-local behavior to scripts or Make targets.
+- When the shared build layer may target Bazel runners, keep `GLAB_RUNNER_TAG_JOB`, `CI_BAZEL_BUILD_LABEL`, and `CI_BAZEL_BUILD_OUTPUT_BIN` explicit in the consumer pipeline.
 
 ## Security checkpoints
 - Keep release jobs restricted to protected branches, protected tags, and protected variables.
